@@ -4,18 +4,28 @@
 
 	Description:	Some common type definitions.
 
-	Copyright 1993-94, Be Incorporated
+	Copyright 1993-96, Be Incorporated
 
 ******************************************************************************/
 
 #ifndef _SUPPORT_DEFS_H
 #define _SUPPORT_DEFS_H
 
-typedef unsigned long	ulong;
-typedef unsigned int	uint;
-typedef unsigned short	ushort;
-typedef unsigned char	uchar;
-typedef unsigned char	bool;
+typedef unsigned long			ulong;
+typedef unsigned int			uint;
+typedef unsigned short			ushort;
+typedef unsigned char			uchar;
+typedef unsigned char			bool;
+
+typedef volatile long			vlong;
+typedef volatile int			vint;
+typedef volatile short			vshort;
+typedef volatile char			vchar;
+
+typedef volatile unsigned long	vulong;
+typedef volatile unsigned int	vuint;
+typedef volatile unsigned short	vushort;
+typedef volatile unsigned char	vuchar;
 
 #ifndef FALSE
 #define FALSE		0
@@ -31,21 +41,20 @@ typedef unsigned char	bool;
 #define NIL		(0)
 #endif
 
-#ifdef __CPLUSPLUS__
-extern const char *EMPTY_STRING;		/* global variable for "" */
+#ifdef __cplusplus
+extern const char *B_EMPTY_STRING;		/* global variable for "" */
 #endif
 
 #define min(a,b) ((a)>(b)?(b):(a))
 #define max(a,b) ((a)>(b)?(a):(b))
-#define trace() printf("%s %d pid=%d\n", __FILE__, __LINE__, getpid()); /* ??? remove */
 
 /* ??? remove */
-typedef void	(*PFV)();
-typedef int		(*PFI)();
-typedef long	(*PFL)();
+typedef void	(*B_PFV)();
+typedef int		(*B_PFI)();
+typedef long	(*B_PFL)();
 
 #ifndef _ERRORS_H
-#include <support/Errors.h>
+#include <Errors.h>
 #endif
 
 #endif

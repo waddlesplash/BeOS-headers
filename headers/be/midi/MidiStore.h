@@ -6,7 +6,7 @@
 //
 //	Written by:		Eric Knight
 //
-//	Copyright 1994, Be Incorporated
+//	Copyright 1994-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -17,54 +17,56 @@
 #include "Midi.h"
 #endif
 #ifndef _STDIO_H
-#include <inc/stdio.h>
+#include <stdio.h>
 #endif
 class BMidiEvent;
+class BFile;
 
 /*------------------------------------------------------------*/
 
 class BMidiStore : public BMidi {
-DECLARE_CLASS_INFO(BMidi);
+B_DECLARE_CLASS_INFO(BMidi);
 public:
 				BMidiStore();
 virtual			~BMidiStore();
 
-virtual	void	NoteOff(char channel, 
-						char note, 
-						char velocity,
-						ulong time = NOW);
-virtual	void	NoteOn(char channel, 
-					   char note, 
-					   char velocity,
-			    	   ulong time = NOW);
-virtual	void	KeyPressure(char channel, 
-							char note, 
-							char pressure, 
-							ulong time = NOW);
-virtual	void	ControlChange(char channel, 
-							  char controlNumber, 
-							  char controlValue, 
-							  ulong time = NOW);
-virtual	void	ProgramChange(char channel, 
-							  char programNumber, 
-							  ulong time = NOW);
-virtual	void	ChannelPressure(char channel, char pressure, ulong time = NOW);
-virtual	void	PitchBend(char channel, 
-						  char lsb, 
-						  char msb,
-						  ulong time = NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = NOW);
-virtual	void	SystemCommon(char statusByte, 
-							 char data1, 
-							 char data2,
-							 ulong time = NOW);
-virtual	void	SystemRealTime(char statusByte, ulong time = NOW);
+virtual	void	NoteOff(uchar channel, 
+						uchar note, 
+						uchar velocity,
+						ulong time = B_NOW);
+virtual	void	NoteOn(uchar channel, 
+					   uchar note, 
+					   uchar velocity,
+			    	   ulong time = B_NOW);
+virtual	void	KeyPressure(uchar channel, 
+							uchar note, 
+							uchar pressure, 
+							ulong time = B_NOW);
+virtual	void	ControlChange(uchar channel, 
+							  uchar controlNumber, 
+							  uchar controlValue, 
+							  ulong time = B_NOW);
+virtual	void	ProgramChange(uchar channel, 
+							  uchar programNumber, 
+							  ulong time = B_NOW);
+virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+virtual	void	PitchBend(uchar channel, 
+						  uchar lsb, 
+						  uchar msb,
+						  ulong time = B_NOW);
+virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+virtual	void	SystemCommon(uchar statusByte, 
+							 uchar data1, 
+							 uchar data2,
+							 ulong time = B_NOW);
+virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
 
-virtual	void	TempoChange(long bpm, ulong time = NOW);
+virtual	void	TempoChange(long bpm, ulong time = B_NOW);
 
-		void	Import(char *pathName);
-		void	Export(char *pathName, long format);
+		void	Import(BFile*);
+		void	Export(BFile*, long format);
 
+		void	SortEvents(bool force=FALSE);
 		ulong	CountEvents();
 		ulong	CurrentEvent();
 		void	SetCurrentEvent(ulong);
@@ -80,13 +82,12 @@ virtual	void	Run();
 
 		void	AddEvent(ulong time, 
 						 bool inMS, 
-						 char type, 
-		   	         	 char data1 = 0, 
-						 char data2 = 0,
-		   	         	 char data3 = 0, 	 
-						 char data4 = 0);
-		void	AddSysEx(void* data, long dataLength);
-		void	SortMidiEvents();
+						 uchar type, 
+		   	         	 uchar data1 = 0, 
+						 uchar data2 = 0,
+		   	         	 uchar data3 = 0, 	 
+						 uchar data4 = 0);
+		void	AddSystemExclusive(void* data, long dataLength);
 	
 		void	Error(char*);
 	
@@ -106,7 +107,7 @@ virtual	void	Run();
 		void	BiggerMsg();
 		void	MetaEvent(long);
 		long	MsgLength();
-		char*	Msg();
+		uchar*	Msg();
 		void	BadByte(long);
 	
 		long	PutC(long c);
@@ -123,7 +124,7 @@ virtual	void	Run();
 							   ulong type, 
 							   uchar* data, 
 							   ulong size);
-		bool	WriteSysExEvent(ulong deltaTime, 
+		bool	WriteSystemExclusiveEvent(ulong deltaTime, 
 							    uchar* data, 
 							    ulong size);
 		void	WriteTempo(ulong deltaTime, long tempo);
@@ -139,9 +140,10 @@ virtual	void	Run();
 		ulong		fNumEvents;
 		ulong		fEventsSize;
 		ulong		fCurrEvent;
+		bool		fNeedsSorting;
 		bool		fResetTimer;
 		ulong		fStartTime;
-		FILE*		fFileRef;
+		BFile*		fFile;
 		short		fDivision;
 		float		fDivisionFactor;
 		long		fTempo;
@@ -152,7 +154,7 @@ virtual	void	Run();
 		long		fToBeRead;
 		long		fMsgIndex;
 		long		fMsgSize;
-		char*		fMsgBuff;
+		uchar*		fMsgBuff;
 	
 		long		fNumBytesWritten;
 };

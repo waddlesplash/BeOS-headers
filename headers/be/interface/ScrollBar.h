@@ -4,7 +4,7 @@
 //
 //	Description:	ScrollBar control class.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -16,7 +16,7 @@
 #include "View.h"
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 class BApplication;
@@ -24,7 +24,7 @@ class BApplication;
 //------------------------------------------------------------------------------
 
 class BScrollBar : public BView {
-	DECLARE_CLASS_INFO(BView);
+	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BScrollBar(	BRect frame,
@@ -38,7 +38,6 @@ virtual				~BScrollBar();
 		void		SetValue(long value);
 		long		Value() const;
 virtual	void		ValueChanged(long newValue);
-virtual long		ResourceDataLength() const;
 
 		void		SetRange(long min, long max);
 		void		GetRange(long *min, long *max) const;
@@ -48,9 +47,6 @@ virtual long		ResourceDataLength() const;
 		void		SetTarget(char *targetName);
 		BView		*Target() const;
 		orientation	Orientation() const;
-
-virtual void		GetResourceData(void *buf) const;
-virtual void		SetResourceData(void *buf, long len);
 
 //------------------------------------------------------------------------------
 

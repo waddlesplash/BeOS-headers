@@ -4,7 +4,7 @@
 //
 //	Description:	List class header.
 //	
-//	Copyright 1992-94, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,16 +12,16 @@
 #define	_LIST_H
 
 #ifndef _OBJECT_H
-#include <support/Object.h>
+#include <Object.h>
 #endif
 
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 // -----------------------------------------------------------------------
 class BList : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BList(long itemsPerBlock = 20);
@@ -64,15 +64,15 @@ private:
 inline void		*BList::Items() const
 			{ return(fObjectList); }
 
-inline void		*BList::ItemAt(long index) const
-			{	if (index < 0 || index >= fItemCount)
+inline void		*BList::ItemAt(long indx) const
+			{	if (indx < 0 || indx >= fItemCount)
 					return(NIL);
 				else
-					return(fObjectList[index]);
+					return(fObjectList[indx]);
 			}
 
-inline void		*BList::ItemAtFast(long index) const
-			{ return(fObjectList[index]); }
+inline void		*BList::ItemAtFast(long indx) const
+			{ return(fObjectList[indx]); }
 
 inline bool		BList::AddItem(void* item)
 			{ return(AddItem(item, fItemCount)); }

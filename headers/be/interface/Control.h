@@ -4,7 +4,7 @@
 //
 //	Description:	base control view class interface
 //
-//	Copyright 1993, Be Incorporated
+//	Copyright 1993-96, Be Incorporated
 //
 //******************************************************************************
  
@@ -14,47 +14,70 @@
 #ifndef _VIEW_H
 #include "View.h"
 #endif
-#ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#ifndef _MESSAGE_H
+#include <Message.h>
 #endif
+#ifndef _CLASS_INFO_H
+#include <ClassInfo.h>
+#endif
+#ifndef _LOOPER_H
+#include <Looper.h>
+#endif
+
+enum {
+	B_CONTROL_OFF = 0,
+	B_CONTROL_ON = 1
+};
 
 //------------------------------------------------------------------------------
 
+class BWindow;
+
 class BControl : public BView {
-	DECLARE_CLASS_INFO(BView);
+	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BControl(	BRect frame,
 								const char *name,
 								const char *label,
-								ulong command,
+								BMessage *message,
 								ulong resizeMask,
 								ulong flags); 
 virtual				~BControl();
 
 virtual	void		AttachedToWindow();
 
-		void		SetLabel(const char *text);
+virtual	void		SetLabel(const char *text);
 		const char	*Label() const;
 		
-		void		SetValue(long value);
+virtual	void		SetValue(long value);
 		long		Value() const;
-		void		SetCommand(ulong command);
-		ulong		Command() const;
-virtual	void		ValueChanged(long newValue);
-virtual long		ResourceDataLength() const;
-virtual void		GetResourceData(void *buf) const;
-virtual void		SetResourceData(void *buf, long len);
 
-//------------------------------------------------------------------------------
+virtual void		SetEnabled(bool on);
+		bool		IsEnabled() const;
+
+virtual	void		SetMessage(BMessage *message);
+		BMessage	*Message() const;
+		ulong		Command() const;
+
+virtual long		SetTarget(BReceiver *target, BLooper *looper = NULL);
+		BReceiver	*Target(BLooper **looper = NULL) const;
+
+//-----------------------------------------------------------------------------
+
+protected:
+	void			Invoke();
+
+//-----------------------------------------------------------------------------
 
 private:
-	ulong		fCommand;
-	char		*fLabel;
-	long		fValue;
+	BMessage		*fMessage;
+	char			*fLabel;
+	long			fValue;
+	BReceiver		*fTarget;
+	BLooper			*fLooper;
+	bool			fEnabled;
 };
-
-inline ulong		BControl::Command() const { return(fCommand); }
 
 //------------------------------------------------------------------------------
 

@@ -2,7 +2,7 @@
 //
 //	File:		StorageDefs.h
 //
-//	Copyright 1994 Be Incorporated. All Rights Reserved.
+//	Copyright 1994-96 Be Incorporated. All Rights Reserved.
 //
 //******************************************************************************/
 
@@ -11,16 +11,17 @@
 #define	_STORAGE_DEFS_H
 
 /*-----------------------------------------------------------------*/
-/*  Record reference and table field typedefs
- */
-typedef long record_ref;
-typedef	long field_key;
+typedef long 	record_id;
+typedef long 	database_id;
+typedef	long	field_key;
 
-/* Private */
-#define	LONG		1
-#define	STRING		2
-#define	DATA		3
-#define	PTR			4
-#define	DATE		5
+/*-----------------------------------------------------------------*/
+/* B_REF_TYPE struct */
+
+struct record_ref {
+	record_id	record;
+	database_id	database;
+};
+
 
 #endif

@@ -1,10 +1,10 @@
 /******************************************************************************
 //
-//	File:			App.h
+//	File:			AppKit.h
 //
 //	Description:	All-in-one include for the App kit.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 *******************************************************************************/
 
@@ -15,19 +15,22 @@
 #include <SupportKit.h>
 #endif
 #ifndef _APP_DEFS_H
-#include <app/AppDefs.h>
+#include <AppDefs.h>
 #endif
 #ifndef _APPLICATION_H
-#include <app/Application.h>
+#include <Application.h>
 #endif
 #ifndef _MESSAGE_H
-#include <app/Message.h>
+#include <Message.h>
 #endif
 #ifndef _MESSAGEQUEUE_H
-#include <app/MessageQueue.h>
+#include <MessageQueue.h>
 #endif
 #ifndef _MESSENGER_H
-#include <app/Messenger.h>
+#include <Messenger.h>
+#endif
+#ifndef _ROSTER_H
+#include <Roster.h>
 #endif
 
 #endif

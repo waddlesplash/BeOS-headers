@@ -1,185 +1,71 @@
 /*
- *   ctype.h -- ANSI 
- *
- *   Functions for handling characters.
- *
- *           Copyright (c) 1990, 1991, 1992, 1993 MetaWare Incorporated
+ *	ctype.h
+ *	
+ *		Copyright © 1995 Metrowerks, Inc.
+ *		All rights reserved.
  */
+ 
+#ifndef __ctype__
+#define __ctype__
 
-#ifndef	_CTYPE_H
-#define	_CTYPE_H
-#pragma push_align_members(64);
+#pragma options align=mac68k
 
-#ifdef __CPLUSPLUS__
-extern "C" {
-#endif
+#include <ansi_parms.h>
 
-#define	_UPPER 1
-#define	_LOWER 2
-#define	_NUMBER	4
-#define	_DIGIT	4
-#define	_SPACE	8
-#define	_PUNCT	16
-#define	_CONTROL 32
-#define	_CNTRL	32
-#if _AIX || _ATT || _XNX || _ATT4 || _SOL || _MSNT
-#define	_BLANK	64
-#define	_HEX	128
-#else
-#define	_HEX	64
-#define	_BLANK	128
-#endif
+__extern_c
 
-#if _IBMESA || (_BSD && _I386 /* OSF/1 */)
-    /* Structure info derived from localedef.h. */
-    extern struct { 
-    	char a,b; short c,d,e; void *f; 
-    	struct { 
-    	    short a,b,c,d,e,f; char g; int h; void *i; int j;
-    	    unsigned short *lc_ctype;	/* At offset 28. */
-    	    } *lc_chrtbl;
-    	} *_locp;
-    #define _CTYPE(c) ((_locp->lc_chrtbl->lc_ctype+1)[c])
-#elif _AIX || _XNX || _ATT || _ATT4 || _SOL
-    #if __ATTSTDC /* AT&T ANSI-std vs. non-ANSI std. ctype.	*/
-	#define	_CTYPE(c)	((__ctype+1)[(c)])
- 	extern const unsigned char __ctype[];
-    #else
-	#define	_CTYPE(c)	((_ctype+1)[(c)])
-	extern const unsigned char _ctype[];
-    #endif	/* __ATTSTDC */
-#elif _MSNT
-    #define	_CTYPE(c)	((_ctype+1)[(c)])
-    extern const unsigned short _ctype[];
-#elif _UPA
-    #define _CTYPE(c)	(__ctype[(c)])
-    extern unsigned char *__ctype;
-#elif _I860BE
-    #define	_CTYPE(c)	((__ctype+1)[(c)])
-    extern const unsigned char __ctype[];
-#else
-    #define	_CTYPE(c)	((_ctype_+1)[(c)])
-    extern const unsigned char _ctype_[];
-#endif
+int isalnum (int);
+int isalpha (int);
+int iscntrl (int);
+int isdigit (int);
+int isgraph (int);
+int islower (int);
+int isprint (int);
+int ispunct (int);
+int isspace (int);
+int isupper (int);
+int isxdigit(int);
+int tolower (int);
+int toupper (int);
 
-/* put here for microsoft compatibility.  NT system headers depend on
-   cytpe.h providing this.
-*/
-#ifndef _WCHAR_T_DEFINED
-#define _WCHAR_T_DEFINED
-typedef _wchar_t wchar_t;
-#endif
+unsigned char	__ctype_map[];
+unsigned char	__lower_map[];
+unsigned char	__upper_map[];
 
+__end_extern_c
 
-extern	int	isupper(int __c);
-extern	int	islower(int __c);
-extern	int	isalpha(int __c);
-extern	int	isdigit(int __c);
-extern	int	isxdigit(int	__c);
-extern	int	isspace(int __c);
-extern	int	ispunct(int __c);
-extern	int	isalnum(int __c);
-extern	int	isgraph(int __c);
-extern	int	isprint(int __c);
-extern	int	iscntrl(int __c);
-extern	int	toupper(int __c);
-extern	int	tolower(int __c);
-extern	int	_isascii(int	__c);
-extern	int	_isodigit(int __c);
-extern	int	_toupper(int	__c);
-extern	int	_tolower(int	__c);
+#define __control_char	0x01
+#define __motion_char		0x02
+#define __space_char		0x04
+#define __punctuation		0x08
+#define __digit					0x10
+#define __hex_digit			0x20
+#define __lower_case		0x40
+#define __upper_case		0x80
 
-#define	isupper(c)	(_CTYPE(c) &	_UPPER)
-#define	islower(c)	(_CTYPE(c) &	_LOWER)
-#define	isalpha(c)	(_CTYPE(c) &	(_UPPER	| _LOWER))
-#define	isdigit(c)	(_CTYPE(c) &	_NUMBER)
-#define	isxdigit(c)	(_CTYPE(c) & 	(_NUMBER |	_HEX))
-#define	isspace(c)	(_CTYPE(c) &	_SPACE)
-#define	ispunct(c)	(_CTYPE(c) &	_PUNCT)
-#define	isalnum(c)	(_CTYPE(c) &	(_UPPER|_LOWER|_NUMBER))
-#define	isgraph(c)	(_CTYPE(c) &	(_UPPER	| _LOWER | _NUMBER | _PUNCT))
-#define	isprint(c)	(_CTYPE(c) & 	(_UPPER |_LOWER |_NUMBER |_PUNCT |_BLANK))
-#define	iscntrl(c)	(_CTYPE(c) &	_CNTRL)
+#define __letter				(__lower_case   | __upper_case  )
+#define __alphanumeric	(__letter       | __digit       )
+#define __graphic				(__alphanumeric | __punctuation )
+#define __printable			(__graphic      | __space_char  )
+#define __whitespace		(__motion_char  | __space_char  )
+#define __control       (__motion_char  | __control_char)
 
-#if __HIGHC__
-#define	_toupper(c)	((c) - 'a' + 'A')
-#define	_tolower(c)	((c) - 'A' + 'a')
-#define	isascii(c)	((unsigned)(c) <= 0177)
-#define	toascii(c)	((unsigned)(c) & 0177)
-#endif
+#define __zero_fill(c)	((int) (unsigned char) (c))
 
-#ifdef _K_AND_R
-#define	_isascii(c)	((unsigned)(c) <= 0177)
-#define	isascii(c)	((unsigned)(c) <= 0177)
-#define	toascii(c)	((unsigned)(c) & 0177)
-#endif
+#define isalnum(c)	((int) (__ctype_map[__zero_fill(c)] & __alphanumeric))
+#define isalpha(c)	((int) (__ctype_map[__zero_fill(c)] & __letter      ))
+#define iscntrl(c)	((int) (__ctype_map[__zero_fill(c)] & __control     ))
+#define isdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __digit       ))
+#define isgraph(c)	((int) (__ctype_map[__zero_fill(c)] & __graphic     ))
+#define islower(c)	((int) (__ctype_map[__zero_fill(c)] & __lower_case  ))
+#define isprint(c)	((int) (__ctype_map[__zero_fill(c)] & __printable   ))
+#define ispunct(c)	((int) (__ctype_map[__zero_fill(c)] & __punctuation ))
+#define isspace(c)	((int) (__ctype_map[__zero_fill(c)] & __whitespace  ))
+#define isupper(c)	((int) (__ctype_map[__zero_fill(c)] & __upper_case  ))
+#define isxdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __hex_digit   ))
+#define tolower(c)	((int)  __lower_map[__zero_fill(c)])
+#define toupper(c)	((int)  __upper_map[__zero_fill(c)])
 
-#if _MSDOS
-#define	_isodigit(c)	((unsigned int)(((c)&0xFF) - '0') <= 7)
-#if __HIGHC__
-#define	toupper(c)	(islower(c) ? _toupper(c) : (c))
-#define	tolower(c)	(isupper(c) ? _tolower(c) : (c))
-#endif
-#endif
+#pragma options align=reset
 
-/* Unicode functions */
-
-extern	int	_uisupper(int __c);
-extern	int	_uislower(int __c);
-extern	int	_uisalpha(int __c);
-extern	int	_uisdigit(int __c);
-extern	int	_uisxdigit(int	__c);
-extern	int	_uisspace(int __c);
-extern	int	_uispunct(int __c);
-extern	int	_uisalnum(int __c);
-extern	int	_uisgraph(int __c);
-extern	int	_uisprint(int __c);
-extern	int	_uiscntrl(int __c);
-extern	int	_utoupper(int __c);
-extern	int	_utolower(int __c);
-extern	int	_uisascii(int	__c);
-extern	int	_uisodigit(int __c);
-extern	int	_utoupper(int	__c);
-extern	int	_utolower(int	__c);
-
-#if __HIGHC__
-  #ifdef __UNICODE__
-    #define Uisupper  _uisupper
-    #define Uislower  _uislower
-    #define Uisalpha  _uisalpha
-    #define Uisdigit  _uisdigit
-    #define Uisxdigit _uisxdigit
-    #define Uisspace  _uisspace
-    #define Uispunct  _uispunct
-    #define Uisalnum  _uisalnum
-    #define Uisgraph  _uisgraph
-    #define Uisprint  _uisprint
-    #define Uiscntrl  _uiscntrl
-    #define Uisascii  _uisascii
-    #define Uisodigit _uisodigit
-    #define Utoupper  _utoupper
-    #define Utolower  _utolower
-  #else	/* ! __UNICODE__ */
-    #define Uisupper  isupper
-    #define Uislower  islower
-    #define Uisalpha  isalpha
-    #define Uisdigit  isdigit
-    #define Uisxdigit isxdigit
-    #define Uisspace  isspace
-    #define Uispunct  ispunct
-    #define Uisalnum  isalnum
-    #define Uisgraph  isgraph
-    #define Uisprint  isprint
-    #define Uiscntrl  iscntrl
-    #define Uisascii  _isascii
-    #define Uisodigit _isodigit
-    #define Utoupper  toupper
-    #define Utolower  tolower
-  #endif /* __UNICODE__ */
-#endif /* __HIGHC__ */
-
-#ifdef __CPLUSPLUS__
-}
-#endif
-#pragma pop_align_members();
-#endif /* _CTYPE_H */
+#endif /* __ctype__ */

@@ -1,21 +1,19 @@
 /*
- *   stdarg.h -- ANSI 
- *
- *   Macros and type for functions that require variable
- *   numbers of arguments.
- *
- *           Copyright (c) 1990, 1993 MetaWare Incorporated
+ *	stdarg.h
+ *	
+ *		Copyright © 1995 Metrowerks, Inc.
+ *		All rights reserved.
  */
+ 
+#ifndef __stdarg__
+#define __stdarg__
 
-#ifndef _STDARG_H
-#define _STDARG_H	
+#include <va_list.h>
 
-#include <_stdarg.h>
+#define __va_start(parm)	(va_list) (&parm + 1)
 
-#define va_start __va_start
-#define va_arg   __va_arg
-#define va_end   __va_end
+#define va_start(ap, parm)	ap = __va_start(parm)
+#define va_arg(ap, type)		(* (((type *) (ap += sizeof(type))) - 1))
+#define va_end(ap)
 
-typedef __va_list va_list;
-
-#endif /*_STDARG_H*/
+#endif /* __stdarg__ */

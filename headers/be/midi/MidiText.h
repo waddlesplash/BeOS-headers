@@ -6,7 +6,7 @@
 //
 //	Written by:		Eric Knight
 //
-//	Copyright 1994, Be Incorporated
+//	Copyright 1994-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -17,47 +17,47 @@
 #include "Midi.h"
 #endif
 #ifndef _STDIO_H
-#include <inc/stdio.h>
+#include <stdio.h>
 #endif
 
 /*------------------------------------------------------------*/
 
 class BMidiText : public BMidi {
-DECLARE_CLASS_INFO(BMidi);
+B_DECLARE_CLASS_INFO(BMidi);
 public:
 				BMidiText();
 virtual			~BMidiText();
 
-virtual	void	NoteOff(char channel, 
-						char note, 
-						char velocity,
-						ulong time = NOW);
-virtual	void	NoteOn(char channel, 
-					   char note, 
-					   char velocity,
-					   ulong time = NOW);
-virtual	void	KeyPressure(char channel, 
-							char note, 
-							char pressure,
-							ulong time = NOW);
-virtual	void	ControlChange(char channel, 
-							  char controlNumber, 
-							  char controlValue, 
-							  ulong time = NOW);
-virtual	void	ProgramChange(char channel, 
-							  char programNumber,
-							  ulong time = NOW);
-virtual	void	ChannelPressure(char channel, char pressure, ulong time = NOW);
-virtual	void	PitchBend(char channel, 
-						  char lsb, 
-						  char msb,
-						  ulong time = NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = NOW);
-virtual	void	SystemCommon(char statusByte, 
-							 char data1, 
-							 char data2,
-							 ulong time = NOW);
-virtual	void	SystemRealTime(char statusByte, ulong time = NOW);
+virtual	void	NoteOff(uchar channel, 
+						uchar note, 
+						uchar velocity,
+						ulong time = B_NOW);
+virtual	void	NoteOn(uchar channel, 
+					   uchar note, 
+					   uchar velocity,
+					   ulong time = B_NOW);
+virtual	void	KeyPressure(uchar channel, 
+							uchar note, 
+							uchar pressure,
+							ulong time = B_NOW);
+virtual	void	ControlChange(uchar channel, 
+							  uchar controlNumber, 
+							  uchar controlValue, 
+							  ulong time = B_NOW);
+virtual	void	ProgramChange(uchar channel, 
+							  uchar programNumber,
+							  ulong time = B_NOW);
+virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+virtual	void	PitchBend(uchar channel, 
+						  uchar lsb, 
+						  uchar msb,
+						  ulong time = B_NOW);
+virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+virtual	void	SystemCommon(uchar statusByte, 
+							 uchar data1, 
+							 uchar data2,
+							 ulong time = B_NOW);
+virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
 
 	void	ResetTimer(bool start=FALSE);
 private:

@@ -1,44 +1,30 @@
 /*
- *   assert.h -- ANSI 
- *
- *   Diagnostic facilities.
- *
- *           Copyright (c) 1991, MetaWare Incorporated
- */
+ *	assert.h
+ *	
+ *		Copyright © 1995 Metrowerks, Inc.
+ *		All rights reserved.
+*/
 
-#ifndef _ASSERT_H
-#define _ASSERT_H
+#pragma options align=mac68k
 
-#ifdef __CPLUSPLUS__
-extern "C" {
-#endif
+#include <ansi_parms.h>
 
-#undef	assert
+#undef assert
 
-#if (defined(NDEBUG) && !defined(__PENPOINT__)) \
- || (!defined(DEBUG) &&  defined(__PENPOINT__))
+#ifdef NDEBUG
 
-    #define assert(ignore) ((void)0)
-    #define _uassert(ignore) ((void)0)
+#define assert(condition) ((void) 0)
 
 #else
-    void _assert(void *, void *, unsigned);
-    #define assert(E) ((E)? (void)0 : _assert(#E, __FILE__, __LINE__))
 
-    void _u_assert(void *, void *, unsigned);
-    #define _uassert(E) ((E)? (void)0 : _u_assert(#E, __FILE__, __LINE__))
+__extern_c
 
-#endif /* NDEBUG */
+void __assertion_failed(char * condition, char * filename, int lineno);
 
-#if __HIGHC__
-    #ifdef __UNICODE__
-	#define Uassert _uassert
-    #else
-	#define Uassert assert
-    #endif
-#endif
+__end_extern_c
 
-#ifdef __CPLUSPLUS__
-}
-#endif
-#endif /*_ASSERT_H */
+#define assert(condition) ((condition) ? ((void) 0) : __assertion_failed(#condition, __FILE__, __LINE__))
+
+#endif /* def NDEBUG */
+
+#pragma options align=reset

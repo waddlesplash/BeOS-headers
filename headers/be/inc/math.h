@@ -1,276 +1,369 @@
 /*
- *   math.h -- ANSI 
- *
- *   Mathematical functions and constants.
- *
- *           Copyright (c) 1990, MetaWare Incorporated
+ *	math.h
+ *	
+ *		Copyright © 1995 Metrowerks, Inc.
+ *		All rights reserved.
+ */
+ 
+#ifndef __math__
+#define __math__
+
+#pragma options align=mac68k
+#pragma direct_destruction off
+
+#include <ansi_parms.h>
+
+#define HUGE_VAL	(* (double *) __huge_val)
+
+extern unsigned char *	__huge_val;
+
+/*
+ *  Set the following define to 1 to force the ANSI math header to inline FPU
+ *	calls whenever possible.  This behaviour is not ANSI compatible, so should
+ *	be used with care.
+ *	
+ *	NB: on 680x0 macs, using inlines in conjunction with 8byte doubles will
+ *	not work correctly.
  */
 
-#ifndef _MATH_H
-#define _MATH_H
-#pragma push_align_members(64);
-
-#ifdef __CPLUSPLUS__
-extern "C" {
+#if !defined(_INLINE_FPU_CALLS_) && __MC68K__
+#define _INLINE_FPU_CALLS_	0
 #endif
 
-#if defined(__PENPOINT__) && (!defined(EDOM) || !defined(ERANGE))
-    #ifndef GO_INCLUDED
-	#include <go.h>
-    #endif
-    #ifndef CLSMGR_INCLUDED
-	#include <clsmgr.h>
-    #endif
-    #ifndef GOMATH_INCLUDED
-	#include <gomath.h>
-    #endif
+		/* function prototype declarations (common to both 68K and PPC) */
 
-    #define StsToErrno(sts) ((U32)(sts)&~flag31)
+__extern_c
 
-    #ifndef EDOM
-	#define EDOM    StsToErrno(stsMathDomain)   /* Argument too large */
-    #endif
+		/* float declarations */
+float cosf(float);
+float sinf(float);
+float tanf(float);
+float acosf(float);
+float asinf(float);
+float atanf(float);
+float atan2f(float, float);
+float coshf(float);
+float sinhf(float);
+float tanhf(float);
+float expf(float);
+float frexpf(float, int *);
+float ldexpf(float, int);
+float logf(float);
+float log10f(float);
+float modff(float, float*);
+float fabsf(float);
+float powf(float, float);
+float sqrtf(float);
+float ceilf(float);
+float floorf(float);
+float fmodf(float, float);
 
-    #ifndef ERANGE
-	#define ERANGE  StsToErrno(stsMathRange)    /* Result too large */
-    #endif
-#else	/* ! __PENPOINT__ */
-    #ifndef EDOM
-	#define EDOM     33     /* errno's value for out of domain */
-    #endif
+__end_extern_c
 
-    #ifndef ERANGE
-	#define ERANGE   34     /* errno's value for out of range  */
-    #endif
-#endif
+#if __POWERPC__
 
-#if defined(_UPA)
-#define HUGE_VAL 1.7976931348623157e+308
+__extern_c
+
+		/* double declarations */
+double cos(double);
+double sin(double);
+double tan(double);
+double acos(double);
+double asin(double);
+double atan(double);
+double atan2(double, double);
+double cosh(double);
+double sinh(double);
+double tanh(double);
+double exp(double);
+double frexp(double, int *);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double modf(double, double *);
+double pow(double, double);
+double sqrt(double);
+double ceil(double);
+double floor(double);
+double fmod(double, double);
+
+__end_extern_c
+
+#ifdef __cplusplus
+		/* double inlines, for C++ */
+inline double fabs(double x)	{ return __fabs(x); }
 #else
-#define HUGE_VAL (_fphuge[0])
-#endif
-extern double _fphuge[];
-
-
-#define _PI 3.141592653589793238462643383279502884197169399
-#define _E  2.718281828459045235360287471352662497757247093
-
-
-extern double cos(double __x);
-extern double sin(double __x);
-extern double tan(double __x);
-extern double atan(double __x);
-
-extern double exp(double __x);
-extern double log(double __x);
-extern double sqrt(double __x);
-
-extern double acos(double __x);
-extern double asin(double __x);
-
-extern double cosh(double __x);
-extern double sinh(double __x);
-extern double tanh(double __x);
-
-extern double log10(double __x);
-
-extern double fabs(double __x);
-
-extern double ceil(double __x);
-extern double floor(double __x);
-
-extern double atan2(double __y, double __x);
-
-extern double frexp(double __value, int *__exp);
-extern double ldexp(double __x, int __exp);
-extern double modf(double __value, double *__iptr);
-
-extern double pow(double __x, double __y);
-
-extern double fmod(double __x, double __y);
-
-#if _AM29K
-extern float cosf(float __x);
-extern float sinf(float __x);
-extern float tanf(float __x);
-extern float atanf(float __x);
-
-extern float expf(float __x);
-extern float logf(float __x);
-extern float sqrtf(float __x);
-
-extern float acosf(float __x);
-extern float asinf(float __x);
-
-extern float coshf(float __x);
-extern float sinhf(float __x);
-extern float tanhf(float __x);
-
-extern float log10f(float __x);
-
-extern float fabsf(float __x);
-
-extern float ceilf(float __x);
-extern float floorf(float __x);
-
-extern float atan2f(float __y, float __x);
-
-extern float frexpf(float __value, int *__exp);
-extern float ldexpf(float __x, int __exp);
-
-extern float powf(float __x, float __y);
-
-extern float fmodf(float __x, float __y);
+		/* double macro overrides, for C */
+double fabs(double);
+#define fabs(x)			__fabs(x)
 #endif
 
-#ifndef _NA_H
-    #include <_na.h>
+#else	/* !__POWERPC__ */
+
+__extern_c
+
+		/* long double declarations */
+long double cosl(long double);
+long double sinl(long double);
+long double tanl(long double);
+long double acosl(long double);
+long double asinl(long double);
+long double atanl(long double);
+long double atan2l(long double, long double);
+long double coshl(long double);
+long double sinhl(long double);
+long double tanhl(long double);
+long double expl(long double);
+long double frexpl(long double, int *);
+long double ldexpl(long double, int);
+long double logl(long double);
+long double log10l(long double);
+long double modfl(long double, long double *);
+long double fabsl(long double);
+long double powl(long double, long double);
+long double sqrtl(long double);
+long double ceill(long double);
+long double floorl(long double);
+long double fmodl(long double, long double);
+
+__end_extern_c
+		
+#if _INLINE_FPU_CALLS_ && __MC68881__
+
+__extern_c
+
+		/* call the FPU directly (NOT ANSI COMPATIBLE) */
+long double _fpucos(long double:__FP0):__FP0                    = { 0xF200,0x001D };
+long double _fpusin(long double:__FP0):__FP0                    = { 0xF200,0x000E };
+long double _fputan(long double:__FP0):__FP0                    = { 0xF200,0x000F };
+long double _fpuacos(long double:__FP0):__FP0                   = { 0xF200,0x001C };
+long double _fpuasin(long double:__FP0):__FP0                   = { 0xF200,0x000C };
+long double _fpuatan(long double:__FP0):__FP0                   = { 0xF200,0x000A };
+long double _fpucosh(long double:__FP0):__FP0                   = { 0xF200,0x0019 };
+long double _fpusinh(long double:__FP0):__FP0                   = { 0xF200,0x0002 };
+long double _fputanh(long double:__FP0):__FP0                   = { 0xF200,0x0009 };
+long double _fpuexp(long double:__FP0):__FP0                    = { 0xF200,0x0010 };
+long double _fpuldexp(long double:__FP0,long:__D0):__FP0        = { 0xF200,0x4026 };
+long double _fpulog(long double:__FP0):__FP0                    = { 0xF200,0x0014 };
+long double _fpulog10(long double:__FP0):__FP0                  = { 0xF200,0x0015 };
+long double _fpufabs(long double:__FP0):__FP0                   = { 0xF200,0x0018 };
+long double _fpusqrt(long double:__FP0):__FP0                   = { 0xF200,0x0004 };
+long double _fpufmod(long double:__FP0,long double:__FP1):__FP0 = { 0xF200,0x0421 };
+
+__end_extern_c
+
+#ifdef __cplusplus
+		/* double inlines, for C++ */
+inline double cos(double x)							{ return (_fpucos(x));     }
+inline double sin(double x)							{ return (_fpusin(x));     }
+inline double tan(double x)							{ return (_fputan(x));     }
+inline double acos(double x)						{ return (_fpuacos(x));    }
+inline double asin(double x)						{ return (_fpuasin(x));    }
+inline double atan(double x)						{ return (_fpuatan(x));    }
+inline double cosh(double x)						{ return (_fpucosh(x));    }
+inline double sinh(double x)						{ return (_fpusinh(x));    }
+inline double tanh(double x)						{ return (_fputanh(x));    }
+inline double exp(double x)							{ return (_fpuexp(x));     }
+inline double ldexp(double x, int y)		{ return (_fpuldexp(x,y)); }
+inline double log(double x)							{ return (_fpulog(x));     }
+inline double log10(double x)						{ return (_fpulog10(x));   }
+inline double fabs(double x)						{ return (_fpufabs(x));    }
+inline double sqrt(double x)						{ return (_fpusqrt(x));    }
+inline double fmod(double x, double y)	{ return (_fpufmod(x,y));  }
+#else
+		/* double macro overrides, for C */
+double cos(double);
+double sin(double);
+double tan(double);
+double acos(double);
+double asin(double);
+double atan(double);
+double cosh(double);
+double sinh(double);
+double tanh(double);
+double exp(double);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double fabs(double);
+double sqrt(double);
+double fmod(double, double);
+#define cos(x)				_fpucos(x)
+#define sin(x)				_fpusin(x)
+#define tan(x)				_fputan(x)
+#define acos(x)				_fpuacos(x)
+#define asin(x)				_fpuasin(x)
+#define atan(x)				_fpuatan(x)
+#define cosh(x)				_fpucosh(x)
+#define sinh(x)				_fpusinh(x)
+#define tanh(x)				_fputanh(x)
+#define exp(x)				_fpuexp(x)
+#define ldexp(x,n)		_fpuldexp(x,n)
+#define log(x)				_fpulog(x)
+#define log10(x)			_fpulog10(x)
+#define fabs(x)				_fpufabs(x)
+#define sqrt(x)				_fpusqrt(x)
+#define fmod(x,y)			_fpufmod(x,y)
 #endif
 
-#ifndef _COMPLEX_DEFINED
-    #define _COMPLEX_DEFINED
-    #define _HUGE HUGE_VAL
+#elif __option(IEEEdoubles)
 
-    #if _HOBBIT            /* conforms to WATCOM member names */
-	struct _complex { double real,imag; };
-	#define _CPLXREAL(c) ((c).real)
-	#define _CPLXIMAG(c) ((c).imag)
-    #else
-	struct _complex { double x,y; };
-	#define _CPLXREAL(c) ((c).x)
-	#define _CPLXIMAG(c) ((c).y)
-    #endif
+__extern_c
 
-    #if __HIGHC__
-	#if !defined(__CPLUSPLUS__) && (_NA_NAMES || _MSDOS)
-	    #define complex _complex
-	#endif
-	#define HUGE HUGE_VAL
-    #endif
+		/* ANSI compatible double overrides */
+double cosd(double);
+double sind(double);
+double tand(double);
+double acosd(double);
+double asind(double);
+double atand(double);
+double coshd(double);
+double sinhd(double);
+double tanhd(double);
+double expd(double);
+double ldexpd(double, int);
+double logd(double);
+double log10d(double);
+double fabsd(double);
+double sqrtd(double);
+double fmodd(double, double);
+
+__end_extern_c
+
+#ifdef __cplusplus
+		/* double inlines, for C++ */
+inline double cos(double x)							{ return (cosd(x));     }
+inline double sin(double x)							{ return (sind(x));     }
+inline double tan(double x)							{ return (tand(x));     }
+inline double acos(double x)						{ return (acosd(x));    }
+inline double asin(double x)						{ return (asind(x));    }
+inline double atan(double x)						{ return (atand(x));    }
+inline double cosh(double x)						{ return (coshd(x));    }
+inline double sinh(double x)						{ return (sinhd(x));    }
+inline double tanh(double x)						{ return (tanhd(x));    }
+inline double exp(double x)							{ return (expd(x));     }
+inline double ldexp(double x, int y)		{ return (ldexpd(x,y)); }
+inline double log(double x)							{ return (logd(x));     }
+inline double log10(double x)						{ return (log10d(x));   }
+inline double fabs(double x)						{ return (fabsd(x));    }
+inline double sqrt(double x)						{ return (sqrtd(x));    }
+inline double fmod(double x, double y)	{ return (fmodd(x,y));  }
+#else
+		/* double macro overrides, for C */
+double cos(double);
+double sin(double);
+double tan(double);
+double acos(double);
+double asin(double);
+double atan(double);
+double cosh(double);
+double sinh(double);
+double tanh(double);
+double exp(double);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double fabs(double);
+double sqrt(double);
+double fmod(double, double);
+#define cos(x)				cosd(x)
+#define sin(x)				sind(x)
+#define tan(x)				tand(x)
+#define acos(x)				acosd(x)
+#define asin(x)				asind(x)
+#define atan(x)				atand(x)
+#define cosh(x)				coshd(x)
+#define sinh(x)				sinhd(x)
+#define tanh(x)				tanhd(x)
+#define exp(x)				expd(x)
+#define ldexp(x,n)		ldexpd(x,n)
+#define log(x)				logd(x)
+#define log10(x)			log10d(x)
+#define fabs(x)				fabsd(x)
+#define sqrt(x)				sqrtd(x)
+#define fmod(x,y)			fmodd(x,y)
 #endif
 
-/* definition of exception struct - this struct is passed to the matherr
- * function when a floating point exception is detected
- */
+#else	/* we don't have FPU inlines, nor do we have 8 byte IEEE Doubles */
 
-#ifndef _EXCEPTION_DEFINED
-    struct _exception {
-	int type;           /* exception type - see constants below */
-	char *name;         /* name of function where error occured */
-	double arg1;        /* first argument to function           */
-	double arg2;        /* second argument (if any) to function */
-	double retval;      /* value to be returned by function     */
-	} ;
+__extern_c
 
-/* Constant definitions for the exception type passed in the exception struct*/
-	#define _DOMAIN      1   /* argument domain error     */
-	#define _SING        2   /* argument singularity      */
-	#define _OVERFLOW    3   /* overflow range error      */
-	#define _UNDERFLOW   4   /* underflow range error     */
-	#define _TLOSS       5   /* total loss of precision   */
-	#define _PLOSS       6   /* partial loss of precision */
-    #define _EXCEPTION_DEFINED
-    #if __HIGHC__
-	#if _NA_NAMES || _MSDOS
-	    #define exception _exception
-	#endif
-	#define DOMAIN      1   /* argument domain error                */
-	#define SING        2   /* argument singularity                 */
-	#define OVERFLOW    3   /* overflow range error                 */
-	#define UNDERFLOW   4   /* underflow range error                */
-	#define TLOSS       5   /* total loss of precision              */
-	#define PLOSS       6   /* partial loss of precision            */
-    #endif
+double cos(double);
+double sin(double);
+double tan(double);
+double acos(double);
+double asin(double);
+double atan(double);
+double cosh(double);
+double sinh(double);
+double tanh(double);
+double exp(double);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double fabs(double);
+double sqrt(double);
+double fmod(double, double);
+
+__end_extern_c
+
+#endif	/* _INLINE_FPU_CALLS_ && __MC68881__ */
+
+#if __option(IEEEdoubles)
+
+__extern_c
+
+double atan2d(double, double);
+double frexpd(double, int *);
+double modfd(double, double *);
+double powd(double, double);
+double ceild(double);
+double floord(double);
+
+__end_extern_c
+
+#ifdef __cplusplus
+		/* double inlines, for C++ */
+inline double atan2(double x, double y)				{ return (atan2d(x,y));   }
+inline double frexp(double x, int *exp)				{ return (frexpd(x,exp)); }
+inline double modf(double x, double *iptr)		{ return (modfd(x,iptr)); }
+inline double pow(double x, double y)					{ return (powd(x,y));     }
+inline double ceil(double x)									{ return (ceild(x));      }
+inline double floor(double x)									{ return (floord(x));     }
+#else
+		/* double macro overrides, for C */
+double atan2(double, double);
+double frexp(double, int *);
+double modf(double, double *);
+double pow(double, double);
+double ceil(double);
+double floor(double);
+#define atan2(x,y)		atan2d(x,y)
+#define frexp(x,exp)	frexpd(x,exp)
+#define modf(x,iptr)	modfd(x,iptr)
+#define pow(x,y)			powd(x,y)
+#define ceil(x)				ceild(x)
+#define floor(x)			floord(x)
 #endif
 
-#define _NULL_MATHERR (int (*)())0
-int _matherr (struct _exception *__s);
-extern void _set_matherr( int (*rtn)(struct _exception *err_info) );
+#else
 
-extern double _cabs(struct _complex);
-extern double _hypot(double __x, double __y);
-extern double _log2(double __x);
+__extern_c
 
-/* Bessel function routines  */
+double atan2(double, double);
+double frexp(double, int *);
+double modf(double, double *);
+double pow(double, double);
+double ceil(double);
+double floor(double);
 
-double _yn(int __n, double __x);
-double _jn(int __n, double __x);
-double _y0(double __x);
-double _y1(double __x);
-double _j0(double __x);
-double _j1(double __x);
+__end_extern_c
 
-/* inverse hyperbolic trigonometric functions */
-extern double _atanh(double __x);
-extern double _acosh(double __x);
-extern double _asinh(double __x);
-
-#include <_na.h>
-#if _NA_NAMES
-
-    /* non-ansi versions of math functions */
-    _NA(cabs)
-    _NA(hypot)
-    _NA(log2)
-    _NA(matherr)
-    _NA(yn)
-    _NA(jn)
-    _NA(y0)
-    _NA(y1)
-    _NA(j0)
-    _NA(j1)
-    _NA(atanh)
-    _NA(acosh)
-    _NA(asinh)
-#elif _MSDOS && __HIGHC__
-    extern double cabs(struct complex __z);
-    extern double hypot(double __x, double __y);
-    extern double log2(double __x);
-    extern int matherr (struct exception *__s);
-    extern double yn(int __n, double __x);
-    extern double jn(int __n, double __x);
-    extern double y0(double __x);
-    extern double y1(double __x);
-    extern double j0(double __x);
-    extern double j1(double __x);
-    extern double atanh(double __x);
-    extern double acosh(double __x);
-    extern double asinh(double __x);
-#endif /*_NA_NAMES*/
-
-#if (_MSDOS || _MSNT || _OS2)
-
-    /* floating point format conversion   */
-    int _fieeetomsbin(float *__x, float *__x1);
-    int _fmsbintoieee(float *__x, float *__x1);
-    int _dieeetomsbin(double *__x, double *__x1);
-    int _dmsbintoieee(double *__x, double *__x1);
-
-    int _matherrx (struct _exception *__s);
-
-    #include <_na.h>
-    #if _NA_NAMES
-	_NA(matherrx)
-	_NA(fieeetomsbin)
-	_NA(fmsbintoieee)
-	_NA(dieeetomsbin)
-	_NA(dmsbintoieee)
-    #elif _MSDOS && __HIGHC__
-	extern int matherrx (struct exception *__s);
-	extern int fieeetomsbin(float *__x, float *__x1);
-	extern int fmsbintoieee(float *__x, float *__x1);
-	extern int dieeetomsbin(double *__x, double *__x1);
-	extern int dmsbintoieee(double *__x, double *__x1);
-    #endif /*_NA_NAMES*/
-
-#endif /*_MSDOS*/
-
-#if __HIGHC__
-extern double atof(const char *__nptr);
 #endif
 
-#ifdef __CPLUSPLUS__
-}
+#endif	/* __POWERPC__ */
+
+#pragma options align=reset
+#pragma direct_destruction reset
+
 #endif
-#pragma pop_align_members();
-#endif /*_MATH_H*/

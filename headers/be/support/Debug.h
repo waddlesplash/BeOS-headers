@@ -2,7 +2,7 @@
 	
 	Debug.h
 	
-	Copyright 1994 Be, Inc. All Rights Reserved.
+	Copyright 1994-96 Be, Inc. All Rights Reserved.
 	
 */
 
@@ -10,7 +10,7 @@
 #define _DEBUG_H
 
 #ifndef _SUPPORT_DEFS_H
-#include <support/SupportDefs.h>
+#include <SupportDefs.h>
 #endif
 
 #ifndef _STDARG_H
@@ -21,8 +21,12 @@
 #include <stdio.h>
 #endif
 
+#ifndef _OS_H
+#include <OS.h>
+#endif
+
 /* runtime switch for enabling the debug code */
-#ifdef __CPLUSPLUS__
+#ifdef __cplusplus
 extern "C" {
 #endif
 	extern bool _rtDebugFlag;
@@ -31,9 +35,10 @@ extern "C" {
 	void _setHeapCheck(bool);
 	
 	int _debugPrintf(char *, ...);
+	int _sPrintf(char *, ...);
 	int _xdebugPrintf(char *, ...);
 	int _debuggerAssert(char *, int, char *);
-#ifdef __CPLUSPLUS__
+#ifdef __cplusplus
 	}
 #endif
 
@@ -42,16 +47,17 @@ extern "C" {
 	#define DEBUG_OFF()		_setDebugFlag(FALSE)
 	#define	IS_DEBUG_ON()		_debugFlag()
 	
-	#define HEAP_CHECK_ON()		_setHeapCheck(TRUE);
-	#define HEAP_CHECK_OFF()	_setHeapCheck(FALSE);
+	#define HEAP_CHECK_ON()		_setHeapCheck(TRUE)
+	#define HEAP_CHECK_OFF()	_setHeapCheck(FALSE)
 
+	#define SPRINT(ARGS)		_sPrintf ARGS
 	#define PRINT(ARGS) 		_debugPrintf ARGS
 	#define PRINT_OBJ(OBJ)		if (_rtDebugFlag) {		\
 						PRINT(("%s\t", #OBJ));	\
 						OBJ.PrintToStream(); 	\
 						} ((void) 0)
 	#define TRACE()			_debugPrintf("File: %s, Line: %d, pid: %d\n", \
-						__FILE__, __LINE__, getpid())
+						__FILE__, __LINE__, find_thread(NULL))
 	
 	#define DEBUGGER(MSG)	if (_rtDebugFlag) debugger(MSG)
 	#define ASSERT(E)	(!(E) ? _debuggerAssert(__FILE__, __LINE__, #E) : (int)0)
@@ -65,6 +71,7 @@ extern "C" {
 	#define HEAP_CHECK_ON()	 	void(0)
 	#define HEAP_CHECK_OFF()	void(0)
 
+	#define SPRINT(ARGS)		(void)0
 	#define PRINT(ARGS)		(void)0
 	#define PRINT_OBJ(OBJ)		(void)0
 	#define TRACE()			(void)0
@@ -78,21 +85,21 @@ extern "C" {
 /*
  The following Debug stuff is only available from C++ code.
 */
-#ifdef __CPLUSPLUS__
+#ifdef __cplusplus
 
 #if DEBUG
 
 	#ifndef _OBJECT_H
-	#include <support/Object.h>
+	#include <Object.h>
 	#endif
 	
 	class BStopWatch : public BObject {
 	public:
-				BStopWatch(const char *name);
+			BStopWatch(const char *name);
 	virtual		~BStopWatch();
 
 	private:
-		ulong	fStart;
+		double	fStart;
 		const char	*fName;
 	};
 

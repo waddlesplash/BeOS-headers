@@ -4,7 +4,7 @@
 //
 //	Description:	client region class.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -18,16 +18,16 @@
 #include "Rect.h"
 #endif
 #ifndef	_OBJECT_H
-#include <support/Object.h>
+#include <Object.h>
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BRegion : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BRegion();

@@ -4,7 +4,7 @@
 //
 //	Description:	top object 
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -12,17 +12,17 @@
 #define	_OBJECT_H
 
 #ifndef _SUPPORT_DEFS_H
-#include <support/SupportDefs.h>
+#include <SupportDefs.h>
 #endif
 
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BObject {
-	DECLARE_ROOT_CLASS_INFO();
+	B_DECLARE_ROOT_CLASS_INFO();
 public:
 				BObject();
 virtual			~BObject();	

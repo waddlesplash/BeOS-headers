@@ -4,15 +4,15 @@
 //
 //	Description:	All-in-one include for the entire system.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 *******************************************************************************/
 
 #ifndef _BE_H
 #define _BE_H
 
-#ifndef _OS_KIT_H
-#include <OSKit.h>
+#ifndef _KERNEL_KIT_H
+#include <KernelKit.h>
 #endif
 #ifndef _APP_KIT_H
 #include <AppKit.h>
@@ -20,8 +20,8 @@
 #ifndef _INTERFACE_KIT_H
 #include <InterfaceKit.h>
 #endif
-#ifndef _MEDIA_KIT_H
+/*#ifndef _MEDIA_KIT_H
 #include <MediaKit.h>
-#endif
+#endif*/
 
 #endif

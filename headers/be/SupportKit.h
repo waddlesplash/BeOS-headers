@@ -4,7 +4,7 @@
 //
 //	Description:	All-in-one include for the Support Kit.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 *******************************************************************************/
 
@@ -12,22 +12,19 @@
 #define _SUPPORT_KIT_H
 
 #ifndef _SUPPORT_DEFS_H
-#include <support/SupportDefs.h>
-#endif
-#ifndef _DEBUG_H
-#include <support/Debug.h>
+#include <SupportDefs.h>
 #endif
 #ifndef _OBJECT_H
-#include <support/Object.h>
+#include <Object.h>
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 #ifndef _LIST_H
-#include <support/List.h>
+#include <List.h>
 #endif
 #ifndef _ERRORS_H
-#include <support/Errors.h>
+#include <Errors.h>
 #endif
 
 #endif

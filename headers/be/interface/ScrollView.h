@@ -4,7 +4,7 @@
 //
 //	Description:	auto-scrollbar(s) and bordered view class interface
 //
-//	Copyright 1993-94, Be Incorporated
+//	Copyright 1993-96, Be Incorporated
 //
 //******************************************************************************
  
@@ -18,18 +18,18 @@
 #include "View.h"
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BScrollView : public BView {
-	DECLARE_CLASS_INFO(BView);
+	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BScrollView(const char *name,
 								BView *target,
-								ulong resizeMask = FOLLOW_LEFT_TOP,
+								ulong resizeMask = B_FOLLOW_LEFT_TOP,
 								ulong flags = 0,
 								bool horizontal = FALSE,
 								bool vertical = FALSE, 
@@ -45,7 +45,7 @@ private:
 
 friend class BView;
 
-		BRect		CalcFrame(BView *, bool, bool, bool) const;
+static	BRect		CalcFrame(BView *, bool, bool, bool);
 		long		ModFlags(long, bool);
 
 		BView		*the_view;

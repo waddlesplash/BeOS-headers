@@ -4,7 +4,7 @@
 //
 //	Description:	Client polygon class.
 //
-//	Copyright 1992-93, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
@@ -18,16 +18,16 @@
 #include "Rect.h"
 #endif
 #ifndef	_OBJECT_H
-#include <support/Object.h>
+#include <Object.h>
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BPolygon : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BPolygon(BPoint *ptArray, long numPoints);

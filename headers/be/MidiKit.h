@@ -4,7 +4,7 @@
 //
 //	Description:	All-in-one include for the Midi kit.
 //
-//	Copyright 1994, Be Incorporated
+//	Copyright 1994-96, Be Incorporated
 //
 *******************************************************************************/
 
@@ -15,16 +15,16 @@
 #include <SupportKit.h>
 #endif
 #ifndef _MIDI_H
-#include <midi/Midi.h>
+#include <Midi.h>
 #endif
 #ifndef _MIDI_PORT_H
-#include <midi/MidiPort.h>
+#include <MidiPort.h>
 #endif
 #ifndef _MIDI_STORE_H
-#include <midi/MidiStore.h>
+#include <MidiStore.h>
 #endif
 #ifndef _MIDI_TEXT_H
-#include <midi/MidiText.h>
+#include <MidiText.h>
 #endif
 
 #endif

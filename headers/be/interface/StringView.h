@@ -4,12 +4,12 @@
 //
 //	Description:	A String text view.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 //******************************************************************************
 
-#ifndef _STING_VIEW_H
-#define _STING_VIEW_H
+#ifndef _STRING_VIEW_H
+#define _STRING_VIEW_H
 
 #ifndef _INTERFACE_DEFS_H
 #include "InterfaceDefs.h"
@@ -18,19 +18,19 @@
 #include "View.h"
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 class BStringView : public BView
 {
-	DECLARE_CLASS_INFO(BView);
+	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BStringView(BRect bounds,
 								const char *name, 
 								const char *text,
-								ulong resizeFlags = FOLLOW_LEFT_TOP,
-								ulong flags = WILL_DRAW);
+								ulong resizeFlags = B_FOLLOW_LEFT_TOP,
+								ulong flags = B_WILL_DRAW);
 virtual 			~BStringView();
 virtual void		AttachedToWindow();
 
@@ -40,9 +40,6 @@ virtual void		AttachedToWindow();
 		alignment	Alignment() const;
 
 virtual	void		Draw(BRect bounds);
-virtual long		ResourceDataLength() const;
-virtual void		GetResourceData(void *buf) const;
-virtual void		SetResourceData(void *buf, long len);
 
 // ----------------------------------------------------------------
 

@@ -4,7 +4,7 @@
 //
 //	Description:	MessageQueue object.
 //
-//	Copyright 1993-94, Be Incorporated
+//	Copyright 1993-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -12,16 +12,19 @@
 #define	_MESSAGE_QUEUE_H
 
 #ifndef _MESSAGE_H
-#include <app/Message.h>
+#include <Message.h>
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
+#endif
+#ifndef _LOCKER_H
+#include <Locker.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class	BMessageQueue : BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BMessageQueue();	
@@ -31,16 +34,19 @@ virtual				~BMessageQueue();
 		BMessage	*NextMessage();
 		void		RemoveMessage(ulong what);
 		void		RemoveMessage(BMessage *an_event);
+		BMessage	*FindMessage(long index) const;
 		BMessage	*FindMessage(ulong what, long index) const;
 		long		CountMessages() const;
 		bool		IsEmpty() const;
+
+		bool		Lock();
+		void		Unlock();
 
 // ------------------------------------------------------------------
 
 private:
 		char		message_filter(BMessage *an_event);
-		void		lock();
-		void		unlock();
+		BMessage	*FindMessage(bool anyWhat, ulong what, long index) const;
 
 		BMessage	*the_queue;
 		BMessage	*tail;
@@ -48,7 +54,7 @@ private:
 		char		debug;
 		long		event_mask;
 		long		system_mask;
-		long		event_sem;
+		BLocker		locker;
 };
 
 #endif

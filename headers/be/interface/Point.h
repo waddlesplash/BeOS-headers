@@ -4,7 +4,7 @@
 //
 //	Description:	BPoint class header.
 //	
-//	Copyright 1993, Be Incorporated, All Rights Reserved.
+//	Copyright 1993-96, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
@@ -12,7 +12,7 @@
 #define	_POINT_H
 
 #ifndef _SUPPORT_DEFS_H
-#include <support/SupportDefs.h>
+#include <SupportDefs.h>
 #endif
 
 class BRect;
@@ -20,17 +20,17 @@ class BRect;
 class BPoint {
 
 public:
-		long x;
-		long y;
+		float x;
+		float y;
 
 		// constructors
 		BPoint();
-		BPoint(long X, long Y);
+		BPoint(float X, float Y);
 		BPoint(const BPoint& pt);
 		
 		// assignment
 		BPoint		&operator=(const BPoint &from);
-		void		Set(long X, long Y);
+		void		Set(float X, float Y);
 
 		void		ConstrainTo(BRect rect);
 
@@ -48,13 +48,13 @@ public:
 		bool		operator==(const BPoint&) const;
 };
 
-extern const BPoint ORIGIN;
+extern const BPoint B_ORIGIN;
 
 inline BPoint::BPoint()
 {
 }
 
-inline BPoint::BPoint(long X, long Y)
+inline BPoint::BPoint(float X, float Y)
 {
 	x = X;
 	y = Y;
@@ -74,7 +74,7 @@ inline BPoint &BPoint::operator=(const BPoint& from)
 	return *this;
 }
 
-inline void BPoint::Set(long X, long Y)
+inline void BPoint::Set(float X, float Y)
 {
 	x = X;
 	y = Y;

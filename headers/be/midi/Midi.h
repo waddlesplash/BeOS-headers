@@ -6,7 +6,7 @@
 //
 //	Written by:		Eric Knight
 //
-//	Copyright 1994, Be Incorporated
+//	Copyright 1994-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -14,61 +14,65 @@
 #define _MIDI_H
 
 #ifndef _MIDI_DEFS_H
-#include <midi/MidiDefs.h>
+#include <MidiDefs.h>
 #endif
 
-#ifndef _SUPPORT_KIT_H
-#include <SupportKit.h>
+#ifndef _OBJECT_H
+#include <Object.h>
 #endif
 
-#ifndef _OS_KIT_H
-#include <OSKit.h>
+#ifndef _LIST_H
+#include <List.h>
+#endif
+
+#ifndef _OS_H
+#include <OS.h>
 #endif
 
 class BMidiEvent;
 
 class BMidi : public BObject {
-DECLARE_CLASS_INFO(BObject);
+B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BMidi();
 virtual			~BMidi();
 
-virtual	void	NoteOff(char channel, 
-						char note, 
-						char velocity,
-						ulong time = NOW);
-virtual	void	NoteOn(char channel, 
-					   char note, 
-					   char velocity,
-			    	   ulong time = NOW);
-virtual	void	KeyPressure(char channel, 
-							char note, 
-							char pressure,
-							ulong time = NOW);
-virtual	void	ControlChange(char channel, 
-							  char controlNumber,
-							  char controlValue, 
-							  ulong time = NOW);
-virtual	void	ProgramChange(char channel, 
-							  char programNumber,
-							  ulong time = NOW);
-virtual	void	ChannelPressure(char channel, char pressure, ulong time = NOW);
-virtual	void	PitchBend(char channel, 
-						  char lsb, 
-						  char msb,
-			    		  ulong time = NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = NOW);
-virtual	void	SystemCommon(char statusByte, 
-							 char data1, 
-							 char data2,
-							 ulong time = NOW);
-virtual	void	SystemRealTime(char statusByte, ulong time = NOW);
+virtual	void	NoteOff(uchar channel, 
+						uchar note, 
+						uchar velocity,
+						ulong time = B_NOW);
+virtual	void	NoteOn(uchar channel, 
+					   uchar note, 
+					   uchar velocity,
+			    	   ulong time = B_NOW);
+virtual	void	KeyPressure(uchar channel, 
+							uchar note, 
+							uchar pressure,
+							ulong time = B_NOW);
+virtual	void	ControlChange(uchar channel, 
+							  uchar controlNumber,
+							  uchar controlValue, 
+							  ulong time = B_NOW);
+virtual	void	ProgramChange(uchar channel, 
+							  uchar programNumber,
+							  ulong time = B_NOW);
+virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+virtual	void	PitchBend(uchar channel, 
+						  uchar lsb, 
+						  uchar msb,
+			    		  ulong time = B_NOW);
+virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+virtual	void	SystemCommon(uchar statusByte, 
+							 uchar data1, 
+							 uchar data2,
+							 ulong time = B_NOW);
+virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
 
-virtual	void	TempoChange(long bpm, ulong time = NOW);
+virtual	void	TempoChange(long bpm, ulong time = B_NOW);
 
-		void	Start();
-		void	Stop();
+virtual	void	Start();
+virtual	void	Stop();
 		bool	IsRunning();
 	
 		void	Connect(BMidi* toObject);
@@ -79,45 +83,45 @@ virtual	void	TempoChange(long bpm, ulong time = NOW);
 		void	SnoozeUntil(ulong time);
 
 protected:
-		void	SprayNoteOff(char channel, 
-							 char note, 
-							 char velocity, 
+		void	SprayNoteOff(uchar channel, 
+							 uchar note, 
+							 uchar velocity, 
 							 ulong time);
-		void	SprayNoteOn(char channel, 
-							char note, 
-							char velocity, 
+		void	SprayNoteOn(uchar channel, 
+							uchar note, 
+							uchar velocity, 
 							ulong time);
-		void	SprayKeyPressure(char channel, 
-								 char note, 
-								 char pressure, 
+		void	SprayKeyPressure(uchar channel, 
+								 uchar note, 
+								 uchar pressure, 
 								 ulong time);
-		void	SprayControlChange(char channel, 
-								   char controlNumber,
-							 	   char controlValue, 
+		void	SprayControlChange(uchar channel, 
+								   uchar controlNumber,
+							 	   uchar controlValue, 
 								   ulong time);
-		void	SprayProgramChange(char channel, 
-								   char programNumber,
+		void	SprayProgramChange(uchar channel, 
+								   uchar programNumber,
 								   ulong time);
-		void	SprayChannelPressure(char channel, char pressure, ulong time);
-		void	SprayPitchBend(char channel, 
-							   char lsb, 
-							   char msb, 
+		void	SprayChannelPressure(uchar channel, uchar pressure, ulong time);
+		void	SprayPitchBend(uchar channel, 
+							   uchar lsb, 
+							   uchar msb, 
 							   ulong time);
 		void	SpraySystemExclusive(void* data, long dataLength, 
-									 ulong time = NOW);
-		void	SpraySystemCommon(char statusByte, 
-							 char data1, 
-							 char data2,
+									 ulong time = B_NOW);
+		void	SpraySystemCommon(uchar statusByte, 
+							 uchar data1, 
+							 uchar data2,
 							 ulong time);
-		void	SpraySystemRealTime(char statusByte, ulong time);
+		void	SpraySystemRealTime(uchar statusByte, ulong time);
 
 		void	SprayTempoChange(long bpm, ulong time);
 
 		bool	KeepRunning();
 
 private:
-friend	void	_run_thread_();
-friend	void	_inflow_task_();
+friend	long	_run_thread_(void *arg);
+friend	long	_inflow_task_(void *arg);
 		void	SprayMidiEvent(BMidiEvent* event);
 		long	ID();
 virtual	void	Run();

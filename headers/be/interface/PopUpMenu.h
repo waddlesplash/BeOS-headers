@@ -2,7 +2,7 @@
 	
 	PopUpMenu.h
 	
-	Copyright 1994 Be, Inc. All Rights Reserved.
+	Copyright 1994-96 Be, Inc. All Rights Reserved.
 	
 */
 
@@ -10,20 +10,20 @@
 #define _POP_UP_MENU_H
 
 #ifndef _MENU_H
-#include <interface/Menu.h>
+#include <Menu.h>
 #endif
 
 class BPopUpMenu : public BMenu
 {
-	DECLARE_CLASS_INFO(BMenu);
+	B_DECLARE_CLASS_INFO(BMenu);
 public:
 					BPopUpMenu(	const char *title,
 								bool radioMode = TRUE,
 								bool autoRename = TRUE,
-								menu_layout layout = ITEMS_IN_COLUMN
+								menu_layout layout = B_ITEMS_IN_COLUMN
 								);
 virtual				~BPopUpMenu();
-		BMenuItem	*Run(BPoint where);
+		BMenuItem	*Go(BPoint where, bool autoInvoke = FALSE);
 
 protected:
 virtual	BPoint		ScreenLocation();

@@ -4,7 +4,7 @@
 //
 //	Description:	client view class.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 //******************************************************************************
 
@@ -17,28 +17,24 @@
 #ifndef	_RECT_H
 #include "Rect.h"
 #endif
-#ifndef	_OBJECT_H
-#include <support/Object.h>
+#ifndef	_RECEIVER_H
+#include <Receiver.h>
+#endif
+#ifndef	_LOOPER_H
+#include <Looper.h>
 #endif
 #ifndef _MESSAGE_H
-#include <app/Message.h>
+#include <Message.h>
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
-
-#define SHIFT_KEY			0x00000001
-#define ALT_KEY				0x00000002
-#define CONTROL_KEY			0x00000004
-#define CAPS_LOCK			0x00000008
-#define SCROLL_LOCK			0x00000010
-#define NUM_LOCK			0x00000020
-#define LEFT_SHIFT_KEY		0x00000040
-#define RIGHT_SHIFT_KEY		0x00000080
-#define LEFT_ALT_KEY		0x00000100
-#define RIGHT_ALT_KEY		0x00000200
-#define LEFT_CONTROL_KEY	0x00000400
-#define RIGHT_CONTROL_KEY	0x00000800
+#ifndef _CLIPBOARD_H
+#include <Clipboard.h>
+#endif
+#ifndef	_PICTURE_H
+#include <Picture.h>
+#endif
 
 struct key_info
 	{
@@ -49,36 +45,40 @@ struct key_info
 	};
 
 enum {
-	ENTERED_VIEW,
-	INSIDE_VIEW,
-	EXITED_VIEW
+	B_PRIMARY_MOUSE_BUTTON = 0x01,
+	B_SECONDARY_MOUSE_BUTTON = 0x02,
+	B_TERTIARY_MOUSE_BUTTON = 0x04
 };
 
-enum track_style {
-	TRACK_WHOLE_RECT,
-	TRACK_RECT_CORNER
+enum {
+	B_ENTERED_VIEW,
+	B_INSIDE_VIEW,
+	B_EXITED_VIEW
+};
+
+enum {
+	B_TRACK_WHOLE_RECT,
+	B_TRACK_RECT_CORNER
 };
 
 //------------------------------------------------------------------------------
 
-#define FONT_NAME_LENGTH 32
-typedef char font_name[FONT_NAME_LENGTH + 1];
 
 struct font_info
 	{
 		font_name name;
-		short	size;
-		short	shear;
-		short	rotation;
-		short	ascent;
-		short	descent;
-		short	leading;
+		float	size;
+		float	shear;
+		float	rotation;
+		float	ascent;
+		float	descent;
+		float	leading;
 	};
 
 struct edge_info
 	{
-		short	left;
-		short	right;
+		float	left;
+		float	right;
 	};
 
 /*----------------------------------------------------------------*/
@@ -93,70 +93,82 @@ struct edge_info
 ** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 */
 
-enum { FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
-       RESERVED1 =		0x40000000	/* 30 */,
-       WILL_DRAW =		0x20000000	/* 29 */,	// ## temporary
-       PULSE_NEEDED =		0x10000000	/* 28 */,
-       BORDERED =		0x08000000	/* 27 */,
-       FRAME_EVENTS =		0x04000000	/* 26 */,
-       RESERVED3 =		0x02000000	/* 25 */,
-       RESERVED4 =		0x01000000	/* 24 */,
-       RESERVED5 =		0x00800000	/* 23 */,
-       RESERVED6 =		0x00400000	/* 23 */,
-       RESERVED7 =		0x00200000	/* 22 */ };
+enum { B_FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
+       _B_RESERVED1_ =				0x40000000	/* 30 */,
+       B_WILL_DRAW =				0x20000000	/* 29 */,
+       B_PULSE_NEEDED =				0x10000000	/* 28 */,
+       B_BORDERED =					0x08000000	/* 27 */,
+       B_FRAME_EVENTS =				0x04000000	/* 26 */,
+       _B_RESERVED3_ =				0x02000000	/* 25 */,
+       _B_RESERVED4_ =				0x01000000	/* 24 */,
+       _B_RESERVED5_ =				0x00800000	/* 23 */,
+       _B_RESERVED6_ =				0x00400000	/* 23 */,
+       _B_RESERVED7_ =				0x00200000	/* 22 */ };
 
-#define _RESIZE_MASK_ ~(FULL_UPDATE_ON_RESIZE|RESERVED1|WILL_DRAW|\
-		 	PULSE_NEEDED|BORDERED|FRAME_EVENTS|RESERVED3|RESERVED4|\
-			RESERVED5|RESERVED6|RESERVED7)
+#define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
+		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|_B_RESERVED3_|_B_RESERVED4_|\
+			_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
 
-//extern const long FOLLOW_LEFT_TOP;
-//extern const long FOLLOW_ALL_SIDES;
-//extern const long FOLLOW_LEFT_TOP_RIGHT;
-//extern const long FOLLOW_LEFT_TOP_BOTTOM;
-//extern const long FOLLOW_RIGHT_BOTTOM;
-//extern const long FOLLOW_TOP_RIGHT;
-//extern const long FOLLOW_LEFT_RIGHT_BOTTOM;
-//extern const long FOLLOW_TOP_RIGHT_BOTTOM;
-//extern const long FOLLOW_LEFT_BOTTOM;
-//extern const long FOLLOW_NONE;
+//extern const long B_FOLLOW_LEFT_TOP;
+//extern const long B_FOLLOW_ALL;
+//extern const long B_FOLLOW_LEFT_TOP_RIGHT;
+//extern const long B_FOLLOW_LEFT_TOP_BOTTOM;
+//extern const long B_FOLLOW_RIGHT_BOTTOM;
+//extern const long B_FOLLOW_TOP_RIGHT;
+//extern const long B_FOLLOW_LEFT_RIGHT_BOTTOM;
+//extern const long B_FOLLOW_TOP_RIGHT_BOTTOM;
+//extern const long B_FOLLOW_LEFT_BOTTOM;
+//extern const long B_FOLLOW_NONE;
 
-enum { VIEW_LEFT = 2L,
-       VIEW_TOP = 1L,
-       VIEW_RIGHT = 4L,
-       VIEW_BOTTOM = 3L };
+enum {
+	_VIEW_TOP_ = 1L,
+	_VIEW_LEFT_ = 2L,
+	_VIEW_BOTTOM_ = 3L,
+	_VIEW_RIGHT_ = 4L,
+	_VIEW_CENTER_ = 5L
+};
 
+// the FOLLOW flags take 16 bits in total
 inline long _rule_(long r1, long r2, long r3, long r4)
-{ return ((r1 << 18) | (r2 << 12) | (r3 << 6) | r4); };
+{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
 
-#define FOLLOW_LEFT_TOP  _rule_(VIEW_TOP, VIEW_LEFT, VIEW_TOP, VIEW_LEFT)
-#define FOLLOW_ALL_SIDES  _rule_(VIEW_TOP, VIEW_LEFT, VIEW_BOTTOM, VIEW_RIGHT)
-#define FOLLOW_LEFT_TOP_RIGHT  _rule_(VIEW_TOP, VIEW_LEFT, VIEW_TOP, VIEW_RIGHT)
-#define FOLLOW_LEFT_TOP_BOTTOM  _rule_(VIEW_TOP, VIEW_LEFT, VIEW_BOTTOM, VIEW_LEFT)
-#define FOLLOW_RIGHT_BOTTOM  _rule_(VIEW_BOTTOM, VIEW_RIGHT, VIEW_BOTTOM, VIEW_RIGHT)
-#define FOLLOW_TOP_RIGHT  _rule_(VIEW_TOP, VIEW_RIGHT, VIEW_TOP, VIEW_RIGHT)
-#define FOLLOW_LEFT_RIGHT_BOTTOM  _rule_(VIEW_BOTTOM, VIEW_LEFT, VIEW_BOTTOM, VIEW_RIGHT)
-#define FOLLOW_TOP_RIGHT_BOTTOM  _rule_(VIEW_TOP, VIEW_RIGHT, VIEW_BOTTOM, VIEW_RIGHT)
-#define FOLLOW_LEFT_BOTTOM  _rule_(VIEW_BOTTOM, VIEW_LEFT, VIEW_BOTTOM, VIEW_LEFT)
-#define FOLLOW_NONE 0
+#define B_FOLLOW_LEFT_TOP  		_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_TOP_, _VIEW_LEFT_)
+#define B_FOLLOW_ALL  			_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
+#define B_FOLLOW_LEFT_TOP_RIGHT  	_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_TOP_, _VIEW_RIGHT_)
+#define B_FOLLOW_LEFT_TOP_BOTTOM  _rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_LEFT_)
+#define B_FOLLOW_RIGHT_BOTTOM  	_rule_(_VIEW_BOTTOM_, _VIEW_RIGHT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
+#define B_FOLLOW_TOP_RIGHT  		_rule_(_VIEW_TOP_, _VIEW_RIGHT_, _VIEW_TOP_, _VIEW_RIGHT_)
+#define B_FOLLOW_LEFT_RIGHT_BOTTOM  _rule_(_VIEW_BOTTOM_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
+#define B_FOLLOW_TOP_RIGHT_BOTTOM _rule_(_VIEW_TOP_, _VIEW_RIGHT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
+#define B_FOLLOW_LEFT_BOTTOM  	_rule_(_VIEW_BOTTOM_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_LEFT_)
+#define B_FOLLOW_NONE 0
+
+#define B_FOLLOW_LEFT			_rule_(0, _VIEW_LEFT_, 0, _VIEW_LEFT_)
+#define B_FOLLOW_RIGHT			_rule_(0, _VIEW_RIGHT_, 0, _VIEW_RIGHT_)
+#define B_FOLLOW_LEFT_RIGHT		_rule_(0, _VIEW_LEFT_, 0, _VIEW_RIGHT_)
+#define B_FOLLOW_H_CENTER		_rule_(0, _VIEW_CENTER_, 0, _VIEW_CENTER_)
+
+#define B_FOLLOW_TOP			_rule_(_VIEW_TOP_, 0, _VIEW_TOP_, 0)
+#define B_FOLLOW_BOTTOM			_rule_(_VIEW_BOTTOM_, 0, _VIEW_BOTTOM_, 0)
+#define B_FOLLOW_TOP_BOTTOM		_rule_(_VIEW_TOP_, 0, _VIEW_BOTTOM_, 0)
+#define B_FOLLOW_V_CENTER		_rule_(0, _VIEW_CENTER_, 0, _VIEW_CENTER_)
 
 //------------------------------------------------------------------------------
 
-class BBitmap;
 class BWindow;
-class BImageBuffer;
+class BBitmap;
 class BRegion;
 class BPoint;
 class BPolygon;
 
-class BView : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+class BView : public BReceiver {
+	B_DECLARE_CLASS_INFO(BReceiver);
 
 public:
 						BView(	BRect frame,
 								const char *name,
 								ulong resizeMask,
 								ulong flags);
-						BView();
 virtual					~BView();
 
 virtual	void			AttachedToWindow();
@@ -169,32 +181,35 @@ virtual	bool			RemoveChild(BView *childView);
 		long			CountChildren() const;
 		BView			*ChildAt(long index) const;
 		bool			RemoveSelf();
-virtual	void			MessageReceived(BMessage *an_event);
 
 		BWindow			*Window() const;
+virtual	BLooper			*Looper() const;
 
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
-virtual	void			MouseMoved(BPoint where, ulong code, BMessage *a_message);
+virtual	void			MouseMoved(	BPoint where,
+									ulong code,
+									BMessage *a_message);
 virtual	void			WindowActivated(bool state);
 virtual	void			KeyDown(ulong aKey);
 virtual	void			Pulse();
 virtual	void			FrameMoved(BPoint new_position);
-virtual	void			FrameResized(long new_width, long new_height);
+virtual	void			FrameResized(float new_width, float new_height);
 
-virtual	bool			MessageDropped(BMessage *aMessage);
+virtual	bool			MessageDropped(	BMessage *aMessage,
+										BPoint loc,
+										BPoint offset);
 	
-		void			BeginRectTracking(BRect startRect,
-										track_style style = TRACK_WHOLE_RECT);
+		void			BeginRectTracking(	BRect startRect,
+											ulong style = B_TRACK_WHOLE_RECT);
 		void			EndRectTracking();
 	
-		void			GetMouse(BPoint* location, ulong *buttons) const;
-		void			GetKeys(key_info *info, bool CheckEventQueue);
+		void			GetMouse(	BPoint* location,
+									ulong *buttons,
+									bool checkMessageQueue = TRUE) const;
+		void			GetKeys(key_info *info, bool checkMessageQueue);
 		ulong			Modifiers() const;
 		void			DragMessage(BMessage *aMessage, BRect dragRect);
-		void			DragMessage(BMessage *aMessage,
-									BImageBuffer *anImage,
-									BPoint offset);
 		void			DragMessage(BMessage *aMessage,
 									BBitmap *anImage,
 									BPoint offset);
@@ -212,138 +227,139 @@ virtual	bool			MessageDropped(BMessage *aMessage);
 		void			ConvertToParent(BRect *r) const;
 		void			ConvertFromParent(BRect *r) const;
 		BPoint			LeftTop() const;
-		void			GetClippingRegion(BRegion*) const;
-virtual	void			SetClippingRegion(BRegion*);
+		void			GetClippingRegion(BRegion *region) const;
+virtual	void			ConstrainClippingRegion(BRegion *region);
 
 virtual	void			SetDrawingMode(drawing_mode mode);
 		drawing_mode 	DrawingMode() const;
 
-virtual	void			SetPenSize(long size);
-		long			PenSize();
+virtual	void			SetPenSize(float size);
+		float			PenSize() const;
 
-virtual	void			SetFrontColor(rgb_color a_color);
-		void			SetFrontColor(uchar r, uchar g, uchar b, uchar a = 0);
-		rgb_color		FrontColor();
+virtual	void			SetViewColor(rgb_color c);
+		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 0);
+		rgb_color		ViewColor() const;
 
-virtual	void			SetBackColor(rgb_color a_color);
-		void			SetBackColor(uchar r, uchar g, uchar b, uchar a = 0);
-		rgb_color		BackColor();
+virtual	void			SetHighColor(rgb_color a_color);
+		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 0);
+		rgb_color		HighColor() const;
+
+virtual	void			SetLowColor(rgb_color a_color);
+		void			SetLowColor(uchar r, uchar g, uchar b, uchar a = 0);
+		rgb_color		LowColor() const;
 
 		void			MovePenTo(BPoint pt);
-		void			MovePenTo(long x, long y);
-		void			MovePenBy(long x, long y);
-		BPoint			PenLocation();
+		void			MovePenTo(float x, float y);
+		void			MovePenBy(float x, float y);
+		BPoint			PenLocation() const;
 		void			StrokeLine(	BPoint toPt,
-									const pattern *p = &solid_front);
+									const pattern *p = &B_SOLID_HIGH);
 		void			StrokeLine(	BPoint pt0,
 									BPoint pt1,
-									const pattern *p = &solid_front);
-		void			BeginLineArray(const pattern *p = &solid_front);
-		void			AddLine(BPoint pt0, BPoint pt1);
+									const pattern *p = &B_SOLID_HIGH);
+		void			BeginLineArray(long count);
+		void			AddLine(BPoint pt0, BPoint pt1, rgb_color col);
 		void			EndLineArray();
 	
 		void			StrokePolygon(	const BPolygon *aPolygon,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										long numPts,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										long numPts,
 										BRect bounds,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			FillPolygon(const BPolygon *aPolygon,
-									const pattern *p = &solid_front);
+									const pattern *p = &B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
 									long numPts,
-									const pattern *p = &solid_front);
+									const pattern *p = &B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
 									long numPts,
 									BRect bounds,
-									const pattern *p = &solid_front);
+									const pattern *p = &B_SOLID_HIGH);
 	
 		void			StrokeTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
 										BRect bounds,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			StrokeTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			FillTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 		void			FillTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
 										BRect bounds,
-										const pattern *p = &solid_front);
+										const pattern *p = &B_SOLID_HIGH);
 
-		void			StrokeRect(BRect r, const pattern *p = &solid_front);
-		void			FillRect(BRect r, const pattern *p = &solid_front);
+		void			StrokeRect(BRect r, const pattern *p = &B_SOLID_HIGH);
+		void			FillRect(BRect r, const pattern *p = &B_SOLID_HIGH);
 		void			InvertRect(BRect r);
 
 		void			StrokeRoundRect(BRect r,
-										long xRadius,
-										long yRadius,
-										const pattern *p = &solid_front);
+										float xRadius,
+										float yRadius,
+										const pattern *p = &B_SOLID_HIGH);
 		void			FillRoundRect(	BRect r,
-										long xRadius,
-										long yRadius,
-										const pattern *p = &solid_front);
+										float xRadius,
+										float yRadius,
+										const pattern *p = &B_SOLID_HIGH);
 
 		void			StrokeEllipse(	BPoint center,
-										long xRadius,
-										long yRadius,
-										const pattern *p = &solid_front);
-		void			StrokeEllipse(BRect r, const pattern *p = &solid_front);
+										float xRadius,
+										float yRadius,
+										const pattern *p = &B_SOLID_HIGH);
+		void			StrokeEllipse(BRect r, const pattern *p = &B_SOLID_HIGH);
 		void			FillEllipse(BPoint center,
-									long xRadius,
-									long yRadius,
-									const pattern *p = &solid_front);
-		void			FillEllipse(BRect r, const pattern *p = &solid_front);
+									float xRadius,
+									float yRadius,
+									const pattern *p = &B_SOLID_HIGH);
+		void			FillEllipse(BRect r, const pattern *p = &B_SOLID_HIGH);
 				
 		void			StrokeArc(	BPoint center,
-									long xRadius,
-									long yRadius,
-									long start_angle,
-									long arc_angle,
-									const pattern *p = &solid_front);
+									float xRadius,
+									float yRadius,
+									float start_angle,
+									float arc_angle,
+									const pattern *p = &B_SOLID_HIGH);
 		void			StrokeArc(	BRect r,
-									long start_angle,
-									long arc_angle,
-									const pattern *p = &solid_front);
+									float start_angle,
+									float arc_angle,
+									const pattern *p = &B_SOLID_HIGH);
 		void			FillArc(BPoint center,
-								long xRadius,
-								long yRadius,
-								long start_angle,
-								long arc_angle,
-								const pattern *p = &solid_front);
+								float xRadius,
+								float yRadius,
+								float start_angle,
+								float arc_angle,
+								const pattern *p = &B_SOLID_HIGH);
 		void			FillArc(BRect r,
-								long start_angle,
-								long arc_angle,
-								const pattern *p = &solid_front);
+								float start_angle,
+								float arc_angle,
+								const pattern *p = &B_SOLID_HIGH);
 			
 		void			CopyBits(BRect src, BRect dst);
 		void			DrawBitmap(	const BBitmap *aBitmap,
 									BRect srcRect,
 									BRect dstRect);
-		void			DrawBitmap(	const BImageBuffer *anImage,
-									BRect srcRect,
-									BRect dstRect);
+		void			DrawBitmap(const BBitmap *aBitmap);
 		void			DrawBitmap(const BBitmap *aBitmap, BPoint where);
-		void			DrawBitmap(const BImageBuffer *anImage, BPoint where);
 		void			DrawBitmap(const BBitmap *aBitmap, BRect dstRect);
-		void			DrawBitmap(const BImageBuffer *anImage, BRect dstRect);
 	
 virtual void			SetFontName(const char* name);
-virtual void			SetFontSize(long pointSize);
-virtual void			SetFontShear(long degrees);
-virtual void			SetFontRotation(long degrees);
+virtual void			SetFontSize(float pointSize);
+virtual void			SetFontShear(float degrees);
+virtual void			SetFontRotation(float degrees);
+virtual void			SetSymbolSet(const char* name);
 		void			GetFontInfo(font_info *info) const;
-		long			StringWidth(const char *aString) const;
-		long			StringWidth(const char *aString, long length) const;
+		float			StringWidth(const char *aString) const;
+		float			StringWidth(const char *aString, long length) const;
 		void			GetCharEscapements(	char charArray[],
 											long numChars,
 											short escapementArray[],
@@ -351,27 +367,35 @@ virtual void			SetFontRotation(long degrees);
 		void			GetCharEdges(	char charArray[],
 										long numChars,
 										edge_info edgeArray[]) const;
-		long			CountFonts() const;
-		void			GetFontName(long index, font_name* name) const;
 		void			DrawChar(char aChar);
+		void			DrawChar(char aChar, BPoint location);
 		void			DrawString(const char *aString);
+		void			DrawString(const char *aString, BPoint location);
 		void			DrawString(const char *aString, long length);
+		void			DrawString(	const char *aString,
+									long length,
+									BPoint location);
 
 		void			Invalidate(BRect invalRect);
 		void			Invalidate();
+
+		void			BeginPicture(BPicture *a_picture);
+		BPicture		*EndPicture();
+		void			DrawPicture(const BPicture *a_picture);
+		void			DrawPicture(const BPicture *a_picture, BPoint where);
 
 virtual	void			SetFlags(ulong flags);
 		ulong			Flags() const;
 virtual	void			SetResizingMode(ulong mode);
 		ulong			ResizingMode() const;
-		void			MoveBy(long dh, long dv);
+		void			MoveBy(float dh, float dv);
 		void			MoveTo(BPoint where);
-		void			MoveTo(long x, long y);
-		void			ResizeBy(long dh, long dv);
-		void			ResizeTo(long width, long height);
-		void			ScrollBy(long dh, long dv);
+		void			MoveTo(float x, float y);
+		void			ResizeBy(float dh, float dv);
+		void			ResizeTo(float width, float height);
+		void			ScrollBy(float dh, float dv);
 		void			ScrollTo(BPoint where);
-		void			ScrollTo(long x, long y);
+		void			ScrollTo(float x, float y);
 virtual	void			MakeFocus(bool focusState = TRUE);
 		bool			IsFocus() const;
 	
@@ -382,11 +406,6 @@ virtual	void			Hide();
 		void			Flush() const;
 		void			Sync() const;
 
-		bool			LoadFromResource(long resID, char *resBuf = (char *) 0);
-virtual long			ResourceDataLength() const;
-virtual void			GetResourceData(void *buf) const;
-virtual void			SetResourceData(const void *buf, long len);
-
 // ------------------------------------------------------------------
 
 private:
@@ -395,9 +414,9 @@ friend class BListView;
 friend class BScrollBar;
 friend class BRadioButton;
 friend class BWindow;
-friend class BImageBuffer;
+friend class BBitmap;
 
-		long		Token()	const;
+//		long		Token()	const;
 		bool		SaveAsResource(long resID);
 		void		UpdateFrame();
 		void		StrokeLineToNoPat(BPoint pt);
@@ -408,20 +427,19 @@ friend class BImageBuffer;
 		void		set_owner(BWindow *the_owner);
 		void		do_activate(long msg);
 		void		end_draw();
-/*		void		flush() const;*/
 		void		check_lock() const;
-		void		lock();
-		void		unlock();
 		void		movesize(long code, long h, long v);
 		void		handle_tick();
 		char		*test_area(long length);
+		void		remove_comm_array();
+		void		*new_comm_array(long cnt);
 
 		long		server_token;
 		long		client_token;
 		BRect		f_bound;
 		long		f_type;
-		long		origin_h;
-		long		origin_v;
+		float		origin_h;
+		float		origin_v;
 
 		char*		view_name;
 
@@ -434,13 +452,19 @@ friend class BImageBuffer;
 
 		long		id;
 		long		resType;
+		BPicture	*cp;
+		void		*comm_array;
+		void		*comm_array_list;
+		long		comm_array_size;
+		long		comm_array_p;
+		rgb_color	cached_color;
 };
 
 inline ulong	BView::Flags() const
-	{ return(f_type & _RESIZE_MASK_); }
+	{ return(f_type & ~(_RESIZE_MASK_)); }
 
 inline ulong	BView::ResizingMode() const
-	{ return(f_type & ~(_RESIZE_MASK_)); }
+	{ return(f_type & (_RESIZE_MASK_)); }
 
 //------------------------------------------------------------------------------
 

@@ -4,15 +4,18 @@
 //
 //	Description:	BRect class header.
 //	
-//	Copyright 1993-94, Be Incorporated, All Rights Reserved.
+//	Copyright 1993-96, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
 #ifndef	_RECT_H
 #define	_RECT_H
 
+#ifndef	_MATH_H
+#include <math.h>
+#endif
 #ifndef _SUPPORT_DEFS_H
-#include <support/SupportDefs.h>
+#include <SupportDefs.h>
 #endif
 #ifndef _POINT_H
 #include "Point.h"
@@ -21,20 +24,20 @@
 class BRect {
 
 public:
-		long		left;
-		long		top;
-		long		right;
-		long		bottom;
+		float		left;
+		float		top;
+		float		right;
+		float		bottom;
 
 		// constructors
 		BRect();
 		BRect(const BRect &);
-		BRect(long l, long t, long r, long b);
+		BRect(float l, float t, float r, float b);
 		BRect(BPoint leftTop, BPoint rightBottom);
 
 		// assignment
 		BRect		&operator=(const BRect &from);
-		void		Set(long l, long t, long r, long b);
+		void		Set(float l, float t, float r, float b);
 
 		// utility to print in text form
 		void		PrintToStream() const;
@@ -53,11 +56,11 @@ public:
 
 		// transformation
 		void		InsetBy(BPoint);
-		void		InsetBy(long dx, long dy);
+		void		InsetBy(float dx, float dy);
 		void		OffsetBy(BPoint);
-		void		OffsetBy(long dx, long dy);
+		void		OffsetBy(float dx, float dy);
 		void		OffsetTo(BPoint);
-		void		OffsetTo(long x, long y);
+		void		OffsetTo(float x, float y);
 
 		// comparison
 		bool		operator==(BRect) const;
@@ -70,8 +73,9 @@ public:
 		// utilities
 		bool		Intersects(BRect r) const;
 		bool		IsValid() const;
-		long		Width() const;
-		long		Height() const;
+		float		Width() const;
+		long		pWidth() const;
+		float		Height() const;
 		bool		Contains(BPoint) const;
 		bool		Contains(BRect) const;
 };
@@ -105,7 +109,7 @@ inline BRect::BRect()
 	bottom = right = -1;
 }
 
-inline BRect::BRect(long l, long t, long r, long b)
+inline BRect::BRect(float l, float t, float r, float b)
 {
 	left = l;
 	top = t;
@@ -139,7 +143,7 @@ inline BRect &BRect::operator=(const BRect& from)
 	return *this;
 }
 
-inline void BRect::Set(long l, long t, long r, long b)
+inline void BRect::Set(float l, float t, float r, float b)
 {
 	left = l;
 	top = t;
@@ -155,14 +159,19 @@ inline bool BRect::IsValid() const
 		return FALSE;
 }
 
-inline long BRect::Width() const
+inline long BRect::pWidth() const
 {
-	return(right - left + 1);
+	return(ceil(right - left));
 }
 
-inline long BRect::Height() const
+inline float BRect::Width() const
 {
-	return(bottom - top + 1);
+	return(right - left);
+}
+
+inline float BRect::Height() const
+{
+	return(bottom - top);
 }
 
 #endif

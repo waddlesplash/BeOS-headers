@@ -4,7 +4,7 @@
 //
 //	Description:	Client Query data structure 
 //	
-//	Copyright 1994, Be Incorporated
+//	Copyright 1994-96, Be Incorporated
 //
 //******************************************************************************/
 
@@ -22,16 +22,19 @@
 
 /*-----------------------------------------------------------------*/
 
-typedef long enum {
-	EQ = 0x01,
-	GT,
-	GE,
-	LT,
-	LE,
-	NE,
-	AND = 0x101,
-	OR,
-	NOT }  query_op;
+typedef enum {
+	B_INVALID_OP = 0,
+	B_EQ,
+	B_GT,
+	B_GE,
+	B_LT,
+	B_LE,
+	B_NE,
+	B_AND = 0x101,
+	B_OR,
+	B_NOT,
+	B_ALL,
+	_B_RESERVED_OP_ = 0x100000}  query_op;
 
 /*-----------------------------------------------------------------*/
 
@@ -41,29 +44,34 @@ class   BResList;
 
 /*-----------------------------------------------------------------*/
 
-#define	DB_RECORD_ADD		'clra'	
-#define	DB_RECORD_MODIFY	'clrm'	
-#define	DB_RECORD_REMOVE	'clrr'	
+#define	B_RECORD_ADDED		'clra'	
+#define	B_RECORD_MODIFIED	'clrm'	
+#define	B_RECORD_REMOVED	'clrr'	
 
 /*-----------------------------------------------------------------*/
 
 class	BQuery : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 	friend		BDatabase;
 public:
-		void		BQuery(bool live = FALSE);
-		void		~BQuery();	
+				BQuery(bool live = FALSE);
+				~BQuery();	
 		long		Fetch();
 		long		FetchOne();
-		long		CountRefs();
-		record_ref	RefAt(long i);
+		long		CountRecordIDs();
+		record_id	RecordIDAt(long i);
 		void		AddTable(BTable *a_table);
 		void		AddTree(BTable *a_table);
 		long		CountTables();
+		BDatabase*	Database();
+		void		SetDatabase(BDatabase* db);
 		BTable*		TableAt(long idx);
-		bool		HasRef(long ref);
+		bool		HasRecordID(record_id id);
 		bool		IsLive();
+		char		*ToFlat(long *asize);
+		void		FromFlat(char *p);
+		long		calc_size();
 
 		void		PrintToStream();	
 		void		Clear();
@@ -71,9 +79,11 @@ public:
 		void		PushOp(query_op op);
 		void		PushArg(long value);
 		void		PushArg(char *string);
+		void		PushDate(double time);
 		void		PushFieldName(char *field_name);
 virtual	void		MessageReceived(BMessage *a_message);
-		bool		RunOn(record_ref ref);
+		bool		RunOn(record_id id);
+		void		AddRecordID(record_id id);
 
 private:
 		BResList	*ResList();
@@ -81,21 +91,26 @@ private:
 		BMessage	*Query2Message();
 
 private:
-#define	MAX_ARG		32
-#define	MAX_QTABLE	128
+#define	_MAX_ARG_		32
+#define	_MAX_QTABLE_	128
 
 		BDatabase	*target_database;
 		BResList	*res_list;
-		long		table_list[MAX_QTABLE];
+		long		table_list[_MAX_QTABLE_];
 		long		table_count;
-		void		*arg[MAX_ARG];
-		long		type[MAX_ARG];
+		void		*arg[_MAX_ARG_];
+		long		type[_MAX_ARG_];
 		long		arg_count;
 		long		client_token;
 		long		server_token;
 		char		pers;
 		char		did_run;
+		BMessage	*the_message;
 };
+
+inline	BDatabase*	BQuery::Database()		{ return(target_database); }
+inline	void		BQuery::SetDatabase(BDatabase*	db)
+					{ target_database = db; }
 
 /*-----------------------------------------------------------------*/		
 
@@ -103,18 +118,19 @@ void		update_query(BMessage *a_message);
 
 /*-----------------------------------------------------------------*/
 
-#define	FIELD_NAME	0x01
-#define	STRING_ARG	0x02
-#define	LONG_ARG	0x03
-#define	OP			0x04
-#define	BOOL		0x05
-#define	ALWAYS_NO	0x06
-#define	VECTOR		0x07
+#define	B_FIELD_NAME	0x01
+#define	B_STRING_ARG	0x02
+#define	B_LONG_ARG		0x03
+#define	B_OP			0x04
+#define	B_BOOL			0x05
+#define	B_ALWAYS_NO		0x06
+#define	B_VECTOR		0x07
+#define	B_DATE_ARG		0x08
 
 /*-----------------------------------------------------------------*/
 
-#define	FIRST_CMP	0x01
-#define	LAST_CMP	0x06
+#define	B_FIRST_CMP		0x01
+#define	B_LAST_CMP		0x06
 
 /*-----------------------------------------------------------------*/
 

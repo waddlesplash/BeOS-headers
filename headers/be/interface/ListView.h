@@ -4,7 +4,7 @@
 **
 **	Description:	client list view class.
 **
-**	Copyright 1992-93, Be Incorporated
+**	Copyright 1992-96, Be Incorporated
 **
 *******************************************************************************/
 #ifndef _LIST_VIEW_H
@@ -14,40 +14,42 @@
 #include "View.h"
 #endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
+#endif
+#ifndef _LOOPER_H
+#include <Looper.h>
 #endif
 #ifndef _LIST_H
-#include <support/List.h>
+#include <List.h>
 #endif
+
 
 class BListView : public BView
 {
-	DECLARE_CLASS_INFO(BView);
+	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BListView(	BRect frame,
 								const char *name,
-								ulong resizeMask = FOLLOW_LEFT_TOP,
-								ulong flags = WILL_DRAW | FRAME_EVENTS);
+								ulong resizeMask = B_FOLLOW_LEFT_TOP,
+								ulong flags = B_WILL_DRAW | B_FRAME_EVENTS);
 virtual				~BListView();
 virtual	void		Draw(BRect updateRect);
 virtual	void		MouseDown(BPoint where);
 virtual	void		KeyDown(ulong aKey);
-virtual	void		FrameResized(long newWidth, long newHeight);
+virtual	void		FrameResized(float newWidth, float newHeight);
 		bool		AddItem(void *item);
 		bool		AddItem(void *item, long atIndex);
 		bool		AddList(BList *newItems);
 		bool		AddList(BList *newItems, long atIndex);
-		bool		RemoveItem(void *item);
+		bool		RemoveItem(void * item);
 		void		*RemoveItem(long index);
 
-virtual	void		SetTarget(BWindow *target);
-		void		SetSelectionMessage(ulong command);
+virtual	long		SetTarget(BReceiver *target, BLooper *looper = NULL);
 virtual	void		SetSelectionMessage(BMessage *message);
-		void		SetInvocationMessage(ulong command);
 virtual	void		SetInvocationMessage(BMessage *message);
 
-		BWindow		*Target() const;
+		BReceiver	*Target(BLooper **looper = NULL) const;
 		BMessage	*SelectionMessage() const;
 		ulong		SelectionCommand() const;
 		BMessage	*InvocationMessage() const;
@@ -67,23 +69,29 @@ virtual	void		SetInvocationMessage(BMessage *message);
 		void		InvalidateItem(long index);
 
 virtual	void		Select(long index);
-		void		Select(void *item);
-		bool		IsItemSelected(void *item) const;
-		void		*CurrentSelection() const;
+		bool		IsItemSelected(long index) const;
+		long		CurrentSelection() const;
 
 virtual void		Invoke(long index);
-		void		Invoke(void *item);
 
 		void		SortItems(int (*cmp)(const void *, const void *));
 	
+virtual	void		AttachedToWindow();
+virtual void		SetFontName(const char *name);
+virtual void		SetSymbolSet(const char *name);
+virtual void		SetFontSize(float pointSize);
+virtual void		SetFontShear(float degrees);
+virtual void		SetFontRotation(float degrees);
+
 // ------------------------------------------------------------------
 
 protected:
 
-virtual	void		DrawItem(BRect updateRect, void *item);
-virtual	void		HighlightItem(bool on, void *item);
-virtual long		ItemHeight();
+virtual	void		DrawItem(BRect updateRect, long index);
+virtual	void		HighlightItem(bool on, long index);
+virtual float		ItemHeight();
 		BRect		ItemFrame(long index);
+		float		BaselineOffset();
 
 
 // ------------------------------------------------------------------
@@ -92,29 +100,27 @@ private:
 		void		FixupScrollBar();
 		void		InvalidateFrom(long y);
 		BScrollBar	*ScrollBar();
-		void		Post(BMessage *msg, long index);
+		void		Invoke(BMessage *msg, long index);
+		void		FontChanged();
 
 		BList		fList;
-		void		*fSelected;
-		long		fIndex;
-		ulong		fClickTime;
+		long		fSelected;
 		BScrollBar	*fScroll;
-		long		fBaselineOffset;
+		float		fItemHeight;
+		float		fBaselineOffset;
 		BMessage	*fSelectMessage;
 		BMessage	*fInvokeMessage;
-		BWindow		*fTarget;
+		BReceiver	*fTarget;
+		BLooper		*fLooper;
 };
 
 inline void *BListView::Items() const
 	{ return fList.Items(); }
 
-inline bool BListView::IsItemSelected(void *item) const
-	{ return(fSelected == item); }
+inline bool BListView::IsItemSelected(long index) const
+	{ return(fSelected == index); }
 
-inline void *BListView::CurrentSelection() const
+inline long BListView::CurrentSelection() const
 	{ return(fSelected); }
-
-inline BWindow *BListView::Target() const
-	{ return(fTarget); }
 
 #endif

@@ -2,9 +2,9 @@
 //
 //	File:		Bitmap.h
 //
-//	Description:	Client bitmap class.
+//	Description:	Client offscreen window class.
 //
-//	Copyright 1992-93, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
@@ -17,55 +17,74 @@
 #ifndef _WINDOW_H
 #include "Window.h"
 #endif
-#ifndef	_OBJECT_H
-#include <support/Object.h>
-#endif
 #ifndef _CLASS_INFO_H
-#include <support/ClassInfo.h>
+#include <ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BBitmap : public BObject {
-	DECLARE_CLASS_INFO(BObject);
+	B_DECLARE_CLASS_INFO(BObject);
 
 public:
-					BBitmap(BRect bounds, color_space);
+					BBitmap(BRect bounds,
+							color_space depth,
+							bool accepts_views = FALSE);
 virtual				~BBitmap();
 
-		void		SetBits(void *data, long length, long offset, color_space);
+		void		SetBits(const void *data, long length, long offset, color_space);
 		void		*Bits() const;
 		long		BitsLength() const;
 		long		BytesPerRow() const;
 		color_space	ColorSpace() const;
 		BRect		Bounds() const;
 
-// ------------------------------------------------------------------
+		// to mimic a BWindow:
+virtual	void		AddChild(BView *view);
+virtual	bool		RemoveChild(BView *view);
+		long		CountChildren() const;
+		BView		*ChildAt(long index) const;
+		BView		*FindView(const char *view_name) const;
+		BView		*FindView(BPoint point) const;
+		bool		Lock();
+		void		Unlock();
+	
+//------------------------------------------------------------------------------
 
 private:
-
 friend class BView;
 friend class BCursor;
 
+		char		*get_shared_pointer() const;
 		void		set_bits(long offset, char *data, long length);
 		void		set_bits_24(long offset, char *data, long length);
-		void		set_bits_24_tst(long offset, char *data, long length);
-		void		set_bits_24_local_256(long offset, char *data, long len);
 		void		set_bits_24_local_gray(long offset, char *data, long len);
+		void		set_bits_24_local_256(long offset, uchar *data, long len);
+		long		get_server_token() const;
 
-		long		server_token;
-		long		client_token;
-		BRect		bound;
-		color_space	type;
-		long		rowbytes;
-		long		bitmap_size;
-		char		*shared_pointer;
+		void		*fBasePtr;
+		long		fSize;
+		color_space	fType;
+		BRect		fBound;
+		long		fRowBytes;
+		BWindow		*fWindow;
+		long		fServerToken;
+		long		fToken;
 };
 
-inline long			BBitmap::BytesPerRow() const	{ return(rowbytes); }
-inline long			BBitmap::BitsLength() const		{ return(bitmap_size); }
-inline color_space	BBitmap::ColorSpace() const		{ return(type); }
-inline BRect		BBitmap::Bounds() const			{ return(bound); }
-inline void			*BBitmap::Bits() const			{ return(shared_pointer); }
+inline long BBitmap::BytesPerRow() const
+	{ return(fRowBytes); }
+
+inline color_space BBitmap::ColorSpace() const
+	{ return(fType); }
+
+inline BRect BBitmap::Bounds() const
+	{ return(fBound); }
+
+inline void *BBitmap::Bits() const
+	{ return((void *) get_shared_pointer()); }
+
+inline long BBitmap::BitsLength() const
+	{ return(fSize); }
 
 #endif

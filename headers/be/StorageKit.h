@@ -4,7 +4,7 @@
 //
 //	Description:	All-in-one include for the Storage Kit.
 //
-//	Copyright 1992-94, Be Incorporated
+//	Copyright 1992-96, Be Incorporated
 //
 *******************************************************************************/
 
@@ -12,22 +12,32 @@
 #define _STORAGE_KIT_H
 
 #ifndef _STORAGE_DEFS_H
-#include <storage/StorageDefs.h>
+#include <StorageDefs.h>
 #endif
 #ifndef _DATABASE_H
-#include <storage/Database.h>
+#include <Database.h>
 #endif
 #ifndef _TABLE_H
-#include <storage/Table.h>
+#include <Table.h>
 #endif
 #ifndef _RECORD_H
-#include <storage/Record.h>
+#include <Record.h>
 #endif
 #ifndef _QUERY_H
-#include <storage/Query.h>
+#include <Query.h>
 #endif
-#ifndef _PARSER_H
-#include <storage/Parser.h>
+
+#ifndef _VOLUME_H
+#include <Volume.h>
+#endif
+#ifndef _STORE_H
+#include <Store.h>
+#endif
+#ifndef _DIRECTORY_H
+#include <Directory.h>
+#endif
+#ifndef _FILE_H
+#include <File.h>
 #endif
 
 #endif
