@@ -39,7 +39,7 @@ char 	   *asctime_r(const struct tm *timeptr, char *buf);
 char 	   *ctime(const time_t *timer);
 char 	   *ctime_r(const time_t *timer, char *buf);
 struct tm  *gmtime(const time_t *timer);
-int 		gmtime_r(const time_t *timer, struct tm *t); 
+struct tm  *gmtime_r(const time_t *timer, struct tm *t); 
 struct tm  *localtime(const time_t *timer);
 struct tm  *localtime_r(const time_t *timer, struct tm *t);
 size_t		strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);

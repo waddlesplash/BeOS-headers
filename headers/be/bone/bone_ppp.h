@@ -170,6 +170,7 @@ struct bone_ncp_info;
 struct bone_ncp_cookie;
 struct ppp_fsm;
 struct bone_ppp_transport;
+struct bone_ncp_lock;
 
 
 /* PPP protocol types (these should be passed to get_ncp()) */
@@ -255,11 +256,17 @@ typedef struct bone_ppp_info {
 	/*********************************************************************/
 
 	/*
-	 * called by an NCP module to send outgoing data
+	 * called by an NCP modules
 	 */
+
+	/* Send outgoing data */
 	status_t	(*send_data)(struct bone_ppp_cookie *you,
 							 struct bone_data *data);
 	
+	/* Lock/Unlock NCP */
+	status_t	(*lock_ncp)(struct bone_ncp_lock *lock);
+	void		(*unlock_ncp)(struct bone_ncp_lock *lock);
+
 	/*
 	 * Configuration Option Utils
 	 */

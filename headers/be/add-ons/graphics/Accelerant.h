@@ -1,9 +1,6 @@
 #if !defined(_ACCELERANT_H_)
 #define _ACCELERANT_H_
 
-#include <BeBuild.h>
-#include <SupportDefs.h>
-#include <GraphicsDefs.h>
 #include <OS.h>
 
 #if defined(__cplusplus)
@@ -46,6 +43,7 @@ enum {
 	B_MOVE_CURSOR = 0x200,		/* optional */
 	B_SET_CURSOR_SHAPE,			/* optional */
 	B_SHOW_CURSOR,				/* optional */
+	B_SET_CURSOR_COLORS,		/* optional */
 
 	/* synchronization */
 	B_ACCELERANT_ENGINE_COUNT = 0x300,	/* required */

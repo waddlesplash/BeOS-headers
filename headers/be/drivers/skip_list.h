@@ -21,22 +21,35 @@ extern "C" {
 	skip_list is an implementation of William Pugh's "skip lists".
 	Skip lists are probablistic alternatives to balanced trees.
 
-	Note that these routines are *NOT* safe to call inside an interrupt
-	handler.  They may block on semaphores.
-	
-	SMP Safety
-		insert(), remove(), search(), iterate() and size() are NOT SMP-safe
-		with respect to one another, or in regards to delete_list().  In other
-		words, don't call delete_list() until you know the other routines are
-		not in use.  create_list() and delete_list() ARE SMP-safe with respect
-		to each other and themselves.
 
-	When the last user of the module puts it away, any remaining lists are
-	deleted.  Note, however, that in this case any memory allocated with
-	a custom allocator will NOT be free()'d, and any list specific item delete
-	hook will NOT be called, as the module can't depend on the function pointers
-	being valid.  If this happens, it's a bug in the _CALLING_ code that needs
-	to be fixed.
+	Interrupt Safety
+
+	You may call these routines inside an interrupt handler
+		a)	if and only if you may call the memory managment hooks and the
+			compare and delete callbacks inside an interrupt handler and
+		b)	if and only if you can access the memory provided by the memory
+			managemnt routines in an interrupt handler.
+	If you only iterate through the skip_list and do not insert or delete
+	items, you may drop requirement a) for the memory management routines.
+	The default malloc() and free() provided by the skip_list module meets
+	requirement b) but does NOT meet requirement a).
+
+
+	SMP and Thread Safety
+
+	None of the routines access the list in a thread-safe manner.  If you want
+	thread-saftey, you must create your own locks.
+
+
+	Module Usage
+
+	When the last user of the module puts it away, the skip_list module abandons
+	all remaining lists, leaking any of the associated memory.  If you provide
+	memory managment routines that can clean up all of the memory at once (like
+	area_malloc) and you don't care about the item delete callbacks, you can simply
+	abandon the list.  Otherwise, you must always pair a create_list() with a
+	delete_list().  
+
 
 	const void * create_list(
 						skip_list_compare cmp,
@@ -59,7 +72,8 @@ extern "C" {
 		entries in the list.  malloc, free, and malloc_info permit the caller to
 		provide the memory used to hold items in the list.  malloc() and free()
 		are called just like their standard library counterparts, except that
-		malloc_info is provided as the first parameter for each call.
+		malloc_info is provided as the first parameter for each call.  If you pass
+		in NULL for malloc, the skip_list will use the kernel's malloc() and free().
 		Returns an opaque list identifier, or NULL if the creation failed.
 
 	status_t delete_list(const void *list_id)

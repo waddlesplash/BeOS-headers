@@ -11,6 +11,7 @@
 #ifndef H_NETDEBUG
 #define H_NETDEBUG
 
+#include <SupportDefs.h>
 
 /*
  * Net debugging class

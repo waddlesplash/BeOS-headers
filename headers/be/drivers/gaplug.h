@@ -27,6 +27,8 @@
 //	ga_		--	exported by driver (called/used by plug)
 //	gaplug_	--	passed from driver to plug
 typedef struct plug_api_v1						plug_api;
+typedef struct plug_mpu401_info_v1				plug_mpu401_info;
+typedef struct plug_gameport_info_v1			plug_gameport_info;
 typedef struct gaplug_open_stream_buffer_v1		gaplug_open_stream_buffer;
 typedef struct gaplug_set_buffer_v1				gaplug_set_buffer;
 typedef struct gaplug_run_stream_info_v1		gaplug_run_stream_info;
@@ -200,7 +202,20 @@ struct plug_api_v1
 	//	LOCKING: general
 	status_t			(*get_stream_timing)(struct plug_api_v1 * i_info,  void * i_stream_cookie);
 
-	uint32				_reserved_[8];
+	//	For devices with an MPU-401 interface fill out the plug_mpu401_info structure.
+	//	LOCKING: general
+	status_t			(*get_mpu401_info)(struct plug_api_v1 * i_info, plug_mpu401_info * o_mpu401_info);
+
+	//	The interrupt_hook should be called with the supplied cookie when an MPU-401
+	//	interrupt occurs.  The hook returns true if the interrupt was handled.
+	//	LOCKING: general
+	status_t			(*set_mpu401_callback)(struct plug_api_v1 * i_info, bool (*i_interrupt_hook)(void*), void* i_cookie);
+
+	//	For devices with a joystick interface fill out the plug_gameport_info structure.
+	//	LOCKING: general
+	status_t			(*get_gameport_info)(struct plug_api_v1 * i_info, plug_gameport_info * o_gameport_info);
+
+	uint32				_reserved_[5];
 
 };
 
@@ -341,6 +356,44 @@ struct ga_utility_funcs_v1
 };
 
 
+//	If the plug implements get_mpu401_info, it fills out this struct
+//	the first time the midi device is opened.
+//#pragma mark -- plug_mpu401_info --
+struct plug_mpu401_info_v1
+{
+	//	MPU-401 base I/O address (typically 0x300 or 0x330)
+	uint32				port;
+
+	//	Cookie to be passed as the first arg to the functions below
+	void*				cookie;
+
+	//	Required hooks for controlling the MPU-401 interrupt
+	void				(*enable_mpu401_int)(void* cookie);
+	void				(*disable_mpu401_int)(void* cookie);
+
+	//	Optional hooks to override access to the MPU-401 I/O port
+	//	These can be NULL
+	uchar				(*read_func)(void* cookie, int addr);
+	void				(*write_func)(void* cookie, int addr, uchar data);
+
+	uint32				_reserved_[2];
+};
+
+
+//	If the plug implements get_gameport_info, it fills out this struct
+//	the first time the joystick device is opened.
+//#pragma mark -- plug_gameport_info --
+struct plug_gameport_info_v1
+{
+	//	Cookie to be passed as the first arg to the functions below
+	void*				cookie;
+
+	//	Required hooks to access to the joystick I/O port
+	uchar				(*read_func)(void* cookie);
+	void				(*write_func)(void* cookie, uchar data);
+
+	uint32				_reserved_[2];
+};
 
 
 //	The game audio driver will load your module and call the appropriate accept function

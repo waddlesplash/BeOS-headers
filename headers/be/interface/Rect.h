@@ -18,6 +18,24 @@
 
 class BDataIO;
 
+/* This is a simple integer-based rectangle, used in certain special */
+/* situations (a.k.a. regions). */
+struct clipping_rect {
+	int32		left;
+	int32		top;
+	int32		right;
+	int32		bottom;
+	
+	void		set(int32 l, int32 t, int32 r, int32 b);
+	bool		is_valid() const;
+	
+	bool		operator==(const clipping_rect&) const;
+	bool		operator!=(const clipping_rect&) const;
+	
+};
+
+BDataIO& operator<<(BDataIO& io, const clipping_rect& rect);
+
 /*----------------------------------------------------------------*/
 /*----- BRect class ----------------------------------------------*/
 
@@ -115,6 +133,22 @@ BDataIO& operator<<(BDataIO& io, const BRect& rect);
 
 /*----------------------------------------------------------------*/
 /*----- inline definitions ---------------------------------------*/
+
+inline void clipping_rect::set(int32 l, int32 t, int32 r, int32 b)
+{
+	left = l;
+	top = t;
+	right = r;
+	bottom = b;
+}
+
+inline bool clipping_rect::is_valid() const
+{
+	if (left <= right && top <= bottom)
+		return true;
+	else
+		return false;
+}
 
 inline BPoint BRect::LeftTop() const
 {

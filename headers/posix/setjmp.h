@@ -17,7 +17,7 @@ __extern_c_end
 
 # define setjmp(jmp_buf)	__setjmp(jmp_buf)
 
-#elif	__INTEL__
+#elif	__GNUC__
 
 #include <signal.h>
 

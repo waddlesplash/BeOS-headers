@@ -4,7 +4,7 @@
 /
 /	Description:	Kernel interface for managing executable images.
 /
-/	Copyright 1993-98, Be Incorporated
+/	Copyright 1993-2000, Be Incorporated
 /
 ******************************************************************************/
 
@@ -42,8 +42,8 @@ typedef struct {
 	image_type	type;				
 	int32		sequence;			
 	int32		init_order;			
-	void		(*init_routine)();
-	void		(*term_routine)();
+	void		(*init_routine)(image_id imid);
+	void		(*term_routine)(image_id imid);
 	dev_t		device;				
 	ino_t		node;
 	char        name[MAXPATHLEN];  
@@ -53,15 +53,15 @@ typedef struct {
 	int32		data_size;	
 } image_info;
 
-extern _IMPEXP_ROOT thread_id	load_image(int32 argc, const char **argv,
+extern thread_id	load_image(int32 argc, const char **argv,
 									const char **envp);
-extern _IMPEXP_ROOT image_id	load_add_on(const char *path);
-extern _IMPEXP_ROOT status_t	unload_add_on(image_id imid);
+extern image_id	load_add_on(const char *path);
+extern status_t	unload_add_on(image_id imid);
 
 /* private; use the macros, below */
-extern _IMPEXP_ROOT status_t	_get_image_info (image_id image,
+extern status_t	_get_image_info (image_id image,
 									image_info *info, size_t size);
-extern _IMPEXP_ROOT status_t	_get_next_image_info (team_id team, int32 *cookie,
+extern status_t	_get_next_image_info (team_id team, int32 *cookie,
 									image_info *info, size_t size);
 /* use these */
 #define get_image_info(image, info)                        \
@@ -77,9 +77,9 @@ extern _IMPEXP_ROOT status_t	_get_next_image_info (team_id team, int32 *cookie,
 #define	B_SYMBOL_TYPE_TEXT		0x2
 #define B_SYMBOL_TYPE_ANY		0x5
 
-extern _IMPEXP_ROOT status_t	get_image_symbol(image_id imid,
+extern status_t	get_image_symbol(image_id imid,
 									const char *name, int32 sclass,	void **ptr);
-extern _IMPEXP_ROOT status_t	get_nth_image_symbol(image_id imid, int32 index,
+extern status_t	get_nth_image_symbol(image_id imid, int32 index,
 									char *buf, int32 *bufsize, int32 *sclass,
 									void **ptr);
 
@@ -92,7 +92,7 @@ extern _IMPEXP_ROOT status_t	get_nth_image_symbol(image_id imid, int32 index,
 #define B_INVALIDATE_DCACHE    0x0002	 
 #define B_INVALIDATE_ICACHE    0x0008   
 
-extern _IMPEXP_ROOT void	clear_caches(void *addr, size_t len, uint32 flags);
+extern void	clear_caches(void *addr, size_t len, uint32 flags);
 
 /*---------------------------------------------------------*/
 

@@ -93,6 +93,7 @@ private:
 
 friend	class _BTextInput_;
 friend	class BTextListControl;
+friend	class BAutoCompleteControl;
 
 						BTextControl(BRect frame,
 									const char *name,

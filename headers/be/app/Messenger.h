@@ -22,17 +22,19 @@ class GHandler;
 class BDataIO;
 class BHandler;
 class BLooper;
+class BMessenger;
 namespace B {
 namespace App2 {
 class BHandler;
 }
 }
 
+
 /*---------------------------------------------------------------*/
 /* --------- BMessenger class----------------------------------- */
 
-_IMPEXP_BE bool operator<(const BMessenger & a, const BMessenger & b);
-_IMPEXP_BE bool operator!=(const BMessenger & a, const BMessenger & b);
+bool operator<(const BMessenger & a, const BMessenger & b);
+bool operator!=(const BMessenger & a, const BMessenger & b);
 
 class BMessenger {
 public:	

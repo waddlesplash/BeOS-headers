@@ -9,6 +9,7 @@
 #include <Path.h>
 
 struct attr_info;
+class BFile;
 
 class BAppPrefs : public BMessage {
 public :

@@ -19,6 +19,7 @@
 #include <SupportDefs.h>
 
 class BMessage;
+class BString;
 
 struct meta_info
 {

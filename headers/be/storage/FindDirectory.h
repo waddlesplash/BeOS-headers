@@ -110,7 +110,7 @@ typedef enum {
 	The C interface
 --- */
 
-extern _IMPEXP_ROOT status_t find_directory (
+extern status_t find_directory (
 	directory_which	which,				/* what directory to return path for */
 	dev_t			device,				/* device w/volume, for vol-specific directories */
 	bool			create_it,			/* create directory if need be */
@@ -131,7 +131,7 @@ class BPath;
 	C++ interface
 --- */
 
-extern _IMPEXP_BE	status_t find_directory (
+extern status_t find_directory (
 	directory_which	which,
 	BPath			*path,
 	bool			and_create_it = false,

@@ -36,10 +36,6 @@ extern "C" {
 */
 
 typedef void (*cv_extractor)( void *context, int32 x, int32 y, void *pixel, const void *srcData );
-
-extern status_t cvInit();
-extern void cvShutdown();
-
 extern void * cvCreateContext();
 extern void cvDestroyContext( void *context );
 
@@ -85,7 +81,7 @@ extern status_t cvSetType( void *context, int32 dir, int32 type, int32 format, u
 *	value :			The value of name to set
 *
 *******************************************************************************/
-extern status_t cvSetTransferParam( void *context, int32 name, int32 value);
+extern status_t cvSetTransferParam( void *context, int32 name, float value);
 
 
 /**********************************************************************************
@@ -274,7 +270,7 @@ extern cv_extractor cvPickExtractor( void *context, int32 width, int32 height,
 
 
 /**********************************************************************************
-* cvPickExtractor
+* cvConvert
 * 	context :		The context from cvCreateContext()
 *
 *	width : 		The width of the source data in pixels

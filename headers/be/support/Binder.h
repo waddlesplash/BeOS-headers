@@ -10,14 +10,6 @@
 
 class BinderNode;
 typedef atom<class BinderNode> binder_node;
-namespace BPrivate {
-	class uspace_io;
-}
-namespace B {
-namespace App2 {
-	class BDispatcher;
-}
-}
 
 struct put_status_t {
 	status_t	error;
@@ -57,6 +49,15 @@ class _observer_data;
 	static property	funcName ## _binding (const property_list &args) { return funcName(args); }
 
 #define BINDER_FUNCTOR(funcName) property(this,this,&(funcName ## _binding))
+
+struct binder_typed_raw{
+	size_t len;
+	type_code type;
+	char buffer[0];	
+};
+
+class BinderObserver;
+class BinderListener;
 
 class BinderNode : public GHandler
 {
@@ -104,6 +105,8 @@ class BinderNode : public GHandler
 				observer_token				AddObserverCallback(void *userData, observer_callback callbackFunc, uint32 observeMask, const char *name);
 				status_t					RemoveObserverCallback(observer_token observer);
 
+				void						AddObserver(const atomref<BinderListener> &observer, uint32 observeMask, const char *name);
+				status_t					RemoveObserver(const atomref<BinderListener> &observer);
 		enum {
 			isValid = 0x00000001,
 			isLocal = 0x00000001
@@ -127,7 +130,8 @@ class BinderNode : public GHandler
 												string,
 												number,
 												object,
-												remote_object
+												remote_object,
+												typed_raw
 											};
 		
 											property();
@@ -142,6 +146,7 @@ class BinderNode : public GHandler
 											property(int value) { Init((double)value); };
 											property(int32 value) { Init((double)value); };
 											property(int64 value) { Init((double)value); };
+											property(type_code type, void* value, size_t len) { Init(type, value, len); };
 //	for functor extension					property(class BinderNode *, void *, property (*)(const property_list &args));
 											~property();
 			
@@ -150,17 +155,20 @@ class BinderNode : public GHandler
 				bool						IsNumber() const;
 				bool						IsString() const;
 				bool						IsObject() const;
+				bool						IsTypedRaw() const;
 				bool						IsRemoteObject() const;
 		
 				double						Number() const;
 				BString						String() const;
 				binder_node					Object() const;
+				binder_typed_raw*			TypedRaw() const;
 				
 				void						Undefine();
 		
 				inline						operator BString() const { return String(); };
 				inline						operator double() const { return Number(); };
 				inline						operator binder_node() const { return Object(); };
+				inline						operator binder_typed_raw *() const { return TypedRaw(); };
 				
 				bool						operator >=(const property &) const;
 				bool						operator <=(const property &) const;
@@ -185,14 +193,14 @@ class BinderNode : public GHandler
 				friend class BinderNode;
 				friend class BinderProxy;
 				friend class GDispatcher;
-				friend class B::App2::BDispatcher;
-				friend class BPrivate::uspace_io;
-				friend get_status_t kGetProperty(int32, const char *, BinderNode::property &, const BinderNode::property_list &);
-				friend put_status_t kPutProperty(int32, const char *, const BinderNode::property &);
+				friend class uspace_io;
+				friend get_status_t kGetProperty(uint32, const char *, BinderNode::property &, const BinderNode::property_list &);
+				friend put_status_t kPutProperty(uint32, const char *, const BinderNode::property &);
 		
 				void						Init(BinderNode *value);
 				void						Init(const char *value);
 				void						Init(double value);
+				void						Init(type_code type, void *value, size_t len);
 				status_t					Remotize();
 				status_t					InstantiateRemote();
 		
@@ -201,17 +209,19 @@ class BinderNode : public GHandler
 					f_string,
 					f_number,
 					f_object,
-					f_descriptor
+					f_descriptor,
+					f_typed_raw
 				};
 				
 				type m_type : 8;
 				format m_format : 8;
 				int32 m_reserved : 16;
-		
+				
 				union {
-					int32 descriptor;
+					uint32 descriptor;
 					char *string;
 					double number;
+					void *typed_raw;
 					BinderNode *object;
 				} m_value;
 		};
@@ -222,7 +232,7 @@ class BinderNode : public GHandler
 						BString 			Next();
 				const	iterator &			operator =(const iterator &);
 			private:
-						friend				BinderNode;
+						friend	class		BinderNode;
 											iterator(BinderNode *node);
 						void *				cookie;
 						binder_node			parent;
@@ -245,6 +255,7 @@ class BinderNode : public GHandler
 				double						Number() const { return (*this)().Number(); };
 				BString						String() const { return (*this)().String(); };
 				binder_node					Object() const { return (*this)().Object(); };
+				binder_typed_raw*			TypedRaw() const { return (*this)().TypedRaw(); };
 				
 				inline						operator BString() const { return String(); };
 				inline						operator double() const { return Number(); };
@@ -253,6 +264,7 @@ class BinderNode : public GHandler
 				inline						operator int32() const { return (int32)Number(); };
 				inline						operator int64() const { return (int64)Number(); };
 				inline						operator binder_node() const { return Object(); };
+				inline						operator binder_typed_raw *() const { return TypedRaw(); };
 
 				property_ref				operator /(const char *name) { return ((property)(*this)) / name; };
 				property_ref				operator [](const char *name) { return ((property)(*this)) / name; };
@@ -267,7 +279,7 @@ class BinderNode : public GHandler
 											~property_ref();
 		
 			private:
-											friend property;
+											friend class BinderNode::property;
 											property_ref(BinderNode *, const char *);
 		
 				binder_node					m_base;
@@ -292,8 +304,7 @@ class BinderNode : public GHandler
 		friend	class 						property;
 		friend	class						GDispatcher;
 		friend	class						BinderProxy;
-		friend	class						B::App2::BDispatcher;
-
+		
 				status_t					SetPrivateFlags(uint32, bool);
 		virtual	status_t					StartHosting();
 				void						Disconnect(void *);
@@ -309,16 +320,16 @@ class BinderNode : public GHandler
 
 		static	void						ProcessMessage(void *buf, size_t buf_size, Gehnaphore *buffer_lock = NULL);
 
-		friend 	get_status_t 				kGetProperty(int32, const char *, BinderNode::property &, const BinderNode::property_list &);
-		friend 	put_status_t 				kPutProperty(int32, const char *, const BinderNode::property &);
+		friend 	get_status_t 				kGetProperty(uint32, const char *, BinderNode::property &, const BinderNode::property_list &);
+		friend 	put_status_t 				kPutProperty(uint32, const char *, const BinderNode::property &);
 		friend	int 						kSeverLinks(int32 desc, uint32 linkFlags);
 
 		static	BinderNode *				rootNode();
-		static	status_t					handle_reflect_punt(struct binder_cmd *cmd, int i);
-		static	int							do_binder_command(int32 desc, struct binder_cmd *cmd, property *prop=NULL, const property_list *args=NULL);
-		static	int							open_node(int64 vnid, bool startHosting=false);
+		static	status_t					handle_reflect_punt(struct binder_cmd *cmd);
+		static	int							do_binder_command(struct binder_cmd *cmd, property *prop=NULL, const property_list *args=NULL);
+		static	status_t					open_node(struct binder_node_id node_id, uint32 *node_handle, bool startHosting=false);
 
-				int32						m_hostingDesc;
+				uint32						m_hostingNodeHandle;
 				uint32						m_privateFlags;
 				_observer_data *			m_observerData;
 };
@@ -334,6 +345,19 @@ enum {
 	permsInherit	= 0x8000
 };
 
+class BinderListener : virtual public BAtom
+{
+	public:
+										BinderListener();
+		virtual							~BinderListener();
+
+				status_t				StartListening(binder_node node, uint32 eventMask=0xFFFFFFFF, const char *propertyName=NULL);
+				status_t				StopListening(binder_node node);
+
+		virtual	status_t				Overheard(binder_node node, uint32 observed, BString propertyName);
+};
+
+// The old-style observer
 class BinderObserver
 {
 	public:

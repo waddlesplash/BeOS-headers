@@ -19,6 +19,8 @@
 class BMimeType;
 struct dormant_flavor_info;
 class BMediaAddOn;
+class BParameterWeb;
+class BBufferGroup;
 
 #define MEDIA_ROSTER_IS_LOOPER 1
 

@@ -15,7 +15,6 @@
 #include <SupportDefs.h>
 
 class BDataIO;
-class BString;
 
 /*-----------------------------------------------------------------*/
 /*------- Standard Streams ----------------------------------------*/
@@ -79,6 +78,20 @@ private:
 };
 
 BDataIO& operator<<(BDataIO& io, const BHexDump& buffer);
+
+class BTypeCode {
+public:
+	BTypeCode(type_code type);
+	~BTypeCode();
+
+	type_code TypeCode() const;
+	
+private:
+	type_code fType;
+	int32 _reserved;
+};
+
+BDataIO& operator<<(BDataIO& io, const BTypeCode& type);
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

@@ -123,7 +123,7 @@ const char *strsignal(int sig);
 const void  set_signal_stack(void *ptr, size_t size);
 int sigaltstack(const stack_t *ss, stack_t *oss);         /* XXXdbg */
 
-#if __INTEL__
+#if __GNUC__
 extern __inline int 
 sigismember(const sigset_t *set, int sig)	
 {	
@@ -143,7 +143,7 @@ sigdelset(sigset_t *set, int sig)
 	return   ((*set &= ~mask), 0) ;	
 } 
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */
 
 #define SIG_BLOCK    1   /* defines for the how arg of sigprocmask() */
 #define SIG_UNBLOCK  2

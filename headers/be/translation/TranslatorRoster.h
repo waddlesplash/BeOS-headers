@@ -23,6 +23,7 @@
 
 
 struct translation_format;
+struct entry_ref;
 
 
 class BBitmap;
@@ -30,6 +31,7 @@ class BView;
 class BPositionIO;
 class BQuery;
 class BMessage;
+class BTranslator;
 
 
 class BTranslatorRoster :

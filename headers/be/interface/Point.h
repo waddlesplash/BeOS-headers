@@ -51,7 +51,7 @@ public:
 		bool		operator==(const BPoint&) const;
 };
 
-extern _IMPEXP_BE const BPoint B_ORIGIN;
+extern const BPoint B_ORIGIN;
 
 BDataIO& operator<<(BDataIO& io, const BPoint& point);
 

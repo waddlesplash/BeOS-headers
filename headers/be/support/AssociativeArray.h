@@ -10,7 +10,11 @@ class AssociativeArray
 {
 	protected:
 
-		struct pair { KEY key; VALUE value; };
+		struct pair {
+			KEY key; VALUE value;
+			pair() {};
+			pair(const pair &copyFrom) : key(copyFrom.key), value(copyFrom.value) {};
+		};
 		SmartArray<pair> 	m_list;
 		NestedGehnaphore	m_lock;
 	
@@ -34,14 +38,23 @@ class AssociativeArray
 	
 	public:
 	
+		AssociativeArray<KEY,VALUE> () { };
+
+		AssociativeArray<KEY,VALUE> (AssociativeArray<KEY,VALUE> &copyFrom) {
+			copyFrom.m_lock.Lock();
+			m_list = copyFrom.m_list;
+			copyFrom.m_lock.Unlock();
+		}
+	
 		void Lock() { m_lock.Lock(); };
 		void Unlock() { m_lock.Unlock(); };
 
 		pair & operator[](int i) const
 		{
-			NestedGehnaphore &g = const_cast<AssociativeArray*>(this)->m_lock;
+			AssociativeArray<KEY,VALUE> *This = const_cast<AssociativeArray<KEY,VALUE>*>(this);
+			NestedGehnaphore &g = This->m_lock;
 			NestedGehnaphoreAutoLock _auto(g);
-			return m_list[i];
+			return This->m_list[i];
 		}
 	
 		VALUE Lookup(const KEY &key) const
@@ -70,6 +83,13 @@ class AssociativeArray
 			if (!Find(key,i)) m_list.InsertItem(i);
 			m_list[i].key = key;
 			m_list[i].value = value;
+			m_lock.Unlock();
+		}	
+
+		void RemoveIndex(int32 i)
+		{
+			m_lock.Lock();
+			m_list.RemoveItem(i);
 			m_lock.Unlock();
 		}	
 

@@ -17,13 +17,14 @@ class Gehnaphore {
 
 	private:
 	
-				friend 	NestedGehnaphore;
+				friend class 	NestedGehnaphore;
 				int32					m_lockValue;
 	
 	public:
 	
-										Gehnaphore() { m_lockValue = -1; };
-										~Gehnaphore() {};
+										Gehnaphore();
+										Gehnaphore(const char *name);
+										~Gehnaphore();
 
 				void					Lock();
 				void					Yield();
@@ -39,8 +40,8 @@ class NestedGehnaphore : protected Gehnaphore {
 
 	public:
 	
-										NestedGehnaphore() { m_nesting = 0; m_owner = B_BAD_THREAD_ID; };
-										~NestedGehnaphore() {};
+										NestedGehnaphore();
+										~NestedGehnaphore();
 
 				bool					IsLocked();
 				void					Lock();

@@ -47,15 +47,15 @@ virtual	void		_ReservedArchivable3();
 
 typedef BArchivable *(*instantiation_func) (BMessage *); 
 
-_IMPEXP_BE BArchivable		*instantiate_object(BMessage *from, image_id *id);
-_IMPEXP_BE BArchivable		*instantiate_object(BMessage *from);
-_IMPEXP_BE bool				validate_instantiation(	BMessage *from, 
+BArchivable		*instantiate_object(BMessage *from, image_id *id);
+BArchivable		*instantiate_object(BMessage *from);
+bool				validate_instantiation(	BMessage *from, 
 											const char *class_name);
 
-_IMPEXP_BE instantiation_func	find_instantiation_func(const char *class_name,
+instantiation_func	find_instantiation_func(const char *class_name,
 														const char *sig);
-_IMPEXP_BE instantiation_func	find_instantiation_func(const char *class_name);
-_IMPEXP_BE instantiation_func	find_instantiation_func(BMessage *archive_data);
+instantiation_func	find_instantiation_func(const char *class_name);
+instantiation_func	find_instantiation_func(BMessage *archive_data);
 
 
 /*-------------------------------------------------------------*/

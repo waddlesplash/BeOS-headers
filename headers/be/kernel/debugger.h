@@ -14,8 +14,9 @@
 #include <BeBuild.h>
 #include <OS.h>
 #include <image.h>
-#include <SupportDefs.h>
-#if __INTEL__
+#include <sys/types.h>
+#include <be_prim.h>
+#if __GNUC__
 #include <signal.h>
 #endif
 
@@ -27,10 +28,10 @@ extern "C" {
 	kernel calls
 ----- */
 
-extern _IMPEXP_ROOT status_t	install_default_debugger (port_id to_debugger_port);
-extern _IMPEXP_ROOT port_id		install_team_debugger (team_id team, port_id to_debugger_port);
-extern _IMPEXP_ROOT status_t	remove_team_debugger (team_id team);
-extern _IMPEXP_ROOT status_t	debug_thread (thread_id thread);
+extern status_t	install_default_debugger (port_id to_debugger_port);
+extern port_id		install_team_debugger (team_id team, port_id to_debugger_port);
+extern status_t	remove_team_debugger (team_id team);
+extern status_t	debug_thread (thread_id thread);
 
 
 /* -----
@@ -55,6 +56,19 @@ typedef enum {
 	B_INSTRUCTION_ACCESS_EXCEPTION,
 	B_ALIGNMENT_EXCEPTION,
 	B_PROGRAM_EXCEPTION,
+	B_GET_PROFILING_INFO,
+	B_WATCHPOINT_HIT,
+	B_SYSCALL_HIT
+} db_why_stopped;
+#endif
+
+#if __arm__	/* FIXME!  This is probably neither complete, nor right.  Placeholder for now. */
+typedef enum {
+	B_THREAD_NOT_RUNNING,
+	B_DEBUGGER_CALL,
+	B_BREAKPOINT_HIT,
+	B_NMI,
+	B_MACHINE_CHECK_EXCEPTION,
 	B_GET_PROFILING_INFO,
 	B_WATCHPOINT_HIT,
 	B_SYSCALL_HIT
@@ -173,15 +187,17 @@ typedef struct {
 #endif
 
 	
-#if __INTEL__
-
 /*
  * all the 486 registers including the segment registers and the 
  * general registers.
  */
 
 typedef struct {
+#if __INTEL__
 	extended_regs	xregs;			/* fpu/mmx/xmm registers */
+#else
+	char xregs[516];			/* Use placeholder array of right size for now */
+#endif
 	uint16	gs;
 	uint16  reserved0;
 	uint16	fs;
@@ -207,7 +223,33 @@ typedef struct {
 	ulong	uesp;			/* user esp */
 	uint16	ss;				/* user ss */
 	uint16  reserved5;
-} cpu_state;
+} x86_cpu_state;
+
+typedef struct
+{
+	/* !!!XXX This is a placeholder and will need to be fixed */
+	int32 r0;
+	int32 r1;
+	int32 r2;
+	int32 r3;
+	int32 r4;
+	int32 r5;
+	int32 r6;
+	int32 r7;			/* WR - Thumb-state work register */
+	int32 r8;
+	int32 r9;			/* SB */
+	int32 r10;		/* SL */
+	int32 r11;		/* FP - ARM-state frame pointer */
+	int32 r12;		/* IP - intra-procedure-call scratch pointer */
+	int32 r13;		/* SP - stack pointer */
+	int32 r14;		/* LR - link register */
+	int32 r15;		/* PC */
+} arm_cpu_state;
+
+#if __INTEL__
+typedef x86_cpu_state cpu_state;
+#elif __arm__
+typedef arm_cpu_state cpu_state;
 #endif
 
 /* -----
@@ -425,12 +467,12 @@ enum debugger_message {
 	B_THREAD_STOPPED 	= 0,	/* thread stopped, here is its state */
 	B_TEAM_CREATED		= 1,	/* team was created */
 	B_TEAM_DELETED		= 2,	/* team was deleted */
-#if __POWERPC__
-	B_PEF_IMAGE_CREATED	= 3,	/* pef image was created */
-	B_PEF_IMAGE_DELETED	= 4,	/* pef image was deleted */
-#elif __INTEL__
+#if __ELF__
 	B_ELF_IMAGE_CREATED	= 3,	/* pe image was created */
 	B_ELF_IMAGE_DELETED	= 4,	/* pe image was deleted */
+#else
+	B_PEF_IMAGE_CREATED	= 3,	/* pef image was created */
+	B_PEF_IMAGE_DELETED	= 4,	/* pef image was deleted */
 #endif
 	B_THREAD_CREATED	= 5,	/* thread was created */
 	B_THREAD_DELETED	= 6,	/* thread was deleted */

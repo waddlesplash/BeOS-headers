@@ -19,6 +19,11 @@
 /*----------------------------------------------------------------*/
 /*----- the property_info structure ------------------------------*/
 
+#if _SUPPORTS_FEATURE_SCRIPTING
+	#define _SCRIPTING_ONLY(x) x
+#else
+	#define _SCRIPTING_ONLY(x)
+#endif
 
 struct _oproperty_info_;
 
@@ -56,6 +61,8 @@ struct value_info {
 };
 
 #define B_PROPERTY_INFO_TYPE		'SCTD'
+
+class BMessage;
 
 /*----------------------------------------------------------------*/
 /*----- BPropertyInfo class --------------------------------------*/

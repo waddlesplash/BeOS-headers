@@ -1,7 +1,7 @@
 #ifndef _SIZE_T_H_
 #define _SIZE_T_H_
 
-#if __INTEL__
+#if __GNUC__
 
 # include <stddef.h>
 

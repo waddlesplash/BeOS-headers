@@ -20,7 +20,7 @@ class BTransportAddOn;
 class BPrintConfigView;
 
 // Must return a pointer to a newly created BTransportAddOn.
-extern "C" _IMPEXP_BE BTransportAddOn *instantiate_transport_addon(BNode *printer_file);
+extern "C" BTransportAddOn *instantiate_transport_addon(BNode *printer_file);
 
 #define B_INSTANTIATE_TRANSPORT_ADDON_FUNCTION	"instantiate_transport_addon"
 

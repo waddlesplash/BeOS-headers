@@ -25,7 +25,7 @@ enum {
 
 class BStopWatch {
 public:
-					BStopWatch(const char *name, uint32 flags);
+					BStopWatch(	const char *name, uint32 flags = 0);
 virtual				~BStopWatch();
 
 		void		Suspend();

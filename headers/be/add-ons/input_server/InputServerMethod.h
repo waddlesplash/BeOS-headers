@@ -6,7 +6,7 @@
 /
 /	Copyright 1998, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+/ *****************************************************************************/
 
 #ifndef _INPUTSERVERMETHOD_H
 #define _INPUTSERVERMETHOD_H
@@ -17,6 +17,7 @@
 
 
 class _BMethodAddOn_;
+class BMenu;
 
 
 class BInputServerMethod : public BInputServerFilter {

@@ -618,6 +618,8 @@ typedef struct cam_edt_entry
 --- */
 
 #define XPT_EXTENDED_PATH_INQ	(XPT_VUNIQUE + 1)		/* Extended Path Inquiry */
+#define	XPT_OPEN_SESSION		(XPT_VUNIQUE + 2)
+#define	XPT_CLOSE_SESSION		(XPT_VUNIQUE + 3)
 
 /* Extended path inquiry CCB */
 
@@ -634,6 +636,17 @@ typedef struct ccb_extended_pathinq
 	char		cam_controller_type [ TYPE_ID ]; /* Controller type */
 } CCB_EXTENDED_PATHINQ;
 
+/* Open session CCB */
+typedef struct ccb_open_session
+{
+	CCB_HEADER	cam_ch;						/* Header information fields */
+} CCB_OPEN_SESSION;
+
+/* Close session CCB */
+typedef struct ccb_close_session
+{
+	CCB_HEADER	cam_ch;						/* Header information fields */
+} CCB_CLOSE_SESSION;
 
 /* ---
 	Vendor unique flags supported by Be OS (cam_vu_flags)
@@ -701,6 +714,8 @@ typedef union ccb_size_union
 	CCB_ENG_INQ			cei;
 	CCB_ENG_EXEC		cee;
 	CCB_EXTENDED_PATHINQ	cdpi;
+	CCB_OPEN_SESSION	cdos;
+	CCB_CLOSE_SESSION	cdcs;
 } CCB_SIZE_UNION;
 
 

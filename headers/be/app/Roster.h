@@ -233,7 +233,7 @@ friend status_t BClipboard::StopWatching(BMessenger);
 /*-----------------------------------------------------*/
 /*----- Global be_roster ------------------------------*/
 
-extern _IMPEXP_BE const BRoster *be_roster;
+extern const BRoster *be_roster;
 
 /*-----------------------------------------------------*/
 /*-----------------------------------------------------*/

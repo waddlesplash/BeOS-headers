@@ -18,6 +18,10 @@
 #ifndef _TERMCAP_H
 #define _TERMCAP_H 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if __STDC__
 
 extern int tgetent (char *buffer, const char *termtype);
@@ -58,5 +62,9 @@ extern char *BC;
 extern char *tgoto ();
 
 #endif /* not __STDC__ */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* not _TERMCAP_H */

@@ -14,6 +14,7 @@
 #define _SIMPLE_GAME_SOUND_H
 
 #include <GameSound.h>
+struct entry_ref;
 
 class BSimpleGameSound : public BGameSound
 {

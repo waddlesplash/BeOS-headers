@@ -19,7 +19,7 @@ int isxdigit(int);
 int tolower (int);
 int toupper (int);
 
-#if __INTEL__
+#if __GNUC__
 
 # define _ISbit(bit)	(bit < 8 ? ((1 << bit) << 8) : ((1 << bit) >> 8))
 enum 

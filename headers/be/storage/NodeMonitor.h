@@ -22,18 +22,18 @@
 class	BLooper;
 class	BHandler;
 
-_IMPEXP_BE status_t watch_node(const node_ref *node, 
+status_t watch_node(const node_ref *node, 
 					   uint32 flags, 
 					   BMessenger target);
 
-_IMPEXP_BE status_t watch_node(const node_ref *node, 
+status_t watch_node(const node_ref *node, 
 					   uint32 flags, 
 					   const BHandler *handler,
 					   const BLooper *looper = NULL);
 
-_IMPEXP_BE status_t stop_watching(BMessenger target);
+status_t stop_watching(BMessenger target);
 
-_IMPEXP_BE status_t stop_watching(const BHandler *handler, 
+status_t stop_watching(const BHandler *handler, 
 					  const BLooper *looper=NULL);
 
 /* Flags for the watch_node() call.

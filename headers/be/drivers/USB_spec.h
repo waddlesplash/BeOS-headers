@@ -10,6 +10,8 @@
 #ifndef _USB_SPEC_H
 #define _USB_SPEC_H
 
+#include <SupportDefs.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -60,6 +62,14 @@ extern "C" {
 #define USB_FEATURE_DEVICE_REMOTE_WAKEUP	1
 #define USB_FEATURE_ENDPOINT_HALT			0
 
+
+typedef struct {
+	uint8 request_type;
+	uint8 request;
+	uint16 value;
+	uint16 index;
+	uint16 length;
+} _PACKED usb_request;
 
 
 typedef struct { 

@@ -16,8 +16,13 @@
 
 #define	UCHAR_MAX		(255U)
 
+#ifdef __CHAR_UNSIGNED__
+#define CHAR_MIN		(0)
+#define CHAR_MAX		(255)
+#else
 #define CHAR_MIN		SCHAR_MIN
 #define CHAR_MAX		SCHAR_MAX
+#endif
 
 #define MB_LEN_MAX		(1)
 
@@ -26,20 +31,21 @@
 
 #define USHRT_MAX		(65535U)
 
-#define LONG_MIN		(-2147483647L-1)
+#define LONG_MIN		(-LONG_MAX - 1L)
 #define LONG_MAX	  	(2147483647L)
 
-#define ULONG_MAX		(4294967295U)
+#define ULONG_MAX		(4294967295UL)
 
-#define	INT_MIN			LONG_MIN
-#define INT_MAX			LONG_MAX
-#define UINT_MAX		ULONG_MAX
+#define	INT_MIN			(-INT_MAX - 1)
+#define INT_MAX			(2147483647)
+
+#define UINT_MAX		(4294967295U)
 
 #endif /* __GNUC__ */
 
-#define LONGLONG_MIN    (-9223372036854775807LL - 1)  /* these are Be specific */
+#define LONGLONG_MIN    (-LONGLONG_MAX - 1LL)  /* these are Be specific */
 #define LONGLONG_MAX    (9223372036854775807LL)
-#define ULONGLONG_MAX   (0xffffffffffffffffULL)                            
+#define ULONGLONG_MAX   (0xffffffffffffffffULL)		/* 18446744073709551615ULL */
 
 /* These are various BeOS implementation limits */
 
@@ -55,7 +61,11 @@
 #define NAME_MAX				(256)
 #define NGROUPS_MAX		 		(32)
 #define OPEN_MAX				(128)
-#define PATH_MAX				(1024)
+#if _SUPPORTS_FEATURE_SHORT_PATH_MAX
+#	define PATH_MAX				(512)
+#else
+#	define PATH_MAX				(1024)
+#endif
 #define PIPE_MAX				(512)
 #define SSIZE_MAX		  		(2147483647L)
 #define TTY_NAME_MAX			(256)
@@ -71,7 +81,11 @@
 #define _POSIX_NAME_MAX	 		(255) 
 #define _POSIX_NGROUPS_MAX  	(0)  
 #define _POSIX_OPEN_MAX	 		(128)
-#define _POSIX_PATH_MAX	 		(1024)
+#if _SUPPORTS_FEATURE_SHORT_PATH_MAX
+#	define _POSIX_PATH_MAX				(512)
+#else
+#	define _POSIX_PATH_MAX				(1024)
+#endif
 #define _POSIX_PIPE_BUF	 		(512) 
 #define _POSIX_SSIZE_MAX		(2147483647L)
 #define _POSIX_STREAM_MAX   	(8)

@@ -23,15 +23,15 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-	extern _IMPEXP_ROOT bool _rtDebugFlag;
+	extern bool _rtDebugFlag;
 
-	_IMPEXP_ROOT bool _debugFlag();
-	_IMPEXP_ROOT bool _setDebugFlag(bool);
+	bool _debugFlag();
+	bool _setDebugFlag(bool);
 	
-	_IMPEXP_ROOT int _debugPrintf(const char *, ...);
-	_IMPEXP_ROOT int _sPrintf(const char *, ...);
-	_IMPEXP_ROOT int _xdebugPrintf(const char *, ...);
-	_IMPEXP_ROOT int _debuggerAssert(const char *, int, char *);
+	int _debugPrintf(const char *, ...);
+	int _sPrintf(const char *, ...);
+	int _xdebugPrintf(const char *, ...);
+	int _debuggerAssert(const char *, int, char *);
 #ifdef __cplusplus
 	}
 #endif
@@ -54,10 +54,16 @@ extern "C" {
 										} ((void) 0)
 	#define TRACE()					_debugPrintf("File: %s, Line: %d, Thread: %d\n", \
 										__FILE__, __LINE__, find_thread(NULL))
-		
+
+	#define FUNC_TRACE()			_debugPrintf("File: %s, Line: %d, Thread: %d, Function: %s\n", \
+										__FILE__, __LINE__, find_thread(NULL), __PRETTY_FUNCTION__)
+
 	#define SERIAL_TRACE()			_sPrintf("File: %s, Line: %d, Thread: %d\n", \
 										__FILE__, __LINE__, find_thread(NULL))
 	
+	#define SERIAL_FUNC_TRACE()			_sPrintf("File: %s, Line: %d, Thread: %d, Function: %s\n", \
+										__FILE__, __LINE__, find_thread(NULL), __PRETTY_FUNCTION__)
+
 	#define DEBUGGER(MSG)			if (_rtDebugFlag) debugger(MSG)
 	#if !defined(ASSERT)
 		#define ASSERT(E)			(!(E) ? _debuggerAssert(__FILE__,__LINE__, #E) \
@@ -82,7 +88,9 @@ extern "C" {
 	#define PRINT(ARGS)				(void)0
 	#define PRINT_OBJECT(OBJ)		(void)0
 	#define TRACE()					(void)0
+	#define FUNC_TRACE()			(void)0
 	#define SERIAL_TRACE()			(void)0
+	#define SERIAL_FUNC_TRACE()		(void)0
 	
 	#define DEBUGGER(MSG)			(void)0
 	#if !defined(ASSERT)

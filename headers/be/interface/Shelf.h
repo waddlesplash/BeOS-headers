@@ -17,6 +17,7 @@
 
 class BDataIO;
 class BView;
+class BShelf;
 
 class BEntry;
 extern "C" void  _ReservedShelf1__6BShelfFv(BShelf *const, int32,

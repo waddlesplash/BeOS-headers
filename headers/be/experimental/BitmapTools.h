@@ -3,8 +3,12 @@
 
 #include <GraphicsDefs.h>
 #include <InterfaceDefs.h>
+#include <Rect.h>
+#include <Point.h>
 
 class BBitmap;
+class BRect;
+class BPoint;
 
 namespace BExperimental {
 

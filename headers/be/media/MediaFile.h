@@ -11,7 +11,7 @@
 
 namespace BPrivate {
 	class MediaExtractor;
-	class _IMPEXP_MEDIA MediaWriter;
+	class MediaWriter;
 	class _AddonManager;
 }
 
@@ -21,6 +21,7 @@ class BMediaTrack;
 class BParameterWeb;
 class BView;
 class Detractor;
+class BFile;
 
 
 // flags for the BMediaFile constructor

@@ -15,17 +15,9 @@
 #include <BeBuild.h>
 #include <Rect.h>
 
-/* Integer rect used to define a cliping rectangle. All bounds are included */
-/* Moved from DirectWindow.h */
-typedef struct {
-	int32		left;
-	int32		top;
-	int32		right;
-	int32		bottom;
-} clipping_rect;
-
 namespace BPrivate {
-	class TestView;
+	class IRegion;
+	class IKAccess;
 }
 
 class BDataIO;
@@ -67,35 +59,16 @@ clipping_rect	RectAtInt(int32 index) const;
 
 /*----- Private or reserved -----------------------------------------*/
 
+				BRegion(BPrivate::IRegion* reg, bool takeOwnership=true);
+		
 private:
 
-struct region;
-friend	class	DecorImagePart;
-friend	class	BPrivate::TestView;
-friend	void	region2BRegion(region *r, BRegion *b);
-
-friend	class	BView;
-friend	class	BDirectWindow;
-friend	void	clear_region(BRegion *a_region);
-friend	void	copy_region(BRegion *src_region, BRegion *dst_region);
-friend	void	copy_region_n(BRegion*, BRegion*, long);
-friend	void	and_region(BRegion*, BRegion*, BRegion*);
-friend	void	or_region(BRegion*, BRegion*, BRegion*);
-friend	void	sub_region(BRegion*, BRegion*, BRegion*);
-friend	void	set_region(BRegion *, clipping_rect *);
-friend	int32	find_span_between(const BRegion *, int32, int32);
-friend	void	set_size(BRegion *, int32);
-friend	void	compress_spans(BRegion *spans);
-
-		void	_AddRect(clipping_rect r);
-		void	set_size(long new_size);
-		long	find_small_bottom(long y1, long y2, long *hint, long *where);
+friend	class				BPrivate::IKAccess;
 
 private:
-		long	count;
-		long	data_size;
-		clipping_rect	bound;
-		clipping_rect	*data;
+		BPrivate::IRegion	*region;
+		int32				ownsRegion;
+		int32				_reserved[5];
 };
 
 BDataIO& operator<<(BDataIO& io, const BRegion& region);

@@ -21,7 +21,7 @@
 # endif /* __MSL__ */
 #endif
 
-#if __INTEL__
+#if __GNUC__
 # define __CONCAT(x,y)  x ## y     
 # define __GLIBC__		2
 # define __GLIBC_MINOR__	1

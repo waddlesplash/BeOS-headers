@@ -22,15 +22,15 @@
 extern "C" {
 #endif
 
-_IMPEXP_BE 	int	update_mime_info(const char *path,
+int	update_mime_info(const char *path,
 						int recursive,
 						int synchronous,
 						int force);
-_IMPEXP_BE 	status_t create_app_meta_mime(const char *path,
+status_t create_app_meta_mime(const char *path,
 									int recursive,
 									int synchronous,
 									int force);
-_IMPEXP_BE 	status_t get_device_icon(const char *dev, void *icon, int32 size);
+status_t get_device_icon(const char *dev, void *icon, int32 size);
 
 	static const uint32 B_MIME_STRING_TYPE	= 'MIMS';
 
@@ -58,12 +58,12 @@ enum app_verb {
 	B_OPEN
 };
 
-extern _IMPEXP_BE const char *B_APP_MIME_TYPE;		/* platform dependent*/
-extern _IMPEXP_BE const char *B_PEF_APP_MIME_TYPE;	/* "application/x-be-executable"*/
-extern _IMPEXP_BE const char *B_PE_APP_MIME_TYPE;	/* "application/x-vnd.be-peexecutable"*/
-extern _IMPEXP_BE const char *B_ELF_APP_MIME_TYPE;	/* "application/x-vnd.be-elfexecutable"*/
-extern _IMPEXP_BE const char *B_RESOURCE_MIME_TYPE;	/* "application/x-be-resource"*/
-extern _IMPEXP_BE const char *B_FILE_MIME_TYPE;		/* "application/octet-stream"*/
+extern const char *B_APP_MIME_TYPE;		/* platform dependent*/
+extern const char *B_PEF_APP_MIME_TYPE;	/* "application/x-be-executable"*/
+extern const char *B_PE_APP_MIME_TYPE;	/* "application/x-vnd.be-peexecutable"*/
+extern const char *B_ELF_APP_MIME_TYPE;	/* "application/x-vnd.be-elfexecutable"*/
+extern const char *B_RESOURCE_MIME_TYPE;	/* "application/x-be-resource"*/
+extern const char *B_FILE_MIME_TYPE;		/* "application/octet-stream"*/
 
 /* ------------------------------------------------------------- */
 

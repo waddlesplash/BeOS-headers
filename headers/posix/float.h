@@ -1,4 +1,4 @@
-#if __INTEL__
+#if __GNUC__
 # include_next <float.h>
 #else
 
@@ -42,7 +42,7 @@ extern const __fcu_t __float_min, __float_max, __float_epsilon;
 #define DBL_MANT_DIG				53
 #define DBL_DIG						15
 #define DBL_MIN_EXP					(-1021)
-#define DBL_MIN_10_EXP				(-308)
+#define DBL_MIN_10_EXP				(-307)
 #define DBL_MAX_EXP					1024
 #define DBL_MAX_10_EXP				308
 
@@ -69,4 +69,4 @@ __extern_c_end
 
 #endif /* __FLOAT_H__ */
 
-#endif /* else not __INTEL__ */
+#endif /* else not __GNUC__ */

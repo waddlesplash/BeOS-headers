@@ -61,6 +61,13 @@ extern void __length_error (const char *);
 
 #endif
 
+#ifdef __BEOS__
+// Needed for atomic_add():
+typedef long int32;
+typedef volatile long vint32;
+extern "C" int32 atomic_add(vint32* value, int32 addvalue);
+#endif	/* __BEOS__ */
+
 template <class charT, class traits = string_char_traits<charT>,
 	  class Allocator = alloc >
 class basic_string
@@ -72,6 +79,10 @@ private:
 
     charT* data () { return reinterpret_cast<charT *>(this + 1); }
     charT& operator[] (size_t s) { return data () [s]; }
+#ifdef __BEOS__
+    charT* grab () { if (selfish) return clone (); atomic_add((vint32*) &ref, 1); return data (); }
+    void release() { if (atomic_add((int32*) &ref, -1) == 1) delete this; }
+#else
     charT* grab () { if (selfish) return clone (); ++ref; return data (); }
 #if 0
     void release () { if (--ref == 0) delete this; }
@@ -85,6 +96,7 @@ private:
 	  delete this;
       }
 #endif
+#endif	/* __BEOS__ */
 
     inline static void * operator new (size_t, size_t);
     inline static void operator delete (void *);

@@ -16,6 +16,7 @@
 
 struct _shared_buffer_list;
 class _buffer_id_cache;
+class BBuffer;
 
 class BBufferGroup
 {

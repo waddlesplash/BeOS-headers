@@ -23,6 +23,7 @@ class BMenuItem;
 class BMenuBar;
 class BMenuWindow;
 class BMenuFrame;
+class BMenu;
 
 class _ExtraMenuData_;
 
@@ -44,8 +45,8 @@ struct menu_info {
 	bool		triggers_always_shown;
 };
 
-_IMPEXP_BE status_t	set_menu_info(menu_info *info);
-_IMPEXP_BE status_t	get_menu_info(menu_info *info);
+status_t	set_menu_info(menu_info *info);
+status_t	get_menu_info(menu_info *info);
 
 typedef bool (* menu_tracking_hook )(BMenu *, void *);
 
@@ -182,10 +183,10 @@ virtual void		AdjustSubmenuLocation(BPoint* inout_location,
 
 /*----- Private or reserved -----------------------------------------*/
 private:
-friend BWindow;
-friend BMenuBar;
-friend BMenuItem;
-friend BMenuFrame;
+friend class BWindow;
+friend class BMenuBar;
+friend class BMenuItem;
+friend class BMenuFrame;
 friend status_t	set_menu_info(menu_info *);
 friend status_t	get_menu_info(menu_info *);
 friend void		_b_cache_menu_info(const BMessage& src);
@@ -319,7 +320,8 @@ static	bool		sSwapped;
 		bool		fRedrawAfterSticky : 1;
 		bool		fAttachAborted : 1;
 		bool		fKeyPressed : 1;
-		int			_reserved_bool : 20;
+		bool		fSkipSnakeDraw : 1;
+		int			_reserved_bool : 19;
 };
 
 /*-------------------------------------------------------------*/

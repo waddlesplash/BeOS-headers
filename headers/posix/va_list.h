@@ -1,7 +1,7 @@
 #ifndef _VA_LIST_H_
 #define _VA_LIST_H_
 
-#if __INTEL__
+#if __GNUC__
 
 #include <stdarg.h>
 

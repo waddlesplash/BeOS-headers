@@ -21,6 +21,7 @@
 class BView;
 class BRect;
 class BPositionIO;
+class BMessage;
 
 
 /*	This is the 4.0 and 4.5 compatible API. For later versions, use the		*/

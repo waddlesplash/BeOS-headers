@@ -19,6 +19,7 @@
 #include <Rect.h>
 
 class BWindow;
+class BView;
 namespace BPrivate {
 class IKAccess;
 }
@@ -31,7 +32,10 @@ enum {
 	B_BITMAP_IS_CONTIGUOUS				= 0x00000010 | B_BITMAP_IS_LOCKED,
 	B_BITMAP_IS_OFFSCREEN				= 0x00000020,
 	B_BITMAP_WILL_OVERLAY				= 0x00000040 | B_BITMAP_IS_OFFSCREEN,
-	B_BITMAP_RESERVE_OVERLAY_CHANNEL	= 0x00000080
+	B_BITMAP_RESERVE_OVERLAY_CHANNEL	= 0x00000080,
+	B_BITMAP_RESERVED_0					= 0x00000100,
+	B_BITMAP_RESERVED_1					= 0x00000200,
+	B_BITMAP_IS_ROTATED					= 0x40000000
 };
 
 #define B_ANY_BYTES_PER_ROW -1
@@ -110,7 +114,8 @@ virtual status_t	Perform(perform_code d, void *arg);
 private:
 friend class BPrivate::IKAccess;
 friend class BApplication;
-friend void  _IMPEXP_BE _get_screen_bitmap_(BBitmap *,BRect,bool);
+friend class BBitmapCollection;
+friend void  _get_screen_bitmap_(BBitmap *,BRect,bool);
 
 virtual	void		_ReservedBitmap1();
 virtual	void		_ReservedBitmap2();
@@ -133,6 +138,8 @@ virtual	void		_ReservedBitmap3();
 		void 		InitObject(	BRect frame, color_space depth,
 								uint32 flags, int32 bytesPerRow, screen_id screenID);
 		void		AssertPtr();
+
+		status_t	SelectLbxBitmap(int32 lbx_token, int32 index);
 
 		void		*fBasePtr;
 		int32		fSize;

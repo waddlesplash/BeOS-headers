@@ -19,6 +19,9 @@
 #include <MediaDefs.h>
 
 class BParameterWeb;
+class BParameter;
+class BControl;
+class BBitmap;
 
 
 class BMediaTheme

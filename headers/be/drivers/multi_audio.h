@@ -239,7 +239,16 @@ struct multi_set_event_info {
 };
 
 typedef struct multi_get_event multi_get_event;
+struct transport_t { /* transport event */
+	float		out_rate;		/* what rate it's now playing at */
+	int32		out_hours;		/* location at the time given */
+	int32		out_minutes;
+	int32		out_seconds;
+	int32		out_frames;
+};
 struct multi_get_event {
+
+
 	size_t		info_size;		/* sizeof(multi_get_event) */
 	uint32		event;
 	bigtime_t	timestamp;		/* real time at which event was received */
@@ -249,13 +258,7 @@ struct multi_get_event {
 			uint32		clocks;
 			int32		mode;
 			int32		controls[100];
-			struct { /* transport event */
-				float		out_rate;		/* what rate it's now playing at */
-				int32		out_hours;		/* location at the time given */
-				int32		out_minutes;
-				int32		out_seconds;
-				int32		out_frames;
-			}transport;
+			struct transport_t transport;
 			char			_reserved_[400];		
 	#if defined(__cplusplus)
 		};
@@ -378,22 +381,28 @@ struct multi_mix_value_info {
 #define B_MULTI_MIX_RAMP 0x10000
 
 typedef struct multi_mix_control multi_mix_control;
+
+struct gain_t {
+			float			min_gain;		/* dB */
+			float			max_gain;		/* dB */
+			float			granularity;	/* dB */
+};
+
+struct mux_t {
+	uint32	_reserved;
+};
+
+struct enable_t{
+	uint32			_reserved;
+};
 struct multi_mix_control {
 	int32			id;				/* unique for device -- not same id as any channel/bus ! */
 	uint32			flags;			/* including kind */
 	int32			master;			/* or 0 if it's not slaved */
 	union {
-		struct {
-			float			min_gain;		/* dB */
-			float			max_gain;		/* dB */
-			float			granularity;	/* dB */
-		}			gain;
-		struct {
-			uint32			_reserved;
-		}			mux;
-		struct {
-			uint32			_reserved;
-		}			enable;
+		struct gain_t		gain;
+		struct mux_t		mux;
+		struct enable_t		enable;
 		uint32		_reserved[12];
 #if defined(__cplusplus)
 	};

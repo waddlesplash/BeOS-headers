@@ -16,9 +16,12 @@
 #define _MEDIA_RECORDER_H
 
 #include <MediaDefs.h>
-#include <MediaNode.h>
 #include <String.h>
 #include <Locker.h>
+
+#if _SUPPORTS_MEDIA_NODES
+#include <MediaNode.h>
+#endif
 
 namespace BPrivate {
 	class BMediaRecorderNode;
@@ -42,6 +45,9 @@ public:
 
 	status_t SetBufferHook(
 		buffer_hook hook,
+		void* cookie =0);
+
+	void SetCookie(
 		void* cookie =0);
 
 	virtual void BufferReceived(
@@ -68,6 +74,8 @@ public:
 		const media_format& format,
 		uint32 flags =0);
 									
+#if _SUPPORTS_MEDIA_NODES
+
 	status_t Connect(
 		const dormant_node_info& info,
 		const media_format* format =0,
@@ -84,7 +92,9 @@ public:
 
 	const media_input& Input() const;
 	const media_output& SourceOutput() const;
-	
+
+#endif // _SUPPORTS_MEDIA_NODES
+
 	status_t Disconnect();
 	bool IsConnected() const;
 		
@@ -112,6 +122,7 @@ private:
 	BMediaRecorder(const BMediaRecorder&);
 	BMediaRecorder& operator=(const BMediaRecorder&);
 
+#if _SUPPORTS_MEDIA_NODES
 	friend class BPrivate::BMediaRecorderNode;
 
 	BPrivate::BMediaRecorderNode* _mNode;
@@ -130,13 +141,29 @@ private:
 		const media_node* node,
 		const media_source* source);
 
+#else	//_SUPPORTS_MEDIA_NODES
+
+	BLocker           _mLock;
+	media_format      _mFormat;
+	int32             _mRun;
+	sem_id            _mRunSem;
+	thread_id         _mThread;
+	int32             _mThreadPriority;
+	int32             _mStreamID;
+	
+	status_t _open_stream();
+	status_t _close_stream();
+	
+	status_t _start_recorder_thread();
+	status_t _stop_recorder_thread();
+
+	static status_t _recorder_thread(void* arg);
+
+#endif	//_SUPPORTS_MEDIA_NODES
+
 	status_t        _mInitErr;
 	
-	void            (*_mBufferHook)(
-	                  void* cookie,
-	                  void* data,
-	                  size_t size,
-	                  const media_header& header);
+	buffer_hook		_mBufferHook;
 	void*           _mBufferCookie;
 	bool            _mConnected;
 	volatile bool   _mRunning;

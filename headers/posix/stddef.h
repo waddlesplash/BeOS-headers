@@ -1,4 +1,4 @@
-#if __INTEL__
+#if __GNUC__
 # ifndef _STDDEF_H /* This is what GCC defines */
 #  include_next <stddef.h>
 # endif /* _STDDEF_H */

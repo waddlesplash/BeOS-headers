@@ -17,6 +17,8 @@ class BMidiConsumer;
 
 class BMidiList;
 
+class BMessage;
+
 // dynamic_cast<BMidiProducer*> (ptr_to_endpoint)
 
 class BMidiEndpoint 

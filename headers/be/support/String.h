@@ -15,7 +15,15 @@
 #include <SupportDefs.h>
 #include <string.h>
 
+class BSharedStringBuffer;
 class BDataIO;
+
+class BString;
+
+extern "C" {
+	char &__vc__7BStringl(BString *, int32);
+	BString &Truncate__7BStringlb(BString *, int32, bool);
+}
 
 class BString {
 public:
@@ -27,6 +35,7 @@ public:
 						~BString();
 			
 /*---- Access --------------------------------------------------------------*/
+
 	const char 			*String() const;
 						/* returns null-terminated string */
 
@@ -97,10 +106,7 @@ public:
 	BString 			&Insert(char, int32 count, int32 pos);
 
 /*---- Removing -----------------------------------------------------------*/
-	BString 			&Truncate(int32 newLength, bool lazy = true);
-						/* pass false in <lazy> to ensure freeing up the
-						 * truncated memory
-						 */
+	BString 			&Truncate(int32 newLength);
 						
 	BString 			&Remove(int32 from, int32 length);
 
@@ -209,19 +215,20 @@ public:
 	BString				&ReplaceSet(const char *setOfChars, const char *with);
 /*---- Unchecked char access -----------------------------------------------*/
 	char 				operator[](int32 index) const;
-	char 				&operator[](int32 index);
 
 /*---- Checked char access -------------------------------------------------*/
 	char 				ByteAt(int32 index) const;
 
 /*---- Fast low-level manipulation -----------------------------------------*/
-	char 				*LockBuffer(int32 maxLength);
+	char 				*LockBuffer(int32 maxStrLen);
 	
 		/* Make room for characters to be added by C-string like manipulation.
-		 * Returns the equivalent of String(), <maxLength> includes space for
-		 * trailing zero while used as C-string, it is illegal to call other
-		 * BString routines that rely on data/length consistency until
-		 * UnlockBuffer sets things up again.
+		 * Returns the equivalent of String(). LockBuffer() reserves enough room
+		 * for a string whose strlen() is maxStrLen. In other words, you do not
+		 * need to add 1 to maxStrLen to make room for the null terminator;
+		 * LockBuffer() does that for you before allocating the memory. It is
+		 * illegal to call other BString routines that rely on data/length
+		 * consistency until UnlockBuffer sets things up again.
 		 */
 
 	BString 			&UnlockBuffer(int32 length = -1);
@@ -284,28 +291,38 @@ public:
 private:
 	void 			_Init(const char *, int32);
 	void 			_DoAssign(const char *, int32);
+	void 			_DoSetTo(const char *, int32);
 	void 			_DoAppend(const char *, int32);
 	char 			*_GrowBy(int32);
 	char 			*_OpenAtBy(int32, int32);
 	char 			*_ShrinkAtBy(int32, int32);
 	void 			_DoPrepend(const char *, int32);
 	void			_DoCompact(const char* set, const char* replace);
-	
+	void			_DoReplaceAt(int32 offset, int32 sourceLength, int32 replaceLength, const char *withThis);
 	int32 			_FindAfter(const char *, int32, int32) const;
 	int32 			_IFindAfter(const char *, int32, int32) const;
 	int32 			_ShortFindAfter(const char *, int32) const;
 	int32 			_FindBefore(const char *, int32, int32) const;
 	int32 			_IFindBefore(const char *, int32, int32) const;
-	void 			_SetLength(int32);
 	
 	void			_SetUsingAsCString(bool);
 	void 			_AssertNotUsingAsCString() const;
 
+	const	BSharedStringBuffer*	_SharedBuffer() const;
+			BSharedStringBuffer*	_Edit(size_t newStrLen);
+
+	friend char &__vc__7BStringl(BString *, int32);
+	friend BString &Truncate__7BStringlb(BString *, int32, bool);
+
 protected:
-	char *_privateData;
+	const char *_privateData;
 };
 
-/*----- STL utilities --------------------------------------*/
+/*----- Type and STL utilities --------------------------------------*/
+void				BMoveBefore(BString* to, BString* from, size_t count = 1);
+void				BMoveAfter(BString* to, BString* from, size_t count = 1);
+void				BSwap(BString& v1, BString& v2);
+int32				BCompare(const BString& v1, const BString& v2);
 void				swap(BString& x, BString& y);
 
 /*----- Comutative compare operators --------------------------------------*/
@@ -325,7 +342,6 @@ int 				ICompare(const BString *, const BString *);
 /*----- Streaming into BDataIO --------------------------------------------*/
 
 BDataIO& operator<<(BDataIO& io, const BString& string);
-
 
 /*-------------------------------------------------------------------------*/
 /*---- No user serviceable parts after this -------------------------------*/
@@ -427,6 +443,18 @@ inline bool
 BString::operator!=(const char *str) const
 {
 	return !operator==(str);
+}
+
+inline void
+BSwap(BString& v1, BString& v2)
+{
+	v1.Swap(v2);
+}
+
+inline int32
+BCompare(const BString& v1, const BString& v2)
+{
+	return strcmp(v1.String(), v2.String());
 }
 
 inline void

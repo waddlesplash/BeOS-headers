@@ -8,6 +8,8 @@
 #ifndef _USB_RLE_H
 #define _USB_RLE_H
 
+#include <SupportDefs.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

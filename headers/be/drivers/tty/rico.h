@@ -1,21 +1,13 @@
-
-
-#define	uchar	unsigned char
-#define	ushort	unsigned short
-#define	uint	unsigned
-#define	ulong	unsigned long
+typedef unsigned char uchar;
 
 #ifndef TRUE
 #define	bool		char
 #define	TRUE		(0 == 0)
-#define	FALSE		(not TRUE)
+#define	FALSE		(!TRUE)
 #endif
-#define	not		!
-#define	and		&&
-#define	or		||
-#define	loop		while (TRUE)
-#define	until(expr)	while (not (expr))
-#define	unless(expr)	if (not (expr))
+
+#define	until(expr)	while (!(expr))
+#define	unless(expr)	if (!(expr))
 
 #define	nel( a)		(sizeof( a) / sizeof( (a)[0]))
 #define	endof( a)	((a) + nel( a))

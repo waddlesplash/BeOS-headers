@@ -19,6 +19,7 @@ namespace BPrivate
 }
 
 class BPrinterVectorAddOn;
+class BShape;
 
 class BPrintPictureIterator
 {

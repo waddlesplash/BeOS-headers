@@ -162,18 +162,18 @@ extern "C" {
 
 /*----- Logging Functions ---------------*/
 
-_IMPEXP_BE void	closelog (void);
-_IMPEXP_BE void	closelog_team (void);
-_IMPEXP_BE void	closelog_thread (void);
-_IMPEXP_BE void	openlog (char *, int, int);
-_IMPEXP_BE void	openlog_team (char *, int, int);
-_IMPEXP_BE void	openlog_thread (char *, int, int);
-_IMPEXP_BE void	syslog (int, char *, ...);
-_IMPEXP_BE void	log_team (int, char *, ...);
-_IMPEXP_BE void	log_thread (int, char *, ...);
-_IMPEXP_BE int		setlogmask (int);
-_IMPEXP_BE int		setlogmask_team (int);
-_IMPEXP_BE int		setlogmask_thread (int);
+void	closelog (void);
+void	closelog_team (void);
+void	closelog_thread (void);
+void	openlog (const char *, int, int);
+void	openlog_team (char *, int, int);
+void	openlog_thread (char *, int, int);
+void	syslog (int, const char *, ...);
+void	log_team (int, char *, ...);
+void	log_thread (int, char *, ...);
+int		setlogmask (int);
+int		setlogmask_team (int);
+int		setlogmask_thread (int);
 
 #ifdef __cplusplus
 }

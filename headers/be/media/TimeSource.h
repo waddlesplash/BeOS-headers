@@ -100,6 +100,7 @@ private:
 	friend class BMediaNode;
 	friend class BMediaRoster;
 	friend class _ServerApp;
+	friend struct ts_op_q;
 
 		BTimeSource(		/* private unimplemented */
 				const BTimeSource & clone);

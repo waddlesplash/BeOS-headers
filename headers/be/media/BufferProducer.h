@@ -14,6 +14,9 @@
 #include <MediaDefs.h>
 #include <MediaNode.h>
 
+class BRegion;
+class BBufferGroup;
+class BBuffer;
 
 class BBufferProducer :
 	public virtual BMediaNode

@@ -1,3 +1,6 @@
+#ifdef __cplusplus
+#define exception __math_exception
+#endif
 #ifndef _MATH_H_
 #define _MATH_H_
 
@@ -42,12 +45,12 @@ extern double y1(double);
 extern double yn(int, double);
 
 
-#if __INTEL__
+#if __GNUC__
 
 extern double gamma_r(double , int *);
 extern double lgamma_r(double , int *);
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */
 
 extern double acosh(double);
 extern double asinh(double);
@@ -99,7 +102,7 @@ extern int isfinite(double);
 extern int finite(double);
 extern float modff(float, float*);
 
-#if __INTEL__
+#if __GNUC__	/* Seems to be floating point format specific (IEEE?) */
 
 extern float acosf(float x);
 extern float asinf(float x);
@@ -158,7 +161,9 @@ extern int ilogbf(float x);
 
 #define	__HUGE_VAL_bytes	{ 0, 0, 0, 0, 0, 0, 0xf0, 0x7f }
 #define __huge_val_t	union { unsigned char __c[8]; double __d; }
+#ifndef HUGE_VAL
 #define HUGE_VAL	(((__huge_val_t) { __c: __HUGE_VAL_bytes }).__d)
+#endif
 
 #define __HUGE_VALF_bytes	{ 0, 0, 0x80, 0x7f }
 #define __huge_valf_t	union { unsigned char __c[4]; float __f; }
@@ -276,7 +281,9 @@ extern const double	*__nan_val;
 extern const float  *__nan_val_float;
 
 
+#ifndef HUGE_VAL
 #define HUGE_VAL 	(*__huge_val)
+#endif
 #define HUGE_VALF	(*__huge_val_float)
 #define HUGE_VALL	(*__huge_val_extended)
 #define INFINITY	(*(double *) __huge_val)
@@ -658,3 +665,6 @@ __extern_c_end
 
 
 #endif /* _MATH_H_ */
+#ifdef __cplusplus
+#undef exception
+#endif

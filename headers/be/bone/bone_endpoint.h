@@ -13,6 +13,7 @@
 #include <bone_util.h>
 #include <bone_data.h>
 #include <sys/socket.h>
+#include <net/if.h>
 #include <bone_proto.h>
 
 
@@ -30,6 +31,8 @@ typedef struct bone_endpoint
 	struct sockaddr		*peer;			
 	struct sockaddr		_peer;
 	int					peerlen;
+	
+	if_index_t			ifindex;		/* interface bound by SO_BINDTODEVICE */
 	
 	int32				family;
 	int32				type;

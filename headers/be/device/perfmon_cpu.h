@@ -8,6 +8,8 @@
 #ifndef _PERFMON_CPU_H
 #define _PERFMON_CPU_H
 
+#include <SupportDefs.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

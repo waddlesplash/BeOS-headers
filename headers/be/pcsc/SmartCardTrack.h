@@ -17,7 +17,7 @@
 #include <ResourceManager.h>
 #include <ResourceDBQuery.h>
 
-typedef vector<SCARD_READERSTATE> SCARD_READERSTATE_LIST;
+typedef std::vector<SCARD_READERSTATE> SCARD_READERSTATE_LIST;
 
 class READER;
 

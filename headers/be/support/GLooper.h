@@ -25,6 +25,10 @@ class GLooper {
 
 	private:
 
+		friend	class			GHandler;
+		static	bool			ResumingScheduling();
+		static	void			ClearSchedulingResumed();
+
 		static	status_t 		send_msg_proc(port_id port, void *buf, int32 size, uint32 flags, int64 timeout, bool syncReply);
 		static	int32			LaunchThread(void *instance);
 				int32			Thread();

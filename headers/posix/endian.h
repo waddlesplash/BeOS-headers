@@ -8,7 +8,7 @@
    '2' in the second least significant byte, and '1' in the least
    significant byte.  */
 
-#if __INTEL__
+#if defined(__INTEL__) || defined(__ARMEL__)	/* FIXME: This should probably use <endian.h> for the right define */
 #define	__LITTLE_ENDIAN	1234
 #define LITTLE_ENDIAN	__LITTLE_ENDIAN
 #define __BYTE_ORDER 	__LITTLE_ENDIAN
@@ -16,9 +16,9 @@
 
 #define __BIG_ENDIAN 	0
 #define BIG_ENDIAN		0
-#endif                       /* __INTEL__ */
+#endif                       /* __INTEL__ || __ARMEL__ */
 
-#if __POWERPC__
+#if defined(__POWERPC__) || defined(__ARMEB__)	/* FIXME: This should probably use <endian.h> for the right define */
 #define	__BIG_ENDIAN	4321
 #define BIG_ENDIAN		__BIG_ENDIAN
 #define __BYTE_ORDER 	__BIG_ENDIAN
@@ -26,7 +26,7 @@
 
 #define __LITTLE_ENDIAN	0
 #define LITTLE_ENDIAN	0
-#endif                      /* __POWERPC__ */
+#endif                      /* __POWERPC__ || __ARMEB__ */
 
 #if __PDP__
 #define	__PDP_ENDIAN	3412

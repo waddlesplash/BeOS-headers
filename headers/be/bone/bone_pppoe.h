@@ -21,12 +21,12 @@ extern "C" {
 
 //ioctl() command values
 enum {
-	BONE_PPPOE_SET_USER_PASS = BONE_PPPOE_IOCTL_BASE,
+	BONE_PPPOE_SET_PARAMS = BONE_PPPOE_IOCTL_BASE,
 };
 
 
-//a bpppoe_user_pass_t is used for BONE_PPPOE_SET_USER_PASS ioctl()s
-typedef struct bpppoe_user_pass_t {
+//a bpppoe_user_pass_t is used for BONE_PPPOE_SET_PARAMS ioctl()s
+typedef struct bpppoe_params {
 
 	//allow this ioctl() to be sent from above the datalink
 	char if_name[IFNAMSIZ];
@@ -35,7 +35,10 @@ typedef struct bpppoe_user_pass_t {
 	const char *username;
 	const char *password;
 
-} bpppoe_user_pass_t;
+	//optional pppoe service-name (may be NULL)
+	const char *service_name;
+
+} bpppoe_params_t;
 
 
 #ifdef __cplusplus

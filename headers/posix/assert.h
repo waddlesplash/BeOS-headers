@@ -12,7 +12,7 @@
 #else
 
 
-#if __INTEL__
+#if __GNUC__
 
 __extern_c_start
 
@@ -29,10 +29,17 @@ extern void __assert_perror_fail(int __errnum,
 
 __extern_c_end
 
+#if _SUPPORTS_FEATURE_SMALL_ASSERT
+# define assert(expr)						      \
+  ((void) ((expr) ? 0 :						      \
+	   (__assert_fail (#expr,				      \
+			   "***not available", __LINE__, __PRETTY_FUNCTION__), 0)))
+#else
 # define assert(expr)						      \
   ((void) ((expr) ? 0 :						      \
 	   (__assert_fail (#expr,				      \
 			   __FILE__, __LINE__, __PRETTY_FUNCTION__), 0)))
+#endif
 
 #elif __POWERPC__
 
@@ -43,7 +50,12 @@ void __assertion_failed(char * condition, char * testfilename, int lineno);
 __extern_c_end
 
 
+#if _SUPPORTS_FEATURE_SMALL_ASSERT
+#define assert(condition) ((condition) ? ((void) 0) : __std(__assertion_failed)(#condition, "***not available", __LINE__))
+#else
 #define assert(condition) ((condition) ? ((void) 0) : __std(__assertion_failed)(#condition, __FILE__, __LINE__))
+#endif
+
 #endif
 
 #endif /* def NDEBUG */

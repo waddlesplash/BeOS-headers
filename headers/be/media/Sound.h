@@ -7,6 +7,7 @@
 #include <MediaDefs.h>
 
 class BSoundFile;
+class BMediaFile;
 
 namespace BPrivate {
 	class BTrackReader;

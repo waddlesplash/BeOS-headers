@@ -20,6 +20,8 @@
 class BParameterWeb;
 class BHandler;
 class BList;
+class BMessenger;
+class BMessage;
 
 class BLocalControllable
 {

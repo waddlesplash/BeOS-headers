@@ -96,7 +96,8 @@ static	int32		entry(void *);
 		bool		_fUnusedBool1;
 		bool		_fUnusedBool2;
 		thread_id	fTrackThread;
-		uint32		_reserved[3];
+		uint32		fGoFlags;
+		uint32		_reserved[2];
 };
 
 /*-------------------------------------------------------------*/

@@ -334,7 +334,8 @@ enum game_mixer_control_type_v1  {
 //#pragma mark game_mixer_control_flags_v1  (enum)
 enum game_mixer_control_flags_v1  {
 	GAME_MIXER_CONTROL_ADVANCED = 0x1,	/*	show on "advanced settings" page	*/
-	GAME_MIXER_CONTROL_AUXILIARY = 0x2	/*	put above or below channel strips	*/
+	GAME_MIXER_CONTROL_AUXILIARY = 0x2,	/*	put above or below channel strips	*/
+	GAME_MIXER_CONTROL_HIDDEN = 0x4		/*  don't display this control			*/
 };
 //#pragma mark game_mixer_control_v1  (struct)
 struct game_mixer_control_v1  {
@@ -474,14 +475,29 @@ enum game_mixer_enable_info_flags_v1  {
 //#pragma mark game_mixer_enable_info_type_v1  (enum)
 enum game_mixer_enable_info_type_v1 {
 	GAME_ENABLE_AC97_MIC_BOOST = 0x060E,
-	GAME_ENABLE_AC97_TREBLE = 0x0008,
-	GAME_ENABLE_AC97_BASS   = 0x0808,
-	GAME_ENABLE_AC97_GP_LPBK= 0x0720,
-	GAME_ENABLE_AC97_GP_LD  = 0x0C20,
-	GAME_ENABLE_AC97_GP_3D  = 0x0D20,
-	GAME_ENABLE_AC97_GP_ST  = 0x0E20,
-	GAME_ENABLE_AC97_GP_POP = 0x0F20,
-	GAME_ENABLE_FIRST_NONAC97 = 0x1000
+	GAME_ENABLE_AC97_TREBLE    = 0x0008,
+	GAME_ENABLE_AC97_BASS      = 0x0808,
+	GAME_ENABLE_AC97_GP_LPBK   = 0x0720,
+	GAME_ENABLE_AC97_GP_LD     = 0x0C20,
+	GAME_ENABLE_AC97_GP_3D     = 0x0D20,
+	GAME_ENABLE_AC97_GP_ST     = 0x0E20,
+	GAME_ENABLE_AC97_GP_POP    = 0x0F20,
+	GAME_ENABLE_FIRST_NONAC97  = 0x1000,
+	/*pwr mgmt status bits */
+	GAME_ENABLE_AC97_PWR_ST_ADC= 0x0026,
+	GAME_ENABLE_AC97_PWR_ST_DAC= 0x0126,
+	GAME_ENABLE_AC97_PWR_ST_ANL= 0x0226,
+	GAME_ENABLE_AC97_PWR_ST_REF= 0x0326,
+	/*pwr mgmt enable bits */
+	GAME_ENABLE_AC97_PWR_ADCMUX= 0x0826,
+	GAME_ENABLE_AC97_PWR_DACS  = 0x0926,	
+	GAME_ENABLE_AC97_PWR_AMVRON= 0x0A26,
+	GAME_ENABLE_AC97_PWR_AMVROF= 0x0B26,
+	GAME_ENABLE_AC97_PWR_DIGINT= 0x0C26,
+	GAME_ENABLE_AC97_PWR_INTCLK= 0x0D26,
+	GAME_ENABLE_AC97_PWR_HPAMP = 0x0E26,
+	GAME_ENABLE_AC97_PWR_EAPD  = 0x0F26,
+	
 };
 //#pragma mark game_get_mixer_enable_info_v1  (struct)
 struct game_get_mixer_enable_info_v1  {

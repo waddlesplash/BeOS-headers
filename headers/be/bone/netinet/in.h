@@ -165,34 +165,40 @@ typedef struct {
  * Options for use with [gs]etsockopt at the IP level. 
  * First word of comment is data type; bool is stored in int.
  * Some of these are not implemented.
- */ 
-#define        IP_OPTIONS              0x1    /* buf/ip_opts; set/get IP options */ 
-#define        IP_HDRINCL              0x2    /* int; header is included with data */ 
-#define        IP_TOS                  0x4    /* int; IP type of service and preced. */ 
-#define        IP_TTL                  0x8    /* int; IP time to live */ 
-#define        IP_RECVOPTS             0x10    /* bool; receive all IP opts w/dgram */ 
-#define        IP_RECVRETOPTS          0x20    /* bool; receive IP opts for response */ 
-#define        IP_RECVDSTADDR          0x40    /* bool; receive IP dst addr w/dgram */ 
-#define        IP_RETOPTS              0x80    /* ip_opts; set/get IP options */ 
-#define        IP_MULTICAST_IF         0x100    /* u_char; set/get IP multicast i/f  */ 
-#define        IP_MULTICAST_TTL        0x200   /* u_char; set/get IP multicast ttl */ 
-#define        IP_MULTICAST_LOOP       0x400   /* u_char; set/get IP multicast loopback */ 
-#define        IP_ADD_MEMBERSHIP       0x800   /* ip_mreq; add an IP group membership */ 
-#define        IP_DROP_MEMBERSHIP      0x1000   /* ip_mreq; drop an IP group membership */ 
-#define IP_MULTICAST_VIF       0x2000   /* set/get IP mcast virt. iface */ 
-#define IP_RSVP_ON             0x4000   /* enable RSVP in kernel */ 
-#define IP_RSVP_OFF            0x8000   /* disable RSVP in kernel */ 
-#define IP_RSVP_VIF_ON         0x10000   /* set RSVP per-vif socket */ 
-#define IP_RSVP_VIF_OFF                0x20000   /* unset RSVP per-vif socket */ 
-#define IP_PORTRANGE           0x40000   /* int; range to choose for unspec port */ 
-#define        IP_RECVIF               0x80000   /* bool; receive reception if w/dgram */ 
+ */
 
-#define IP_FW_ADD              0x100000   /* add a firewall rule to chain */ 
-#define IP_FW_DEL              0x200000   /* delete a firewall rule from chain */ 
-#define IP_FW_FLUSH            0x400000   /* flush firewall rule chain */ 
-#define IP_FW_ZERO             0x800000   /* clear single/all firewall counter(s) */ 
-#define IP_FW_GET              0x1000000   /* get entire firewall rule chain */ 
-#define IP_NAT                 0x2000000   /* set/get NAT opts */ 
+#define	IP_HDRINCL				0x00000001	/* bool; header is included with data */ 
+#define IP_RECVIF				0x00000002	/* bool; receive reception if w/dgram */
+#define IP_RECVOPTS				0x00000004	/* bool; receive all IP opts w/dgram */ 
+#define IP_RECVRETOPTS			0x00000008	/* bool; receive IP opts for response */ 
+#define IP_RECVDSTADDR			0x00000010	/* bool; receive IP dst addr w/dgram */
+#define IP_ONESBCAST			0x00000020	/* bool; IP broadcast address always set to 255.255.255.255 by kernel */
+
+#define IP_OPTIONS				0x40000001	/* buf/ip_opts; set/get IP options */ 
+#define IP_TOS					0x40000002	/* int; IP type of service and preced. */ 
+#define IP_TTL					0x40000003	/* int; IP time to live */ 
+ 
+#define IP_RETOPTS				0x40000004	/* ip_opts; set/get IP options */ 
+#define IP_MULTICAST_IF			0x40000005	/* u_char; set/get IP multicast i/f  */ 
+#define IP_MULTICAST_TTL		0x40000006	/* u_char; set/get IP multicast ttl */ 
+#define IP_MULTICAST_LOOP		0x40000007	/* u_char; set/get IP multicast loopback */ 
+#define IP_ADD_MEMBERSHIP		0x40000008	/* ip_mreq; add an IP group membership */ 
+#define IP_DROP_MEMBERSHIP		0x40000009	/* ip_mreq; drop an IP group membership */
+
+#define IP_MULTICAST_VIF		0x4000000a	/* set/get IP mcast virt. iface */ 
+#define IP_RSVP_ON				0x4000000b	/* enable RSVP in kernel */ 
+#define IP_RSVP_OFF				0x4000000c	/* disable RSVP in kernel */ 
+#define IP_RSVP_VIF_ON			0x4000000d	/* set RSVP per-vif socket */ 
+#define IP_RSVP_VIF_OFF			0x4000000e	/* unset RSVP per-vif socket */ 
+#define IP_PORTRANGE			0x4000000f	/* int; range to choose for unspec port */ 
+
+
+#define IP_FW_ADD				0x40000010	/* add a firewall rule to chain */ 
+#define IP_FW_DEL				0x40000020	/* delete a firewall rule from chain */ 
+#define IP_FW_FLUSH				0x40000030	/* flush firewall rule chain */ 
+#define IP_FW_ZERO				0x40000040	/* clear single/all firewall counter(s) */ 
+#define IP_FW_GET				0x40000050	/* get entire firewall rule chain */ 
+#define IP_NAT					0x40000060	/* set/get NAT opts */ 
 
 /* 
  * Defaults and limits for options 

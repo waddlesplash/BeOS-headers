@@ -22,6 +22,7 @@ enum {
 	BONE_ALIAS_GET_REDIRECT_PROTOS, // ba_redirect_t[n]
 	BONE_ALIAS_DEL_REDIRECT_PROTO, // ba_redirect_t
 	BONE_ALIAS_DEL_REDIRECT_PROTOS, // void
+	BONE_ALIAS_PROXY_RULE, // ba_proxy
 };
 
 typedef struct ba_device
@@ -44,5 +45,11 @@ typedef struct ba_redirect
 	u_short 		alias_port;
 	u_char 			alias_proto;
 } ba_redirect_t;
+
+typedef struct ba_proxy
+{
+	char proxy_rule[1024];
+	int status;
+} ba_proxy_t;
 
 #endif /* H_BONE_ALIAS_CTRL */

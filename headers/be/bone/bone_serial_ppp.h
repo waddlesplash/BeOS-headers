@@ -106,13 +106,18 @@ typedef enum {
 typedef struct bsppp_status {
 
 	//allow this ioctl() to be sent from above the datalink
-	char ifname[IFNAMSIZ];
+	char if_name[IFNAMSIZ];
 
 	//current connection status (filled out by bone_serial_ppp module)
 	bsppp_connection_state_t connection_status;
 
 	//reason for last disconnect (e.g., busy signal, lost carrier)
 	status_t last_error;
+
+	//speed reported by the modem when we connected (note that this
+	//isn't necessarily the current speed of the connection), or
+	//zero if we're not connected/the speed couldn't be determined
+	int connect_speed;
 
 } bsppp_status_t;
 

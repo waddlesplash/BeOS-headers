@@ -70,7 +70,7 @@ private:
  
  	RESOURCEMANAGER *resmgr_;
 	bool HasInterface(const CARDINFO& a_card, const GUID_t& interface);
-	RESPONSECODE ListCards(vector<CARDINFO>& AllCards);
+	RESPONSECODE ListCards(std::vector<CARDINFO>& AllCards);
 	uint32 _reserved_RESOURCEDBQUERY_[16];
 };
 

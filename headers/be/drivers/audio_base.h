@@ -73,8 +73,11 @@
 #define B_CHANNEL_TOP_BACK_LEFT 0x8000
 #define B_CHANNEL_TOP_BACK_CENTER 0x10000
 #define B_CHANNEL_TOP_BACK_RIGHT 0x20000
-#define B_MATRIX_PROLOGIC_LR 0x1
-#define B_MATRIX_AMBISONIC_WXYZ 0x4
+
+enum media_multi_matrix {
+	B_MATRIX_PROLOGIC_LR = 0x1,
+	B_MATRIX_AMBISONIC_WXYZ = 0x4
+};
 
 #endif	/* audio_base_h */
 

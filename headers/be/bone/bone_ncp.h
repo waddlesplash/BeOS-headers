@@ -16,6 +16,7 @@ struct bone_data;
 struct bone_ppp_cookie;
 struct cp_header;
 struct cp_options;
+struct bone_ncp_lock;
 
 typedef struct ncp_info {
 	uint16		config_proto;
@@ -54,9 +55,11 @@ typedef struct bone_ncp_info {
 	status_t	(*send_data)(void *you, struct bone_data *data);
 	
 	/*
-	 * called by bone_ppp to process an incoming data packet
+	 * called by bone_ppp to process an incoming data packet (note that
+	 * 'lock' will be locked when receive_data() is called - it must
+	 * unlock it before it returns)
 	 */
-	status_t	(*receive_data)(void *you, struct bone_data *data, uint16 ppp_proto);
+	status_t	(*receive_data)(void *you, struct bone_data *data, uint16 ppp_proto, struct bone_ncp_lock *lock);
 	status_t	(*receive_config_request)(void *you, struct cp_header *header, struct bone_data *data);
 	status_t	(*receive_config_response)(void *you, struct cp_header *header, struct bone_data *data);
 	

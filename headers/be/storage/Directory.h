@@ -29,7 +29,7 @@ class	BFile;
 class	BSymLink;
 struct	entry_ref;
 
-_IMPEXP_BE status_t create_directory(const char *path, mode_t mode);
+status_t create_directory(const char *path, mode_t mode);
 
 class BDirectory : public BNode, public BEntryList {
 public:

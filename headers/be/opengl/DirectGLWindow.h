@@ -77,23 +77,26 @@ virtual					void DirectConnected(direct_buffer_info *info);
 						void ReleaseCurrent();
 						void YieldCurrent();
 						bool IsCurrent();
-						void SwapBuffers( bool vsync = true );
+						void SwapBuffers();
 virtual					void ErrorCallback (GLenum errorCode);
 						status_t FullscreenEnable( int32 width, int32 height );
 						void FullscreenDisable();
 						
 						void SaveDebuggingInfo( const char *filename );
-
+						
 						const char * GetBGLString();
 						status_t BGLEnable( uint32 );
 						status_t BGLDisable( uint32 );
 						void * BGLGetExtension( const char *name );
+						
 
 /* private */
 private:
 						static void pdc( direct_buffer_info	*info, BDirectWindow *dw );
 						void processDC( direct_buffer_info	*info );
+						void dither_front();
 						static void scanlineHandler ( struct __glContextRec *m_gc, GLint x1, GLint x2);
+						static void sw8bppBlit( struct __glContextRec *m_gc );
 
 
 virtual void        	_ReservedDirectGLWindow1();
@@ -134,9 +137,16 @@ static	void			gl_error( struct __glContextRec * gc, GLenum code);
 
 		thread_id		notify_thread_id;
 		sem_id			notify_sem;
+
+		sem_id			dc_sem;
+		int32			dc_ben;
 		
+		// Dithiring Info
+		uint8 *			m_ditherMap;
+		int16 *			m_errorBuffer[2];
+
 		
-		uint32 			_ReservedData[61];
+		uint32 			_ReservedData[64];
 };
 
 

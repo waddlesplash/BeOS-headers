@@ -34,6 +34,7 @@ class GHandler : virtual public BAtom {
 		virtual	void				PostMessageAtTime(BMessage *message, bigtime_t absoluteTime);
 				void				PostMessageAtTime(const BMessage &message, bigtime_t absoluteTime) { PostMessageAtTime(new BMessage(message), absoluteTime); };
 		virtual	void				PostMessage(BMessage *message);
+				void				PostMessage(uint32 message_constant);
 				void				PostMessage(const BMessage &message) { PostMessage(new BMessage(message)); };
 				void				PostDelayedMessage(BMessage *message, bigtime_t delay);
 				void				PostDelayedMessage(const BMessage &message, bigtime_t delay) { PostDelayedMessage(new BMessage(message), delay); };
@@ -52,8 +53,8 @@ class GHandler : virtual public BAtom {
 		
 	private:
 
-				friend				GDispatcher;
-				friend				BMessenger;
+				friend class			GDispatcher;
+				friend class			BMessenger;
 				
 		static	int32				g_defaultDispatcherCreated;
 		static	dispatcher			g_defaultDispatcher;

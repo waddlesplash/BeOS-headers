@@ -50,17 +50,38 @@ using namespace BResourcePrivate;
 
 // Some new types we handle.
 enum {
+	B_STRING_BLOCK_TYPE		= 'SBLK',
 	B_CURSOR_TYPE			= 'CURS',
 	B_BITMAP_TYPE			= 'BBMP'
 };
 
-// String conversion.  The default implementation does a
-// getenv() on the requested name.
-class BStringMap
+class BStringBlock
 {
 public:
-	BStringMap();
-	virtual ~BStringMap();
+	BStringBlock(BDataIO* data);
+	BStringBlock(const void* block, size_t size);
+	virtual ~BStringBlock();
+	
+	const char* String(size_t index) const;
+
+private:
+	size_t pre_index(char* strings, size_t len);
+	void make_index(char* strings, size_t len,
+					size_t index_len, size_t* out_index);
+	
+	size_t fNumEntries;
+	size_t* fIndex;
+	char* fStrings;
+	bool fOwnData;
+};
+
+// String conversion.  The default implementation does a
+// getenv() on the requested name.
+class BEnvString
+{
+public:
+	BEnvString();
+	virtual ~BEnvString();
 	
 	virtual const char* FindString(const char* name);
 };
@@ -86,7 +107,7 @@ public:
 	status_t AddEnvDirectory(const char* env_path,
 							 const char* default_value = 0,
 							 bool at_front=true,
-							 BStringMap* variables=0);
+							 BEnvString* variables=0);
 	
 	// Functions to look up generic resource data.
 	
@@ -106,6 +127,12 @@ public:
 	const BMessage* FindMessage(type_code type, int32 id);
 	const BMessage* FindMessage(type_code type, const char* name);
 	
+	const BStringBlock* FindStringBlock(type_code type, int32 id);
+	const BStringBlock* FindStringBlock(type_code type, const char* name);
+	
+	const char* FindString(type_code type, int32 id, int32 index);
+	const char* FindString(type_code type, const char* name, int32 index);
+	
 	// Functions to look up specific types of data with standard type codes.
 	
 	const BBitmap* FindBitmap(int32 id);
@@ -117,6 +144,12 @@ public:
 	const BMessage* FindMessage(int32 id);
 	const BMessage* FindMessage(const char* name);
 
+	const BStringBlock* FindStringBlock(int32 id);
+	const BStringBlock* FindStringBlock(const char* name);
+	
+	const char* FindString(int32 id, int32 index);
+	const char* FindString(const char* name, int32 index);
+	
 protected:
 	class TypeObject {
 	public:
@@ -164,15 +197,25 @@ protected:
 		virtual ~MessageObject();
 	};
 	
+	class StringBlockObject : public BStringBlock, public TypeObject
+	{
+	public:
+		StringBlockObject(BDataIO* data);
+		StringBlockObject(const void* block, size_t size);
+		virtual ~StringBlockObject();
+	};
+	
 	virtual BitmapObject* GenerateBitmap(const void* data, size_t size);
 	virtual CursorObject* GenerateCursor(const void* data, size_t size);
 	virtual MessageObject* GenerateMessage(const void* data, size_t size);
+	virtual StringBlockObject* GenerateStringBlock(BDataIO* file);
+	virtual StringBlockObject* GenerateStringBlock(const void* data, size_t size);
 	
 private:
 	friend class BResourcePrivate::TypeItem;
 	
 	status_t expand_string(BString* out, const char* in,
-						   BStringMap* variables);
+						   BEnvString* variables);
 	TypeList* find_type_list(type_code type);
 	
 	TypeItem* find_item_id(type_code type, int32 id);
@@ -184,6 +227,7 @@ private:
 	BBitmap* return_bitmap_item(type_code type, TypeItem* from);
 	BCursor* return_cursor_item(TypeItem* from);
 	BMessage* return_message_item(TypeItem* from);
+	BStringBlock* return_string_block_item(TypeItem* from);
 	
 	static BitmapObject* read_png_image(BDataIO* stream);
 	

@@ -221,6 +221,7 @@ driver you'd want to use smaller buffers and drive it from a realtime thread
 
 #include <KernelExport.h>
 #include <bus_manager.h>
+#include <iovec.h>
 
 #include <USB_spec.h>
 #include <USB_rle.h>
@@ -295,8 +296,19 @@ struct usb_configuration_info {
 };
 
 	     		
-typedef void (*usb_callback_func)(void *cookie, uint32 status, 
+typedef void (*usb_callback_func)(void *cookie, status_t status, 
 								  void *data, uint32 actual_len);
+								  
+								 
+typedef struct {
+	int16	req_len;
+	int16	act_len;
+	status_t		status;	
+} usb_iso_packet_descriptor;
+ 								 
+
+#define USB_ISO_ASAP	0x00000001
+						 
 				
 /* Old version 2 of the API, kept for driver compatability */
 struct usb_module_info_v2 {
@@ -439,7 +451,9 @@ struct usb_module_info_v3 {
 
 	status_t (*queue_isochronous)(usb_pipe pipe, 
 								  void *data, size_t len,
-								  rlea* rle_array, uint16 buffer_duration_ms,
+								  usb_iso_packet_descriptor* packet_descriptors, uint32 packet_count,
+  								  uint32* starting_frame_number, /* optional, can be NULL */
+								  uint32 flags, 
 								  usb_callback_func notify, void *cookie);
 
 	status_t (*queue_request)(usb_device device, 

@@ -92,16 +92,13 @@
 #if __BEOS__
 #include <BeBuild.h>
 #else
-#ifndef _IMPEXP_ROOT
-#define	_IMPEXP_ROOT
-#endif
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-_IMPEXP_ROOT time_t       parsedate_etc(const char *s, time_t now, int *flags);
+time_t       parsedate_etc(const char *s, time_t now, int *flags);
 
 /*
    The flags passed back from parsedate tell you about how it parsed
@@ -111,9 +108,9 @@ _IMPEXP_ROOT time_t       parsedate_etc(const char *s, time_t now, int *flags);
 #define PARSEDATE_RELATIVE_TIME    0x0001  /* the string was relative */
 
 
-_IMPEXP_ROOT time_t       parsedate(const char *s, time_t now);
-_IMPEXP_ROOT void         set_dateformats(const char *table[]);
-_IMPEXP_ROOT const char **get_dateformats();
+time_t       parsedate(const char *s, time_t now);
+void         set_dateformats(const char *table[]);
+const char **get_dateformats();
 
 #ifdef __cplusplus
 }

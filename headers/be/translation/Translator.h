@@ -17,6 +17,10 @@
 #include <TranslationDefs.h>
 #include <Archivable.h>
 
+class BPositionIO;
+class BView;
+class BRect;
+
 class BTranslator : public BArchivable {
 public:
 		BTranslator();	/* sets refcount to 1 */

@@ -8,6 +8,8 @@
 #ifndef H_SETTINGS
 #define H_SETTINGS
 
+#include <SupportDefs.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -20,6 +20,18 @@
 
 #include <stdio.h>
 
+#ifdef __BEOS__
+
+#include <stdlib.h>
+
+//the memecluster is very thread-unsafe - just use malloc()/free()
+#define meminit(x, y)		((int)0)
+#define memget(s)			malloc(s)
+#define memput(p, s)		free(p)
+#define memstats(f)		((void)0)
+
+#else	/* __BEOS__ */
+
 #define meminit		__meminit
 #ifdef MEMCLUSTER_DEBUG
 #define memget(s)	__memget_debug(s, __FILE__, __LINE__)
@@ -30,11 +42,13 @@
 #endif
 #define memstats	__memstats
 
-int	meminit(size_t, size_t);
+int	__meminit(size_t, size_t);
 void *	__memget(size_t);
 void 	__memput(void *, size_t);
 void *	__memget_debug(size_t, const char *, int);
 void 	__memput_debug(void *, size_t, const char *, int);
-void 	memstats(FILE *);
+void 	__memstats(FILE *);
+
+#endif	/* __BEOS__ */
 
 #endif /* MEMCLUSTER_H */

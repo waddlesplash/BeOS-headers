@@ -31,12 +31,11 @@ class GDispatcher : virtual public BAtom {
 
 	private:
 	
-		friend	GLooper;
-		friend	GHandler;
-		friend	BMessage;
+		friend	class	GLooper;
+		friend	class	GHandler;
+		friend	class	BMessage;
 
 				void				ScheduleHandler(GHandler *handler);
-				void				UnscheduleHandler(GHandler *handler);
 
 				void				RegisterGLooper(GLooper *looper);
 				void				UnregisterGLooper(GLooper *looper);
@@ -50,6 +49,8 @@ class GDispatcher : virtual public BAtom {
 				status_t			ReadMsg(ssize_t size);
 				status_t			DispatchMessage();
 				bool				InsertHandler(GHandler **handlerP, GHandler *handler);
+
+				void				UnscheduleHandler(GHandler *handler);
 
 				Gehnaphore			m_lock;
 				int32				m_maxThreads;

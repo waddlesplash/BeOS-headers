@@ -22,6 +22,8 @@ struct domain_info;
 
 typedef struct bone_dl_proto_info
 {
+	struct module_info info;
+
 	/*
 	 * called by the datalink when instantiating a new instance
 	 * of this protocol
@@ -91,36 +93,6 @@ typedef status_t (*receive_data_func)(struct bone_data *data, void *cookie);
  * it doesn't need them)
  */
 typedef int (*deframe_data_func)(struct bone_data *data);
-
-
-/*
- * unlike other bone modules, a datalink protocol module publishes the
- * bone_dl_proto_info_t's it contains via a "factory" function - this
- * allows the packaging of multiple modules which differ slightly but
- * share lots of code (e.g., IPv4 ARP and Appletalk's AARP) in a single
- * kernel module.  this eliminates the need for lots of "utility modules"
- * containing this shared code, and/or multiple copies of the same code
- * in different modules.
- *
- * your datalink modules should publish only a "factory" through its
- * 'modules' variable.
- */
-
-typedef struct bone_dl_proto_factory {
-
-	struct module_info info;
-
-	/*
-	 * factory method - this will be called with a sub-module name,
-	 * obtained from bone.conf (e.g., the datalink protocol name
-	 * "bone_arp:ipv4" will result in the 'bone_arp's module's factory
-	 * being called to obtain sub-module "ipv4"), or the empty string ("")
-	 * if no sub-module name is specified (e.g., just "bone_arp" is
-	 * specified in bone.conf)
-	 */
-	status_t (*get_dl_proto)(const char *name, bone_dl_proto_info_t **out);
-
-} bone_dl_proto_factory_t;
 
 
 #ifdef __cplusplus

@@ -5,6 +5,9 @@
 #include <Gehnaphore.h>
 #include <SupportDefs.h>
 
+namespace std {
+class type_info;
+}
 class BDataIO;
 
 enum {
@@ -31,6 +34,7 @@ class BAtom
 
 	public:
 				void	Report(BDataIO& io, const char* prefix="  ", uint32 flags=0) const;
+				void	Report(const char* prefix="  ", uint32 flags=0) const;
 				
 		static	int32	MarkLeakReport();
 		static	void	LeakReport(BDataIO& io, int32 mark=0, int32 last=-1);
@@ -39,8 +43,8 @@ class BAtom
 		static	bool	ExistsAndAcquire(BAtom* atom);
 		static	bool	ExistsAndIncRefs(BAtom* atom);
 		
-		static	void	StartWatching(const type_info* type);
-		static	void	StopWatching(const type_info* type);
+		static	void	StartWatching(const std::type_info* type);
+		static	void	StopWatching(const std::type_info* type);
 
 		const BAtom &	operator =(const BAtom &p) { return p; };
 
@@ -69,8 +73,8 @@ class AtomPtr {
 		TYPE *ptr;
 		Gehnaphore lock;
 		
-		friend atom<TYPE>;
-		friend atomref<TYPE>;
+		friend class atom<TYPE>;
+		friend class atomref<TYPE>;
 
 		TYPE * Acquire(void *id) {
 			lock.Lock();
@@ -135,8 +139,8 @@ class AtomRef {
 		TYPE *ptr;
 		Gehnaphore lock;
 
-		friend atom<TYPE>;
-		friend atomref<TYPE>;
+		friend class atom<TYPE>;
+		friend class atomref<TYPE>;
 
 		TYPE * AcquireRef(void *id) {
 			lock.Lock();
@@ -188,20 +192,20 @@ class atomref {
 		TYPE *ptr;
 	public:
 		bool operator !=(void *p) { return ptr != p; };
-		bool operator ==(void *p) { return ptr == p; };
+		bool operator ==(const atomref<TYPE> &p) { return ptr == p.ptr; };
 		operator TYPE*() const { return ptr; };
 		operator atomref<BAtom>() const { return atomref(ptr); };
 		TYPE * operator ->() const { return ptr; };
 		const atomref<TYPE> &operator =(TYPE *p) {
 			if (ptr!=p) {
+				if (p) p->IncRefs(this);
 				if (ptr) ptr->DecRefs(this);
 				ptr = p;
-				if (ptr) ptr->IncRefs(this);
 			};
 			return *this;
 		};
 		const atomref<TYPE> &operator =(const atom<TYPE> &p) {
-			return ((*this) = p.ptr);
+			return ((*this) = (TYPE*)p);
 		};
 		const atomref<TYPE> &operator =(const atomref<TYPE> &p) {
 			return ((*this) = p.ptr);
@@ -223,7 +227,7 @@ class atomref {
 		atomref() { ptr = NULL; };
 		atomref(AtomPtr<TYPE> &p) { ptr = NULL; *this = p; };
 		atomref(AtomRef<TYPE> &p) { ptr = NULL; *this = p; };
-		atomref(const atom<TYPE> &p) { ptr = p.ptr; if (ptr) ptr->IncRefs(this); };
+		atomref(const atom<TYPE> &p) { ptr = (TYPE*)p; if (ptr) ptr->IncRefs(this); };
 		atomref(const atomref<TYPE> &p) { ptr = p.ptr; if (ptr) ptr->IncRefs(this); };
 		atomref(TYPE *p) { ptr = p; if (ptr) ptr->IncRefs(this); };
 		~atomref() { if (ptr) ptr->DecRefs(this); };
@@ -242,9 +246,9 @@ class atom {
 		TYPE * operator ->() const { return ptr; };
 		const atom<TYPE> &operator =(TYPE *p) {
 			if (ptr!=p) {
+				if (p) p->Acquire(this);
 				if (ptr) ptr->Release(this);
 				ptr = p;
-				if (ptr) ptr->Acquire(this);
 			};
 			return *this;
 		};

@@ -47,7 +47,10 @@ enum {
 	
 	B_DISABLE_HINTING			= 0x00000100,
 	B_ENABLE_HINTING			= 0x00000200,
+	B_HINTING_MASK				= 0x00000300,
+	
 	B_DISABLE_GLOBAL_OVERLAY	= 0x00010000,
+	B_GLOBAL_OVERLAY_MASK		= 0x00010000,
 	
 	B_FORCE_ANTIALIASING		= B_NORMAL_ANTIALIASING	// backwards compatibility
 };
@@ -111,11 +114,11 @@ enum {
 };
 
 enum font_which {
-	B_PLAIN_FONT			= 0,
-	B_BOLD_FONT				= 1,
-	B_FIXED_FONT			= 2,
-	B_SYMBOL_FONT			= 3,
-	B_SERIF_FONT			= 4,
+	B_PLAIN_FONT			= 1,
+	B_BOLD_FONT				= 2,
+	B_FIXED_FONT			= 3,
+	B_SYMBOL_FONT			= 4,
+	B_SERIF_FONT			= 5,
 	
 	B__NUM_FONT				= 5
 };
@@ -200,6 +203,8 @@ private:
 class BDataIO;
 class BShape;
 class BString;
+class BFont;
+class BPoint;
 namespace BPrivate {
 class IKAccess;
 struct font_extra;
@@ -209,7 +214,7 @@ class BFontProxy;
 /*----------------------------------------------------------------*/
 /*----- Private --------------------------------------------------*/
 
-_IMPEXP_BE void _font_control_(BFont *font, int32 cmd, void *data);
+void _font_control_(BFont *font, int32 cmd, void *data);
 
 /*----------------------------------------------------------------*/
 /*----- BFont class ----------------------------------------------*/
@@ -217,6 +222,7 @@ _IMPEXP_BE void _font_control_(BFont *font, int32 cmd, void *data);
 class BFont : public BFlattenable {
 public:
 							BFont();
+							BFont(font_which which);
 							BFont(const BFont &font);	
 							BFont(const BFont *font);			
 
@@ -228,11 +234,11 @@ virtual						~BFont();
 		// the font overlay features.
 static	void				UseModernFonts();
 
-static	void				GetStandardFont(font_which which, BFont* into);
-static	void				SetStandardFont(font_which which, const BFont& from);
+static	status_t			GetStandardFont(font_which which, BFont* into);
+static	status_t			SetStandardFont(font_which which, const BFont& from);
 
-static	void				GetGlobalOverlay(BFont* into);
-static	void				SetGlobalOverlay(const BFont& from);
+static	status_t			GetGlobalOverlay(BFont* into);
+static	status_t			SetGlobalOverlay(const BFont& from);
 
 		BFont&				SetTo(const BFont &source, uint32 mask = B_FONT_ALL);
 		BFont&				SetTo(font_which which, uint32 mask = B_FONT_ALL);
@@ -416,30 +422,30 @@ friend void _font_control_(BFont*, int32, void*);
 /*----------------------------------------------------------------*/
 /*----- BFont related declarations -------------------------------*/
 
-extern _IMPEXP_BE const BFont* be_plain_font;
-extern _IMPEXP_BE const BFont* be_bold_font;
-extern _IMPEXP_BE const BFont* be_fixed_font;
+extern const BFont* be_plain_font;
+extern const BFont* be_bold_font;
+extern const BFont* be_fixed_font;
 
-_IMPEXP_BE int32       count_font_families();
-_IMPEXP_BE status_t    get_font_family(int32		index, 
+int32       count_font_families();
+status_t    get_font_family(int32		index, 
 									   font_family	*name,
 									   uint32		*flags = NULL);
 
-_IMPEXP_BE int32       count_font_styles(font_family name);
-_IMPEXP_BE status_t    get_font_style(font_family	family, 
+int32       count_font_styles(font_family name);
+status_t    get_font_style(font_family	family, 
 									  int32			index,
 									  font_style	*name, 
 									  uint32		*flags = NULL);
-_IMPEXP_BE status_t    get_font_style(font_family	family, 
+status_t    get_font_style(font_family	family, 
 									  int32			index,
 									  font_style	*name, 
 									  uint16		*face, 
 									  uint32		*flags = NULL);
 
-_IMPEXP_BE bool        update_font_families(bool check_only);
+bool        update_font_families(bool check_only);
 
-_IMPEXP_BE status_t    get_font_cache_info(uint32 id, void  *set);
-_IMPEXP_BE status_t    set_font_cache_info(uint32 id, void  *set);
+status_t    get_font_cache_info(uint32 id, void  *set);
+status_t    set_font_cache_info(uint32 id, void  *set);
 
 BDataIO& operator<<(BDataIO& io, const BFont& font);
 

@@ -17,14 +17,14 @@
 /*----- Global Cursors ------------------------------------*/
 
 // Old-style cursors
-extern _IMPEXP_BE const unsigned char B_HAND_CURSOR[];
-extern _IMPEXP_BE const unsigned char B_I_BEAM_CURSOR[];
+extern const unsigned char B_HAND_CURSOR[];
+extern const unsigned char B_I_BEAM_CURSOR[];
 
 // New-style cursors
 #ifdef  __cplusplus
 class BCursor;
-extern _IMPEXP_BE const BCursor *B_CURSOR_SYSTEM_DEFAULT;
-extern _IMPEXP_BE const BCursor *B_CURSOR_I_BEAM;
+extern const BCursor *B_CURSOR_SYSTEM_DEFAULT;
+extern const BCursor *B_CURSOR_I_BEAM;
 #endif
 
 /*---------------------------------------------------------------*/
@@ -68,6 +68,9 @@ enum {
 	B_WORKSPACES_CHANGED		= '_WCG',
 	B_WORKSPACE_ACTIVATED		= '_WAC',
 	B_ZOOM						= '_WZM',
+	B_PIPESTDOUT_REQUESTED		= '_PSR',
+	B_PIPESTDOUT_ACKNOWLEDGE	= '_PSA',
+	B_PIPESTDOUT_RESET			= '_PSC',
 	_APP_MENU_					= '_AMN',
 	_BROWSER_MENUS_				= '_BRM',
 	_MENU_EVENT_ 				= '_MEV',
@@ -140,6 +143,19 @@ enum {
 
 	/* Media Kit reserves all reserved codes starting in 'TRI' */
 };
+
+/*-------------------------------------------------------------*/
+/*----- Some standard message protocol fields -----------------*/
+
+	/* This field can be supplied in B_MOUSE_DOWN, B_MOUSE_MOVED, and        */
+	/* B_MOUSE_UP message to indicate whether the cursor should be down.  If */
+	/* not supplied, B_CURSOR_NEEDED is assumed.                             */
+enum {
+	B_CURSOR_NEEDED			= 0,	/* Allow cursor to be shown */
+	B_CURSOR_NOT_NEEDED		= 1,	/* Don't allow cursor to be shown */
+	B_CURSOR_MAYBE_NEEDED 	= 2		/* No change from last message */
+};
+#define B_MOUSE_CURSOR_NEEDED "be:cursor_needed"
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

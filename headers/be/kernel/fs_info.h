@@ -14,7 +14,6 @@
 
 #include <BeBuild.h>
 #include <sys/types.h>
-#include <SupportDefs.h>
 #include <OS.h>
 
 #ifdef  __cplusplus
@@ -46,9 +45,9 @@ struct fs_info {
 
 typedef struct fs_info	fs_info;
 
-_IMPEXP_ROOT dev_t		dev_for_path(const char *path);
-_IMPEXP_ROOT dev_t		next_dev(int32 *pos);
-_IMPEXP_ROOT int		fs_stat_dev(dev_t dev, fs_info *info);
+dev_t		dev_for_path(const char *path);
+dev_t		next_dev(int32 *pos);
+int		fs_stat_dev(dev_t dev, fs_info *info);
 
 #ifdef  __cplusplus
 }

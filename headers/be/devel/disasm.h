@@ -1,7 +1,7 @@
 #ifndef _DISASM_H
 #define _DISASM_H
 
-#if __INTEL__
+#if __GNUC__
 
 #include <SupportDefs.h>
 
@@ -24,6 +24,6 @@ status_t disasm(uchar *in, uint32 insize, char *out, uint32 outsize,
 }
 #endif
 
-#endif /* INTEL */
+#endif /* __GNUC__ */
 
 #endif /* _DISASM_H */

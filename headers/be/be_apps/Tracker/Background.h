@@ -35,6 +35,8 @@ All rights reserved.
 #ifndef	_TRACKER_BACKGROUND_H
 #define	_TRACKER_BACKGROUND_H
 
+#include <SupportDefs.h>
+
 /*----------------------------------------------------------------*/
 /*-----  Tracker background attribute name  ----------------------*/
 

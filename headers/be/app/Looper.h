@@ -15,6 +15,7 @@
 #include <List.h>
 #include <OS.h>
 #include <Handler.h>
+#include <Locker.h>
 
 class BMessage;
 class BMessageQueue;
@@ -80,7 +81,7 @@ virtual	bool			QuitRequested();
 		lock_status_t	LockWithStatus();
 		void			Unlock();
 		bool			IsLocked() const;
-		lock_status_t	LockWithTimeout(bigtime_t timeout, bool dummy=true);
+		lock_status_t	LockWithTimeout(bigtime_t timeout, uint32 debug_flags=0);
 		thread_id		Thread() const;
 		team_id			Team() const;
 		bool			IsRunningInCurrentThread();
@@ -158,12 +159,14 @@ virtual	void			_ReservedLooper6();
 
 static	lock_status_t	_Lock(BLooper *loop,
 								port_id port,
-								bigtime_t timeout);
+								bigtime_t timeout,
+								uint32 debug_flags);
 static	lock_status_t	_LockComplete(BLooper *loop,
 										int32 old,
 										thread_id this_tid,
 										sem_id sem,
-										bigtime_t timeout);
+										bigtime_t timeout,
+										uint32 debug_flags);
 static	void			_UnlockFunc(BLooper *loop);
 
 		void			InitData();

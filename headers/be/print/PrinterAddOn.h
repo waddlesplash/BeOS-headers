@@ -32,11 +32,11 @@ class BPrintConfigView;
 
 
 // Must return a pointer to a newly created BPrinterAddOn.
-extern "C" _IMPEXP_BE BPrinterAddOn *instantiate_printer_addon(BTransportIO* transport, BNode *printer_file);
+// Or NULL if there is no more driver availlable after the passed index.
+// (index=0 should never return NULL).
+extern "C" BPrinterAddOn *instantiate_printer_addon(int32 index, BTransportIO* transport, BNode *printer_file);
 
 #define B_INSTANTIATE_PRINTER_ADDON_FUNCTION	"instantiate_printer_addon"
-
-class BPrintStream;
 
 namespace BPrivate
 {
@@ -49,6 +49,7 @@ public:
 			BPrinterAddOn(BTransportIO* transport, BNode *printer_file);
 	virtual	~BPrinterAddOn();
 	virtual status_t Perform(int32 selector, void *data);
+	virtual status_t InitCheck();	// != B_OK if there was an error in the ctor
 
 	// Return a list of supported printers. If mdl is empty the driver
 	// will match for all printers from the manufacturer 'mfg'
@@ -91,6 +92,12 @@ public:
 	void ReportPrinterStatus(const printer_status_t& status);
 	
 
+	// Memory allocation. These functions know about the memory adviser.
+	// Use them for big allocations.
+	void *malloc(size_t size);
+	void free(void *ptr);
+	void *realloc(void *ptr, size_t size);
+
 protected:
 	// Called when the user canceled the job. Implementation should expect this method
 	// to be called from CanContinue()
@@ -110,12 +117,13 @@ private:
 	BPrinterAddOn& operator = (const BPrinterAddOn &);
 
 	friend class BPrintJob;
+	friend class BDirectPrintJob;
 	friend class BServer;
 			status_t	TakeJob(const BMessage *msg);
 			status_t	TakeJob(BFile *spool_file);
 
 	status_t take_job(BFile *spool_file, const BMessage *msg);
-	status_t do_page(uint32, const int);
+	status_t take_job(const BMessage *msg);
 	virtual status_t _Reserved_BPrinterAddOn_0(int32 arg, ...);
 	virtual status_t _Reserved_BPrinterAddOn_1(int32 arg, ...);
 	virtual status_t _Reserved_BPrinterAddOn_2(int32 arg, ...);

@@ -41,8 +41,9 @@ public:
 
 	enum
 	{
-		B_HIDE_WHEN_DONE,
-		B_MODAL_PANEL
+		B_MODAL_PANEL = 1,
+		B_HIDE_WHEN_DONE = 2,
+		B_HIDE_ON_CANCEL = 4,
 	};
 
 	enum pane_type
@@ -105,6 +106,7 @@ public:
 			void SetPageCount(uint32 page_count);	// 0 = unknown
 			void SetCurrentPage(uint32 page);		// One-based
 			void SetDocSelection(bool selection);
+			status_t SetPrinter(const char *printer_name);
 
 private:
 	friend class BPrintJob;

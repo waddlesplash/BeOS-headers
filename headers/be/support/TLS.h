@@ -5,13 +5,17 @@
 #include <SupportDefs.h>
 
 
+#define TLS_MAX_KEYS	64
+#define TLS_ALIGNMENT	16
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern _IMPEXP_ROOT int32	tls_allocate(void);
+extern int32	tls_allocate(void);
 
-#if !NOINLINE && __INTEL__
+#if !_NO_INLINE_ASM && __INTEL__ && __GNUC__
 
 static inline void * tls_get(int32 index) {
 	void	*ret;
@@ -38,9 +42,9 @@ static inline void 	tls_set(int32 index, void *value) {
 
 #else
 
-extern _IMPEXP_ROOT void *	tls_get(int32 index);
-extern _IMPEXP_ROOT void **	tls_address(int32 index);
-extern _IMPEXP_ROOT void 	tls_set(int32 index, void *value);
+extern void *	tls_get(int32 index);
+extern void **	tls_address(int32 index);
+extern void 	tls_set(int32 index, void *value);
 
 #endif
 

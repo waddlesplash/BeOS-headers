@@ -15,7 +15,7 @@
 #include <BeBuild.h>
 #include <sys/types.h>
 #include <iovec.h>
-#include <SupportDefs.h>
+#include <be_prim.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,6 +71,8 @@ extern _EXPORT const char	**publish_devices();
 extern _EXPORT device_hooks	*find_device(const char *name);
 extern _EXPORT status_t		init_driver(void);
 extern _EXPORT void			uninit_driver(void);	
+extern _EXPORT void			wake_driver(void);	
+extern _EXPORT void			suspend_driver(void);	
 
 extern _EXPORT int32	api_version;
 

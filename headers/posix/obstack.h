@@ -1,4 +1,4 @@
-#if __INTEL__
+#if __GNUC__
 
 /* obstack.h - object stack macros
    Copyright (C) 1988,89,90,91,92,93,94,96,97,98 Free Software Foundation, Inc.
@@ -585,4 +585,4 @@ __extension__								\
 
 #endif /* obstack.h */
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */

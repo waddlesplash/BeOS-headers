@@ -18,7 +18,9 @@
 
 class BList;
 struct _extended_joystick;
-class _IMPEXP_DEVICE _BJoystickTweaker;
+class _BJoystickTweaker;
+class BString;
+struct entry_ref;
 
 /* -----------------------------------------------------------------------*/
 class BJoystick {
@@ -87,6 +89,7 @@ virtual	void			Calibrate(
 
 private:
 friend class _BJoystickTweaker;
+friend class JoyCalib;
 
 		struct _joystick_info;
 

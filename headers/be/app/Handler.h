@@ -14,6 +14,7 @@
 
 #include <BeBuild.h>
 #include <Archivable.h>
+#include <Messenger.h>
 
 class BLooper;
 class BMessageFilter;

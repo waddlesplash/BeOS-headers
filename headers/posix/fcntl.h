@@ -18,7 +18,7 @@
 #define F_UNLCK         0x0200
 #define F_WRLCK         0x0400
 
-#if __INTEL__
+#if __GNUC__
 #define	FD_CLOEXEC	1	/* Close on exec.  */
 #else
 #define FD_CLOEXEC      0x0800

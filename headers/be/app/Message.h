@@ -34,6 +34,7 @@ class	BHandler;
 class	BMessenger;
 class	BString;
 class	BAtom;
+struct entry_ref;
 template <class TYPE> class atom;
 template <class TYPE> class atomref;
 namespace BPrivate {
@@ -93,7 +94,7 @@ public:
 		uint32		what;
 
 					BMessage();
-					BMessage(uint32 what);
+explicit			BMessage(uint32 what);
 					BMessage(const BMessage &a_message);
 virtual				~BMessage();
 
@@ -104,14 +105,12 @@ virtual				~BMessage();
 		status_t	FillIn(const BMessage& from, bool recursive = false);
 		
 /* Statistics and misc info */
-		status_t	GetInfo(type_code typeRequested, int32 which, char **name,
+		status_t	GetInfo(type_code typeRequested, int32 which, const char **name,
 							type_code *typeReturned, int32 *count = NULL) const;
 
 		status_t	GetInfo(const char *name, type_code *type, int32 *c = 0) const;
 		status_t	GetInfo(const char *name, type_code *type, bool *fixed_size) const;
-		// TO DO: Fix const-ness of 'name'!  (This is being put off because it also
-		// needs to be done in-sync with IAD.)
-		status_t	GetNextName(void **cookie, char **outName,
+		status_t	GetNextName(void **cookie, const char **outName,
 								type_code *outType=NULL, int32 *outCount=NULL) const;
 
 		int32		CountNames(type_code type) const;
@@ -373,8 +372,8 @@ virtual				~BMessage();
 
 private:
 
-// optimization for gcc
-#if __GNUC__
+// optimization for x86 gcc
+#if defined (__GNUC__) && defined (__stdcall)
 #define STANDARD_CALL __attribute__((stdcall))
 #define ARITHMETIC_CALL __attribute__((stdcall,const))
 #else
@@ -395,9 +394,6 @@ friend inline	int32		_get_message_target_(BMessage *);
 friend inline	bool		_use_preferred_target_(BMessage *);
 friend			BDataIO&	operator<<(BDataIO& io, const BMessage& message);
 
-					/* deprecated */
-					BMessage(BMessage *a_message);
-					
 virtual	void		_ReservedMessage1();
 virtual	void		_ReservedMessage2();
 virtual	void		_ReservedMessage3();
@@ -522,7 +518,7 @@ template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, in
 	return FindAtomRef(name,0,atom);
 };
 
-_IMPEXP_BE BDataIO& operator<<(BDataIO& io, const BMessage& message);
+BDataIO& operator<<(BDataIO& io, const BMessage& message);
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

@@ -36,7 +36,7 @@ namespace BPrivate
 }
 
 // Must return a pointer to a newly created BPrinterConfigAddOn.
-extern "C" _IMPEXP_BE BPrinterConfigAddOn *instantiate_printer_config_addon(BTransportIO* transport, BNode *printer_file);
+extern "C" BPrinterConfigAddOn *instantiate_printer_config_addon(BTransportIO* transport, BNode *printer_file);
 
 #define B_INSTANTIATE_PRINTER_CONFIG_ADDON_FUNCTION	"instantiate_printer_config_addon"
 
@@ -47,6 +47,7 @@ class BPrinterConfigAddOn
 public:
 			BPrinterConfigAddOn(BTransportIO* transport, BNode *printer_file);
 	virtual	~BPrinterConfigAddOn();
+	virtual status_t InitCheck();	// != B_OK if there was an error in the ctor
 
 	/////////////////////////////////////////////////////////////////////
 	// Called when a printer is added. Let a chance to the driver to configure the new printer
@@ -133,6 +134,12 @@ public:
 	// (it will be called _after_ BPrintConfigView::Save() is called
 	BPrintJobEditSettings& Settings() const;
 	
+	// Memory allocation. These functions know about the memory adviser.
+	// Use them for big allocations.
+	void *malloc(size_t size);
+	void free(void *ptr);
+	void *realloc(void *ptr, size_t size);
+
 private:
 	BPrinterConfigAddOn(const BPrinterConfigAddOn &);
 	BPrinterConfigAddOn& operator = (const BPrinterConfigAddOn);

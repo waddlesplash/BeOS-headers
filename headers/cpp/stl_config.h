@@ -158,7 +158,7 @@
 #     define __STL_CLASS_PARTIAL_SPECIALIZATION
 #     define __STL_FUNCTION_TMPL_PARTIAL_ORDER
 #     define __STL_MEMBER_TEMPLATES
-//#     define __STL_MEMBER_TEMPLATE_CLASSES
+#     define __STL_MEMBER_TEMPLATE_CLASSES
 #     define __STL_EXPLICIT_FUNCTION_TMPL_ARGS
 #     define __STL_HAS_NAMESPACES
 #     define __STL_NO_NAMESPACES
@@ -279,8 +279,7 @@
     !defined(__STL_NO_BOOL) && \
     !defined(__STL_NON_TYPE_TMPL_PARAM_BUG) && \
     !defined(__STL_LIMITED_DEFAULT_TEMPLATES) && \
-    !defined(__STL_USE_SGI_ALLOCATORS) || \
-     defined(__BEOS__)
+    !defined(__STL_USE_SGI_ALLOCATORS)
 #   define __STL_USE_STD_ALLOCATORS
 # endif
 

@@ -27,7 +27,7 @@ typedef unsigned int 		uintptr_t;
 typedef long long 			intmax_t;
 typedef unsigned long long 	uintmax_t;
 
-#if __INTEL__
+#if __GNUC__
 
 #define __need_wchar_t /* gnu */
 #include <stddef.h>
@@ -52,7 +52,7 @@ extern uintmax_t wcstoumax(const wchar_t * __nptr,
 
 __extern_c_end
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */
 
 
 #endif /* _INTTYPES_H_ */

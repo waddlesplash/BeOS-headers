@@ -56,4 +56,8 @@ private:
 	BMessageQueue mQueue;	// messages to be processed
 };
 
+// The BMessage will have the following named fields, in network byte order:
+extern const char * const B_UDP_ORIGIN_IP;			// 32 bits
+extern const char * const B_UDP_ORIGIN_PORT;	// 16 bits
+
 #endif

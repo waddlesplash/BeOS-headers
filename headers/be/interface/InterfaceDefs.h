@@ -15,7 +15,11 @@
 #include <GraphicsDefs.h>
 #include <OS.h>
 
+#if defined(__cplusplus)
 class BRect;
+class BMessage;
+class BString;
+#endif
 
 /*----------------------------------------------------------------*/
 
@@ -229,60 +233,63 @@ enum overlay_options {
 	B_OVERLAY_FILTER_HORIZONTAL	= 0x00010000,
 	B_OVERLAY_FILTER_VERTICAL	= 0x00020000,
 	B_OVERLAY_MIRROR			= 0x00040000,
-	B_OVERLAY_TRANSFER_CHANNEL	= 0x00080000
+	B_OVERLAY_TRANSFER_CHANNEL	= 0x00080000,
+	B_OVERLAY_NO_CHROMA_KEY		= 0x00100000
 };
 
 /*----------------------------------------------------------------*/
 
-_IMPEXP_BE status_t		get_deskbar_frame(BRect *frame);
+#if defined(__cplusplus)
+status_t		get_deskbar_frame(BRect *frame);
 
-_IMPEXP_BE const color_map *system_colors();
+const color_map *system_colors();
 
-_IMPEXP_BE status_t		set_screen_space(int32 index, uint32 res,
+status_t		set_screen_space(int32 index, uint32 res,
 							bool stick = true);
 
-_IMPEXP_BE status_t		get_scroll_bar_info(scroll_bar_info *info);
-_IMPEXP_BE status_t		set_scroll_bar_info(scroll_bar_info *info);
+status_t		get_scroll_bar_info(scroll_bar_info *info);
+status_t		set_scroll_bar_info(scroll_bar_info *info);
 
-_IMPEXP_BE status_t		get_mouse_type(int32 *type);
-_IMPEXP_BE status_t		set_mouse_type(int32 type);
-_IMPEXP_BE status_t		get_mouse_map(mouse_map *map);
-_IMPEXP_BE status_t		set_mouse_map(mouse_map *map);
-_IMPEXP_BE status_t		get_click_speed(bigtime_t *speed);
-_IMPEXP_BE status_t		set_click_speed(bigtime_t speed);
-_IMPEXP_BE status_t		get_mouse_speed(int32 *speed);
-_IMPEXP_BE status_t		set_mouse_speed(int32 speed);
-_IMPEXP_BE status_t		get_mouse_acceleration(int32 *speed);
-_IMPEXP_BE status_t		set_mouse_acceleration(int32 speed);
+status_t		get_mouse_type(int32 *type);
+status_t		set_mouse_type(int32 type);
+status_t		get_mouse_map(mouse_map *map);
+status_t		set_mouse_map(mouse_map *map);
+status_t		get_click_speed(bigtime_t *speed);
+status_t		set_click_speed(bigtime_t speed);
+status_t		get_mouse_speed(int32 *speed);
+status_t		set_mouse_speed(int32 speed);
+status_t		get_mouse_acceleration(int32 *speed);
+status_t		set_mouse_acceleration(int32 speed);
 
-_IMPEXP_BE status_t		get_key_repeat_rate(int32 *rate);
-_IMPEXP_BE status_t		set_key_repeat_rate(int32 rate);
-_IMPEXP_BE status_t		get_key_repeat_delay(bigtime_t *delay);
-_IMPEXP_BE status_t		set_key_repeat_delay(bigtime_t  delay);
+status_t		get_key_repeat_rate(int32 *rate);
+status_t		set_key_repeat_rate(int32 rate);
+status_t		get_key_repeat_delay(bigtime_t *delay);
+status_t		set_key_repeat_delay(bigtime_t  delay);
 
-_IMPEXP_BE uint32		modifiers();
-_IMPEXP_BE status_t		get_key_info(key_info *info);
-_IMPEXP_BE void			get_key_map(key_map **map, char **key_buffer);
-_IMPEXP_BE status_t		get_keyboard_id(uint16 *id);
-_IMPEXP_BE void			set_modifier_key(uint32 modifier, uint32 key);
-_IMPEXP_BE void			set_keyboard_locks(uint32 modifiers);
+uint32			modifiers();
+status_t		get_key_info(key_info *info);
+void			get_key_map(key_map **map, char **key_buffer);
+status_t		get_keyboard_id(uint16 *id);
+void			set_modifier_key(uint32 modifier, uint32 key);
+void			set_keyboard_locks(uint32 modifiers);
 
-_IMPEXP_BE rgb_color	keyboard_navigation_color();
+rgb_color		keyboard_navigation_color();
 
-_IMPEXP_BE int32		count_workspaces();
-_IMPEXP_BE void			set_workspace_count(int32 count);
-_IMPEXP_BE int32		current_workspace();
-_IMPEXP_BE void			activate_workspace(int32 workspace);
+int32			count_workspaces();
+void			set_workspace_count(int32 count);
+int32			current_workspace();
+void			activate_workspace(int32 workspace);
 
-_IMPEXP_BE bigtime_t	idle_time();
+bigtime_t		idle_time();
 
-_IMPEXP_BE void			run_select_printer_panel();	
-_IMPEXP_BE void			run_add_printer_panel();	
-_IMPEXP_BE void			run_be_about();	
-_IMPEXP_BE status_t		set_default_printer(const char *printer_name);
+void			run_select_printer_panel();	
+void			run_add_printer_panel();	
+void			run_be_about();	
+status_t		set_default_printer(const char *printer_name);
 
-_IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
-_IMPEXP_BE bool			focus_follows_mouse();	
+void			set_focus_follows_mouse(bool follow);	
+bool			focus_follows_mouse();	
+#endif
 
 enum mode_mouse {
 	B_NORMAL_MOUSE 			= 0,
@@ -291,51 +298,111 @@ enum mode_mouse {
 	B_INSTANT_WARP_MOUSE	= 7
 };
 
-_IMPEXP_BE void			set_mouse_mode(mode_mouse mode);	
-_IMPEXP_BE mode_mouse	mouse_mode();	
+#if defined(__cplusplus)
+void			set_mouse_mode(mode_mouse mode);	
+mode_mouse		mouse_mode();	
+#endif
 
-extern _IMPEXP_BE const char *B_UI_PANEL_BACKGROUND_COLOR;			/* be:c:Panel Background */
-extern _IMPEXP_BE const char *B_UI_KEYBOARD_NAVIGATION_COLOR;		/* be:c:Keyboard Navigation */
-extern _IMPEXP_BE const char *B_UI_SUCCESS_COLOR;					/* be:c:Success */
-extern _IMPEXP_BE const char *B_UI_FAILURE_COLOR;					/* be:c:Failure */
+extern const char *B_UI_PANEL_BACKGROUND_COLOR;			/* be:c:PanBg*/
+extern const char *B_UI_PANEL_TEXT_COLOR;				/* be:c:PanTx */
+extern const char *B_UI_DOCUMENT_BACKGROUND_COLOR;		/* be:c:DocBg */
+extern const char *B_UI_DOCUMENT_TEXT_COLOR;			/* be:c:DocTx */
+extern const char *B_UI_CONTROL_BACKGROUND_COLOR;		/* be:c:CtlBg */
+extern const char *B_UI_CONTROL_TEXT_COLOR;				/* be:c:CtlTx */
+extern const char *B_UI_CONTROL_BORDER_COLOR;			/* be:c:CtlBr */
+extern const char *B_UI_CONTROL_HIGHLIGHT_COLOR;		/* be:c:CtlHg */
+extern const char *B_UI_NAVIGATION_BASE_COLOR;			/* be:c:NavBs */
+extern const char *B_UI_NAVIGATION_PULSE_COLOR;			/* be:c:NavPl */
+extern const char *B_UI_SHINE_COLOR;					/* be:c:Shine */
+extern const char *B_UI_SHADOW_COLOR;					/* be:c:Shadow */
 
-extern _IMPEXP_BE const char *B_UI_MENU_BACKGROUND_COLOR;		 	/* be:c:Menu Background */
-extern _IMPEXP_BE const char *B_UI_MENU_SELECTION_BACKGROUND_COLOR;	/* be:c:Menu Selection Background */
-extern _IMPEXP_BE const char *B_UI_MENU_ITEM_TEXT_COLOR;			/* be:c:Menu Item Text */
-extern _IMPEXP_BE const char *B_UI_MENU_SELECTED_ITEM_TEXT_COLOR;	/* be:c:Menu Selected Item Text */
-extern _IMPEXP_BE const char *B_UI_MENU_ITEM_TEXT_FONT;				/* be:f:Menu Item Text */
-extern _IMPEXP_BE const char *B_UI_MENU_SEPARATOR;					/* be:Menu Separator */
-extern _IMPEXP_BE const char *B_UI_MENU_SHOW_TRIGGERS;				/* be:Show Menu Triggers */
-extern _IMPEXP_BE const char *B_UI_MENU_ZSNAKE;						/* be:Menu ZSnake */
+extern const char *B_UI_TOOLTIP_BACKGROUND_COLOR;		/* be:c:TipBg */
+extern const char *B_UI_TOOLTIP_TEXT_COLOR;				/* be:c:TipTx */
+extern const char *B_UI_TOOLTIP_FONT;					/* be:f:Tip */
+
+extern const char *B_UI_MENU_BACKGROUND_COLOR;		 	/* be:c:MenBg */
+extern const char *B_UI_MENU_SELECTED_BACKGROUND_COLOR;	/* be:c:MenSBg */
+extern const char *B_UI_MENU_ITEM_TEXT_COLOR;			/* be:c:MenTx */
+extern const char *B_UI_MENU_SELECTED_ITEM_TEXT_COLOR;	/* be:c:MenSTx */
+extern const char *B_UI_MENU_SELECTED_BORDER_COLOR;		/* be:c:MenSBr */
+extern const char *B_UI_MENU_ITEM_TEXT_FONT;			/* be:f:MenTx */
+extern const char *B_UI_MENU_SEPARATOR;					/* be:MenSep */
+extern const char *B_UI_MENU_SHOW_TRIGGERS;				/* be:MenTrig */
+extern const char *B_UI_MENU_ZSNAKE;					/* be:MenZSnake */
+
+extern const char *B_UI_SUCCESS_COLOR;					/* be:c:Success */
+extern const char *B_UI_FAILURE_COLOR;					/* be:c:Failure */
 
 enum {
 	B_APPLY_UI_SETTINGS		= 0x00000001,
 	B_SAVE_UI_SETTINGS		= 0x00000002
 };
 
-_IMPEXP_BE status_t		update_ui_settings(const BMessage& changes,
-							uint32 flags = B_APPLY_UI_SETTINGS | B_SAVE_UI_SETTINGS);
-_IMPEXP_BE status_t		get_ui_settings(BMessage* dest);
-_IMPEXP_BE status_t		get_default_settings(BMessage* dest);
+#if defined(__cplusplus)
+status_t		update_ui_settings(const BMessage& changes,
+							uint32 flags = B_APPLY_UI_SETTINGS | B_SAVE_UI_SETTINGS,
+							const BMessage* names = NULL);
+status_t		get_ui_settings(BMessage* dest, BMessage* names = NULL);
+status_t		get_default_settings(BMessage* dest, BMessage* names = NULL);
+
+status_t		set_window_decor(const char* name,
+							const BMessage* globals = NULL,
+							uint32 flags = 0);
+status_t		get_window_decor(BString* outName,
+							BMessage* globals = NULL);
+#endif
 
 enum color_which {
 	B_PANEL_BACKGROUND_COLOR = 1,
+	B_PANEL_TEXT_COLOR = 10,
+	B_DOCUMENT_BACKGROUND_COLOR = 11,
+	B_DOCUMENT_TEXT_COLOR = 12,
+	B_CONTROL_BACKGROUND_COLOR = 13,
+	B_CONTROL_TEXT_COLOR = 14,
+	B_CONTROL_BORDER_COLOR = 15,
+	B_CONTROL_HIGHLIGHT_COLOR = 16,
+	B_NAVIGATION_BASE_COLOR = 4,
+	B_NAVIGATION_PULSE_COLOR = 17,
+	B_SHINE_COLOR = 18,
+	B_SHADOW_COLOR = 19,
+	
 	B_MENU_BACKGROUND_COLOR = 2,
-	B_MENU_SELECTION_BACKGROUND_COLOR = 6,
+	B_MENU_SELECTED_BACKGROUND_COLOR = 6,
 	B_MENU_ITEM_TEXT_COLOR = 7,
 	B_MENU_SELECTED_ITEM_TEXT_COLOR = 8,
-	B_WINDOW_TAB_COLOR = 3,
-	B_KEYBOARD_NAVIGATION_COLOR = 4,
-	B_DESKTOP_COLOR = 5,
+	B_MENU_SELECTED_BORDER_COLOR = 9,
+	
+	B_TOOLTIP_BACKGROUND_COLOR = 20,
+	B_TOOLTIP_TEXT_COLOR = 21,
+	
 	B_SUCCESS_COLOR = 100,
-	B_FAILURE_COLOR = 101
+	B_FAILURE_COLOR = 101,
+	
+	// Old name synonyms.
+	B_KEYBOARD_NAVIGATION_COLOR = B_NAVIGATION_BASE_COLOR,
+	B_MENU_SELECTION_BACKGROUND_COLOR = B_MENU_SELECTED_BACKGROUND_COLOR,
+	
+	// These are deprecated -- do not use in new code.  See BScreen for
+	// the replacement for B_DESKTOP_COLOR.
+	B_DESKTOP_COLOR = 5,
+	B_WINDOW_TAB_COLOR = 3,
+
+	B_RANDOM_COLOR = 0x80000000,
+	B_MICHELANGELO_FAVORITE_COLOR,
+	B_DSANDLER_FAVORITE_SKY_COLOR,
+	B_DSANDLER_FAVORITE_INK_COLOR,
+	B_DSANDLER_FAVORITE_SHOES_COLOR,
+	B_DAVE_BROWN_FAVORITE_COLOR
 };
 
-_IMPEXP_BE rgb_color	ui_color(color_which which);
-_IMPEXP_BE rgb_color	tint_color(rgb_color color, float tint);
+#if defined(__cplusplus)
+rgb_color	ui_color(color_which which);
+rgb_color	ui_color(const char* name);
+rgb_color	tint_color(rgb_color color, float tint);
 
 extern "C" status_t	_init_interface_kit_();
 extern "C" void		_fini_interface_kit_();
+#endif
 
 											/* effects on standard gray level */
 const float B_LIGHTEN_MAX_TINT	= 0.0F;		/* 216 --> 255.0 (255) */

@@ -110,8 +110,8 @@ virtual	void		_ReservedSynth2();
 virtual	void		_ReservedSynth3();
 virtual	void		_ReservedSynth4();
 
-	friend BMidiSynth;
-	friend BMidiSynthFile;
+	friend class BMidiSynth;
+	friend class BMidiSynthFile;
 
 	int32					fClientCount;
 	void _init();
@@ -136,7 +136,7 @@ virtual	void		_ReservedSynth4();
 	
 };
 
-extern _IMPEXP_MIDI BSynth *be_synth;
+extern BSynth *be_synth;
 
 
 #endif

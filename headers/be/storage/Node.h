@@ -35,6 +35,7 @@ class BStatable;
 class BEntry;
 class BDirectory;
 struct entry_ref;
+class BString;
 
 class BNode : public BStatable {
 

@@ -3,9 +3,6 @@
 
 /* OpenSSL was configured with the following options: */
 #ifdef OPENSSL_ALGORITHM_DEFINES
-# ifndef NO_RC4
-#  define NO_RC4
-# endif
 # ifndef NO_RC5
 #  define NO_RC5
 # endif

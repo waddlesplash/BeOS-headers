@@ -13,6 +13,8 @@
 
 #include <Midi.h>
 
+class BMidiProducer;
+class BMidiConsumer;
 class BMidiLocalProducer;
 class BMidiPortConsumer;
 

@@ -1,4 +1,4 @@
-#if __INTEL__
+#if __GNUC__
 
 /* Definitions for data structures and routines for the regular
    expression library, version 0.12.
@@ -573,4 +573,4 @@ trim-versions-without-asking: nil
 End:
 */
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */

@@ -8,7 +8,7 @@
 	extern "C" {
 #endif
 
-#if !NOINLINE && __INTEL__
+#if !_NO_INLINE_ASM && __INTEL__
 	inline int32 compare_and_swap32(volatile int32 *location, int32 oldValue, int32 newValue)
 	{
 		int32 success;
@@ -18,7 +18,7 @@
 	}
 	
 #else
-	_IMPEXP_BE int32 compare_and_swap32(volatile int32 *location, int32 oldValue, int32 newValue);
+	int32 compare_and_swap32(volatile int32 *location, int32 oldValue, int32 newValue);
 #endif
 
 #if 0
@@ -33,7 +33,7 @@
 		return success;
 	}
 #else
-	_IMPEXP_BE int32 compare_and_swap64(volatile int64 *location, int64 oldValue, int64 newValue);
+	int32 compare_and_swap64(volatile int64 *location, int64 oldValue, int64 newValue);
 #endif
 
 inline bool cmpxchg32(volatile int32 *atom, int32 *value, int32 newValue)

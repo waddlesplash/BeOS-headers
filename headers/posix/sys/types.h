@@ -29,14 +29,15 @@ typedef unsigned long u_long;
 
 /* sysv */
 typedef unsigned char unchar;
-#ifndef _SUPPORT_DEFS_H 
 typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
-#endif /* _SUPPORT_DEFS_H */
 
 typedef char *caddr_t;
 
 #include <size_t.h>
+
+/* include select()'s FD_SET declarations */
+#include <sys/select.h>
 
 #endif

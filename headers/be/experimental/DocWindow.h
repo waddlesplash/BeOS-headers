@@ -1,5 +1,5 @@
-#ifndef _BITMAP_TOOLS_H
-#define _BITMAP_TOOLS_H
+#ifndef _DOC_WINDOW_H
+#define _DOC_WINDOW_H
 
 #include <Window.h>
 #include <Entry.h>

@@ -136,15 +136,15 @@ extern void  _free_internal   (void * __ptr,  malloc_state *ms, malloc_funcs *mf
 extern void *_malloc_internal (size_t __size, malloc_state *ms, malloc_funcs *mf);
 
 /* these are the routines you write your wrappers for */
-extern _IMPEXP_ROOT void *_malloc  (size_t size,  malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void *_calloc  (size_t nmemb, size_t size,      malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void *_realloc (void * ptr,   size_t size,      malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void *_valloc  (size_t size,  malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void *_memalign(size_t align, size_t size,      malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void  _free    (void *ptr,    malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void  _cfree   (void *ptr,    malloc_state *ms, malloc_funcs *mf);
+extern void *_malloc  (size_t size,  malloc_state *ms, malloc_funcs *mf);
+extern void *_calloc  (size_t nmemb, size_t size,      malloc_state *ms, malloc_funcs *mf);
+extern void *_realloc (void * ptr,   size_t size,      malloc_state *ms, malloc_funcs *mf);
+extern void *_valloc  (size_t size,  malloc_state *ms, malloc_funcs *mf);
+extern void *_memalign(size_t align, size_t size,      malloc_state *ms, malloc_funcs *mf);
+extern void  _free    (void *ptr,    malloc_state *ms, malloc_funcs *mf);
+extern void  _cfree   (void *ptr,    malloc_state *ms, malloc_funcs *mf);
 
-extern _IMPEXP_ROOT int _mcheck (void (*func) (enum mcheck_status), malloc_state *ms,
+extern int _mcheck (void (*func) (enum mcheck_status), malloc_state *ms,
 					malloc_funcs *mf);
-extern _IMPEXP_ROOT struct mstats _mstats (malloc_state *ms, malloc_funcs *mf);
-extern _IMPEXP_ROOT void *_malloc_find_object_address (void *ptr, malloc_state *ms, malloc_funcs *mf);
+extern struct mstats _mstats (malloc_state *ms, malloc_funcs *mf);
+extern void *_malloc_find_object_address (void *ptr, malloc_state *ms, malloc_funcs *mf);

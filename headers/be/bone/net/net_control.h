@@ -29,6 +29,7 @@ extern "C" {
 status_t get_interface_configuration(struct ifconf *ifc);
 status_t get_interface_by_index(uint32 if_index, ifreq_t *ifr);
 status_t get_interface_by_name(const char *if_name, ifreq_t *ifr);
+status_t get_interface_by_route(const struct sockaddr *dst, ifreq_t *ifr);
 void free_interface_configuration(struct ifconf *ifc);
 
 status_t open_iface_control_socket(void);

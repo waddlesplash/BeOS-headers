@@ -12,7 +12,7 @@
 #include <sys/wait.h>
 #include <alloca.h>
 
-#if __INTEL__
+#if __GNUC__
 #define RAND_MAX		0x7fffffff
 #define	MB_CUR_MAX	(__ctype_get_mb_cur_max ())
 #else
@@ -29,7 +29,7 @@ double	atof(const char *str);
 int		atoi(const char *str); 
 long	atol(const char *str); 
 
-#if __INTEL__
+#if __GNUC__
 extern long long int atoll(const char *str);
 extern int __ctype_get_mb_cur_max(void);
 #endif
@@ -49,7 +49,7 @@ char 	*initstate(unsigned int seed, char *state, int n);
 char 	*setstate(char *state);
 char 	*realpath(const char *path, char *resolved);
 
-#if __INTEL__
+#if __GNUC__
 
 struct random_data  {
     int *fptr;		 
@@ -167,7 +167,7 @@ atoll (const char *__nptr)
 
 #endif /* __OPTIMIZE__ */
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */
 
 void 	*calloc(size_t nmemb, size_t size); 
 void	free(void *ptr); 
@@ -191,9 +191,9 @@ int 	daemon(int nochdir, int noclose);
 int		system(const char *command); 
 
 char   *mktemp(char *name);
-#if __INTEL__
+#if __GNUC__
 int 	mkstemp(char *tmplate);
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */
 
 typedef int (*_compare_function)(const void*, const void*);
 void	*bsearch(const void*, const void*, size_t, size_t, _compare_function);

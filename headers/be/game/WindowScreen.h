@@ -32,7 +32,6 @@ typedef int32 (*_add_on_control_)(uint32,void *);
 
 /* Global function, allowing to move the position of the mouse when the GameKit is in
    control of the screen. */
-_IMPEXP_GAME
 void set_mouse_position(int32 x, int32 y);
 
 /**********************  WARNING - WARNING - WARNING ***********************************

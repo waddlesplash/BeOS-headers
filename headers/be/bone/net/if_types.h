@@ -111,7 +111,7 @@
  */
 
 #define			LOGT_NONE				0x00	/* the logical interface doesn't provide any special framing */
-#define			LOGT_ETHERNET_II		0x01	/* Ethernet II framing */
+#define			LOGT_ETHERNET			0x01	/* Ethernet framing */
 #define			LOGT_802_3				0x02	/* IEEE 802.3 framing */
 #define			LOGT_802_2				0x03	/* IEEE 802.2 framing */
 #define			LOGT_802_2_SNAP			0x04	/* IEEE 802.2 framing with SNAP MAC */

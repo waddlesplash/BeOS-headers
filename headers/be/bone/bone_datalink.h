@@ -28,7 +28,6 @@ typedef struct domain_info
 	 */
 	const char				*name;				/* e.g. "internet", "appletalk", etc. */
 	const char				*module;			/* e.g. "network/bone_ipv4" */
-	uint16					e_type;				/* e.g. 0x800 for inet, etc. See net/if_types.h */ 
 	int    					family;       	    /* e.g. AF_INET */
 
 	status_t				(*receive_data)(bone_data_t *data);	/* called to deliver an incoming packet to the domain */

@@ -87,6 +87,16 @@ enum {
 #define B_CURRENT_WORKSPACE	0
 #define B_ALL_WORKSPACES	0xffffffff
 
+
+/*----------------------------------------------------------------*/
+/*----- Defines for NextNavigableView() --------------------------*/
+
+enum {
+	B_NAVIGATE_PREVIOUS		= 0x00000000,
+ 	B_NAVIGATE_NEXT			= 0x00000001,
+	B_NAVIGATE_GROUP			= 0x00000002,
+};	
+
 /*----------------------------------------------------------------*/
 
 class BButton;
@@ -95,6 +105,7 @@ class BMenuItem;
 class BMessage;
 class BMessenger;
 class BView;
+class BPicture;
 
 struct _cmd_key_;
 struct _view_attr_;
@@ -130,6 +141,11 @@ virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Quit();
 		void			Close(); /* Synonym of Quit() */
+
+		BWindow 		*Parent();
+		status_t		AddChild(BWindow *window);
+		bool			RemoveChild(BWindow *window);
+		bool			RemoveSelf();
 
 		void			AddChild(BView *child, BView *before = NULL);
 		bool			RemoveChild(BView *child);
@@ -257,6 +273,11 @@ virtual status_t		Perform(perform_code d, void *arg);
 		bool			IsModal() const;
 		bool			IsFloating() const;
 
+		// Communication with window's frame decor.  The message contents
+		// depends entirely on the current decor that is being used.
+		status_t		GetFrameState(BMessage* dest) const;
+		status_t		UpdateFrameState(const BMessage& changes);
+		
 		status_t		SetWindowAlignment(window_alignment mode,
 											int32 h,
 											int32 hOffset = 0,
@@ -280,6 +301,7 @@ virtual	bool			QuitRequested();
 virtual thread_id		Run();
 
 virtual	status_t		UISettingsChanged(const BMessage* changes, uint32 flags);
+virtual	BView*			NextNavigableView(BView* currentFocus, uint32 flags);
 
 /*----- Private or reserved -----------------------------------------*/
 
@@ -305,7 +327,6 @@ friend class _CEventPort_;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
 friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 
-virtual	void			_ReservedWindow2();
 virtual	void			_ReservedWindow3();
 virtual	void			_ReservedWindow4();
 virtual	void			_ReservedWindow5();
@@ -425,10 +446,12 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 #else
 		int32			_more_more_more_reserved;
 #endif
-		bool			fWaitingForMenu;
-		bool			fOffscreen;
-		bool			fIsNavigating;
-		bool			fIsFilePanel;
+		bool			fWaitingForMenu : 1;
+		bool			fOffscreen : 1;
+		bool			fIsNavigating : 1;
+		bool			fIsFilePanel : 1;
+		bool			fNoQuitShortcut : 1;
+		bool			_reserved_bool : 24;
 		sem_id			fMenuSem;
 		float			fMaxZoomH;
 		float			fMaxZoomV;
@@ -446,9 +469,10 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		BString			fEventBeep;
 		BPrivate::win_tip_info*	fTipInfo;
 		rgb_color		fWindowColor;
+		BWindow			*fParent;
 		
 #if !_PR3_COMPATIBLE_
-		uint32			_more_reserved[4];
+		uint32			_more_reserved[3];
 #endif
 };
 

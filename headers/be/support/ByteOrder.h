@@ -31,21 +31,21 @@ typedef enum {
 	B_SWAP_ALWAYS
 } swap_action;
 
-extern _IMPEXP_BE  status_t swap_data(type_code type,
+extern status_t swap_data(type_code type,
 										void *data,
 										size_t length,
 										swap_action action);
 
-extern _IMPEXP_BE  bool is_type_swapped(type_code type);
+extern bool is_type_swapped(type_code type);
  
  
 /*-----------------------------------------------------------------------*/
 /*----- Private implementations -----------------------------------------*/
-extern _IMPEXP_ROOT double __swap_double(double arg);
-extern _IMPEXP_ROOT float  __swap_float(float arg);
-extern _IMPEXP_ROOT uint64 __swap_int64(uint64 uarg);
-extern _IMPEXP_ROOT uint32 __swap_int32(uint32 uarg);
-extern _IMPEXP_ROOT uint16 __swap_int16(uint16 uarg);
+extern double __swap_double(double arg);
+extern float  __swap_float(float arg);
+extern uint64 __swap_int64(uint64 uarg);
+extern uint32 __swap_int32(uint32 uarg);
+extern uint16 __swap_int16(uint16 uarg);
 /*-------------------------------------------------------------*/
 
 

@@ -27,7 +27,7 @@ struct lconv {
 };
 
 
-#if __INTEL__
+#if __GNUC__
 # define LC_CTYPE       0
 # define LC_NUMERIC     1
 # define LC_TIME        2

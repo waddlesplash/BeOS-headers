@@ -28,6 +28,7 @@
 
 class BMessage;
 class BString;
+class BDirectory;
 
 enum {
 	B_GENERATE_RESOURCE		= 'BGRS'

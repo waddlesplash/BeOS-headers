@@ -17,7 +17,7 @@
 /*----------------------------------------------------------------*/
 /*----- BTextView structures and definitions ---------------------*/
 
-// Note that you MUST ALWAYS allocate and fre these structures using
+// Note that you MUST ALWAYS allocate and free these structures using
 // BTextView::AllocRunArray() and BTextView::FreeRunArray().
 
 struct text_run {
@@ -54,6 +54,7 @@ class BBitmap;
 class BClipboard;
 class BFile;
 class BList;
+class BMessageRunner;
 class _BTextGapBuffer_;
 class _BLineBuffer_;
 class _BStyleBuffer_;
@@ -212,6 +213,8 @@ virtual	void			ScrollToOffset(int32 inOffset);
 		BRect			TextRect() const;
 		void			SetStylable(bool stylable);
 		bool			IsStylable() const;
+		void			SetPrintWhiteBackground(bool printWhite);
+		bool			PrintWhiteBackground() const;
 		void			SetTabWidth(float width);
 		float			TabWidth() const;
 		void			MakeSelectable(bool selectable = true);
@@ -395,6 +398,8 @@ static	void			UnlockWidthBuffer();
 		int32					fSelStart;
 		int32					fSelEnd;
 		bool					fCaretVisible;
+		bool					fColorSpaceSet;
+		bool					fPrintWhiteBackground;
 		bigtime_t				fCaretTime;
 		int32					fClickOffset;
 		int32					fClickCount;

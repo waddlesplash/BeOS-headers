@@ -24,12 +24,12 @@ extern "C" {
 	DPC and kernel threads
 --- */
 
-extern _IMPEXP_KERNEL thread_id	spawn_kernel_dpc (
+extern thread_id	spawn_kernel_dpc (
 	thread_entry	function,
 	void			*arg
 );
 
-extern _IMPEXP_KERNEL thread_id spawn_kernel_thread (
+extern thread_id spawn_kernel_thread (
 	thread_entry	function, 
 	const char 		*thread_name, 
 	long			priority,
@@ -43,8 +43,8 @@ extern _IMPEXP_KERNEL thread_id spawn_kernel_thread (
 
 typedef ulong		cpu_status;
 
-extern _IMPEXP_KERNEL cpu_status	disable_interrupts();
-extern _IMPEXP_KERNEL void			restore_interrupts(cpu_status status);
+extern cpu_status	disable_interrupts();
+extern void			restore_interrupts(cpu_status status);
 
 
 /* ---
@@ -56,13 +56,13 @@ typedef vlong	spinlock;
 
 #if _SUPPORTS_SMP
 
-extern _IMPEXP_KERNEL void			acquire_spinlock (spinlock *lock);
-extern _IMPEXP_KERNEL void			release_spinlock (spinlock *lock);
+extern void			acquire_spinlock (spinlock *lock);
+extern void			release_spinlock (spinlock *lock);
 
 #else
 
-#define	acquire_spinlock(x)			(void)0
-#define	release_spinlock(x)			(void)0
+#define	acquire_spinlock(x)			(void)(x)
+#define	release_spinlock(x)			(void)(x)
 
 #endif
 
@@ -79,13 +79,13 @@ typedef int32 (*interrupt_handler) (void *data);
 
 /* interrupt handling support for device drivers */
 
-extern _IMPEXP_KERNEL long 	install_io_interrupt_handler (
+extern long 	install_io_interrupt_handler (
 	long 				interrupt_number, 
 	interrupt_handler	handler, 
 	void				*data, 
 	ulong 				flags
 );
-extern _IMPEXP_KERNEL long 	remove_io_interrupt_handler (
+extern long 	remove_io_interrupt_handler (
 	long 				interrupt_number,
 	interrupt_handler	handler,
 	void				*data
@@ -119,19 +119,14 @@ bool		cancel_timer(timer *t);
 #define		B_ONE_SHOT_ABSOLUTE_TIMER		1
 #define		B_ONE_SHOT_RELATIVE_TIMER		2
 #define		B_PERIODIC_TIMER				3
+#define		B_REAL_TIME_TIMER				4
+#define		B_WAKE_TIMER					8
 
 /* ---
 	signal functions
 --- */
 
-extern _IMPEXP_KERNEL int	send_signal_etc(pid_t thid, uint sig, uint32 flags);
-
-
-/* ---
-	snooze functions
---- */
-
-extern _IMPEXP_KERNEL status_t	snooze_etc(bigtime_t usecs, int timebase, uint32 flags);
+extern int	send_signal_etc(pid_t thid, uint sig, uint32 flags);
 
 
 /* ---
@@ -146,19 +141,19 @@ typedef struct {
 	ulong		size;					/* size of block */
 } physical_entry;
 
-extern _IMPEXP_KERNEL long		lock_memory (
+extern long		lock_memory (
 	void		*buf,			/* -> virtual buffer to lock (make resident) */
 	ulong		num_bytes,		/* size of virtual buffer */
 	ulong		flags
 );
 
-extern _IMPEXP_KERNEL long		unlock_memory (
+extern long		unlock_memory (
 	void		*buf,			/* -> virtual buffer to unlock */
 	ulong		num_bytes,		/* size of virtual buffer */
 	ulong		flags
 );
 
-extern _IMPEXP_KERNEL long		get_memory_map (
+extern long		get_memory_map (
 	const void		*address,		/* -> virtual buffer to translate */
 	ulong			size,			/* size of virtual buffer */
 	physical_entry	*table,			/* -> caller supplied table */
@@ -169,6 +164,9 @@ extern _IMPEXP_KERNEL long		get_memory_map (
 /* -----
 	address specifications for mapping physical memory
 ----- */
+
+#define	B_LOMEM				4
+#define	B_SLOWMEM			5
 
 #define	B_ANY_KERNEL_BLOCK_ADDRESS	((B_ANY_KERNEL_ADDRESS)+1)
 
@@ -188,7 +186,7 @@ extern _IMPEXP_KERNEL long		get_memory_map (
 	call to map physical memory - typically used for memory-mapped i/o
 ----- */
 
-extern _IMPEXP_KERNEL area_id	map_physical_memory (
+extern area_id	map_physical_memory (
 	const char	*area_name,
 	void		*physical_address,
 	size_t		size,
@@ -204,10 +202,10 @@ extern _IMPEXP_KERNEL area_id	map_physical_memory (
 
 /* platform_type return value is defined in OS.h */
 
-extern _IMPEXP_KERNEL platform_type	platform();
+extern platform_type	platform();
 #if __POWERPC__
-extern _IMPEXP_KERNEL long			motherboard_version (void);
-extern _IMPEXP_KERNEL long			io_card_version (void);
+extern long			motherboard_version (void);
+extern long			io_card_version (void);
 #endif
 
 
@@ -222,41 +220,41 @@ extern _IMPEXP_KERNEL long			io_card_version (void);
 --- */
 
 #if __GNUC__
-extern _IMPEXP_KERNEL void		dprintf (const char *format, ...)		/* just like printf */
+extern void		dprintf (const char *format, ...)		/* just like printf */
                                   __attribute__ ((format (__printf__, 1, 2)));
-extern _IMPEXP_KERNEL void		kprintf (const char *fmt, ...)          /* only for debugger cmds */
+extern void		kprintf (const char *fmt, ...)          /* only for debugger cmds */
                                   __attribute__ ((format (__printf__, 1, 2)));
 #else
-extern _IMPEXP_KERNEL void		dprintf (const char *format, ...);		/* just like printf */
-extern _IMPEXP_KERNEL void		kprintf (const char *fmt, ...);         /* only for debugger cmds */
+extern void		dprintf (const char *format, ...);		/* just like printf */
+extern void		kprintf (const char *fmt, ...);         /* only for debugger cmds */
 #endif
-extern _IMPEXP_KERNEL bool		set_dprintf_enabled (bool new_state);	/* returns old state */
+extern bool		set_dprintf_enabled (bool new_state);	/* returns old state */
 
-extern _IMPEXP_KERNEL void		panic(const char *format, ...);
+extern void		panic(const char *format, ...);
 
-extern _IMPEXP_KERNEL void		kernel_debugger (const char *message);	/* enter kernel debugger */
-extern _IMPEXP_KERNEL ulong		parse_expression (char *str);           /* util for debugger cmds */
+extern void		kernel_debugger (const char *message);	/* enter kernel debugger */
+extern ulong		parse_expression (char *str);           /* util for debugger cmds */
 
 /* special return codes for kernel debugger */
 #define  B_KDEBUG_CONT   2
 #define  B_KDEBUG_QUIT   3
 
-extern _IMPEXP_KERNEL int		add_debugger_command (char *name,       /* add a cmd to debugger */
+extern int		add_debugger_command (char *name,       /* add a cmd to debugger */
 									int (*func)(int argc, char **argv), 
 									char *help);
-extern _IMPEXP_KERNEL int		remove_debugger_command (char *name,       /* remove a cmd from debugger */
+extern int		remove_debugger_command (char *name,       /* remove a cmd from debugger */
 									int (*func)(int argc, char **argv)); 
-extern _IMPEXP_KERNEL int		load_driver_symbols(const char *driver_name);
+extern int		load_driver_symbols(const char *driver_name);
 
 
 /* -----
 	misc
 ----- */
 
-extern _IMPEXP_KERNEL void			spin (bigtime_t num_microseconds);
-extern _IMPEXP_KERNEL int			register_kernel_daemon(void (*func)(void *, int), void *arg, int freq);
-extern _IMPEXP_KERNEL int			unregister_kernel_daemon(void (*func)(void *, int), void *arg);
-extern _IMPEXP_KERNEL void			call_all_cpus(void (*f)(void*, int), void* cookie);
+extern void			spin (bigtime_t num_microseconds);
+extern int			register_kernel_daemon(void (*func)(void *, int), void *arg, int freq);
+extern int			unregister_kernel_daemon(void (*func)(void *, int), void *arg);
+extern void			call_all_cpus(void (*f)(void*, int), void* cookie);
 
 
 #ifdef __cplusplus

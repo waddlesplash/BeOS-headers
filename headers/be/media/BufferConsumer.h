@@ -15,6 +15,9 @@
 #include <MediaNode.h>
 
 class _buffer_id_cache;
+class BRegion;
+class BBuffer;
+class BBufferGroup;
 
 class BBufferConsumer :
 	public virtual BMediaNode

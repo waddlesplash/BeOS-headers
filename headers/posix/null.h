@@ -1,6 +1,6 @@
 #ifndef NULL
 
-#if __INTEL__
+#if __GNUC__
 # if defined __GNUG__ && \
     (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8))
 #  define NULL (__null)

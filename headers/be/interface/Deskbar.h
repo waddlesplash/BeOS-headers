@@ -7,6 +7,7 @@
 
 class BMessenger;
 class BView;
+struct entry_ref;
 
 enum deskbar_location {
 	B_DESKBAR_TOP,

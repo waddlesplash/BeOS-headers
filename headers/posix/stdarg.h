@@ -1,6 +1,6 @@
 /* GCC defines its own stdarg.h */
 
-#if __INTEL__
+#if __GNUC__
 # ifndef _STDARG_H /* This is what GCC defines */
 #  include_next <stdarg.h>
 # endif /* _STDARG_H */

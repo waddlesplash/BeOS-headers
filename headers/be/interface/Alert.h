@@ -123,4 +123,9 @@ virtual	void		_ReservedAlert3();
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 
+// functions to display HTML alerts with Opera
+
+status_t TellTellBrowser(BMessage*m);
+status_t TellTellBrowser(BMessage*m,BMessage*r);
+
 #endif /* _ALERT_H */

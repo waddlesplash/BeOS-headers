@@ -27,8 +27,8 @@ class	BDirectory;
 class	BPath;
 struct	entry_ref;
 
-_IMPEXP_BE status_t	get_ref_for_path(const char *path, entry_ref *ref);
-_IMPEXP_BE bool operator<(const entry_ref & a, const entry_ref & b);
+status_t	get_ref_for_path(const char *path, entry_ref *ref);
+bool operator<(const entry_ref & a, const entry_ref & b);
 
 
 struct entry_ref {
@@ -48,7 +48,7 @@ struct entry_ref {
 	char				*name;
 };
 
-_IMPEXP_BE BDataIO& operator<<(BDataIO& io, const entry_ref& ref);
+BDataIO& operator<<(BDataIO& io, const entry_ref& ref);
 
 class BEntry : public BStatable {
 public:

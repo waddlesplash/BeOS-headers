@@ -17,8 +17,10 @@ typedef int __libc_sem_id;
 
 extern char	_single_threaded;
 
+#ifdef _X86_
+
 extern inline int
-__compare_and_swap (int *p, int oldval, int newval)
+__compare_and_swap (volatile int *p, int oldval, int newval)
 {
   char ret;
   long int readval;
@@ -29,14 +31,44 @@ __compare_and_swap (int *p, int oldval, int newval)
   return ret;
 }
 
+#endif
+
+#ifdef __arm__
+
+/* This ARM version was snarfed from sysdeps/arm/atomicity.h in glibc 2.2.3. */
+
 extern inline int
-__atomic_add (int *p, int inc)
+__attribute__ ((unused))
+__compare_and_swap (volatile long int *p, long int oldval, long int newval)
+{
+  int result, tmp;
+  __asm__ ("\n"
+	   "0:\tldr\t%1,[%2]\n\t"
+	   "mov\t%0,#0\n\t"
+	   "cmp\t%1,%4\n\t"
+	   "bne\t1f\n\t"
+	   "swp\t%0,%3,[%2]\n\t"
+	   "cmp\t%1,%0\n\t"
+	   "swpne\t%1,%0,[%2]\n\t"
+	   "bne\t0b\n\t"
+	   "mov\t%0,#1\n"
+	   "1:"
+	   : "=&r" (result), "=&r" (tmp)
+	   : "r" (p), "r" (newval), "r" (oldval)
+	   : "cc", "memory");
+  return result;
+}
+
+#endif
+
+extern inline int
+__atomic_add (volatile int *p, int inc)
 {
 	int		i;
 
 	do {
 		i = *p;
-	} while (!__compare_and_swap(p, i, i+1));
+	} while (!__compare_and_swap(p, i, i+inc));
 	return i;
 }
 
@@ -54,7 +86,7 @@ extern long atomic_or(long *value, long increment);
 
 /* Mutex type.  */
 typedef struct __libc_lock_t {
-	long				count;
+	volatile long		count;
 	__libc_sem_id		sem;
 	__libc_thread_id	owner;
 	int					owner_count;

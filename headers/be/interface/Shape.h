@@ -15,6 +15,10 @@
 #include <Archivable.h>
 
 class BTransform2d;
+class BShape;
+class BPoint;
+class BRect;
+class BDataIO;
 
 namespace BPrivate {
 class IKAccess;
@@ -91,7 +95,7 @@ virtual	void			_ReservedShape3();
 virtual	void			_ReservedShape4();
 
 		friend class	TPicture;
-		friend			BPrivate::IKAccess;
+		friend class	BPrivate::IKAccess;
 		friend class	BFont;
 		void			GetData(int32 *opCount, int32 *ptCount, uint32 **opList, BPoint **ptList) const;
 		void			SetData(int32 opCount, int32 ptCount, uint32 *opList, BPoint *ptList);

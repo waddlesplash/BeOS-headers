@@ -26,8 +26,8 @@ extern "C" {
 
 #if __INTEL__
 
-extern _IMPEXP_ROOT		uint64	read_pmc(uint32 pmc); 
-extern _IMPEXP_ROOT		uint64	read_tsc(void); 
+extern uint64	read_pmc(uint32 pmc); 
+extern uint64	read_tsc(void); 
 
 #endif
 

@@ -27,10 +27,17 @@ public:
 	// you will get a report from the control but must hide the
 	// appropriate view yourself.
 	// B_VERTICAL orientation is currently not supported.
+	
+	// The Divider queries the sibling view's GetPreferredSize() method
+	// to find out when to stop sizing, you will need to implement this
+	// method in your derived classes as the default version just returns
+	// the current size.
 	DividerControl(BPoint where, const char* name,
 				   BMessage* message,
 				   orientation o = B_HORIZONTAL,
-				   uint32 resizeMask = B_FOLLOW_NONE);
+				   uint32 resizeMask = B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
+				   bool useTwister = true,
+				   bool fillToEdge = true);
 	~DividerControl();
 	
 	virtual	void			AttachedToWindow();
@@ -53,26 +60,33 @@ public:
 	virtual	void			SetValue(int32 value);
 	void					AnimateValue(int32 value);
 	
+			orientation		Orientation();
+	
+private:
+	// Twisting the visibility knob.
+			float			TargetTwist() const;
+			void			StartTwisting();
+
 private:
 	typedef BControl inherited;
 	
-	orientation fOrientation;
-	bool fFillToEdge;
-	
+	orientation		fOrientation;
+	bool			fFillToEdge;
+		
 	// Tracking the movement bar.
-	bool fTracking;
-	BPoint fInitPoint;
-	float fInitPos;
-	rgb_color fBackColor;
+	bool			fTracking;
+	BPoint			fInitPoint;
+	float			fInitPos;
+	rgb_color		fBackColor;
+	BCursor*		fVSplit;
+	BCursor*		fHSplit;
 	
-	// Twisting the visibility knob.
-	float TargetTwist() const;
-	void StartTwisting();
-	bool fTwisting;
-	bool fOverKnob;
-	float fTwistAmount;
-	float fTwistSpeed;
-	BMessageRunner* fTwistPulse;
+	bool			fUseTwister;
+	bool			fTwisting;
+	bool			fOverKnob;
+	float			fTwistAmount;
+	float			fTwistSpeed;
+	BMessageRunner*	fTwistPulse;
 };
 
 }	// namespace BExperimental

@@ -9,6 +9,8 @@ namespace BPrivate {
 	class _AddonManager;
 }
 
+class BParameterWeb;
+
 class BMediaEncoder {
 	public:
 		BMediaEncoder();

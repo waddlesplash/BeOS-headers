@@ -118,13 +118,13 @@ static	BToolTip*		Default();
 	// B_REQUEST_TOOL_INFO message is sent to 'who' to get the
 	// information for showing the tip.  All other methods are
 	// keyed off the same 'who' target.
-virtual	status_t		ShowTip(BMessenger who);
+virtual	status_t		ShowTip(const BMessenger& who);
 	
 	// Update state based on cursor movement.  If 'who' is still
 	// the shown tip (and the mouse has moved enough) this will
 	// either restart the display timer or hide the tip, depending
 	// on whether it is currently visible.
-virtual	status_t		CursorMoved(BMessenger who,
+virtual	status_t		CursorMoved(const BMessenger& who,
 									BPoint where, BPoint delta);
 	
 	// Make the tip visible.  These are usually called in response
@@ -138,20 +138,20 @@ virtual	status_t		CursorMoved(BMessenger who,
 	// B_REQUEST_TOOL_INFO message, in which case the tool tip will
 	// be made visible immediately.
 virtual	BToolTipInfo*	NewToolTipInfo() const;
-virtual	status_t		SetToolTipInfo(	BMessenger who,
+virtual	status_t		SetToolTipInfo(	const BMessenger& who,
 										BRect region, BToolTipInfo* info);
 	
 	// Finish the tool tip for this target.  If it is currently
 	// visible, it will be made hidden before going away.
-virtual status_t		HideTip(BMessenger who);
+virtual status_t		HideTip(const BMessenger& who);
 	
 	// Like above but hide immediately, do not pass go, do not
 	// collect $200.
-virtual	status_t		KillTip(BMessenger who);
+virtual	status_t		KillTip(const BMessenger& who);
 	
 	// Call this when your target object goes invalid, just to be
 	// sure everything is cleaned up.
-virtual	status_t		RemoveOwner(BMessenger who);
+virtual	status_t		RemoveOwner(const BMessenger& who);
 	
 private:
 		/* FBC */

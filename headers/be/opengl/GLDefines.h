@@ -65,6 +65,7 @@
 #define GL_USE_TEMP_NORMAL_BE	0x7502 
 #define GL_USE_TEX2_BE			0x7503 
 #define GL_USE_TEX3_BE			0x7504 
+#define GL_USE_TEX_ORTHO_BE		0x7507 
 
 
 

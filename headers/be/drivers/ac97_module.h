@@ -90,6 +90,7 @@ struct ac97_codec_info_v3
 	uint32		_reserved_[8];
 };
 
+enum ac97_mode_select;
 typedef enum ac97_mode_select ac97_mode_select;
 enum ac97_mode_select
 {

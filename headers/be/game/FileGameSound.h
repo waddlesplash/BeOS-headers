@@ -14,6 +14,7 @@
 #include <StreamingGameSound.h>
 
 class BMediaFile;
+struct entry_ref;
 namespace BPrivate {
 	class BTrackReader;
 }

@@ -26,13 +26,13 @@ extern "C" {
 #endif
 
 
-_IMPEXP_ROOT DIR   	       *fs_open_query(dev_t device, const char *query, uint32 flags);
-_IMPEXP_ROOT DIR           *fs_open_live_query(dev_t device, const char *query,
+DIR   	       *fs_open_query(dev_t device, const char *query, uint32 flags);
+DIR           *fs_open_live_query(dev_t device, const char *query,
 								  uint32 flags, port_id port, int32 token);
-_IMPEXP_ROOT int            fs_close_query(DIR *d);
-_IMPEXP_ROOT struct dirent *fs_read_query(DIR *d);
+int            fs_close_query(DIR *d);
+struct dirent *fs_read_query(DIR *d);
 
-_IMPEXP_ROOT status_t		get_path_for_dirent(struct dirent *dent, char *buf,
+status_t		get_path_for_dirent(struct dirent *dent, char *buf,
 												size_t len);
 
 

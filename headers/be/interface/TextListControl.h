@@ -45,7 +45,7 @@ public:
 	// and then invalidates the pop-up list.
 	virtual void		SetChoiceList(BChoiceList *list, bool ownership = true);
 	// ChoiceList returns a pointer to the current choice list
-	const BChoiceList*	ChoiceList() const;
+	BChoiceList*	ChoiceList() const;
 	// ChoiceListChanged should be called whenever an item in the choice list changes
 	// so that BTextListControl can perform the proper updating.  BStringChoiceList
 	// calls this method on its owner for all Add/Remove operations

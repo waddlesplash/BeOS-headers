@@ -240,6 +240,22 @@ virtual	void			SetDrawingMode(drawing_mode mode);
 virtual	void			SetPenSize(float size);
 		float			PenSize() const;
 
+		// Setting view colors as abstract UI colors.  The view will automatically
+		// update the underlying color if the user interface settings change.
+		// NOTE WELL: These strings are -not- copied.  They must remain valid
+		// for the life of the view.
+		void			SetViewUIColor(const char* name);
+		void			SetLowUIColor(const char* name);
+		void			SetHighUIColor(const char* name);
+		const char*		ViewUIColor() const;
+		const char*		LowUIColor() const;
+		const char*		HighUIColor() const;
+		
+		// A convenience function to copy your view and low colors from your
+		// parent.  You'll typically call this in AttachedToWindow() and
+		// possibly UISettingsChanged();
+		void			SetColorsFromParent();
+		
 		void			SetViewCursor(const BCursor *cursor, bool sync=true);
 
 virtual	void			SetViewColor(rgb_color c);
@@ -447,7 +463,8 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 										int32 numStrings,
 										float widthArray[]) const;
 		void			SetFontSize(float size);
-		void			ForceFontAliasing(bool enable);
+		void			ForceFontFlags(uint32 flags);
+		void			ForceFontAliasing(bool enable);	// a.k.a. ForceFontFlags(B_DISABLE_ANTIALIASING)
 		void			GetFontHeight(font_height *height) const;
 	
 		void			Invalidate(BRect invalRect);
@@ -621,7 +638,8 @@ virtual	void			_ReservedView16();
 		uchar		font_encoding() const;
 		BShelf		*shelf() const;
 		void		set_shelf(BShelf *);
-						
+		void		refresh_colors(const BMessage& settings);
+		
 		int32			server_token;
 		uint32			f_type;
 		float			origin_h;
@@ -655,7 +673,7 @@ virtual	void			_ReservedView16();
 		BString			fToolTipText;
 mutable	bool			fPulseDir;
 mutable	uint8			fPulseValue;
-		uint16			_reserved1;
+		uint16			fStateLevel;
 		uint32			_reserved2;
 #if !_PR3_COMPATIBLE_
 		uint32			_more_reserved[3];

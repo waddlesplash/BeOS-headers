@@ -21,6 +21,7 @@ class BPicture;
 class BView;
 class BPrintJobSettings;
 class BPositionIO;
+class BList;
 
 namespace BPrivate
 {
@@ -87,6 +88,9 @@ virtual	status_t	DrawView(		BView *view,
 
 private:
 	friend class BRawPrintJob;
+	friend class BDirectPrintJob;
+	friend class BPrinterRasterAddon;
+
 	virtual void _ReservedPrintJob1();
 	virtual void _ReservedPrintJob2();
 	virtual void _ReservedPrintJob3();
@@ -119,7 +123,7 @@ private:
 	BPrivate::printjob_private& _m_rprivate;
 	uint32 _reserved0[3];
 
-	#if _R5_COMPATIBLE_
+//	#if _R4_COMPATIBLE_
 	uint32 _reserved1[89];
 	public:
 	// Just here for compatibility with old drivers
@@ -132,7 +136,7 @@ private:
 		int32	_reserved_4_;
 		int32	_reserved_5_;
 	};
-	#endif
+//	#endif
 };
 
 

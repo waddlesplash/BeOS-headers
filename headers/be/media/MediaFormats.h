@@ -139,6 +139,7 @@ typedef struct _media_format_description {
 
 namespace BPrivate {
 	class addon_list;
+	void register_codec_addon(const char *path, const BMessage &msg);
 	void dec_load_hook(void *arg, image_id imgid);
 	void extractor_load_hook(void *arg, image_id imgid);
 	class Extractor;
@@ -202,6 +203,7 @@ virtual		~BMediaFormats();
 				media_format * out_format);
 private:
 		friend class BPrivate::addon_list;
+		friend void BPrivate::register_codec_addon(const char *path, const BMessage &msg);
 		friend void BPrivate::dec_load_hook(void *arg, image_id imgid);
 		friend void BPrivate::extractor_load_hook(void * arg, image_id imgid);
 		friend class BMediaDecoder;
@@ -225,6 +227,14 @@ static	void clear_formats_imp();
 static	status_t get_formats_imp();
 static	BMessenger & get_server();
 
+static	status_t merge_formats(
+				void * vmf,
+				int index,
+				const media_format_description * descs,
+				int desc_count,
+				uint32 flags,
+				media_format * io_format);
+
 static	status_t bind_addon(
 				const char * addon,
 				const media_format * formats,
@@ -238,11 +248,25 @@ static	status_t find_addons(
 				BPrivate::addon_list & addons);
 };
 
-_IMPEXP_MEDIA bool operator==(const media_format_description & a, const media_format_description & b);
-_IMPEXP_MEDIA bool operator<(const media_format_description & a, const media_format_description & b);
+bool operator==(const media_format_description & a, const media_format_description & b);
+bool operator<(const media_format_description & a, const media_format_description & b);
 
-_IMPEXP_MEDIA bool operator==(const GUID & a, const GUID & b);
-_IMPEXP_MEDIA bool operator<(const GUID & a, const GUID & b);
+bool operator==(const GUID & a, const GUID & b);
+bool operator<(const GUID & a, const GUID & b);
+bool operator!=(const GUID & a, const GUID & b);
+#endif
+
+#if 0
+GUID functionality pending
+#if defined(__cplusplus)
+extern "C" {
+#endif
+status_t media_mint_guid(GUID * guid);
+status_t guid_to_string(const GUID * guid, char * string);
+status_t string_to_guid(const char * string, GUID * guid);
+#if defined(__cplusplus)
+}
+#endif
 #endif
 
 #endif	/* _MEDIA_TYPES_H */

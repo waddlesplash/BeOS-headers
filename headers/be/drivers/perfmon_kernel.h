@@ -21,10 +21,10 @@ extern "C" {
 
 #if __INTEL__
 
-extern _IMPEXP_KERNEL 		uint64	read_msr(uint32 msr); 
-extern _IMPEXP_KERNEL		void		write_msr(uint32 msr, uint64 val); 
-extern _IMPEXP_KERNEL 		uint64	read_pmc(uint32 pmc); 
-extern _IMPEXP_KERNEL 		uint64	read_tsc(void); 
+extern uint64	read_msr(uint32 msr); 
+extern void		write_msr(uint32 msr, uint64 val); 
+extern uint64	read_pmc(uint32 pmc); 
+extern uint64	read_tsc(void); 
 
 #endif
 

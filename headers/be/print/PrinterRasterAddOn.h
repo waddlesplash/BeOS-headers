@@ -22,6 +22,7 @@
 #include <SupportDefs.h>
 
 #include <print/PrinterAddOn.h>
+#include <print/DirectPrintJob.h>
 
 class BTransportIO;
 
@@ -80,9 +81,11 @@ protected:
 	// For implementation, you shouldn't need to override this method.
 	virtual status_t	Print(const page_t& page, const int nbCopies = 1);
 
+
 private:
 	BPrinterRasterAddOn(const BPrinterRasterAddOn &);
 	BPrinterRasterAddOn& operator = (const BPrinterRasterAddOn &);
+	status_t handle_direct_mode(const page_t& page, uint32 nbCopies);
 	virtual status_t _Reserved_BPrinterRasterAddOn_0(int32 arg, ...);
 	virtual status_t _Reserved_BPrinterRasterAddOn_1(int32 arg, ...);
 	virtual status_t _Reserved_BPrinterRasterAddOn_2(int32 arg, ...);
@@ -95,6 +98,8 @@ private:
 	BPrivate::_printer_raster_addon_data *_fPrivate;
 	BPrivate::_printer_raster_addon_data& _rPrivate;
 	uint32 _reserved_BPrinterConfigAddOn_[4];
+	
+	friend struct BPrivate::_printer_raster_addon_data;
 };
 
 #endif

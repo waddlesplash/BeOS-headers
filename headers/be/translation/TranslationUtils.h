@@ -13,14 +13,18 @@
 #define _TRANSLATION_UTILS_H
 
 #include <TranslationDefs.h>
+#include <GraphicsDefs.h>
 #include <SupportDefs.h>
 
+struct entry_ref;
 
 class BBitmap;
 class BTranslatorRoster;
 class BPositionIO;
 class BMenu;
-
+class BTextView;
+class BFile;
+class BMessage;
 
 /* This class is a little different from many other classes. */
 /* You don't create an instance of it; you just call its various */
@@ -65,6 +69,12 @@ static	BBitmap * GetBitmap(
 static	BBitmap * GetBitmap(
 				BPositionIO * stream,	/*	not NULL	*/
 				BTranslatorRoster * use = NULL);
+		//	GetBitmap() will try to deliver bitmaps in the PreferredColorSpace().
+		//	Currently, B_RGB16 is supported; all other spaces will behave like
+		//	B_NO_COLOR_SPACE (i e deliver whatever the translator delivers).
+static	void SetBitmapColorSpace(
+				color_space newSpace);
+static	color_space BitmapColorSpace();
 
 		/* For styled text, we can translate from a stream directly into a BTextView */
 static	status_t GetStyledText(
@@ -111,6 +121,10 @@ static	status_t AddTranslationItems(
 				const char * translator_id_name = NULL, /* default "be:translator" */
 				const char * translator_type_name = NULL, /* default "be:type" */
 				BTranslatorRoster * use = NULL);
+
+private:
+
+static	color_space sBitmapSpace;
 				
 };
 

@@ -11,6 +11,7 @@
 #define _PRINTER_ADDON_DEFS_H_
 
 #include <string.h>
+#include <SupportDefs.h>
 
 enum orientation_type
 {	B_PRINT_LAYOUT_PORTRAIT,

@@ -23,6 +23,7 @@
 
 class BWindow;
 class BPrivateScreen;
+class BBitmap;
 namespace B {
 namespace Interface2 {
 class BWindow;

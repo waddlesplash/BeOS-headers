@@ -10,7 +10,7 @@
 
 typedef long long fpos_t;
 
-#if __INTEL__
+#if __GNUC__
 #include <gnu_stdio.h>
 #elif __POWERPC__
 #include <mwerks_stdio.h>
@@ -67,7 +67,7 @@ int  	fprintf(FILE *file, const char *format, ...);
 int 	sprintf(char *s, const char *format, ...);
 int 	vfprintf(FILE *file, const char *format, va_list arg);
 int 	vprintf(const char *format, va_list arg);
-#if __INTEL__
+#if __GNUC__
 int asprintf (char **string_ptr, const char *format, ...);
 #endif
 

@@ -61,13 +61,16 @@ const char *strtcopy(char *dest, const char *src, int size);	/* terminated strnc
 size_t	 strlcat(char *dst, const char *src, size_t len);
 size_t	 strlcpy(char *dst, const char *src, size_t len);
 
+char   *strlwr(char *str); 
+char   *strupr(char *str);
+
 char 	 *strsep(char **stringp, const char *delim);
 __extern_c_end
 
 #define __max_errstr	64   /* for internal use (ppc) */
 
 #if 0
-#if __INTEL__ 
+#if __GNUC__ 
 # ifdef __OPTIMIZE__
 #  include <stringinline.h>
 # endif

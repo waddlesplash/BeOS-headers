@@ -85,7 +85,7 @@ enum {
 /*-------------------------------------------------------------*/
 /*------- Conversion Functions --------------------------------*/
 
-_IMPEXP_TEXTENCODING status_t convert_to_utf8(uint32		srcEncoding, 
+status_t convert_to_utf8(uint32		srcEncoding, 
 						 					  const char	*src, 
 						 					  int32			*srcLen, 
 											  char			*dst, 
@@ -93,7 +93,7 @@ _IMPEXP_TEXTENCODING status_t convert_to_utf8(uint32		srcEncoding,
 											  int32			*state,
 											  char			substitute = B_SUBSTITUTE);
 
-_IMPEXP_TEXTENCODING status_t convert_from_utf8(uint32		dstEncoding,
+status_t convert_from_utf8(uint32		dstEncoding,
 												const char	*src, 
 												int32		*srcLen, 
 						  						char		*dst, 

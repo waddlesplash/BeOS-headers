@@ -20,6 +20,7 @@
 #include <Point.h>
 #include <Looper.h>
 #include <Messenger.h>
+#include <stdio.h>
 
 class BCursor;
 class BList;
@@ -28,6 +29,7 @@ class BResources;
 class BMessageRunner;
 struct _server_heap_;
 struct _drag_data_;
+struct app_info;
 namespace BPrivate {
 class AppSession;
 }
@@ -87,11 +89,21 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 		BLooper			*LooperAt(int32 index) const;
 		bool			IsLaunching() const;
 		status_t		GetAppInfo(app_info *info) const;
-static		BResources		*AppResources();
+static	BResources		*AppResources();
 
 virtual	void			DispatchMessage(BMessage *an_event,
 										BHandler *handler);
 		void			SetPulseRate(bigtime_t rate);
+
+		/*
+			The callback functions(s) passed to AddInitializer() will be called
+			when the application's BApplication becomes valid. If the BApplication
+			is already valid when AddInitializer() is called, the callback will be
+			called immediately.
+			RemoveInitializer() removes the callback from the list.
+		*/
+static	status_t		AddInitializer(void (*callback)(void));
+static	status_t		RemoveInitializer(void (*callback)(void));
 
 /* More scripting  */
 virtual status_t		GetSupportedSuites(BMessage *data);
@@ -114,7 +126,7 @@ friend class BBitmap;
 friend class BScrollBar;
 friend class BPrivateScreen;
 friend class _BAppServerLink_;
-friend void _toggle_handles_(bool);
+friend void  _toggle_handles_(bool);
 						
 						BApplication(uint32 signature);
 						BApplication(const BApplication &);
@@ -139,10 +151,12 @@ virtual	bool			ScriptReceived(BMessage *msg,
 		void			EndRectTracking();
 		void			get_scs();
 		void			setup_server_heaps();
-		void *			rw_offs_to_ptr(uint32 offset);
-		void *			ro_offs_to_ptr(uint32 offset);
-		void *			global_ro_offs_to_ptr(uint32 offset);
+		void 			*rw_offs_to_ptr(uint32 offset);
+		void 			*ro_offs_to_ptr(uint32 offset);
+		void 			*global_ro_offs_to_ptr(uint32 offset);
 		void			connect_to_app_server();
+		void			hmsg_B_PIPESTDOUT_REQUESTED(BMessage *msg);
+		void			hmsg_B_PIPESTDOUT_RESET(BMessage *msg);
 		void			send_drag(	BMessage *msg,
 									int32 vs_token,
 									BPoint offset,
@@ -163,35 +177,43 @@ virtual	bool			ScriptReceived(BMessage *msg,
 #endif
 		uint32			InitialWorkspace();
 		int32			count_windows(bool incl_menus) const;
-		BWindow			*window_at(uint32 index, bool incl_menus) const;
+		BWindow 		*window_at(uint32 index, bool incl_menus) const;
 		status_t		get_window_list(BList *list, bool incl_menus) const;
 static	int32			async_quit_entry(void *);
-static	BResources		* _app_resources;
+static	BResources 	 	*_app_resources;
 static	BLocker			_app_resources_lock;
 
 		const char		*fAppName;
 		int32			fServerFrom;
 		int32			fServerTo;
 #ifndef FIX_FOR_4_6
-		void			*fCursorData;
+		void 			*fCursorData;
 #else
-		void			*_unused1;
+		void 			*_unused1;
 #endif
-		_server_heap_ *	fServerHeap;
+		_server_heap_ 	*fServerHeap;
 		bigtime_t		fPulseRate;
 		uint32			fInitialWorkspace;
-		_drag_data_	*	fDraggedMessage;
+		_drag_data_		*fDraggedMessage;
 		BMessageRunner	*fPulseRunner;
 		status_t		fInitError;
-		uint32			_reserved[11];
+		
+		//for rerouting of stdout
+		struct redirect_struct
+		{
+			int oldstdout;
+			int readfd;
+		} *fRedirect;
+		
+		uint32			_reserved[10];
 
 		bool			fReadyToRunCalled;
 };
 
 /*----- Global Objects -----------------------------------------*/
 
-extern _IMPEXP_BE BApplication	*be_app;
-extern _IMPEXP_BE BMessenger	be_app_messenger;
+extern BApplication	*be_app;
+extern BMessenger	be_app_messenger;
 
 /*-------------------------------------------------------------*/
 

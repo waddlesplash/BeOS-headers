@@ -44,6 +44,7 @@ extern gid_t	getegid(void);
 extern uid_t	geteuid(void);
 extern gid_t	getgid(void);
 extern int      getgroups(int size, gid_t list[]);
+extern int		gethostname(char *hname, size_t namelen);
 extern char		*getlogin(void);
 /* XXXdbg getlogin_r() */
 extern int 		getopt(int argc, char *const *argv, const char *shortopts);
@@ -72,6 +73,7 @@ extern int		rmdir(const char *path);
 
 extern void     *sbrk(long incr);
 extern int		setgid(gid_t gid);
+extern int		sethostname(const char *hname, size_t namelen);
 extern int      setpgid(pid_t pid, pid_t pgid);
 extern pid_t	setsid(void);
 extern int		setuid(uid_t uid);
@@ -84,7 +86,7 @@ extern pid_t    tcgetpgrp(int fd);
 extern int      tcsetpgrp(int fd, pid_t pgrpid);
 extern int      truncate(const char *path, off_t newsize);
 extern char     *ttyname(int fd);
-/* XXXdbg ttyname_r() */
+extern int		ttyname_r(int fd, char *buf, size_t buflen);
 
 /* XXXdbg ualarm() */
 extern int		unlink(const char *name);

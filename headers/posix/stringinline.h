@@ -18,7 +18,7 @@
    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if __INTEL__ 
+#if __GNUC__ 
 
 #ifndef _STRINGINLINE_H_
 #define _STRINGINLINE_H_
@@ -464,4 +464,4 @@ __strtok_r_1c (char *__s, char __sep, char **__nextp)
 
 #endif /* _STRINGINLINE_H_ */
 
-#endif /* __INTEL__ */
+#endif /* __GNUC__ */

@@ -19,6 +19,7 @@
 class BBitmap;
 class BMessage;
 class BShelf;
+class BPopUpMenu;
 
 /*----------------------------------------------------------------*/
 /*----- BDragger class -------------------------------------------*/

@@ -70,6 +70,7 @@
 # include <sys/types.h>
 #endif
 #include <sys/cdefs.h>
+#include <netinet/in.h>
 
 #define	inet_addr		__inet_addr
 #define	inet_aton		__inet_aton
