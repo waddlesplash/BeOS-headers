@@ -15,6 +15,11 @@ struct timezone {
 };
 
 
+/* due to a circular dependency with sys/select.h, we must include
+   it after timeval is defined */
+#include <sys/select.h>
+
+
 __extern_c_start
 
 int gettimeofday(struct timeval *tv, struct timezone *tz);

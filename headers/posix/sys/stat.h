@@ -76,7 +76,7 @@ struct stat {
 __extern_c_start
 
 extern int    chmod(const char *path, mode_t mode);
-/* XXXdbg fchmod() */
+extern int 	  fchmod(int fd, mode_t mode);
 extern int    fstat(int fd, struct stat *buf);
 extern int    lstat(const char *path, struct stat *st);
 extern int    mkdir(const char *path, mode_t mode);

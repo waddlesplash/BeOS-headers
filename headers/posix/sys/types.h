@@ -39,4 +39,7 @@ typedef char *caddr_t;
 
 #include <size_t.h>
 
+/* include select()'s FD_SET declarations */
+#include <sys/select.h>
+
 #endif
