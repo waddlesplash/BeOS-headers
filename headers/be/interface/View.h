@@ -86,14 +86,14 @@ enum { B_FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
        B_PULSE_NEEDED =				0x10000000	/* 28 */,
        B_BORDERED =					0x08000000	/* 27 */,
        B_FRAME_EVENTS =				0x04000000	/* 26 */,
-       _B_RESERVED3_ =				0x02000000	/* 25 */,
+       B_NAVIGABLE =				0x02000000	/* 25 */,
        _B_RESERVED4_ =				0x01000000	/* 24 */,
        _B_RESERVED5_ =				0x00800000	/* 23 */,
        _B_RESERVED6_ =				0x00400000	/* 23 */,
        _B_RESERVED7_ =				0x00200000	/* 22 */ };
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
-		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|_B_RESERVED3_|\
+		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|B_NAVIGABLE|\
 			_B_RESERVED4_|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
 
 enum {
@@ -109,8 +109,9 @@ inline long _rule_(long r1, long r2, long r3, long r4)
 	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
 
 #define B_FOLLOW_NONE 0
-#define B_FOLLOW_ALL  			_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_,\
+#define B_FOLLOW_ALL_SIDES		_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_,\
 										_VIEW_RIGHT_)
+#define B_FOLLOW_ALL  			B_FOLLOW_ALL_SIDES
 
 #define B_FOLLOW_LEFT			_rule_(0, _VIEW_LEFT_, 0, _VIEW_LEFT_)
 #define B_FOLLOW_RIGHT			_rule_(0, _VIEW_RIGHT_, 0, _VIEW_RIGHT_)
@@ -129,9 +130,12 @@ class BBitmap;
 class BRegion;
 class BPoint;
 class BPolygon;
+class BScrollBar;
+struct _view_attr_;
+struct _array_data_;
+struct _array_hdr_;
 
 class BView : public BHandler {
-	B_DECLARE_CLASS_INFO(BHandler);
 
 public:
 						BView(	BRect frame,
@@ -141,6 +145,9 @@ public:
 virtual					~BView();
 
 virtual	void			AttachedToWindow();
+virtual	void			AllAttached();
+virtual	void			DetachedFromWindow();
+virtual	void			AllDetached();
 
 virtual	void			AddChild(BView *aView);
 virtual	bool			RemoveChild(BView *childView);
@@ -163,10 +170,6 @@ virtual	void			Pulse();
 virtual	void			FrameMoved(BPoint new_position);
 virtual	void			FrameResized(float new_width, float new_height);
 
-virtual	bool			MessageDropped(	BMessage *aMessage,
-										BPoint loc,
-										BPoint offset);
-	
 		void			BeginRectTracking(	BRect startRect,
 											ulong style = B_TRACK_WHOLE_RECT);
 		void			EndRectTracking();
@@ -188,13 +191,21 @@ virtual	bool			MessageDropped(	BMessage *aMessage,
 		BRect			Bounds() const;
 		BRect			Frame() const;
 		void			ConvertToScreen(BPoint* pt) const;
+		BPoint			ConvertToScreen(BPoint pt) const;
 		void			ConvertFromScreen(BPoint* pt) const;
+		BPoint			ConvertFromScreen(BPoint pt) const;
 		void			ConvertToScreen(BRect *r) const;
+		BRect			ConvertToScreen(BRect r) const;
 		void			ConvertFromScreen(BRect *r) const;
+		BRect			ConvertFromScreen(BRect r) const;
 		void			ConvertToParent(BPoint *pt) const;
+		BPoint			ConvertToParent(BPoint pt) const;
 		void			ConvertFromParent(BPoint *pt) const;
+		BPoint			ConvertFromParent(BPoint pt) const;
 		void			ConvertToParent(BRect *r) const;
+		BRect			ConvertToParent(BRect r) const;
 		void			ConvertFromParent(BRect *r) const;
+		BRect			ConvertFromParent(BRect r) const;
 		BPoint			LeftTop() const;
 		void			GetClippingRegion(BRegion *region) const;
 virtual	void			ConstrainClippingRegion(BRegion *region);
@@ -317,6 +328,12 @@ virtual	void			SetLowColor(rgb_color a_color);
 								pattern p = B_SOLID_HIGH);
 			
 		void			CopyBits(BRect src, BRect dst);
+		void			DrawBitmapAsync(	const BBitmap *aBitmap,
+											BRect srcRect,
+											BRect dstRect);
+		void			DrawBitmapAsync(const BBitmap *aBitmap);
+		void			DrawBitmapAsync(const BBitmap *aBitmap, BPoint where);
+		void			DrawBitmapAsync(const BBitmap *aBitmap, BRect dstRect);
 		void			DrawBitmap(	const BBitmap *aBitmap,
 									BRect srcRect,
 									BRect dstRect);
@@ -352,6 +369,7 @@ virtual void			SetSymbolSet(const char* name);
 		void			Invalidate();
 
 		void			BeginPicture(BPicture *a_picture);
+		void			BeginPicture_pr(BPicture *a_picture, BRect r);
 		BPicture		*EndPicture();
 		void			DrawPicture(const BPicture *a_picture);
 		void			DrawPicture(const BPicture *a_picture, BPoint where);
@@ -378,8 +396,11 @@ virtual	void			Hide();
 		void			Flush() const;
 		void			Sync() const;
 
-virtual	void			HandlersRequested(BMessage *msg);
+		BScrollBar		*ScrollBar(orientation posture) const;
 
+virtual	void			HandlersRequested(BMessage *msg);
+		bool			IsPrinting() const;
+		void			SetScale(float scale) const;
 // ------------------------------------------------------------------
 
 private:
@@ -387,10 +408,9 @@ private:
 friend class BScrollBar;
 friend class BWindow;
 friend class BBitmap;
+friend class BPrintJob;
 
-//		long		Token()	const;
 		bool		SaveAsResource(long resID);
-		void		UpdateFrame();
 		void		StrokeLineToNoPat(BPoint pt);
 		void		StrokeRectNoPat(BRect r);
 		bool		remove_from_list(BView *a_view);
@@ -404,29 +424,39 @@ friend class BBitmap;
 		void		handle_tick();
 		char		*test_area(long length);
 		void		remove_comm_array();
-		void		*new_comm_array(long cnt);
+		_array_hdr_	*new_comm_array(long cnt);
 		BView		*RealParent() const;
+		void		SetScroller(BScrollBar *sb);
+		void		UnsetScroller(BScrollBar *sb);
+		void		RealScrollTo(BPoint);
+		void		init_cache();
+		void		set_cached_attributes();
 
-		long		server_token;
-		BRect		f_bound;
-		long		f_type;
-		float		origin_h;
-		float		origin_v;
+		long			server_token;
+		BRect			f_bound;
+		long			f_type;
+		float			origin_h;
+		float			origin_v;
 
-		BWindow*	owner;
-		BView*		parent;
-		BView*		next_sibling;
-		BView*		prev_sibling;
-		BView*		first_child;
+		BWindow*		owner;
+		BView*			parent;
+		BView*			next_sibling;
+		BView*			prev_sibling;
+		BView*			first_child;
 
-		short 		fShowLevel;
-		bool		top_level_view;
-		BPicture	*cpicture;
-		void		*comm_array;
-		void		*comm_array_list;
-		long		comm_array_size;
-		long		comm_array_p;
-		rgb_color	cached_color;
+		short 			fShowLevel;
+		bool			top_level_view;
+		BPicture		*cpicture;
+		_array_data_	*comm;
+		rgb_color		high_color;
+		rgb_color		low_color;
+		rgb_color		view_color;
+
+		BScrollBar		*fVerScroller;
+		BScrollBar		*fHorScroller;
+		bool			f_is_printing;
+		bool			attached;
+		_view_attr_		*attr_cache;
 };
 
 inline ulong	BView::Flags() const

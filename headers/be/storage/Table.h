@@ -25,7 +25,6 @@ class BDatabase;
 
 /*-----------------------------------------------------------------*/
 class BTable : public BObject	{
-	B_DECLARE_CLASS_INFO(BObject);
 public:
 		char		*Name();
 		BDatabase	*Database();

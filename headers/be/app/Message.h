@@ -55,7 +55,6 @@ extern "C" void		_msg_cache_cleanup_();
 //--------------------------------------------------------------------
 
 class BMessage : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 		ulong		what;
@@ -149,10 +148,14 @@ virtual				~BMessage();
 		bool		IsEmpty();
 
 		bool		WasSent();
-		bool		IsSenderWaiting();
+		bool		IsSourceWaiting();
+		bool		IsSourceRemote();
 		BMessenger	ReturnAddress();
 		bool		IsReply();
 		BMessage	*Previous();
+
+		bool		WasDropped();
+		BPoint		DropPoint(BPoint *offset = NULL);
 
 		long		SendReply(BMessage *the_reply, BHandler *reply_to = NULL);
 		long		SendReply(ulong command, BHandler *reply_to = NULL);

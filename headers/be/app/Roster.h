@@ -104,6 +104,7 @@ friend class BApplication;
 friend class BWindow;
 friend class _BAppInit_;
 friend int	_init_roster_();
+friend void	activate_app(team_id);
 
 		void		*operator new(size_t size);
 		void		operator delete(void *p, size_t size);

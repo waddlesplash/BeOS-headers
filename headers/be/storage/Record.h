@@ -32,7 +32,6 @@ bool does_ref_conform(record_ref ref, const char* table_name);
 /*-----------------------------------------------------------------*/
 
 class	BRecord : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 public:
 					BRecord(BDatabase* db, record_id id);
 					BRecord(record_ref ref);

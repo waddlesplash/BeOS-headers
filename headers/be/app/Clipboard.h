@@ -50,7 +50,8 @@ public:
 		void		AddData(ulong type, const void *data, long numBytes);
 
 		const char	*FindText(long *numBytes);
-		const void	*FindData(ulong type, long *numBytes, long index = 0);
+		const void	*FindData(ulong type, long *numBytes);
+		const void	*FindData(ulong type, long index, long *numBytes);
 
 		long		CountEntries(ulong type);
 		BMessenger	DataOwner();
@@ -68,13 +69,16 @@ friend int	_init_clipboard_();
 					~BClipboard();
 
 		void		UpdateFromSys();
-		bool		CheckLock() const;
+		bool		IsLocked() const;
 
 		long		fCount;
 		BClipboard	*fSystemClip;
 		long		fSystemCount;
 		BMessage	fData;
 		BLocker		fLock;
+
+private:
+		bool		AssertLocked() const;
 };
 
 extern BClipboard *be_clipboard;

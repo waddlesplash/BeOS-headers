@@ -22,7 +22,6 @@
 //------------------------------------------------------------------------------
 
 class BObject {
-	B_DECLARE_ROOT_CLASS_INFO();
 public:
 				BObject();
 virtual			~BObject();	

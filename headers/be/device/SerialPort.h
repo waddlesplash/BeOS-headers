@@ -38,7 +38,6 @@ enum { B_NOFLOW_CONTROL = 0, B_HARDWARE_CONTROL = 0x00000001,
 
 // -----------------------------------------------------------------------
 class BSerialPort : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BSerialPort();
@@ -76,7 +75,7 @@ bool			IsCTS(void);
 bool			IsDSR(void);
 bool			IsRI(void);
 bool			IsDCD(void);
-
+long			WaitForInput(void);
 // -----------------------------------------------------------------------
 
 private:

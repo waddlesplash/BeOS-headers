@@ -33,7 +33,6 @@ class BMenuBar;
 
 class BMenuItem : public BObject
 {
-		B_DECLARE_CLASS_INFO(BObject);
 public:
 
 /* Public Interface for clients of this class */
@@ -42,7 +41,7 @@ public:
 									BMessage *message,
 									char shortcut = 0,
 									ulong modifiers = 0);
-						BMenuItem(BMenu *menu);
+						BMenuItem(BMenu *menu, BMessage *message = NULL);
 virtual					~BMenuItem();
 	
 virtual	void			SetLabel(const char *name);
@@ -52,6 +51,7 @@ virtual	void			SetEnabled(bool state);
 virtual	void			SetMarked(bool state);
 virtual void			SetMessage(BMessage *message);
 virtual void			SetTrigger(char ch);
+virtual void			SetShortcut(char ch, ulong modifiers);
 
 		const char		*Label() const;
 		BHandler		*Target(BLooper **looper = NULL) const;
@@ -60,9 +60,9 @@ virtual void			SetTrigger(char ch);
 		ulong			Command() const;
 		BMessage		*Message() const;
 		char			Trigger() const;
+		char			Shortcut(ulong *modifiers = NULL) const;
 		
 		BMenu			*Submenu() const;
-		char			Shortcut(ulong *modifiers = NULL) const;
 		BMenu			*Menu() const;
 		BRect			Frame() const;
 
@@ -80,13 +80,13 @@ friend	BMenu;
 friend	BPopUpMenu;
 friend	BMenuBar;
 
+		void		InitData();
 		void		Invoke();
 		void		Install(BWindow *window);
 		void		Uninstall();
 		void		SetSuper(BMenu *super);
 		void		Select(bool on);
 		bool		IsSelected();
-		void		CalcBaseline();
 		void		DrawMarkSymbol();
 		void		DrawShortcutSymbol();
 		void		DrawSubmenuSymbol();
@@ -101,9 +101,6 @@ friend	BMenuBar;
 		BMenu		*fSuper;
 		BRect		fBounds;		// in coord system of Super menu view
 		ulong		fModifiers;
-		float		fAscent;
-		float		fDescent;
-		float		fFontHeight;
 		short		fTriggerIndex;
 		char		fUserTrigger;
 		char		fSysTrigger;
@@ -115,7 +112,6 @@ friend	BMenuBar;
 
 class BSeparatorItem : public BMenuItem
 {
-	B_DECLARE_CLASS_INFO(BMenuItem);
 public:
 				BSeparatorItem();
 virtual			~BSeparatorItem();

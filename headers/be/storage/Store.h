@@ -40,7 +40,6 @@ typedef		long	store_creation_hook(BStore *, void *);
 extern "C" long		get_ref_for_path(const char *, record_ref *);
 
 class BStore : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 virtual					~BStore();

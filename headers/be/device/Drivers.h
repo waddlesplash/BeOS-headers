@@ -63,12 +63,13 @@ typedef struct device_entry {
  		"publish_device_names"	returns char** list of names
 		"find_device_entry"		returns the device_entry for a given name
  		"init_driver"			called when the driver is loaded
+ 		"uninit_driver"			called when the driver is unloaded
 
 	A driver should define either
 		"devices", or
 		"publish_device_names" and "find_device_entry"
 
-	"init_driver" is optional.
+	"init_driver" and "uninit_driver" are optional.
 --- */
 
 extern device_entry	devices[];
@@ -76,6 +77,7 @@ extern device_entry	devices[];
 extern char**		publish_device_names (const char *device_name);
 extern device_entry	*find_device_entry (const char *device_name);
 extern long			init_driver (void);
+extern long			uninit_driver (void);
 
 
 /* ---

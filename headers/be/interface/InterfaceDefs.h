@@ -70,8 +70,6 @@ typedef enum { B_MONOCHROME_1_BIT = 1,
 typedef struct {
 		color_space	mode;
 		BRect		frame;
-		void		*bits;
-		long		bytes_per_row;
 		ulong		spaces;
 		float		min_refresh_rate;
 		float		max_refresh_rate;
@@ -278,6 +276,9 @@ enum {
 	B_32_BIT_1024x768  = 0x00001000,
 	B_32_BIT_1280x1024 = 0x00002000,
 	B_32_BIT_1600x1200 = 0x00004000,
+    B_8_BIT_1152x900   = 0x00008000,
+    B_16_BIT_1152x900  = 0x00010000,
+    B_32_BIT_1152x900  = 0x00020000,
 	B_8_BIT_640x400	   = 0x80000000
 };
 
@@ -287,9 +288,6 @@ long		adjust_crt(long index, uchar x_position, uchar y_position,
 					   uchar x_size, uchar y_size, bool stick = TRUE);
 
 long		get_dock_width(float *width);
-
-void		lock_screen(long index=0);
-void		unlock_screen(long index=0);
 
 ulong		modifiers();
 key_map		*system_key_map();
@@ -309,6 +307,12 @@ long		get_click_speed(double *speed);
 long		set_click_speed(double speed);
 long		get_mouse_speed(long *speed);
 long		set_mouse_speed(long speed);
+
+long		get_key_repeat_rate(int     *rate);
+long		set_key_repeat_rate(int      rate);
+long		get_key_repeat_delay(double *delay);
+long		set_key_repeat_delay(double  delay);
+
 
 long		count_fonts();
 void		get_font_name(long index, font_name* name);

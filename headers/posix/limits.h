@@ -55,7 +55,7 @@
 #define MAX_INPUT           (255)
 #define NAME_MAX            (64)
 #define NGROUPS_MAX         (32)
-#define OPEN_MAX            (32)
+#define OPEN_MAX            (128)
 #define PATH_MAX            (1024)  /* really it's infinite though */
 #define PIPE_MAX            (512)
 #define SSIZE_MAX           (32767)

@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 
 class	BMessageQueue : BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BMessageQueue();	
@@ -32,10 +31,9 @@ virtual				~BMessageQueue();
 
 		void		AddMessage(BMessage *an_event);
 		BMessage	*NextMessage();
-		void		RemoveMessage(ulong what);
-		void		RemoveMessage(BMessage *an_event);
+		bool		RemoveMessage(BMessage *an_event);
 		BMessage	*FindMessage(long index) const;
-		BMessage	*FindMessage(ulong what, long index) const;
+		BMessage	*FindMessage(ulong what, long index = 0) const;
 		long		CountMessages() const;
 		bool		IsEmpty() const;
 

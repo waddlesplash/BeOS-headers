@@ -27,7 +27,6 @@ class BApplication;
 //------------------------------------------------------------------------------
 
 class BScrollBar : public BView {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BScrollBar(	BRect frame,

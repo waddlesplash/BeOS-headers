@@ -3,7 +3,7 @@
 
 #include	<File.h>
 
-struct	map;
+struct	rsrc_map;
 struct	rsrc_desc;
 class	RTDF;
 
@@ -52,20 +52,20 @@ virtual	long		FileCreated();
 private:
 		RTDF		*the_datafile;
 		char		dirty;
-		map			*the_map;
+		rsrc_map	*the_map;
 		bool		fReadOnly;
 		int			fOpenCount;
 
-		map			*find_type(ulong type);
-		rsrc_desc 	*find_id(map *a_map, long id);
+		rsrc_map	*find_type(ulong type);
+		rsrc_desc 	*find_id(rsrc_map *a_map, long id);
 		rsrc_desc 	*find_entry(ulong type, long id);
 		void		add_type(ulong type);
-		void		add_desc(map *a_map, long id, long df_id, const char *name);
+		void		add_desc(rsrc_map *a_map, long id, long df_id, long name_length, const char *name);
 		void		load_map();
 		long		calc_size();
 		void		free_map();
 		void		save_map();
-		rsrc_desc 	*find_name(map *a_map, const char *name);
+		rsrc_desc 	*find_name(rsrc_map *a_map, const char *name);
 		rsrc_desc 	*find_entry(ulong type, const char *name);
 };
 

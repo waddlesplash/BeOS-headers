@@ -35,7 +35,6 @@ enum { B_UNKNOWN_FILE, B_AIFF_FILE, B_WAVE_FILE, B_UNIX_FILE };
 
 class BSoundFile : public BFile {
 
-	B_DECLARE_CLASS_INFO(BFile);
 
 
 public:

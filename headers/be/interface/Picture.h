@@ -29,7 +29,6 @@ class	BView;
 //------------------------------------------------------------------------------
 
 class BPicture : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BPicture();

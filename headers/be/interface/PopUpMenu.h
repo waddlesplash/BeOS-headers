@@ -15,7 +15,6 @@
 
 class BPopUpMenu : public BMenu
 {
-	B_DECLARE_CLASS_INFO(BMenu);
 public:
 					BPopUpMenu(	const char *title,
 								bool radioMode = TRUE,
@@ -23,12 +22,23 @@ public:
 								menu_layout layout = B_ITEMS_IN_COLUMN
 								);
 virtual				~BPopUpMenu();
-		BMenuItem	*Go(BPoint where, bool autoInvoke = FALSE);
+		BMenuItem	*Go(BPoint where,
+						bool autoInvoke = FALSE,
+						bool start_opened = FALSE);
+		BMenuItem	*Go(BPoint where,
+						bool autoInvoke,
+						bool start_opened,
+						BRect special_rect);
 
 protected:
 virtual	BPoint		ScreenLocation();
 
 private:
+		BMenuItem	*_go(	BPoint where,
+							bool autoInvoke,
+							bool start_opened,
+							BRect *special_rect);
+
 		BPoint		fWhere;
 		bool		fUseWhere;
 };

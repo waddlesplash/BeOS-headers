@@ -19,9 +19,10 @@
 #endif
 
 class BLooper;
+class BMessageFilter;
+class BList;
 
 class BHandler : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BHandler(const char *name = NULL);
@@ -34,14 +35,25 @@ virtual	void		HandlersRequested(BMessage *msg);
 		const char	*Name() const;
 		void		SetName(const char *name);
 
+virtual	void		SetNextHandler(BHandler *handler);
+		BHandler	*NextHandler() const;
+
+virtual	void		AddFilter(BMessageFilter *filter);
+virtual	bool		RemoveFilter(BMessageFilter *filter);
+virtual	void		SetFilterList(BList *filters);
+		BList		*FilterList();
+
 private:
 friend inline long _get_object_token_(const BHandler *);
 friend inline BLooper *_get_handler_looper_(const BHandler *);
 friend class BLooper;
+friend class BMessageFilter;
 
 		long		fToken;
 		char		*fName;
 		BLooper		*fLooper;
+		BHandler	*fNextHandler;
+		BList		*fFilters;
 };
 
 #endif

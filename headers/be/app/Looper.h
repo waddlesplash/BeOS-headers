@@ -31,7 +31,6 @@ class BList;
 struct _loop_data_;
 
 class BLooper : public BHandler {
-	B_DECLARE_CLASS_INFO(BHandler);
 
 public:
 						BLooper(const char *name = NULL,
@@ -41,7 +40,7 @@ virtual					~BLooper();
 		bool			Lock();
 		void			Unlock();
 		thread_id		LockOwner() const;
-		bool			CheckLock() const;
+		bool			IsLocked() const;
 
 		long			PostMessage(BMessage *message,
 									BHandler *handler = NULL);
@@ -65,10 +64,17 @@ virtual	void			Quit();
 virtual	bool			QuitRequested();
 virtual	void			HandlersRequested(BMessage *msg);
 		
+virtual	void		AddCommonFilter(BMessageFilter *filter);
+virtual	bool		RemoveCommonFilter(BMessageFilter *filter);
+virtual	void		SetCommonFilterList(BList *filters);
+		BList		*CommonFilterList();
+
 private:
 friend class BWindow;
 friend class BApplication;
 friend class BMessenger;
+friend class BView;
+
 friend inline port_id _get_handler_port_(const BHandler *);
 
 						// private constructor for BApplication
@@ -79,6 +85,11 @@ friend inline port_id _get_handler_port_(const BHandler *);
 static	long			_task0_(void *arg);
 virtual	void			task_looper();
 		void			do_quit_requested();
+		bool			AssertLocked() const;
+		BHandler		*filter_message(BMessage *msg, BHandler *target);
+		BHandler		*apply_filters(	BList *list,
+										BMessage *msg,
+										BHandler *target);
 
 static	ulong			sLooperID;
 static	long			sLooperListSize;
@@ -102,17 +113,21 @@ static	BLooper			*FindLooper(const char *name);
 		thread_id		fOwner;
 		thread_id		fTaskID;
 		team_id			fTeamID;
-		bool			fTerminating;
-		bool			fRunCalled;
 		sem_id			fCloseSem;
 		long			fInitPriority;
 		BList			fHandlers;
+		BList			*fCommonFilters;
+		bool			fTerminating;
+		bool			fRunCalled;
+		bool			fWasFiltered;
+		//long			cached_pid;
+		//long			cached_stack;
 };
 
 inline thread_id BLooper::LockOwner() const
 	{ return fOwner; }
 
-inline bool BLooper::CheckLock() const
+inline bool BLooper::IsLocked() const
 	{ return (fOwner == find_thread(NULL)); }
 
 #endif

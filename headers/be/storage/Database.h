@@ -29,7 +29,6 @@ class BRecord;
 class BDF;
 
 class	BDatabase : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 public:
 		long		Error();
 		database_id	xID();

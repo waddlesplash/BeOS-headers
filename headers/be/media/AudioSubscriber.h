@@ -25,7 +25,6 @@
 
 class BAudioSubscriber : public BSubscriber {
 
-	B_DECLARE_CLASS_INFO(BSubscriber);
 
 public:
 

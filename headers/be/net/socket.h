@@ -17,6 +17,11 @@ extern "C" {
 
 #define AF_INET 1
 
+
+#define INADDR_ANY			0x00000000	
+#define INADDR_BROADCAST	0xffffffff
+#define INADDR_LOOPBACK		0x7f000001	/* in host order */
+
 #define SOL_SOCKET 1
 
 #define SO_DEBUG 1

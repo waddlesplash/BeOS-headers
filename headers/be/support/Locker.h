@@ -23,7 +23,6 @@
 extern "C" int	_init_shared_heap_();
 
 class BLocker : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 public:
 		void		*operator new(size_t size);
 
@@ -34,7 +33,7 @@ virtual				~BLocker();
 		bool		Lock();
 		void		Unlock();
 		thread_id	LockOwner() const;
-		bool		CheckLock() const;
+		bool		IsLocked() const;
 
 private:
 friend int	_init_shared_heap_();
@@ -50,7 +49,7 @@ friend int	_init_shared_heap_();
 inline thread_id BLocker::LockOwner() const
 	{ return fOwner; }
 
-inline bool BLocker::CheckLock() const
+inline bool BLocker::IsLocked() const
 	{ return (fOwner == find_thread(NULL)); }
 
 #endif

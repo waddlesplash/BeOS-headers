@@ -11,11 +11,17 @@
 #ifndef _BE_H
 #define _BE_H
 
+#ifndef _3D_KIT_H
+#include <3dKit.h>
+#endif
 #ifndef _APP_KIT_H
 #include <AppKit.h>
 #endif
 #ifndef _DEVICE_KIT_H
 #include <DeviceKit.h>
+#endif
+#ifndef _GAME_KIT_H
+#include <GameKit.h>
 #endif
 #ifndef _INTERFACE_KIT_H
 #include <InterfaceKit.h>

@@ -24,7 +24,6 @@ enum {
 //------------------------------------------------------------------------------
 
 class BPictureButton : public BControl {
-	B_DECLARE_CLASS_INFO(BControl);
 
 public:
 					BPictureButton(BRect frame, 
@@ -35,16 +34,22 @@ public:
 								   ulong behavior = B_ONE_STATE_BUTTON,
 								   ulong resizeMask =
 										B_FOLLOW_LEFT | B_FOLLOW_TOP, 
-								   ulong flags = B_WILL_DRAW); 
+								   ulong flags = B_WILL_DRAW | B_NAVIGABLE); 
 virtual				~BPictureButton();
 
 virtual	void		Draw(BRect updateRect);
 virtual	void		MouseDown(BPoint where);
+virtual	void		KeyDown(ulong key);
 
 virtual	void		SetEnabledOn(BPicture *on);
 virtual	void		SetEnabledOff(BPicture *off);
 virtual	void		SetDisabledOn(BPicture *on);
 virtual	void		SetDisabledOff(BPicture *off);
+		
+		BPicture	*EnabledOn() const;
+		BPicture	*EnabledOff() const;
+		BPicture	*DisabledOn() const;
+		BPicture	*DisabledOff() const;
 
 virtual	void		SetBehavior(ulong behavior);
 		ulong		Behavior() const;
@@ -60,6 +65,20 @@ private:
 		ulong		fBehavior;
 };
 
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------
+inline BPicture *BPictureButton::EnabledOn() const
+	{ return fEnabledOn; };
+
+inline BPicture *BPictureButton::EnabledOff() const
+	{ return fEnabledOff; };
+
+inline BPicture *BPictureButton::DisabledOn() const
+	{ return fDisabledOn; };
+
+inline BPicture *BPictureButton::DisabledOff() const
+	{ return fDisabledOff; };
+
+//------------------------------------------------------------------------
+
 
 #endif

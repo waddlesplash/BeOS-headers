@@ -34,7 +34,6 @@ enum {
 class BWindow;
 
 class BControl : public BView {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BControl(	BRect frame,
@@ -46,6 +45,8 @@ public:
 virtual				~BControl();
 
 virtual	void		AttachedToWindow();
+virtual void		MakeFocus(bool state = TRUE);
+virtual	void		KeyDown(ulong key);
 
 virtual	void		SetLabel(const char *text);
 		const char	*Label() const;

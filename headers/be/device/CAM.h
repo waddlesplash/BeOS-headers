@@ -20,17 +20,7 @@
    Be-provided additions to the standard include file.
 --- */
 
-#ifndef u_char
-typedef unsigned char u_char;
-#endif
-
-#ifndef u_short
-typedef unsigned short u_short;
-#endif
-
-#ifndef u_long
-typedef unsigned long u_long;
-#endif
+#include <sys/types.h>
 
 #ifndef U32
 typedef unsigned long U32;
@@ -611,6 +601,14 @@ CCB_HEADER	*xpt_ccb_alloc (void);
 void		xpt_ccb_free (void *ccb);
 long		xpt_action (CCB_HEADER *ccbh);
 long		xpt_bus_register (CAM_SIM_ENTRY *entrypoints);
-long		xpt_bus_deregister (long pathid);
+long		xpt_bus_deregister (long pathid);	
+
+/* ---
+	SIM add-ons must define this entry point to be recognized by the kernel.
+	They return B_NO_ERROR if they find hardware thay can support and
+	successfully install themselves (using xpt_bus_register).
+--- */
+
+extern long	sim_install(void);
 
 #endif

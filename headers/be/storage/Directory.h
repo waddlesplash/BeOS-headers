@@ -28,7 +28,6 @@
 //--------------------------------------------------------------------
 
 class BDirectory : public BStore {
-	B_DECLARE_CLASS_INFO(BStore);
 
 	friend class	BStore;
 	friend class	BFile;

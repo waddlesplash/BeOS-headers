@@ -29,6 +29,10 @@
 #include <ClassInfo.h>
 #endif
 
+#ifndef _LOCKER_H
+#include <Locker.h>
+#endif
+
 
 /* ================
    Local Declarations
@@ -51,9 +55,9 @@ enum stream_state {
    Class definition for BStreamController
    ================ */
 
+
 class BStreamController : public BObject {
 
-  B_DECLARE_CLASS_INFO(BObject);
 
 public:
 
@@ -126,7 +130,7 @@ public:
 
   /* Lock the data structures associated with this StreamController
    */
-	bool			Lock(thread_id tid);
+	bool			Lock();
 	void			Unlock();
 
   /****************************************************************
@@ -135,7 +139,8 @@ public:
 
 	long			Subscribe(char *name, 
 							  subscriber_id clique, 
-							  subscriber_id *subID);
+							  subscriber_id *subID,
+							  sem_id semID);
 	long			Unsubscribe(subscriber_id subID);
   	bool			IsSubscribed(subscriber_id subID);
 
@@ -156,6 +161,8 @@ public:
    ================ */
 
 private:
+
+	friend class BStreamer;
 
   /****************************************************************
    * 
@@ -198,9 +205,7 @@ private:
   thread_id		fProcessingThread;	/* thread to dispatch buffers */
   subscriber_id	fControllerID;		/* StreamController's subID in fStream */
 
-  sem_id		fLock;
-  thread_id		fLockOwner;
-  long			fLockOwnerCount;
+  BLocker		fLock;
 };
 
 #endif			// #ifdef _STREAM_CONTROLLER_H

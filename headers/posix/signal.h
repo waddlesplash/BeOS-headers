@@ -71,6 +71,7 @@ __end_extern_c
    be smart and use them backwards from signal 32).
 */
 #define __signal_max  21
+#define NSIG __signal_max
 
 
 typedef long sigset_t;

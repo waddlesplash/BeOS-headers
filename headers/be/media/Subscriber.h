@@ -37,8 +37,8 @@
    declarations
    ================ */
 
-typedef bool	(*StreamFn)(void *userData, char *buffer, long count);
-typedef long	(*CompletionFn)(void *userData, long error);
+typedef bool	(*enter_stream_hook)(void *userData, char *buffer, long count);
+typedef long	(*exit_stream_hook)(void *userData, long error);
 
 /* ================
    Class definition for BSubscriber
@@ -46,7 +46,6 @@ typedef long	(*CompletionFn)(void *userData, long error);
 
 class BSubscriber : public BObject {
 
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BSubscriber(const char *name=NULL);
@@ -80,10 +79,10 @@ public:
 	virtual long	EnterStream(subscriber_id neighbor,
 								bool before,
 								void *userData,
-								StreamFn streamFunction,
-								CompletionFn completionFunction,
-
+								enter_stream_hook entryFunction,
+								exit_stream_hook exitFunction,
 								bool background);
+
 	virtual long	ExitStream(bool synch=FALSE);
 
 	bool			IsInStream(void);
@@ -136,10 +135,11 @@ private:
 	long			fError;			/* for Error() member fn */
 	subscriber_id	fID;		 	/* our subscriber_id */
 	subscriber_id	fClique;
+	sem_id			fSem;			/* stream semaphore */
 
 	void			*fUserData;		/* arg to fStreamFn and fCompletionFn */
-	StreamFn		fStreamFn;		/* per-buffer user function */
-	CompletionFn	fCompletionFn;	/* called after streaming stops */
+	enter_stream_hook	fStreamFn;		/* per-buffer user function */
+	exit_stream_hook	fCompletionFn;	/* called after streaming stops */
 	bool			fCallStreamFn;	/* true while we should call fStreamFn */
 	double			fTimeout;		/* time out while awaiting buffers */
 	sem_id			fSynchLock;

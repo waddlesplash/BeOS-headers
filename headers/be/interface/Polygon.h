@@ -27,7 +27,6 @@
 //------------------------------------------------------------------------------
 
 class BPolygon : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BPolygon(BPoint *ptArray, long numPoints);

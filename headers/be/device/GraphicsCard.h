@@ -27,15 +27,25 @@ enum {
 	B_GET_SCREEN_SPACES,
 	B_CONFIG_GRAPHICS_CARD,
 	B_GET_REFRESH_RATES,
-	B_SET_SCREEN_GAMMA
-};
+	B_SET_SCREEN_GAMMA,
+	
+	B_GET_INFO_FOR_CLONE_SIZE,
+	B_GET_INFO_FOR_CLONE,
+	B_SET_CLONED_GRAPHICS_CARD,
+	B_CLOSE_CLONED_GRAPHICS_CARD,	
+	B_PROPOSE_FRAME_BUFFER,
+	B_SET_FRAME_BUFFER,
+	B_SET_DISPLAY_AREA,
+	B_MOVE_DISPLAY_AREA}
+;
 
 //----------------------------------------------------------------
 // graphic add-on optional abilities
 
 enum {
-	B_CRT_CONTROL,
-	B_GAMMA_CONTROL
+	B_CRT_CONTROL = 0x0001,
+	B_GAMMA_CONTROL = 0x0002,
+	B_FRAME_BUFFER_CONTROL = 0x0004
 };
 
 //-------------------------------------------------------
@@ -44,13 +54,13 @@ enum {
 typedef struct {
 	short           version;
 	short           id;
+	void            *frame_buffer;
+	char            rgba_order[4];
+	short           flags;
+	short			bits_per_pixel;
+	short           bytes_per_row;
 	short			width;
 	short			height;
-	short			bits_per_pixel;
-	short           flags;
-	char            rgba_order[4];
-	void            *bits;
-	long            bytes_per_row;
 } graphics_card_info;
 
 
@@ -106,6 +116,18 @@ typedef struct {
 
 
 typedef struct {
+    short           bits_per_pixel;
+	short           bytes_per_row;
+	short           width;
+	short           height;
+    short           display_width;
+	short           display_height;
+	short           display_x;
+	short           display_y;
+} frame_buffer_info;
+
+
+typedef struct {
 	uchar           red[256];
 	uchar           green[256];
 	uchar           blue[256];
@@ -113,7 +135,7 @@ typedef struct {
 
 typedef void (*graphics_card_hook) ();
 
-/* debug calls */
+/* debug calls for version 1 */
 extern "C" void    dprintf(const char *format, ...);
 extern "C" bool    set_dprintf_enabled(bool);	/* returns old enable flag */
 

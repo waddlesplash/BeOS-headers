@@ -20,7 +20,6 @@
 
 class BBox : public BView
 {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BBox(	BRect bounds,
@@ -32,7 +31,6 @@ virtual 			~BBox(void);
 		const char	*Label() const;
 		void		SetLabel(const char *label);
 virtual	void		Draw(BRect bounds);
-virtual	void		AttachedToWindow();
 
 // ----------------------------------------------------------------
 

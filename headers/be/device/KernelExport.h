@@ -79,7 +79,6 @@ extern long		set_isa_interrupt_handler (
 
 extern void		*isa_address (long offset_in_isa_io_space);
 
-
 /* ---
 	virtual memory buffer functions
 --- */
@@ -107,6 +106,12 @@ extern long		get_memory_map (
 	long			num_entries		/* # entries in table */
 );
 	
+
+/* ---
+	address of system memory when viewed from ISA or PCI (by bus masters).
+--- */
+
+extern void		*ram_address (void *physical_address_in_system_memory);
 
 /* ---
 	ISA dma support
@@ -197,29 +202,6 @@ extern void		kernel_debugger (const char *message);	/* enter kernel debugger */
 ----- */
 
 extern void		spin (double num_microseconds);
-
-
-/* -----
-	flags for semaphore control
------ */
-
-enum {
-	B_CAN_INTERRUPT = 1,			/* semaphore can be interrupted by a signal */
-	B_DO_NOT_RESCHEDULE = 2,		/* release() without rescheduling */
-	B_CHECK_PERMISSION = 4			/* disallow users changing kernel semaphores */
-};
-
-/* ----------
-	souped-up versions of semaphore routines with more explicit
-	semantic control.
----- */
-
-extern long acquire_sem_flag (sem_id sem, long flags);
-extern long acquire_sem_count_flag (sem_id sem, long count, long flags);
-extern long acquire_sem_timeout_flag (sem_id sem, double timeout, long flags);
-extern long acquire_sem_count_timeout_flag (sem_id sem, long count,
-										   double timeout, long flags);
-extern long release_sem_count_flag (sem_id sem, long count, long flags);
 
 
 #ifdef __cplusplus

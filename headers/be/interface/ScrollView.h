@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 
 class BScrollView : public BView {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BScrollView(const char *name,
@@ -40,6 +39,9 @@ virtual	void		Draw(BRect updateRect);
 virtual	void		AttachedToWindow();
 		BScrollBar	*ScrollBar(orientation flag) const;
 
+virtual	void		SetBordered(bool bordered);
+		bool		IsBordered() const;
+
 //------------------------------------------------------------------------------
 
 private:
@@ -54,6 +56,9 @@ static	BRect		CalcFrame(BView *, bool, bool, bool);
 		BScrollBar	*fVSB;	
 		bool		fFramed;
 };
+
+inline bool BScrollView::IsBordered() const
+	{ return fFramed; };
 
 //------------------------------------------------------------------------------
 

@@ -41,7 +41,6 @@ enum alert_type {
 
 class BAlert : public BWindow
 {
-	B_DECLARE_CLASS_INFO(BWindow);
 public:
 
 					BAlert(	const char *title,

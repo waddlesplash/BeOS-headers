@@ -25,7 +25,6 @@ class BFile;
 /*------------------------------------------------------------*/
 
 class BMidiStore : public BMidi {
-B_DECLARE_CLASS_INFO(BMidi);
 public:
 				BMidiStore();
 virtual			~BMidiStore();

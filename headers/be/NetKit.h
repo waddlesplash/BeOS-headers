@@ -7,5 +7,6 @@
 /***************************************************************/
 
 
+#include <E-mail.h>
 #include <netdb.h>
 #include <socket.h>

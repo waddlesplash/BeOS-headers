@@ -32,7 +32,6 @@
 class BMidiEvent;
 
 class BMidi : public BObject {
-B_DECLARE_CLASS_INFO(BObject);
 
 public:
 				BMidi();
@@ -71,7 +70,7 @@ virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
 
 virtual	void	TempoChange(long bpm, ulong time = B_NOW);
 
-virtual	void	Start();
+virtual	long	Start();
 virtual	void	Stop();
 		bool	IsRunning();
 	
@@ -126,7 +125,7 @@ friend	long	_inflow_task_(void *arg);
 		long	ID();
 virtual	void	Run();
 
-		void	StartInflow();
+		long	StartInflow();
 		void	StopInflow();
 		bool	IsInflowing();
 		void	InflowTask();

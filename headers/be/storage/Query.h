@@ -51,7 +51,6 @@ class   BResList;
 /*-----------------------------------------------------------------*/
 
 class	BQuery : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 	friend		BDatabase;
 public:

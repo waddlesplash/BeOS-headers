@@ -23,7 +23,6 @@ class _BTextInput_;
 //------------------------------------------------------------------------------
 
 class BTextControl : public BControl {
-	B_DECLARE_CLASS_INFO(BControl);
 
 public:
 					BTextControl(BRect frame,
@@ -32,13 +31,16 @@ public:
 								const char *initial_text, 
 								BMessage *message,
 								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-								ulong flags = B_WILL_DRAW); 
+								ulong flags = B_WILL_DRAW | B_NAVIGABLE); 
 virtual				~BTextControl();
 
 virtual	void		SetText(const char *text);
 		const char	*Text() const;
 virtual	void		SetLabel(const char *text);
 		const char	*Label() const;
+
+virtual	void		SetModificationMessage(BMessage *message);
+		BMessage	*ModificationMessage() const;
 
 virtual	void		SetAlignment(alignment label, alignment text);
 		void		GetAlignment(alignment *label, alignment *text) const;
@@ -53,22 +55,18 @@ virtual	void		AttachedToWindow();
 virtual	void		MakeFocus(bool focusState = TRUE);
 virtual	void		SetEnabled(bool state);
 
-protected:
-		void		GoToNext();
-		void		GoToPrevious();
-
 private:
 friend	class _BTextInput_;
 
 		void			CommitValue();
-		rgb_color		disable_color(rgb_color);
-		rgb_color		enable_color(rgb_color);
 
 		_BTextInput_	*fText;
 		char			*fLabel;
+		BMessage		*fModificationMessage;
 		alignment		fLabelAlign;
 		float			fDivider;
 		float			fLineHeight;
+		bool			fClean;
 };
 
 

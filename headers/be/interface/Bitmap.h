@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 
 class BBitmap : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 public:
 					BBitmap(BRect bounds,
@@ -53,8 +52,7 @@ virtual	bool		RemoveChild(BView *view);
 
 private:
 friend class BView;
-friend class BCursor;
-friend void  _get_screen_bitmap_(BBitmap *,BRect);
+friend void  _get_screen_bitmap_(BBitmap *,BRect,bool);
 
 		char		*get_shared_pointer() const;
 		void		set_bits(long offset, char *data, long length);

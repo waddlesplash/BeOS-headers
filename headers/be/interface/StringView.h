@@ -23,7 +23,6 @@
 
 class BStringView : public BView
 {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BStringView(BRect bounds,
@@ -33,7 +32,6 @@ public:
 									B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								ulong flags = B_WILL_DRAW);
 virtual 			~BStringView();
-virtual void		AttachedToWindow();
 
 		void		SetText(const char *text);
 		const char	*Text() const;

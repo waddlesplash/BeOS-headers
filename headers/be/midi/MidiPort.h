@@ -20,7 +20,6 @@
 /*------------------------------------------------------------*/
 
 class BMidiPort : public BMidi {
-B_DECLARE_CLASS_INFO(BMidi);
 public:
 				BMidiPort();
 				~BMidiPort();
@@ -36,6 +35,10 @@ virtual	void	NoteOn(uchar channel,
 					   uchar note, 
 					   uchar velocity,
 					   ulong time = B_NOW);
+virtual	void	KeyPressure(uchar channel, 
+							uchar note, 
+							uchar pressure,
+							ulong time = B_NOW);
 virtual	void	ControlChange(uchar channel, 
 							  uchar controlNumber,
 							  uchar controlValue, 
@@ -57,7 +60,7 @@ virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
 
 		void	AllNotesOff(bool justChannel = TRUE, ulong time = B_NOW);
 
-virtual	void	Start();
+virtual	long	Start();
 virtual	void	Stop();
 
 private:

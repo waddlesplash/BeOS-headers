@@ -7,4 +7,9 @@
 /***************************************************************/
 
 
+#include <A2D.h>
+#include <D2A.h>
+#include <DigitalPort.h>
+#include <Joystick.h>
 #include <SerialPort.h>
+

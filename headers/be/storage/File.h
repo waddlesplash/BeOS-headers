@@ -25,10 +25,11 @@
 #include <Directory.h>
 #endif
 
+typedef		long	copy_status_hook(record_ref, int length, void *);
+
 //--------------------------------------------------------------------
 
 class BFile : public BStore {
-	B_DECLARE_CLASS_INFO(BStore);
 
 	friend class	BStore;
 	friend class	BDirectory;
@@ -42,7 +43,8 @@ virtual					~BFile();
 virtual	long			FileCreated();
 
 		long			CopyTo(BDirectory *dir, const char *name, BFile *file,
-							store_creation_hook *f = NULL, void *d = NULL);
+							store_creation_hook *f = NULL, void *d = NULL,
+							copy_status_hook *c = NULL);
 		long			SwitchWith(BFile *file);
 		
 		long			Size();
@@ -69,7 +71,8 @@ virtual	long			set_ref(long volid, record_id id);
 		void			set_icon();
 		bool			test_and_extract_icons(ulong *type, ulong *creator);
 
-		int				copy_file(int sfd, int dfd);
+		int				copy_file(int sfd, int dfd, copy_status_hook *c,
+								  record_ref);
 
 		int				fFd;
 		bool			fReadOnly;

@@ -19,13 +19,13 @@ pid_t waitpid(pid_t pid, int *stat_loc, int options);
 #define WUNTRACED  0x2
 
 
-#define WIFEXITED(val)    (val == 0)
+#define WIFEXITED(val)    ((val) == 0)
 #define WEXITSTATUS(val)  ((val) & 0xff)
-#define WIFSIGNALED(val)  (val)
-#define WTERMSIG(val)     (val)
-#define WIFSTOPPED(val)   (val)
-#define WSTOPSIG(val)     (val)
-#define WIFCORED(val)     (val)
+#define WIFSIGNALED(val)  ((((val) >>  8) & 0xff) != 0)
+#define WTERMSIG(val)     (((val)  >>  8) & 0xff)
+#define WIFSTOPPED(val)   ((((val) >> 16) & 0xff) != 0)
+#define WSTOPSIG(val)     (((val)  >> 16) & 0xff)
+#define WIFCORED(val)     ((val) & 0x10000)
 
 						 
 #endif /* _SYS_WAIT_H_ */

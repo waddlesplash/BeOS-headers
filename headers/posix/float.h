@@ -8,6 +8,16 @@
 #ifndef __float__
 #define __float__
 
+typedef union {
+	unsigned char c[4];
+	float f;
+} __fcu_t;
+
+typedef union {
+	unsigned char c[8];
+	double d;
+} __dcu_t;
+
 #if __MC68K__
 
 #define FLT_ROUNDS					1
@@ -19,11 +29,11 @@
 #define FLT_MIN_10_EXP			(-37)
 #define FLT_MAX_EXP					128
 #define FLT_MAX_10_EXP			38
-#define FLT_MAX							(* (float *) __float_max)
-#define FLT_EPSILON					(* (float *) __float_epsilon)
-#define FLT_MIN							(* (float *) __float_min)
+#define FLT_MAX							(__float_max.f
+#define FLT_EPSILON					(__float_epsilon.f
+#define FLT_MIN							(__float_min.f
 
-extern unsigned char __float_min[], __float_max[], __float_epsilon[];
+extern const __fcu_t __float_min, __float_max, __float_epsilon;
 
 #if __option(IEEEdoubles)
 
@@ -33,11 +43,11 @@ extern unsigned char __float_min[], __float_max[], __float_epsilon[];
 #define DBL_MIN_10_EXP			(-307)
 #define DBL_MAX_EXP					1024
 #define DBL_MAX_10_EXP			308
-#define DBL_MAX							(* (double *) __double_max)
-#define DBL_EPSILON					(* (double *) __double_epsilon)
-#define DBL_MIN							(* (double *) __double_min)
+#define DBL_MAX							(__double_max.d)
+#define DBL_EPSILON					(__double_epsilon.d)
+#define DBL_MIN							(__double_min.d)
 
-extern unsigned char __double_min[], __double_max[], __double_epsilon[];
+extern const __dcu_t __double_min, __double_max, __double_epsilon;
 
 #else
 
@@ -47,9 +57,9 @@ extern unsigned char __double_min[], __double_max[], __double_epsilon[];
 #define DBL_MIN_10_EXP			(-4931)
 #define DBL_MAX_EXP					16384
 #define DBL_MAX_10_EXP			4932
-#define DBL_MAX							(* (double *) __extended_max)
-#define DBL_EPSILON					(* (double *) __extended_epsilon)
-#define DBL_MIN							(* (double *) __extended_min)
+#define DBL_MAX							(__extended_max.e)
+#define DBL_EPSILON					(__extended_epsilon.e)
+#define DBL_MIN							(__extended_min.e)
 
 #endif
 
@@ -59,11 +69,11 @@ extern unsigned char __double_min[], __double_max[], __double_epsilon[];
 #define LDBL_MIN_10_EXP			(-4931)
 #define LDBL_MAX_EXP				16384
 #define LDBL_MAX_10_EXP			4932
-#define LDBL_MAX						(* (long double *) __extended_max)
-#define LDBL_EPSILON				(* (long double *) __extended_epsilon)
-#define LDBL_MIN						(* (long double *) __extended_min)
+#define LDBL_MAX						((long double) __extended_max.e)
+#define LDBL_EPSILON				((long double) __extended_epsilon.e)
+#define LDBL_MIN						((long double) __extended_min.e)
 
-extern unsigned char __extended_min[], __extended_max[], __extended_epsilon[];
+extern const __ecu_t __extended_min, __extended_max, __extended_epsilon;
 
 #endif
 
@@ -78,11 +88,11 @@ extern unsigned char __extended_min[], __extended_max[], __extended_epsilon[];
 #define FLT_MIN_10_EXP			(-37)
 #define FLT_MAX_EXP					128
 #define FLT_MAX_10_EXP			38
-#define FLT_MAX							(* (float *) __float_max)
-#define FLT_EPSILON					(* (float *) __float_epsilon)
-#define FLT_MIN							(* (float *) __float_min)
+#define FLT_MAX							(__float_max.f)
+#define FLT_EPSILON					(__float_epsilon.f)
+#define FLT_MIN							(__float_min.f)
 
-extern unsigned char __float_min[], __float_max[], __float_epsilon[];
+extern const __fcu_t __float_min, __float_max, __float_epsilon;
 
 #define DBL_MANT_DIG				53
 #define DBL_DIG							15
@@ -90,9 +100,9 @@ extern unsigned char __float_min[], __float_max[], __float_epsilon[];
 #define DBL_MIN_10_EXP			(-307)
 #define DBL_MAX_EXP					1024
 #define DBL_MAX_10_EXP			308
-#define DBL_MAX							(* (double *) __double_max)
-#define DBL_EPSILON					(* (double *) __double_epsilon)
-#define DBL_MIN							(* (double *) __double_min)
+#define DBL_MAX							(__double_max.d)
+#define DBL_EPSILON					(__double_epsilon.d)
+#define DBL_MIN							(__double_min.d)
 
 #define LDBL_MANT_DIG				53
 #define LDBL_DIG						15
@@ -100,11 +110,11 @@ extern unsigned char __float_min[], __float_max[], __float_epsilon[];
 #define LDBL_MIN_10_EXP			(-307)
 #define LDBL_MAX_EXP				1024
 #define LDBL_MAX_10_EXP			308
-#define LDBL_MAX						(* (long double *) __double_max)
-#define LDBL_EPSILON				(* (long double *) __double_epsilon)
-#define LDBL_MIN						(* (long double *) __double_min)
+#define LDBL_MAX						((long double) __double_max.d)
+#define LDBL_EPSILON				((long double) __double_epsilon.d)
+#define LDBL_MIN					((long double) __double_min.d)
 
-extern unsigned char __double_min[], __double_max[], __double_epsilon[];
+extern const __dcu_t __double_min, __double_max, __double_epsilon;
 
 #endif
 

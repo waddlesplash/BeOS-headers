@@ -57,24 +57,24 @@ typedef struct area_info {
 	area_id		area;
 	char		name[B_OS_NAME_LENGTH];
 	void		*address;
-	long		size;
+	ulong		size;
 	ulong		lock;
 	ulong		protection;
 	team_id		team;
-	long		ram_size;
-	long		copy_count;
-	long		in_count;
-	long		out_count;
+	ulong		ram_size;
+	ulong		copy_count;
+	ulong		in_count;
+	ulong		out_count;
 } area_info;
 
 extern area_id	create_area(const char *name, void **start_addr,
-					ulong addr_spec, long size, ulong lock, ulong protection);
+					ulong addr_spec, ulong size, ulong lock, ulong protection);
 extern area_id	find_area(const char *name);
 extern area_id	area_for(void *addr);
 extern area_id	clone_area(const char *name, void **dest_addr, ulong addr_spec,
 					ulong protection, area_id source);
 extern long		delete_area(area_id id);
-extern long		resize_area(area_id id, long new_size);
+extern long		resize_area(area_id id, ulong new_size);
 extern long		set_area_protection(area_id id, ulong new_protection);
 extern long		get_area_info(area_id id, area_info *ainfo);
 extern long		get_nth_area_info(team_id team, long n, area_info *ainfo);
@@ -101,7 +101,14 @@ extern port_id	find_port(const char *name);
 extern long		write_port(port_id port, long code, const void *buf, long buf_size);
 extern long 	read_port(port_id port, long *code, void *buf, long buf_size);
 
+extern long		write_port_etc(port_id port, long code, const void *buf, long buf_size,
+                              int flags, double timeout);
+extern long 	read_port_etc(port_id port, long *code, void *buf, long buf_size,
+                              int flags, double timeout);
+
 extern long		port_buffer_size(port_id port);
+extern long		port_buffer_size_etc(port_id port, int flags, double timeout);
+
 extern long		port_count(port_id port);
 extern long		set_port_owner(port_id port, team_id team);
 
@@ -125,16 +132,28 @@ typedef struct sem_info {
 extern sem_id	create_sem(long count, const char *name);
 extern long		delete_sem(sem_id sem);
 extern long		acquire_sem(sem_id sem);
-extern long		acquire_sem_count(sem_id sem, long count);
-extern long		acquire_sem_timeout(sem_id sem, double microsecond_timeout);
+extern long		acquire_sem_etc(sem_id sem, int count, int flags,
+								double microsecond_timeout);
 extern long		release_sem(sem_id sem);
-extern long		release_sem_count(sem_id sem, long count);
-extern long		get_sem_count(sem_id sem, long *count);
+extern long		release_sem_etc(sem_id sem, long count, long flags);
+extern long		get_sem_count(sem_id sem, long *count); /* XXXdbg -- should go away  */
 
 extern long		set_sem_owner(sem_id sem, team_id team);
 
 extern long		get_sem_info(sem_id sem, sem_info *info);
 extern long		get_nth_sem_info(team_id team, long n, sem_info *info);
+
+
+/* -----
+	flags for semaphore control
+----- */
+
+enum {
+	B_CAN_INTERRUPT     = 1, 	/* semaphore can be interrupted by a signal */
+	B_DO_NOT_RESCHEDULE = 2,	/* release() without rescheduling */
+	B_CHECK_PERMISSION  = 4,	/* disallow users changing kernel semaphores */
+	B_TIMEOUT           = 8     /* honor the timeout parameter */
+};
 
 /*--------------------------------------------------------------------------*/
 
@@ -199,7 +218,7 @@ extern bool has_data(thread_id thread);
 
 /* Teams */
 
-#define	B_SYSTEM_TEAM		1
+#define	B_SYSTEM_TEAM		2
 
 typedef struct {
 	team_id			team;
@@ -223,13 +242,25 @@ extern long			get_nth_team_info(long n, team_info *info);
 
 #define		B_MAX_CPU_COUNT		8
 
+#define		B_CPU_PPC_601		1
+#define		B_CPU_PPC_603		2
+#define		B_CPU_PPC_603e		3
+#define		B_CPU_PPC_604		4
+#define		B_CPU_PPC_604e		5
+#define		B_CPU_PPC_686		13
+
 typedef struct {
 	double		active_time;				/* # usec doing useful work since boot */
 } cpu_info;
 
+typedef long machine_id[2];					/* unique machine ID */
+
 typedef struct {
+	machine_id	id;							/* unique machine ID */
 	double		boot_time;					/* time of boot (# usec since 1/1/70) */
 	long		cpu_count;					/* # of cpus */
+	long		cpu_type;					/* type of cpu */
+	long		cpu_revision;				/* revision # of cpu */
 	cpu_info	cpu_infos[B_MAX_CPU_COUNT];	/* info about individual cpus */
 	double		cpu_clock_speed;	 		/* processor clock speed (Hz) */
 	double		bus_clock_speed;			/* bus clock speed (Hz) */
@@ -250,6 +281,7 @@ typedef struct {
 } system_info;
 
 extern long	get_system_info (system_info *returned_info);
+extern long is_computer_on(void);
 double system_time (void);	/* time since booting in microseconds */
 
 /* Basic debugging and heap check calls. */

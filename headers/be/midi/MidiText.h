@@ -23,7 +23,6 @@
 /*------------------------------------------------------------*/
 
 class BMidiText : public BMidi {
-B_DECLARE_CLASS_INFO(BMidi);
 public:
 				BMidiText();
 virtual			~BMidiText();

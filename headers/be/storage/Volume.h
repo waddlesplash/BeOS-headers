@@ -31,7 +31,6 @@ BVolume		volume_for_database(BDatabase *db);
 BVolume		boot_volume();
 
 class BVolume : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
 
 	friend class	BStore;
 	friend class	BDirectory;

@@ -11,5 +11,4 @@
 #include <debugger.h>
 #include <fcntl.h>
 #include <image.h>
-#include <joystick.h>
 #include <unistd.h>

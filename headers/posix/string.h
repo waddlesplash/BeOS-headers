@@ -156,8 +156,6 @@ char * strstr(const char * str, const char * pat);
 
 char * strerror(int errnum);
 
-char * __strerror(int errnum, char * str);
-
 void * __memrchr(const void * src, int val, size_t n);
 
 #if __dest_os == __be_os

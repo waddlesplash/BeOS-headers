@@ -24,7 +24,6 @@
 //------------------------------------------------------------------------------
 
 class BCheckBox : public BControl {
-	B_DECLARE_CLASS_INFO(BControl);
 
 public:
 				BCheckBox(	BRect frame,
@@ -32,9 +31,10 @@ public:
 							const char *label,
 							BMessage *message,
 							ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP, 
-							ulong flags = B_WILL_DRAW); 
+							ulong flags = B_WILL_DRAW | B_NAVIGABLE); 
 
 virtual	void	Draw(BRect updateRect);
+virtual	void	AttachedToWindow();
 virtual	void	MouseDown(BPoint where);
 
 //------------------------------------------------------------------------------

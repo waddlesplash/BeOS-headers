@@ -26,17 +26,18 @@
 
 class BListView : public BView
 {
-	B_DECLARE_CLASS_INFO(BView);
 
 public:
 					BListView(	BRect frame,
 								const char *name,
 								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-								ulong flags = B_WILL_DRAW | B_FRAME_EVENTS);
+								ulong flags = B_WILL_DRAW | B_FRAME_EVENTS |
+												B_NAVIGABLE);
 virtual				~BListView();
 virtual	void		Draw(BRect updateRect);
 virtual	void		MouseDown(BPoint where);
 virtual	void		KeyDown(ulong aKey);
+virtual	void		MakeFocus(bool state = TRUE);
 virtual	void		FrameResized(float newWidth, float newHeight);
 		bool		AddItem(void *item);
 		bool		AddItem(void *item, long atIndex);
@@ -103,6 +104,7 @@ private:
 		BScrollBar	*ScrollBar();
 		void		Invoke(BMessage *msg, long index);
 		void		FontChanged();
+		void		DrawFocusIndicator(bool smart);
 
 		BList		fList;
 		long		fSelected;

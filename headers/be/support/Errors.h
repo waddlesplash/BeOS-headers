@@ -21,6 +21,9 @@
 #define B_MEDIA_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x4000
 #define B_MIDI_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x5000
 #define B_STORAGE_ERROR_BASE		B_GENERAL_ERROR_BASE + 0x6000
+#define B_POSIX_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x7000
+#define B_MAIL_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x8000
+#define B_PRINT_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x9000
 
 /* end of be-defined error constants; dev-defined errors start here(+1) */
 #define B_ERRORS_END		(B_GENERAL_ERROR_BASE + 0xffff)
@@ -45,8 +48,11 @@ enum {
 	B_NAME_IN_USE,				/* for named token creation functions */
 	B_TIMED_OUT,				/* time-out limit expired */
     B_INTERRUPTED,              /* call was interrupted by a signal */
+	B_WOULD_BLOCK,              /* call would have blocked */
+    B_CANCELED,              	/* User did stop operation */
 
 	B_ERROR = -1,				/* for the very lazy */
+	B_OK = 0,
 	B_NO_ERROR = 0
 };
 
@@ -113,5 +119,104 @@ enum {
   B_LAST_BUFFER_ERROR
 };
 
+
+/* 
+ * Posix and Berkeley socket errors
+ * These must be #define's and not enums
+ */
+#define E2BIG			(B_POSIX_ERROR_BASE + 1)
+/* #define _ERROR_2		(B_POSIX_ERROR_BASE + 2)	reserved */
+/* #define _ERROR_3		(B_POSIX_ERROR_BASE + 3)	reserved */
+#define EBADF			(B_POSIX_ERROR_BASE + 4)
+#define EBUSY			(B_POSIX_ERROR_BASE + 5)
+#define ECHILD			(B_POSIX_ERROR_BASE + 6)
+#define EDEADLK			(B_POSIX_ERROR_BASE + 7)
+#define EEXIST			(B_POSIX_ERROR_BASE + 8)
+#define EFAULT			(B_POSIX_ERROR_BASE + 9)
+#define EFBIG			(B_POSIX_ERROR_BASE + 10)
+/* #define _ERROR_11	(B_POSIX_ERROR_BASE + 11)	reserved */
+#define EINVAL			(B_POSIX_ERROR_BASE + 12)
+/* #define _ERROR_13	(B_POSIX_ERROR_BASE + 13) 	reserved */
+#define EISDIR			(B_POSIX_ERROR_BASE + 14)
+#define EMFILE			(B_POSIX_ERROR_BASE + 15)
+#define EMLINK			(B_POSIX_ERROR_BASE + 16)
+#define ENAMETOOLONG	(B_POSIX_ERROR_BASE + 17)
+#define ENFILE			(B_POSIX_ERROR_BASE + 18)
+#define ENODEV			(B_POSIX_ERROR_BASE + 19)
+#define ENOENT			(B_POSIX_ERROR_BASE + 20)
+#define ENOEXEC			(B_POSIX_ERROR_BASE + 21)
+#define ENOLCK			(B_POSIX_ERROR_BASE + 22)
+#define ENOMEM			(B_POSIX_ERROR_BASE + 23)
+#define ENOSPC			(B_POSIX_ERROR_BASE + 24)
+#define ENOSYS			(B_POSIX_ERROR_BASE + 25)
+#define ENOTDIR			(B_POSIX_ERROR_BASE + 26)
+#define ENOTEMPTY		(B_POSIX_ERROR_BASE + 27)
+#define ENOTTY			(B_POSIX_ERROR_BASE + 28)
+#define ENXIO			(B_POSIX_ERROR_BASE + 29)
+#define EPERM			(B_POSIX_ERROR_BASE + 30)
+#define EPIPE			(B_POSIX_ERROR_BASE + 31)
+#define EROFS			(B_POSIX_ERROR_BASE + 32)
+#define ESPIPE			(B_POSIX_ERROR_BASE + 33)
+#define ESRCH			(B_POSIX_ERROR_BASE + 34)
+#define EXDEV			(B_POSIX_ERROR_BASE + 35)
+#define EFPOS			(B_POSIX_ERROR_BASE + 36)
+#define ESIGPARM		(B_POSIX_ERROR_BASE + 37)
+#define EDOM			(B_POSIX_ERROR_BASE + 38)
+#define ERANGE			(B_POSIX_ERROR_BASE + 39)
+#define EPROTOTYPE		(B_POSIX_ERROR_BASE + 40)
+#define EPROTONOSUPPORT	(B_POSIX_ERROR_BASE + 41)
+#define EPFNOSUPPORT	(B_POSIX_ERROR_BASE + 42)
+#define EAFNOSUPPORT	(B_POSIX_ERROR_BASE + 43)
+#define EADDRINUSE		(B_POSIX_ERROR_BASE + 44)
+#define EADDRNOTAVAIL	(B_POSIX_ERROR_BASE + 45)
+#define ENETDOWN		(B_POSIX_ERROR_BASE + 46)
+#define ENETUNREACH		(B_POSIX_ERROR_BASE + 47)
+#define ENETRESET		(B_POSIX_ERROR_BASE + 48)
+#define ECONNABORTED	(B_POSIX_ERROR_BASE + 49)
+#define ECONNRESET		(B_POSIX_ERROR_BASE + 50)
+#define EISCONN			(B_POSIX_ERROR_BASE + 51)
+#define ENOTCONN		(B_POSIX_ERROR_BASE + 52)
+#define ESHUTDOWN		(B_POSIX_ERROR_BASE + 53)
+/* #define _ERROR_54	(B_POSIX_ERROR_BASE + 54)	reserved */
+#define ECONNREFUSED	(B_POSIX_ERROR_BASE + 55)
+#define EHOSTUNREACH	(B_POSIX_ERROR_BASE + 56)
+#define ENOPROTOOPT		(B_POSIX_ERROR_BASE + 57)
+#define ENOBUFS			(B_POSIX_ERROR_BASE + 58)
+
+
+#define EACCES			B_PERMISSION_DENIED
+#define EINTR			B_INTERRUPTED
+#define EIO				B_IO_ERROR
+#define ETIMEDOUT		B_TIMED_OUT
+#define EAGAIN 			B_WOULD_BLOCK	/* SysV compatibility */
+#define EWOULDBLOCK 	B_WOULD_BLOCK	/* BSD compatibility */
+
+/*
+ * ---------------------------------------------------------------------------
+			Mail Errors
+ * ---------------------------------------------------------------------------
+ */
+enum
+{
+/* mail errors */
+	B_MAIL_NO_DAEMON = B_MAIL_ERROR_BASE,
+	B_MAIL_UNKNOWN_USER,
+	B_MAIL_WRONG_PASSWORD,
+	B_MAIL_UNKNOWN_HOST,
+	B_MAIL_ACCESS_ERROR,
+	B_MAIL_UNKNOWN_FIELD,
+	B_MAIL_NO_RECIPIENT,
+	B_MAIL_INVALID_MAIL
+};
+/*
+ * ---------------------------------------------------------------------------
+			Print Errors
+ * ---------------------------------------------------------------------------
+ */
+enum
+{
+/* mail errors */
+	B_NO_PRINT_SERVER = B_PRINT_ERROR_BASE
+};
 
 #endif

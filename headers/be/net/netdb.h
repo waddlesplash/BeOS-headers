@@ -44,9 +44,12 @@ struct servent {
 };	
 
 struct hostent *gethostbyname(const char *hostname);
+struct hostent *gethostbyaddr(const char *hostname, int len, int type);
 struct servent *getservbyname(const char *name, const char *proto);
 void herror(const char *);
 unsigned long inet_addr(const char *a_addr);
+extern char *inet_ntoa(struct in_addr addr);
+
 
 int gethostname(char *hostname, unsigned hostlen);
 

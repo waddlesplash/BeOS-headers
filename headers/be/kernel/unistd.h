@@ -20,7 +20,7 @@ extern "C" {
 extern void         _exit(int status);
 extern int			access(const char *path, int amode);			/* I */
 
-/* XXX alarm */
+extern long			alarm(long sec);
 
 extern int			chdir(const char *path);						/* */
 extern int			chown(const char *path, uid_t owner, gid_t group);
@@ -33,9 +33,7 @@ extern int			execve(const char *path, char *argv[], char **envp);
 extern int          execl(const char *path, const char *arg, ...);
 extern int          execv(const char *path, char **argv);
 extern int          execlp(const char *file, const char *arg, ...);
-#if 0   /* metrowerks doesn't grok a regular arg after var args */
-extern int          execle(const char *path, const char *arg , ..., char **envp);
-#endif
+extern int          execle(const char *path, const char *arg , ... /*, char **envp */);
 extern int          exect(const char *path, char **argv);
 extern int          execvp(const char *file, char **argv);
 
@@ -119,7 +117,7 @@ extern long			set_file_type_creator(const char *path, ulong type,
 #define _POSIX_JOB_CONTROL         10
 #define _POSIX_NO_TRUNC            11
 #define _POSIX_SAVED_IDS           12
-#define _POSIX_VDISABLE            13
+#define _POSIX_VDISABLE            -2
 #define _POSIX_VERSION             14
 #define _SC_ARG_MAX                15
 #define _SC_CHILD_MAX              16

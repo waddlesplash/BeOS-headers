@@ -14,9 +14,9 @@
 #include <ansi_parms.h>
 #include <be_math.h>       /* useful constants like M_PI, etc */
 
-#define HUGE_VAL	(* (double *) __huge_val)
+#define HUGE_VAL	(*__huge_val)
 
-extern unsigned char *	__huge_val;
+extern const double *__huge_val;
 
 /*
  *  Set the following define to 1 to force the ANSI math header to inline FPU

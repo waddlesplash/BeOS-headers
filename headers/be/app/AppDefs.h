@@ -47,6 +47,7 @@ enum {
 	B_ZOOM					= '_WZM',
 	B_HANDLERS_REQUESTED	= '_RCR',
 	_APP_MENU_				= '_AMN',
+	_BROWSER_MENUS_			= '_BRM',
 	_HEAP_WATCH_			= '_HPW',
 	_MENU_EVENT_ 			= '_MEV',
 	_SAVE_PACKAGE_			= '_SVP',
@@ -64,7 +65,8 @@ enum {
 	B_PASTE 					= 'PSTE',
 	B_HANDLERS_INFO				= 'RINF',
 	B_MESSAGE_NOT_UNDERSTOOD	= 'MNOT',
-	B_NO_REPLY 					= 'NONE'
+	B_NO_REPLY 					= 'NONE',
+	B_SIMPLE_DATA				= 'DATA'
 };
 
 /* Data types */

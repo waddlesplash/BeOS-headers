@@ -155,7 +155,9 @@ enum debug_nub_message {
 	B_CLEAR_BREAKPOINT,			/* set a breakpoint */
 	B_STOP_NEW_THREADS,			/* en/disable stopping of child threads */
 	B_GET_THREAD_DEBUG_INFO,	/* get debugging info */
-	B_ACKNOWLEGE_IMAGE_CREATED	/* acknowlege image created */
+	B_ACKNOWLEGE_IMAGE_CREATED,	/* acknowlege image created */
+	B_START_PROFILER,			/* start profiler */
+	B_STOP_PROFILER				/* stop profiler */
 };
 
 /* -----
@@ -231,6 +233,22 @@ typedef struct {
 	long	token;
 } nub_acknowlege_image_created_msg;
 
+typedef struct {
+	port_id		reply_port;				/* port for reply from kernel */
+	thread_id	thid;
+	long		num;
+	long		slots[1];
+} nub_start_profiler_msg;	
+
+typedef struct {
+	port_id		reply_port;				/* port for reply from kernel */
+	thread_id	thid;
+} nub_stop_profiler_msg;	
+
+typedef struct {
+	long		num;
+	long		slots[1];
+} nub_stop_profiler_reply;
 
 /* -----
 	union of all stuctures passed to the nub
@@ -248,6 +266,8 @@ typedef union {
 	nub_stop_new_threads_msg			nub_stop_new_threads;
 	nub_get_thread_debug_info_msg		nub_get_thread_debug_info;
 	nub_acknowlege_image_created_msg	nub_acknowlege_image_created;
+	nub_start_profiler_msg				nub_start_profiler;
+	nub_stop_profiler_msg				nub_stop_profiler;
 } to_nub_msg;
 
 

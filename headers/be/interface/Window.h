@@ -95,7 +95,7 @@ enum {
 /*----------------------------------------------------------------*/
 
 struct message;
-class _BSession;
+class _BSession_;
 class BMenuItem;
 class BMenuBar;
 class BButton;
@@ -104,7 +104,6 @@ struct _cmd_key_;
 /*----------------------------------------------------------------*/
 
 class BWindow : public BLooper {
-	B_DECLARE_CLASS_INFO(BLooper);
 
 public:
 						BWindow(BRect frame,
@@ -145,6 +144,7 @@ virtual	bool			RemoveChild(BView *view);
 		BView			*ChildAt(long index) const;
 
 virtual	void			DispatchMessage(BMessage *message, BHandler *handler);
+virtual	void			MessageReceived(BMessage *message);
 virtual	void			FrameMoved(BPoint new_position);
 virtual void			WorkspacesChanged(ulong old_ws, ulong new_ws);
 virtual void			WorkspaceActivated(long ws, bool state);
@@ -178,10 +178,14 @@ virtual	void			MenusWillShow();
 		void			Flush() const;
 		void			Activate(bool = TRUE);
 virtual	void			WindowActivated(bool state);
-		void			ConvertToScreen(BPoint* ) const;
-		void			ConvertFromScreen(BPoint* ) const;
-		void			ConvertToScreen(BRect *) const;
-		void			ConvertFromScreen(BRect *) const;
+		void			ConvertToScreen(BPoint *pt) const;
+		BPoint			ConvertToScreen(BPoint pt) const;
+		void			ConvertFromScreen(BPoint *pt) const;
+		BPoint			ConvertFromScreen(BPoint pt) const;
+		void			ConvertToScreen(BRect *rect) const;
+		BRect			ConvertToScreen(BRect rect) const;
+		void			ConvertFromScreen(BRect *rect) const;
+		BRect			ConvertFromScreen(BRect rect) const;
 		void			MoveBy(float dx, float dy);
 		void			MoveTo(BPoint);
 		void			MoveTo(float x, float y);
@@ -222,6 +226,7 @@ friend class BBitmap;
 friend class BScrollBar;
 friend class BView;
 friend class BMenuItem;
+friend class BWindowScreen;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
 
 					BWindow(BRect frame, color_space depth);
@@ -239,16 +244,17 @@ virtual	void		task_looper();
 								BHandler *reply_to);
 		void		view_builder(BView *a_view);
 		void		attach_builder(BView *a_view);
+		void		detach_builder(BView *a_view);
 		long		get_server_token() const;
-		void		do_drop(BMessage *an_event);
+		BMessage	*extract_drop(BMessage *an_event, BHandler **target);
 		void		movesize(long opcode, float h, float v);
 		
 		void		handle_activate(BMessage *an_event);
 		void		do_view_frame(BMessage *an_event);
-		void		do_value_change(BMessage *an_event);
-		void		do_mouse_down(BMessage *an_event);
-		void		do_mouse_moved(BMessage *an_event);
-		void		do_key_down(BMessage *an_event);
+		void		do_value_change(BMessage *an_event, BHandler *handler);
+		void		do_mouse_down(BMessage *an_event, BView *target);
+		void		do_mouse_moved(BMessage *an_event, BView *target);
+		void		do_key_down(BMessage *an_event, BHandler *handler);
 		void		do_menu_event(BMessage *an_event);
 		void		do_draw_view(message *a_message);
 		void		*read_message(long *code);
@@ -263,6 +269,9 @@ virtual	void		task_looper();
 		void		post_message(BMessage *message);
 		void		SetLocalTitle(const char *new_title);
 		void		enable_pulsing(bool enable);
+		BHandler	*determine_target(BMessage *msg, BHandler *target);
+		void		kb_navigate();
+		void		navigate_to_next(long direction);
 
 		char			*fTitle;
 		long			server_token;
@@ -277,7 +286,7 @@ virtual	void		task_looper();
 		BView			*top_view;
 		BView			*focus;
 		BView			*last_mm_target;
-		_BSession		*a_session;
+		_BSession_		*a_session;
 		void			*fBuffer;
 		long			fBufferSize;
 		BMenuBar		*fKeyMenuBar;

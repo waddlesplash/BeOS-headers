@@ -13,6 +13,7 @@
 #include <Handler.h>
 #include <Looper.h>
 #include <Message.h>
+#include <MessageFilter.h>
 #include <MessageQueue.h>
 #include <Messenger.h>
 #include <Roster.h>

@@ -27,12 +27,11 @@
 //------------------------------------------------------------------------------
 
 class BWindow;
-class BScrollBar;
+//class BScrollBar;
 class _BTextBuffer_;
 class BTextControl;
 
 class BTextView : public BView {
-	B_DECLARE_CLASS_INFO(BView);
 public:
 					BTextView(	BRect frame,
 								const char *name,
@@ -55,7 +54,7 @@ virtual				~BTextView();
 		void		SetAlignment(alignment flag);
 		alignment	Alignment() const;
 		void		SetTabWidth(float width);
-		float		TabWidth();
+		float		TabWidth() const;
 		void		SetMaxChars(long max);
 		long		TextLength() const;
 		float		LineWidth(long line = 0) const;
@@ -88,7 +87,6 @@ virtual	void		MakeFocus(bool focusState = TRUE);
 virtual	void		KeyDown(ulong a_key);
 virtual	void		Pulse();
 virtual void		MessageReceived(BMessage *message);
-virtual	bool		MessageDropped(BMessage *message, BPoint pt, BPoint offset);
 virtual	void		FrameResized(float new_width, float new_height);
 virtual void		Cut(BClipboard *clip);
 virtual void		Copy(BClipboard *clip);
@@ -107,7 +105,7 @@ virtual void		SetFontRotation(float degrees);
 //-----------------------------------------------------------------------------
 private:
 
-friend class BScrollBar;
+//friend class BScrollBar;
 friend class BTextControl;
 
 		void			CalcText(bool inval = TRUE);
@@ -135,8 +133,6 @@ friend class BTextControl;
 								long* firstChar,
 								long* lastChar);
 		void			SetScrollBarRanges();
-		void			AttachHorzScrollBar(BScrollBar* hsb);
-		void			AttachVertScrollBar(BScrollBar* vsb);
 		float			JustOffset(long line) const;
 	 	float 			GetWidthEntry(unsigned char c) const;
 		float			StringWidth_table(long index, long length) const;
@@ -150,6 +146,7 @@ friend class BTextControl;
 										float vPos);
 		void			CheckSizeChange();
 		bool			IsAllowed(ulong aChar) const;
+		bool			HandleTextDrop(BMessage *msg);
 		void			InsertPasteOrDropped(	const char *theText,
 												long len,
 												bool doingDrop,
@@ -183,8 +180,6 @@ friend class BTextControl;
 		float			fInitialLineWidth;
 		BRect			fInitialContRect;
 		float			fInitialDestRight;
-		BScrollBar*		fHSB;
-		BScrollBar*		fVSB;
 		BList*			fDisallowedChars;
 		bool			fAutoIndent;	
 		bool 			fWrapWords;

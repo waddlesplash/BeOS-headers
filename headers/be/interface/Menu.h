@@ -25,6 +25,7 @@
 class BMenuItem;
 class BMenuBar;
 class BMenuWindow;
+extern "C" long _init_interface_kit_();
 
 enum menu_layout {
 	B_ITEMS_IN_ROW = 0,
@@ -32,9 +33,20 @@ enum menu_layout {
 	B_ITEMS_IN_MATRIX
 };
 
+struct menu_info {
+	float		font_size;
+	font_name	font;
+	rgb_color	background_color;
+	long		separator;
+	bool		click_to_open;
+	bool		triggers_always_shown;
+};
+
+long	set_menu_info(menu_info *info);
+long	get_menu_info(menu_info *info);
+
 class BMenu : public BView
 {
-		B_DECLARE_CLASS_INFO(BView);
 public:
 
 /* Public Interface for clients of this class */
@@ -89,6 +101,7 @@ virtual void			Draw(BRect updateRect);
 	// order to force and relayout
 		void			InvalidateLayout();
 	
+
 // -------------------------------------------------------------//
 // -------------------------------------------------------------//
 protected:
@@ -112,7 +125,8 @@ virtual	BPoint		ScreenLocation();
 virtual	void		Show();
 		void		Show(bool selectFirstItem);
 		void		Hide();
-		BMenuItem	*Track();
+		BMenuItem	*Track(	bool start_opened = FALSE,
+							BRect *special_rect = NULL);
 
 // -------------------------------------------------------------//
 // -------------------------------------------------------------//
@@ -120,7 +134,11 @@ private:
 friend BWindow;		// it calls InvokeItem for menu shortcuts
 friend BMenuBar;
 friend BMenuItem;
+friend long _init_interface_kit_();
+friend long	set_menu_info(menu_info *);
+friend long	get_menu_info(menu_info *);
 
+		void		InitData();
 		void		SetPad(BRect pad);
 		void		_show(bool selectFirstItem = FALSE);
 		void		_hide();
@@ -143,6 +161,7 @@ friend BMenuItem;
 		void		DeleteMenuWindow();
 		BMenuItem	*HitTestItems(BPoint where, BPoint slop = B_ORIGIN) const;
 		BRect		Superbounds() const;
+		void		CacheFontInfo();
 
 		void		ItemMarked(BMenuItem *item);
 		void		Install(BWindow *target);
@@ -160,6 +179,11 @@ friend BMenuItem;
 		void		CalcTriggers();
 		const char	*ChooseTrigger(const char *title, BList *chars);
 		void		UpdateWindowViewSize(bool upWind = TRUE);
+		bool		IsStickyPrefOn();
+		void		RedrawAfterSticky(BRect bounds);
+
+static	menu_info	*GetSystemMenuInfoPtr();
+static	menu_info	sMenuInfo;
 
 		BMenuItem	*fChosenItem;
 		BList		fItems;
@@ -169,9 +193,13 @@ friend BMenuItem;
 		BMenu		*fSuper;		// the BMenu that brought up this menu
 		BMenuItem	*fSuperitem;	// item in menu that bought up this menu
 		BRect		fSuperbounds;	// should be in global coords
+		float		fAscent;
+		float		fDescent;
+		float		fFontHeight;
 		int			fState;
 		menu_layout	fLayout;
 		char		fTrigger;
+		BRect		*fExtraRect;
 
 		bool		fResizeToFit;
 		bool		fUseCachedMenuLayout;
@@ -182,6 +210,7 @@ friend BMenuItem;
 		bool		fStickyMode;
 		bool		fIgnoreHidden;
 		bool		fTriggerEnabled;
+		bool		fRedrawAfterSticky;
 };
 
 #endif

@@ -63,13 +63,12 @@ class BView;
 
 class BRect;
 class BList;
-class _BSession;
+class _BSession_;
 class BWindow;
 
 //------------------------------------------------------------------------------
 
 class BApplication : public BLooper {
-	B_DECLARE_CLASS_INFO(BLooper);
 
 public:
 						BApplication(ulong signature);
@@ -124,13 +123,6 @@ virtual	void			MenusWillShow();
 
 private:
 
-friend BView *EditViewCreate(	BRect frame,
-								char *name,
-								ulong resizeMask,
-								ulong flags,
-								void *resData,
-								long id);
-
 friend class BWindow;
 friend class BView;
 friend class BScrollBar;
@@ -157,7 +149,7 @@ friend long _pulse_task_(void *arg);
 									BPoint offset,
 									long bitmap_token,
 									BHandler *reply_to);
-		void			write_drag(_BSession *the_session, BMessage *a_message);
+		void			write_drag(_BSession_ *session, BMessage *a_message);
 		bool			quit_all_windows(bool makeRequest);
 		void			do_argv(BMessage *msg);
 		BPopUpMenu		*MakeDefaultMainMenu();
