@@ -19,6 +19,8 @@
 #include <OS.h>
 #endif
 
+#define B_MENU_BAR_HEIGHT	15.0
+
 enum {
 	B_BORDER_FRAME = 0x01,
 	B_BORDER_CONTENTS = 0x02,
@@ -38,9 +40,10 @@ public:
 
 					BMenuBar(	BRect frame,
 								const char *title,
-								ulong resizeMask = B_FOLLOW_LEFT_TOP_RIGHT,
+								ulong resizeMask =
+									B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP,
 								menu_layout layout = B_ITEMS_IN_ROW,
-								bool resizeToFit = FALSE);
+								bool resizeToFit = TRUE);
 virtual				~BMenuBar();
 
 /* Public Interface for derived classes and partner classes */
@@ -52,6 +55,7 @@ virtual	void		MouseDown(BPoint where);
 
 private:
 friend BWindow;
+friend BMenuItem;
 
 		void		StartMenuBar(long menuIndex, bool sticky = TRUE);
 static	long		TrackTask(void *arg);
@@ -67,7 +71,7 @@ static	long		TrackTask(void *arg);
 		bool		fAllowSticky;
 		bool		fPopUpMenuBar;
 		bool		fTracking;
-		BView		*fPrevFocus;
+		long		fPrevFocusToken;
 		sem_id		fMenuSem;
 };
 

@@ -36,8 +36,8 @@
 
 #define B_DEFAULT_BSTREAM_COUNT			3
 #define	B_DEFAULT_BSTREAM_SIZE			B_PAGE_SIZE
-#define B_DEFAULT_BSTREAM_DELAY			10
-#define	B_DEFAULT_BSTREAM_TIMEOUT		5000
+#define B_DEFAULT_BSTREAM_DELAY			10000
+#define	B_DEFAULT_BSTREAM_TIMEOUT		5000000
 
 
 enum stream_state {
@@ -75,8 +75,8 @@ public:
    * prevent runaway streams.  A zero or negative value means no 
    * delay.
    */
-	long			BufferDelay() const;
-	void			SetBufferDelay(long ticks);
+	double			BufferDelay() const;
+	void			SetBufferDelay(double usecs);
 
   /* If no Buffers return to the StreamController within a period of time, the
    * StreamController will decide that one of the subscribers is broken and
@@ -86,8 +86,8 @@ public:
    * The default is B_DEFAULT_TIMEOUT.  Setting the timeout to 0 or a 
    * negative number will disable this.
    */
-	long			Timeout() const;
-	void			SetTimeout(long milliseconds);
+	double			Timeout() const;
+	void			SetTimeout(double usecs);
 
   /****************************************************************
    * Control the running of the stream.
@@ -178,7 +178,7 @@ private:
   /* Snooze until the desired time arrives.  Returns the 
    * current time upon returning.
    */
-	long			SnoozeUntil(long time);
+	double			SnoozeUntil(double sys_time);
 
   /****************************************************************
    *
@@ -191,8 +191,8 @@ private:
 
   long			fCountBuffers;		/* desired # of buffers */
   long			fBufferSize;		/* desired size of each buffer */
-  long			fBufferDelay;		/* minimum time between sends */
-  long			fTimeout;			/* watchdog timer */
+  double		fBufferDelay;		/* minimum time between sends */
+  double		fTimeout;			/* watchdog timer */
 
   port_id		fNotifyPort;		/* when set, send change of state msgs */
   thread_id		fProcessingThread;	/* thread to dispatch buffers */

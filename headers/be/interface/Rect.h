@@ -74,8 +74,9 @@ public:
 		bool		Intersects(BRect r) const;
 		bool		IsValid() const;
 		float		Width() const;
-		long		pWidth() const;
+		long		IntegerWidth() const;
 		float		Height() const;
+		long		IntegerHeight() const;
 		bool		Contains(BPoint) const;
 		bool		Contains(BRect) const;
 };
@@ -159,7 +160,7 @@ inline bool BRect::IsValid() const
 		return FALSE;
 }
 
-inline long BRect::pWidth() const
+inline long BRect::IntegerWidth() const
 {
 	return(ceil(right - left));
 }
@@ -167,6 +168,11 @@ inline long BRect::pWidth() const
 inline float BRect::Width() const
 {
 	return(right - left);
+}
+
+inline long BRect::IntegerHeight() const
+{
+	return(ceil(bottom - top));
 }
 
 inline float BRect::Height() const

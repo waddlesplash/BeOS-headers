@@ -27,7 +27,6 @@ enum {
 	B_KEY_DOWN 				= '_KYD',
 	B_KEY_UP 				= '_KYU',
 	B_MESSAGE_DROPPED 		= '_MDP',
-	B_MESSAGE_REPLY 		= '_MRP',
 	B_MINIMIZE				= '_WMN',
 	B_MOUSE_DOWN 			= '_MDN',
 	B_MOUSE_MOVED 			= '_MMV',
@@ -41,24 +40,31 @@ enum {
 	B_VALUE_CHANGED 		= '_VCH',
 	B_VIEW_MOVED 			= '_VMV',
 	B_VIEW_RESIZED 			= '_VRS',
-	B_VOLUME_MOUNTED 		= '_NVL',
-	B_VOLUME_UNMOUNTED		= '_VRM',
 	B_WINDOW_MOVED 			= '_WMV',
 	B_WINDOW_RESIZED 		= '_WRS',
+	B_WORKSPACES_CHANGED	= '_WCG',
+	B_WORKSPACE_ACTIVATED	= '_WAC',
 	B_ZOOM					= '_WZM',
+	B_HANDLERS_REQUESTED	= '_RCR',
 	_APP_MENU_				= '_AMN',
 	_HEAP_WATCH_			= '_HPW',
 	_MENU_EVENT_ 			= '_MEV',
 	_SAVE_PACKAGE_			= '_SVP',
-	_QUIT_ 					= '_QIT'
+	_PULSE_ENABLED_			= '_PBL',
+	_QUIT_ 					= '_QIT',
+	_VOLUME_MOUNTED_ 		= '_NVL',
+	_VOLUME_UNMOUNTED_		= '_VRM',
+	_OPEN_IN_WORKSPACE_		= '_OWS'
 };
 
 /* other commands */
 enum {
-	B_CUT 					= 'CCUT',
-	B_COPY 					= 'COPY',
-	B_PASTE 				= 'PSTE',
-	B_NO_REPLY 				= 'NONE'
+	B_CUT 						= 'CCUT',
+	B_COPY 						= 'COPY',
+	B_PASTE 					= 'PSTE',
+	B_HANDLERS_INFO				= 'RINF',
+	B_MESSAGE_NOT_UNDERSTOOD	= 'MNOT',
+	B_NO_REPLY 					= 'NONE'
 };
 
 /* Data types */
@@ -72,6 +78,7 @@ enum {
 	B_FLOAT_TYPE 				= 'FLOT',
 	B_GRAYSCALE_8_BIT_TYPE		= 'GRYB',
 	B_LONG_TYPE 				= 'LONG',
+	B_MESSENGER_TYPE			= 'MSNG',
 	B_MONEY_TYPE 				= 'MULA',
 	B_MONOCHROME_1_BIT_TYPE 	= 'MNOB',
 	B_OBJECT_TYPE 				= 'OPTR',
@@ -95,5 +102,6 @@ enum {
 };
 
 extern const unsigned char B_HAND_CURSOR[];
+extern const unsigned char B_I_BEAM_CURSOR[];
 
 #endif

@@ -31,7 +31,7 @@ class BListView : public BView
 public:
 					BListView(	BRect frame,
 								const char *name,
-								ulong resizeMask = B_FOLLOW_LEFT_TOP,
+								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								ulong flags = B_WILL_DRAW | B_FRAME_EVENTS);
 virtual				~BListView();
 virtual	void		Draw(BRect updateRect);
@@ -45,11 +45,12 @@ virtual	void		FrameResized(float newWidth, float newHeight);
 		bool		RemoveItem(void * item);
 		void		*RemoveItem(long index);
 
-virtual	long		SetTarget(BReceiver *target, BLooper *looper = NULL);
+virtual	long		SetTarget(BHandler *target);
+virtual long		SetTarget(BLooper *target, bool preferred);
 virtual	void		SetSelectionMessage(BMessage *message);
 virtual	void		SetInvocationMessage(BMessage *message);
 
-		BReceiver	*Target(BLooper **looper = NULL) const;
+		BHandler	*Target(BLooper **looper = NULL) const;
 		BMessage	*SelectionMessage() const;
 		ulong		SelectionCommand() const;
 		BMessage	*InvocationMessage() const;
@@ -110,7 +111,7 @@ private:
 		float		fBaselineOffset;
 		BMessage	*fSelectMessage;
 		BMessage	*fInvokeMessage;
-		BReceiver	*fTarget;
+		BHandler	*fTarget;
 		BLooper		*fLooper;
 };
 

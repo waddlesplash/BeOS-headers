@@ -31,6 +31,9 @@
 #ifndef _LOCKER_H
 #include <Locker.h>
 #endif
+#ifndef _MESSENGER_H
+#include <Messenger.h>
+#endif
 #ifndef _CLASS_INFO_H
 #include <ClassInfo.h>
 #endif
@@ -40,8 +43,10 @@
 
 struct	_data_;
 struct	_entry_;
-struct	_shared_;
+struct	_shared_msg_data_;
 class	BBlockCache;
+class	BMessenger;
+class	BHandler;
 
 //--------------------------------------------------------------------
 
@@ -71,6 +76,7 @@ virtual				~BMessage();
 		long		AddDouble(const char *name, double a_double);
 		long		AddRef(const char *name, record_ref a_ref);
 		long		AddObject(const char *name, BObject *obj);
+		long		AddMessenger(const char *name, BMessenger messenger);
 		long		AddData(const char *name,
 							ulong type,
 							const void *data,
@@ -85,6 +91,7 @@ virtual				~BMessage();
 		double		FindDouble(const char *name, long index = 0);
 		record_ref	FindRef(const char *name, long index = 0);
 		BObject		*FindObject(const char *name, long index = 0);
+		BMessenger	FindMessenger(const char *name, long index = 0);
 		void		*FindData(	const char *name,
 								ulong type,
 								long *numBytes);
@@ -115,6 +122,10 @@ virtual				~BMessage();
 		long		ReplaceRef(const char *name, long index, record_ref a_ref);
 		long		ReplaceObject(const char *name, BObject *obj);
 		long		ReplaceObject(const char *name, long index, BObject *obj);
+		long		ReplaceMessenger(const char *name, BMessenger messenger);
+		long		ReplaceMessenger(	const char *name,
+										long index,
+										BMessenger messenger);
 		long		ReplaceData(const char *name,
 								ulong type,
 								void *data,
@@ -137,10 +148,17 @@ virtual				~BMessage();
 		long		MakeEmpty();
 		bool		IsEmpty();
 
-		long		SendReply(BMessage *the_reply);
-		long		SendReply(ulong command);
+		bool		WasSent();
 		bool		IsSenderWaiting();
-		thread_id	Sender();
+		BMessenger	ReturnAddress();
+		bool		IsReply();
+		BMessage	*Previous();
+
+		long		SendReply(BMessage *the_reply, BHandler *reply_to = NULL);
+		long		SendReply(ulong command, BHandler *reply_to = NULL);
+	
+		long		SendReply(BMessage *the_reply, BMessage **reply_to_reply);
+		long		SendReply(ulong command, BMessage **reply_to_reply);
 	
 		bool		HasRect(const char *name, long index = 0);
 		bool		HasPoint(const char *name, long index = 0);
@@ -151,6 +169,7 @@ virtual				~BMessage();
 		bool		HasDouble(const char *name, long index = 0);
 		bool		HasRef(const char *name, long index = 0);
 		bool		HasObject(const char *name, long index = 0);
+		bool		HasMessenger(const char *name, long index = 0);
 		bool		HasData(const char *name, ulong type, long index = 0);
 		
 		long		CountNames(ulong type);
@@ -175,12 +194,13 @@ friend void		_msg_cache_cleanup_();
 // these internal functions.
 
 friend BMessage *_get_msg_from_port_(port_id, long *);
+friend BMessage *_msg_from_data_(void *);
 friend BMessage *_reconstruct_msg_(BMessage *);
-friend void		_set_message_sender_(BMessage *, thread_id);
 friend inline void		_set_message_target_(BMessage *, long);
+friend inline void		_set_message_reply_(BMessage *, BMessenger);
 friend inline long		_get_message_target_(BMessage *);
 
-					BMessage(ulong what, _shared_ *shared);
+					BMessage(ulong what, _shared_msg_data_ *shared);
 		void		init_shared_data();
 		void		delete_data();
 		long		calc_size();
@@ -189,12 +209,8 @@ friend inline long		_get_message_target_(BMessage *);
 								ulong type,
 								long index=0,
 								ulong *found_type = NULL);
-		long		forward_message(port_id port);
-		void		async_reply(BMessage *reply);
-		long		send_message(port_id port, BMessage **reply);
-		long		send_message(port_id port);
-		long		send_reply(port_id port);
-		long		_send_(port_id port, long code);
+		long		_send_(port_id port, long token, long code);
+		long		send_message(port_id port, long token, BMessage **reply);
 		BMessage	*shallow_clone();
 		BMessage	*make_ref();
 		long		get_ref();
@@ -204,12 +220,12 @@ friend inline long		_get_message_target_(BMessage *);
 static	BBlockCache	*sMsgCache;
 static	BBlockCache	*sSharedCache;
 
-		BMessage	*link;
-		_shared_	*shared;
-		long		target;		// token of the target
-		port_id		sender_port;
-		long		error;
-		bool		posted;
+		BMessage			*link;
+		_shared_msg_data_	*shared;
+		long				target;		// token of the target
+		long				error;
+		bool				posted;
+		BMessage			*original;
 };
 
 

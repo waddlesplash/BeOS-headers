@@ -15,6 +15,9 @@
 #ifndef _OS_H
 #include <OS.h>
 #endif
+#ifndef _MESSENGER_H
+#include <Messenger.h>
+#endif
 #ifndef _MESSAGE_H
 #include <Message.h>
 #endif
@@ -50,6 +53,7 @@ public:
 		const void	*FindData(ulong type, long *numBytes, long index = 0);
 
 		long		CountEntries(ulong type);
+		BMessenger	DataOwner();
 
 private:
 friend BApplication;

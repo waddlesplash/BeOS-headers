@@ -29,8 +29,6 @@
 #include <ClassInfo.h>
 #endif
 
-
-
 /* ================
    Per-subscriber information.
    ================ */
@@ -43,7 +41,7 @@ typedef struct _sub_info {
   struct _sbuf_info	*fRel;		/* next buf to be released */
   struct _sbuf_info	*fAcq;		/* next buf to be acquired */
   sem_id			fSem;		/* semaphore used for blocking */
-  long				fTotalTime;	/* accumulated time between acq/rel */
+  double			fTotalTime;	/* accumulated time between acq/rel */
   long				fHeld;		/* # of buffers acq'd but not yet rel'd */
   bool				fIsBlocked;	/* TRUE if sub is sitting in acquire_sem */
 } *subscriber_id;
@@ -57,28 +55,28 @@ typedef struct _sbuf_info {
   struct _sbuf_info	*fNext;		/* next "newer" buffer in the chain */
   subscriber_id		fAvailTo;	/* next subscriber to acquire this buffer */
   subscriber_id		fHeldBy;	/* subscriber that's acquired this buffer */
-  long				fAcqTime;	/* time at which this buffer was acquired */
+  double			fAcqTime;	/* time at which this buffer was acquired */
   area_id			fAreaID;	/* for system memory allocation calls */
   char				*fAddress;
-  long				fSize;
+  long				fSize;     /* usable portion can be smaller than ... */
+  long				fAreaSize; /* ... the size of the area. */
   bool				fIsFinal;	/* TRUE => stream is stopping */
 } *buffer_id;
 
 
-/* ================
+/* ================
    Interface definition for BStream class
    ================ */
 
 /* We've chosen B_MAX_SUBSCRIBER_COUNT and B_MAX_BUFFER_COUNT to be just
  * small enough so that a BStream structure fits in one 4096 byte page.
  */
-#define	B_MAX_SUBSCRIBER_COUNT	62
-#define	B_MAX_BUFFER_COUNT		62
+#define	B_MAX_SUBSCRIBER_COUNT	56
+#define	B_MAX_BUFFER_COUNT		56
 
 #define B_BUFFER_STREAM_BASE_ADDRESS	((const char*) 0x26000000)
 
 
-
 class BStream : public BObject {
 
 	B_DECLARE_CLASS_INFO(BObject);
@@ -122,14 +120,14 @@ public:
 /* Acquire and release a buffer */
 		long			AcquireBuffer(subscriber_id subID, 
 									  buffer_id *bufID,
-									  long timeout, 
+									  double timeout, 
 									  thread_id threadID=NULL);
 		long			ReleaseBuffer(subscriber_id subID, 
 									  thread_id threadID=NULL);
 
 /* Get the attributes of a particular buffer */
-		char			*BufferData(buffer_id bufID);
 		long			BufferSize(buffer_id bufID);
+		char			*BufferData(buffer_id bufID);
 		bool			IsFinalBuffer(buffer_id bufID);
 
 /* Get attributes of a particular subscriber */
@@ -152,11 +150,7 @@ public:
 		void			PrintStream(thread_id threadID=NULL);
 		void			PrintBuffers(thread_id threadID=NULL);
 		void			PrintSubscribers(thread_id threadID=NULL);
-#if 0
-		void			ConsistencyCheck(thread_id threadID=NULL);
-#endif
 
-
 /* ================
    Private member functions that require locking
    ================ */

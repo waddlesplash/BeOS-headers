@@ -67,6 +67,7 @@ public:
 		BDatabase*	Database();
 		void		SetDatabase(BDatabase* db);
 		BTable*		TableAt(long idx);
+		char*		FieldAt(long idx);
 		bool		HasRecordID(record_id id);
 		bool		IsLive();
 		char		*ToFlat(long *asize);
@@ -75,19 +76,20 @@ public:
 
 		void		PrintToStream();	
 		void		Clear();
-		void		PushField(char *name);
+
+		void		PushField(const char *name);
 		void		PushOp(query_op op);
-		void		PushArg(long value);
-		void		PushArg(char *string);
-		void		PushDate(double time);
-		void		PushFieldName(char *field_name);
+		void		PushLong(long value);
+		void		PushString(const char *string);
+		void		PushDouble(double value);
+
 virtual	void		MessageReceived(BMessage *a_message);
 		bool		RunOn(record_id id);
 		void		AddRecordID(record_id id);
 
 private:
 		BResList	*ResList();
-		long		add_any(void *data, long size, long atype);
+		long		add_any(const void *data, long size, long atype);
 		BMessage	*Query2Message();
 
 private:
@@ -125,7 +127,7 @@ void		update_query(BMessage *a_message);
 #define	B_BOOL			0x05
 #define	B_ALWAYS_NO		0x06
 #define	B_VECTOR		0x07
-#define	B_DATE_ARG		0x08
+#define	B_DOUBLE_ARG	0x08
 
 /*-----------------------------------------------------------------*/
 

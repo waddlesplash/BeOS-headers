@@ -14,6 +14,9 @@
 #ifndef _SUPPORT_DEFS_H
 #include <SupportDefs.h>
 #endif
+#ifndef _OS_H
+#include <OS.h>
+#endif
 #ifndef _RECT_H
 #include <Rect.h>
 #endif
@@ -60,7 +63,8 @@ typedef	struct
 typedef enum { B_MONOCHROME_1_BIT = 1,
                B_GRAYSCALE_8_BIT = 2,
                B_COLOR_8_BIT = 4,
-               B_RGB_24_BIT = 8 } color_space;
+               B_RGB_32_BIT = 8,
+			   B_RGB_16_BIT = 16 } color_space;
 	      
 /*----------------------------------------------------------------*/
 typedef struct {
@@ -68,7 +72,14 @@ typedef struct {
 		BRect		frame;
 		void		*bits;
 		long		bytes_per_row;
-		long		reserved;
+		ulong		spaces;
+		float		min_refresh_rate;
+		float		max_refresh_rate;
+		float		refresh_rate;
+		uchar		h_position;
+		uchar		v_position;
+		uchar		h_size;
+		uchar		v_size;
 	} screen_info;
 
 /*----------------------------------------------------------------*/
@@ -152,6 +163,11 @@ typedef	struct {
 		ulong	circumflex_dead_key[32];
 		ulong	dieresis_dead_key[32];
 		ulong	tilde_dead_key[32];
+		ulong	acute_tables;
+		ulong	grave_tables;
+		ulong	circumflex_tables;
+		ulong	dieresis_tables;
+		ulong	tilde_tables;
 	} key_map;
 
 typedef struct {
@@ -167,6 +183,13 @@ typedef enum {
 	B_VERTICAL
 } orientation;
 
+typedef struct {
+	bool	proportional;
+	bool	double_arrows;
+	long	knob;
+	long	min_knob_size;
+} scroll_bar_info;
+
 /*----------------------------------------------------------------*/
 
 typedef enum {
@@ -174,6 +197,20 @@ typedef enum {
     B_ALIGN_RIGHT,
     B_ALIGN_CENTER
 } alignment;
+
+/*----------------------------------------------------------------*/
+
+enum {
+	B_CONTROL_TABLE				= 0x00000001,
+	B_OPTION_CAPS_SHIFT_TABLE	= 0x00000002,
+	B_OPTION_CAPS_TABLE			= 0x00000004,
+	B_OPTION_SHIFT_TABLE		= 0x00000008,
+	B_OPTION_TABLE				= 0x00000010,
+	B_CAPS_SHIFT_TABLE			= 0x00000020,
+	B_CAPS_TABLE				= 0x00000040,
+	B_SHIFT_TABLE				= 0x00000080,
+	B_NORMAL_TABLE				= 0x00000100
+};
 
 /*----------------------------------------------------------------*/
 
@@ -206,7 +243,7 @@ typedef font_name symbol_set_name;
 
 //??? This is temporary until alpha channel gets going
 extern const uchar B_TRANSPARENT_8_BIT;
-extern const rgb_color B_TRANSPARENT_24_BIT;
+extern const rgb_color B_TRANSPARENT_32_BIT;
 
 #ifdef __cplusplus
 }
@@ -218,21 +255,51 @@ rgb_color	desktop_color();
 void		set_desktop_color(rgb_color c, bool stick = TRUE);
 color_map	*system_colors();
 
+
+/*----------------------------------------------------------------*/
+
 long		count_screens();
 void		get_screen_info(screen_info *info);
 void		get_screen_info(long index, screen_info *info);
-void		set_screen_size(long index, float h, float v, bool stick = TRUE);
+
+enum {
+	B_8_BIT_640x480    = 0x00000001,
+	B_8_BIT_800x600    = 0x00000002,
+	B_8_BIT_1024x768   = 0x00000004,
+	B_8_BIT_1280x1024  = 0x00000008,
+	B_8_BIT_1600x1200  = 0x00000010,
+	B_16_BIT_640x480   = 0x00000020,
+	B_16_BIT_800x600   = 0x00000040,
+	B_16_BIT_1024x768  = 0x00000080,
+	B_16_BIT_1280x1024 = 0x00000100,
+	B_16_BIT_1600x1200 = 0x00000200,
+	B_32_BIT_640x480   = 0x00000400,
+	B_32_BIT_800x600   = 0x00000800,
+	B_32_BIT_1024x768  = 0x00001000,
+	B_32_BIT_1280x1024 = 0x00002000,
+	B_32_BIT_1600x1200 = 0x00004000,
+	B_8_BIT_640x400	   = 0x80000000
+};
+
+long		set_screen_space(long index, ulong res, bool stick = TRUE);
+long		set_screen_refresh_rate(long index, float rate, bool stick = TRUE);
+long		adjust_crt(long index, uchar x_position, uchar y_position,
+					   uchar x_size, uchar y_size, bool stick = TRUE);
 
 long		get_dock_width(float *width);
 
 void		lock_screen(long index=0);
 void		unlock_screen(long index=0);
 
+ulong		modifiers();
 key_map		*system_key_map();
 void		restore_key_map();
 long		get_keyboard_id(ushort *ID);
 void		set_modifier_key(ulong modifier, ulong key);
 void		set_keyboard_locks(ulong modifiers);
+
+long		get_scroll_bar_info(scroll_bar_info *info);
+long		set_scroll_bar_info(scroll_bar_info *info);
 
 long		get_mouse_type(long *type);
 long		set_mouse_type(long type);
@@ -247,5 +314,19 @@ long		count_fonts();
 void		get_font_name(long index, font_name* name);
 long		count_symbol_sets();
 void		get_symbol_set_name(long index, symbol_set_name* name);
+
+void		activate_app(team_id);
+
+void		animate_window(	BRect from,
+							BRect to,
+							long num_frames,
+							bool restore_last);
+
+long		count_workspaces();
+void		set_workspace_count(long count);
+long		current_workspace();
+void		activate_workspace(long workspace);
+
+double		idle_time();
 
 #endif

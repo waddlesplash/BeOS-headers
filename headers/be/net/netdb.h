@@ -52,6 +52,7 @@ int gethostname(char *hostname, unsigned hostlen);
 
 /* BE specific, because of lack of UNIX passwd functions */
 int getusername(char *username, unsigned userlen);
+int getpassword(char *password, unsigned passlen);
 
 #if __cplusplus
 }

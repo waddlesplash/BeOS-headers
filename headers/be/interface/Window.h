@@ -29,6 +29,9 @@
 #ifndef _MESSAGE_H
 #include <Message.h>
 #endif
+#ifndef _MESSENGER_H
+#include <Messenger.h>
+#endif
 #ifndef _LIST_H
 #include <List.h>
 #endif
@@ -41,12 +44,12 @@
 
 /*----------------------------------------------------------------*/
 
-typedef enum { B_SHADOWED_WINDOW,
-       	       B_TITLED_WINDOW,
-       	       B_BORDERED_WINDOW,
-       	       B_MODAL_WINDOW,
-       	       B_BACKDROP_WINDOW,
-       	       B_QUERY_WINDOW } window_type;
+enum window_type {
+	B_TITLED_WINDOW = 1,
+	B_BORDERED_WINDOW = 2,
+	B_MODAL_WINDOW = 3,
+	B_DOCUMENT_WINDOW = 11
+};
 
 /*----------------------------------------------------------------*/
 /* window part codes */
@@ -65,23 +68,29 @@ enum {
 /* window manager flags for windows properties			  */
 /*----------------------------------------------------------------*/
 
-const long B_NOT_MOVABLE				= 0x00000001;
-const long B_NOT_H_RESIZABLE			= 0x00000004;
-const long B_NOT_V_RESIZABLE			= 0x00000008;
-const long B_NOT_RESIZABLE				= 0x00000002;
-const long B_WILL_ACCEPT_FIRST_CLICK	= 0x00000010;
-const long B_NOT_CLOSABLE			= 0x00000020;
-const long B_NOT_ZOOMABLE			= 0x00000040;
-const long B_NOT_MINIMIZABLE		= 0x00004000;
-const long B_WILL_FLOAT				= 0x00000080;
-const long _PRIVATE_W_FLAG1_		= 0x00000100;
-const long _PRIVATE_W_FLAG2_		= 0x00000200;
-const long _PRIVATE_W_FLAG3_		= 0x00000400;
-const long _PRIVATE_W_FLAG4_		= 0x00000800;
-const long _PRIVATE_W_FLAG5_		= 0x00001000;
-const long _PRIVATE_W_FLAG6_		= 0x00002000;
-const long _PRIVATE_W_FLAG7_		= 0x10000000;
-const long _PRIVATE_W_FLAG8_		= 0x20000000;
+enum {
+	B_NOT_MOVABLE				= 0x00000001,
+	B_NOT_RESIZABLE				= 0x00000002,
+	B_NOT_H_RESIZABLE			= 0x00000004,
+	B_NOT_V_RESIZABLE			= 0x00000008,
+	B_WILL_ACCEPT_FIRST_CLICK	= 0x00000010,
+	B_NOT_CLOSABLE				= 0x00000020,
+	B_NOT_ZOOMABLE				= 0x00000040,
+	B_NOT_MINIMIZABLE			= 0x00004000,
+	B_WILL_FLOAT				= 0x00000080,
+	_PRIVATE_W_FLAG1_			= 0x00000100,
+	_PRIVATE_W_FLAG2_			= 0x00000200,
+	_PRIVATE_W_FLAG3_			= 0x00000400,
+	_PRIVATE_W_FLAG4_			= 0x00000800,
+	_PRIVATE_W_FLAG5_			= 0x00001000,
+	_PRIVATE_W_FLAG6_			= 0x00002000,
+	_PRIVATE_W_FLAG7_			= 0x10000000,
+	_PRIVATE_W_FLAG8_			= 0x20000000,
+	_PRIVATE_W_FLAG9_			= 0x00008000
+};
+
+#define B_CURRENT_WORKSPACE	0
+#define B_ALL_WORKSPACES	0xffffffff
 
 /*----------------------------------------------------------------*/
 
@@ -90,7 +99,6 @@ class _BSession;
 class BMenuItem;
 class BMenuBar;
 class BButton;
-class BDirectory;
 struct _cmd_key_;
 
 /*----------------------------------------------------------------*/
@@ -102,18 +110,21 @@ public:
 						BWindow(BRect frame,
 								const char *title, 
 								window_type type,
-								ulong flags);
+								ulong flags,
+								ulong workspace = B_CURRENT_WORKSPACE);
 virtual					~BWindow();
 
 virtual	void			Quit();
 		void			Close();
 		void			SetDiscipline(bool yesno);
+		window_type		WindowType() const;
 
 		long			RunSavePanel(	const char* save_name = NULL,
 										const char* title = NULL,
 										const char* button_name = NULL,
+										const char* cancel_button_name = NULL,
 										BMessage* configuration = NULL);
-		bool			IsSavePanelRunning() const;
+		bool			IsSavePanelRunning();
 		void			CloseSavePanel();
 virtual	void			SaveRequested(record_ref directory, const char *name);
 virtual	void			SavePanelClosed(BMessage* message);
@@ -132,8 +143,11 @@ virtual	void			AddChild(BView *view);
 virtual	bool			RemoveChild(BView *view);
 		long			CountChildren() const;
 		BView			*ChildAt(long index) const;
-virtual	void			DispatchMessage(BMessage *message, BReceiver *receiver);
+
+virtual	void			DispatchMessage(BMessage *message, BHandler *handler);
 virtual	void			FrameMoved(BPoint new_position);
+virtual void			WorkspacesChanged(ulong old_ws, ulong new_ws);
+virtual void			WorkspaceActivated(long ws, bool state);
 virtual	void			FrameResized(float new_width, float new_height);
 virtual void			Minimize(bool minimize);
 virtual void			Zoom(	BPoint rec_position,
@@ -142,25 +156,25 @@ virtual void			Zoom(	BPoint rec_position,
 		void			Zoom();
 		void			SetZoomLimits(float max_h, float max_v);
 virtual void			ScreenChanged(BRect screen_size, color_space depth);
-		void			SetPulseRate(long rate);
+		void			SetPulseRate(double rate);
+		double			PulseRate() const;
 		void			AddShortcut(	ulong key,
 										ulong modifiers,
 										BMessage *msg);
 		void			AddShortcut(	ulong key,
 										ulong modifiers,
 										BMessage *msg,
-										BReceiver *target);
+										BHandler *target);
 		void			RemoveShortcut(ulong key, ulong modifiers);
 		void			SetDefaultButton(BButton *button);
 		BButton			*DefaultButton() const;
 virtual	void			MenusWillShow();
-		ulong			Modifiers() const;
 		bool			NeedsUpdate() const;
 		void			UpdateIfNeeded();
 		BView			*FindView(const char *view_name) const;
 		BView			*FindView(BPoint) const;
 		BView			*CurrentFocus() const;
-		BReceiver		*PreferredReceiver() const;
+		BHandler		*PreferredHandler() const;
 		void			Flush() const;
 		void			Activate(bool = TRUE);
 virtual	void			WindowActivated(bool state);
@@ -184,12 +198,20 @@ virtual	void			Hide();
 		void			SetTitle(const char *title);
 		bool			IsFront() const;
 		bool			IsActive() const;
-		void			RemoveMouseMessages();
-		void			SetMainMenuBar(BMenuBar *bar);
+		void			SetKeyMenuBar(BMenuBar *bar);
+		BMenuBar		*KeyMenuBar() const;
 		void			SetSizeLimits(	float min_h,
 										float max_h,
 										float min_v,
 										float max_v);
+		void			GetSizeLimits(	float *min_h,
+										float *max_h,
+										float *min_v,
+										float *max_v);
+		ulong			Workspaces() const;
+		void			SetWorkspaces(ulong);
+
+virtual	void			HandlersRequested(BMessage *msg);
 
 // ------------------------------------------------------------------
 
@@ -208,12 +230,15 @@ virtual	void		task_looper();
 		void		start_drag(	BMessage *msg,
 								long token,
 								BPoint offset,
-								BRect track_rect);
+								BRect track_rect,
+								BHandler *reply_to);
 		void		start_drag(	BMessage *msg,
 								long token,
 								BPoint offset,
-								long bitmap_token);
+								long bitmap_token,
+								BHandler *reply_to);
 		void		view_builder(BView *a_view);
+		void		attach_builder(BView *a_view);
 		long		get_server_token() const;
 		void		do_drop(BMessage *an_event);
 		void		movesize(long opcode, float h, float v);
@@ -226,9 +251,9 @@ virtual	void		task_looper();
 		void		do_key_down(BMessage *an_event);
 		void		do_menu_event(BMessage *an_event);
 		void		do_draw_view(message *a_message);
-		void		queue_new_message(message *a_message);
-		void		queue_event_message(message *a_message);
-		void		dequeue_as_much_as_possible();
+		void		*read_message(long *code);
+		void		queue_new_message(void *data);
+		void		queue_event_message(void *data, long code);
 		void		DoPulse();
 		_cmd_key_	*allocShortcut(ulong key, ulong modifiers);
 		_cmd_key_	*FindShortcut(ulong key, ulong modifiers);
@@ -236,8 +261,8 @@ virtual	void		task_looper();
 								ulong modifiers,
 								BMenuItem *item);
 		void		post_message(BMessage *message);
-		void		tickle();
 		void		SetLocalTitle(const char *new_title);
+		void		enable_pulsing(bool enable);
 
 		char			*fTitle;
 		long			server_token;
@@ -248,26 +273,30 @@ virtual	void		task_looper();
 
 		long			send_port;
 		long			receive_port;
-		long			task_id;
 
 		BView			*top_view;
 		BView			*focus;
 		BView			*last_mm_target;
 		_BSession		*a_session;
-		BMenuBar		*fMainMenuBar;
+		void			*fBuffer;
+		long			fBufferSize;
+		BMenuBar		*fKeyMenuBar;
 		BButton			*fDefaultButton;
 		BList			accelList;
 		long			top_view_token;
+		bool			pulse_enabled;
 		long			pulse_phase;
-		long			pulse_rate;
+		double			pulse_rate;
 		bool			discipline;
 		bool			fWaitingForMenu;
-		bool			fSavePanelOpen;
+		BMessenger		fPanelMessenger;
 		record_ref		fLastSavePanelDir;
 		bool			fOffscreen;
 		sem_id			fMenuSem;
 		float			fMaxZoomH;
 		float			fMaxZoomV;
+		float			fMinWindH;
+		float			fMinWindV;
 		float			fMaxWindH;
 		float			fMaxWindV;
 		BRect			fFrame;
@@ -277,6 +306,7 @@ virtual	void		task_looper();
 //------------------------------------------------------------------------------
 
 inline void  BWindow::Close()			{ Quit(); }
+inline window_type  BWindow::WindowType() const		{ return fType; }
 
 //------------------------------------------------------------------------------
 

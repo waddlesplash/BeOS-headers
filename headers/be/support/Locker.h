@@ -25,24 +25,32 @@ extern "C" int	_init_shared_heap_();
 class BLocker : public BObject {
 	B_DECLARE_CLASS_INFO(BObject);
 public:
-		void	*operator new(size_t size);
+		void		*operator new(size_t size);
 
-				BLocker();
-				BLocker(const char *name);
-virtual			~BLocker();	
-		bool	Lock();
-		void	Unlock();
-		bool	CheckLock() const;
+					BLocker();
+					BLocker(const char *name);
+virtual				~BLocker();	
+
+		bool		Lock();
+		void		Unlock();
+		thread_id	LockOwner() const;
+		bool		CheckLock() const;
 
 private:
 friend int	_init_shared_heap_();
 		
 		void	*operator new(size_t size, void *buffer);
 
-		int		fCount;
+		long	fCount;
 		sem_id	fSem;
 		long	fOwner;
 		int		fOwnerCount;
 };
+
+inline thread_id BLocker::LockOwner() const
+	{ return fOwner; }
+
+inline bool BLocker::CheckLock() const
+	{ return (fOwner == find_thread(NULL)); }
 
 #endif

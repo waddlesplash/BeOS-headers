@@ -17,40 +17,57 @@
 #ifndef _OBJECT_H
 #include <Object.h>
 #endif
+#ifndef _MESSAGE_H
+#include <Message.h>
+#endif
 #ifndef _CLASS_INFO_H
 #include <ClassInfo.h>
-#endif
-#ifndef _MESSAGE_H
-#include "Message.h"
 #endif
 
 //------------------------------------------------------------------------------
 
-class BMessenger : public BObject {
-	B_DECLARE_CLASS_INFO(BObject);
+class	BHandler;
+class	BMessage;
+
+// This class shouldn't have a vtable
+
+class BMessenger {
 
 public:	
 		void	*operator new(size_t size);
 
-				BMessenger(ulong signature, thread_id thread = -1);
-virtual			~BMessenger();
+				BMessenger();
+				BMessenger(ulong signature, team_id team = -1);
+				BMessenger(const BHandler *handler);
+				BMessenger(const BMessenger &from);
+				~BMessenger();
+
+		long	SendMessage(ulong command, BHandler *reply_to = NULL);
+		long	SendMessage(BMessage *a_message, BHandler *reply_to = NULL);
 
 		long	SendMessage(ulong command, BMessage **reply);
-		long	SendMessage(ulong command);
 		long	SendMessage(BMessage *a_message, BMessage **reply);
-		long	SendMessage(BMessage *a_message);
+
 		long	Error();
+
+		BMessenger	FindHandler(BMessage *find_msg);
+		BMessenger	FindHandler(long index, const char *the_class = NULL);
+		BMessenger	FindHandler(const char *name, const char *the_class =NULL);
+		BMessage	*FindAllHandlers(const char *the_class = NULL);
+
+		BMessenger	&operator=(const BMessenger &from);
 
 // ------------------------------------------------------------------
 
 private:
 friend class BRoster;
+friend class BMessage;
 				
-				BMessenger(port_id port, int, int);
-
 		void	*operator new(size_t size, void *buffer);
 
 		port_id		fPort;
+		long		fHandlerToken;
+		team_id		fTeam;
 		long		fError;
 };
 

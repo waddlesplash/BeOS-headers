@@ -33,7 +33,8 @@ enum stop_bits { B_STOP_BITS_1, B_STOP_BITS_2 };
 
 enum parity_mode { B_NO_PARITY, B_ODD_PARITY, B_EVEN_PARITY };
 
-enum { B_HARDWARE_CONTROL = 0x00000001, B_SOFTWARE_CONTROL = 0x00000002 };
+enum { B_NOFLOW_CONTROL = 0, B_HARDWARE_CONTROL = 0x00000001, 
+								B_SOFTWARE_CONTROL = 0x00000002 };
 
 // -----------------------------------------------------------------------
 class BSerialPort : public BObject {
@@ -48,8 +49,8 @@ void			Close(void);
 
 long			Read(void *buf, long count);
 long			Write(const void *buf, long count);
-void			SetNumBytes(long numBytes);
-void			SetTimeout(long tenthsOfSeconds);
+void			SetBlocking(bool Blocking);
+void			SetTimeout(double microSeconds);
 
 void			SetDataRate(data_rate bitsPerSecond);
 data_rate		DataRate(void);
@@ -86,8 +87,8 @@ data_bits		fDataBits;
 stop_bits		fStopBits;
 parity_mode		fParityMode;
 ulong			fFlow;
-unsigned char	fTime;
-unsigned char	fMin;
+uchar			fTimeout;
+bool			fBlocking;
 
 int				DriverControl();
 };

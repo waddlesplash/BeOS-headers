@@ -29,7 +29,7 @@
 class BWindow;
 class BScrollBar;
 class _BTextBuffer_;
-class BTextView;
+class BTextControl;
 
 class BTextView : public BView {
 	B_DECLARE_CLASS_INFO(BView);
@@ -54,9 +54,8 @@ virtual				~BTextView();
 		void		Insert(const char* text);
 		void		SetAlignment(alignment flag);
 		alignment	Alignment() const;
-		void		SetSpacing(long spacing);
-		long		Spacing() const;
 		void		SetTabWidth(float width);
+		float		TabWidth();
 		void		SetMaxChars(long max);
 		long		TextLength() const;
 		float		LineWidth(long line = 0) const;
@@ -83,12 +82,14 @@ virtual	bool		AcceptsChar(ulong aChar) const;
 virtual	void		AttachedToWindow();
 virtual	void		Draw(BRect updateRect);
 virtual	void		MouseDown(BPoint where);
+virtual	void		MouseMoved(BPoint where, ulong code, BMessage *a_message);
 virtual	void		WindowActivated(bool state);
 virtual	void		MakeFocus(bool focusState = TRUE);
 virtual	void		KeyDown(ulong a_key);
 virtual	void		Pulse();
 virtual void		MessageReceived(BMessage *message);
 virtual	bool		MessageDropped(BMessage *message, BPoint pt, BPoint offset);
+virtual	void		FrameResized(float new_width, float new_height);
 virtual void		Cut(BClipboard *clip);
 virtual void		Copy(BClipboard *clip);
 virtual	void		Paste(BClipboard *clip);
@@ -107,6 +108,7 @@ virtual void		SetFontRotation(float degrees);
 private:
 
 friend class BScrollBar;
+friend class BTextControl;
 
 		void			CalcText(bool inval = TRUE);
 		void			Lock(bool state);
@@ -162,7 +164,6 @@ friend class BScrollBar;
 		ulong 			fCaretTime;
 		BRect			fCaretRect;
 		alignment		fJust;
-		short 			fSpacing;
 		float			fTabWidth;
 		long			fMaxChars;
 		_BTextBuffer_	*fBuffer;
@@ -192,6 +193,7 @@ friend class BScrollBar;
 		bool 			fCaretOn;
 		bool 			fHiliteState;
 		bool			fActive;
+		bool			fIBeamSet;
 };
 
 inline bool	BTextView::IsAllowed(ulong c) const

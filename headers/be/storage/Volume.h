@@ -25,10 +25,6 @@ class	BDirectory;
 class	BFile;
 class	BVolume;
 
-long		mount_vol(const char *device);
-long		unmount_vol(long volid);
-long		format_device(const char *device, const char *volume_name);
-
 long		count_volumes();
 BVolume		volume_at(long index);
 BVolume		volume_for_database(BDatabase *db);

@@ -80,6 +80,8 @@ friend class BRecord;
 						   ulong type,
 						   ulong creator);
 
+		void		private_lock();
+		void		private_unlock();
 		field_key	AddField(const char *field_name, long field_type, long flags = 0);
 					BTable(char *table_name,
 					   			long id, 
@@ -102,6 +104,7 @@ friend class BRecord;
 		long		fprop_count;
 		ulong		table_type;
 		ulong		table_creator;
+		long		lock;
 };
 
 #endif

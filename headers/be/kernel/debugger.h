@@ -288,6 +288,7 @@ typedef struct {
 typedef struct {
 	long		reply_token;	/* token to acknowledge receipt (REQUIRED!) */
 	team_id		team;			/* team id */
+	thread_id	thread;			/* id of thread that is loading the image */
 	image_info	info;			/* info for the image */
 } db_pef_image_created_msg;
 

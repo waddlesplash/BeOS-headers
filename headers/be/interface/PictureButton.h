@@ -33,7 +33,8 @@ public:
 								   BPicture *on,
 								   BMessage *message, 
 								   ulong behavior = B_ONE_STATE_BUTTON,
-								   ulong resizeMask = B_FOLLOW_LEFT_TOP, 
+								   ulong resizeMask =
+										B_FOLLOW_LEFT | B_FOLLOW_TOP, 
 								   ulong flags = B_WILL_DRAW); 
 virtual				~BPictureButton();
 

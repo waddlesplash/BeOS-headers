@@ -28,11 +28,11 @@ class BTable;
 class BRecord;
 class BDF;
 
-class	BDatabase : public BMessenger {
-	B_DECLARE_CLASS_INFO(BMessenger);
+class	BDatabase : public BObject {
+	B_DECLARE_CLASS_INFO(BObject);
 public:
 		long		Error();
-		database_id	ID();
+		database_id	xID();
 		long		VolumeID();
 
 		BTable		*CreateTable(const char *table_name);
@@ -44,7 +44,8 @@ public:
 		BTable		*TableAt(long i);
 		bool		IsValid();
 		bool		IsReadOnly();
-		long		GetUnique();
+		long		ID();
+		long		Version();
 
 		void		PrintToStream();
 		long		GetTag(long index);
@@ -55,7 +56,7 @@ private:
 friend class BQuery;
 friend class BTable;
 friend class BRecord;
-friend int	_add_volume_(long, long, int *);	// ## from Volume.cpp
+friend int	_add_volume_(long, long, long *);	// ## from Volume.cpp
 friend int	_remove_volume_(long);				// ## from Volume.cpp
 friend class BVolCtrl;							// ## from zoo_keeper
 
@@ -82,6 +83,7 @@ virtual				~BDatabase();
 		long		do_reserve();
 		void		remove_reserve(long ref);
 
+		BMessenger	messenger;
 		long		signature;
 		long		db_id;
 		database_id	db_sid;
@@ -92,9 +94,10 @@ virtual				~BDatabase();
 		BDF			*datafile;
 		bool		read_only;
 		long		unique;
+		long		version;
 };
 	
 BDatabase	*database_for(database_id id);
-long		master_hash(char *name, long type);
+long		master_hash(const char *name, long type);
 
 #endif

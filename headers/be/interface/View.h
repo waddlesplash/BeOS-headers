@@ -17,11 +17,8 @@
 #ifndef	_RECT_H
 #include "Rect.h"
 #endif
-#ifndef	_RECEIVER_H
-#include <Receiver.h>
-#endif
-#ifndef	_LOOPER_H
-#include <Looper.h>
+#ifndef	_HANDLER_H
+#include <Handler.h>
 #endif
 #ifndef _MESSAGE_H
 #include <Message.h>
@@ -83,16 +80,6 @@ struct edge_info
 
 /*----------------------------------------------------------------*/
 
-/*
-** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-**
-**  IF YOU CHANGE THESE BIT FLAGS YOU MUST UPDATE _RESIZE_MASK_
-**
-**	If you don't, bad things will happen.
-**
-** !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*/
-
 enum { B_FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
        _B_RESERVED1_ =				0x40000000	/* 30 */,
        B_WILL_DRAW =				0x20000000	/* 29 */,
@@ -106,19 +93,8 @@ enum { B_FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
        _B_RESERVED7_ =				0x00200000	/* 22 */ };
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
-		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|_B_RESERVED3_|_B_RESERVED4_|\
-			_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
-
-//extern const long B_FOLLOW_LEFT_TOP;
-//extern const long B_FOLLOW_ALL;
-//extern const long B_FOLLOW_LEFT_TOP_RIGHT;
-//extern const long B_FOLLOW_LEFT_TOP_BOTTOM;
-//extern const long B_FOLLOW_RIGHT_BOTTOM;
-//extern const long B_FOLLOW_TOP_RIGHT;
-//extern const long B_FOLLOW_LEFT_RIGHT_BOTTOM;
-//extern const long B_FOLLOW_TOP_RIGHT_BOTTOM;
-//extern const long B_FOLLOW_LEFT_BOTTOM;
-//extern const long B_FOLLOW_NONE;
+		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|_B_RESERVED3_|\
+			_B_RESERVED4_|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
 
 enum {
 	_VIEW_TOP_ = 1L,
@@ -130,18 +106,11 @@ enum {
 
 // the FOLLOW flags take 16 bits in total
 inline long _rule_(long r1, long r2, long r3, long r4)
-{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
+	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
 
-#define B_FOLLOW_LEFT_TOP  		_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_TOP_, _VIEW_LEFT_)
-#define B_FOLLOW_ALL  			_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
-#define B_FOLLOW_LEFT_TOP_RIGHT  	_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_TOP_, _VIEW_RIGHT_)
-#define B_FOLLOW_LEFT_TOP_BOTTOM  _rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_LEFT_)
-#define B_FOLLOW_RIGHT_BOTTOM  	_rule_(_VIEW_BOTTOM_, _VIEW_RIGHT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
-#define B_FOLLOW_TOP_RIGHT  		_rule_(_VIEW_TOP_, _VIEW_RIGHT_, _VIEW_TOP_, _VIEW_RIGHT_)
-#define B_FOLLOW_LEFT_RIGHT_BOTTOM  _rule_(_VIEW_BOTTOM_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
-#define B_FOLLOW_TOP_RIGHT_BOTTOM _rule_(_VIEW_TOP_, _VIEW_RIGHT_, _VIEW_BOTTOM_, _VIEW_RIGHT_)
-#define B_FOLLOW_LEFT_BOTTOM  	_rule_(_VIEW_BOTTOM_, _VIEW_LEFT_, _VIEW_BOTTOM_, _VIEW_LEFT_)
 #define B_FOLLOW_NONE 0
+#define B_FOLLOW_ALL  			_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_,\
+										_VIEW_RIGHT_)
 
 #define B_FOLLOW_LEFT			_rule_(0, _VIEW_LEFT_, 0, _VIEW_LEFT_)
 #define B_FOLLOW_RIGHT			_rule_(0, _VIEW_RIGHT_, 0, _VIEW_RIGHT_)
@@ -151,7 +120,7 @@ inline long _rule_(long r1, long r2, long r3, long r4)
 #define B_FOLLOW_TOP			_rule_(_VIEW_TOP_, 0, _VIEW_TOP_, 0)
 #define B_FOLLOW_BOTTOM			_rule_(_VIEW_BOTTOM_, 0, _VIEW_BOTTOM_, 0)
 #define B_FOLLOW_TOP_BOTTOM		_rule_(_VIEW_TOP_, 0, _VIEW_BOTTOM_, 0)
-#define B_FOLLOW_V_CENTER		_rule_(0, _VIEW_CENTER_, 0, _VIEW_CENTER_)
+#define B_FOLLOW_V_CENTER		_rule_(_VIEW_CENTER_, 0, _VIEW_CENTER_, 0)
 
 //------------------------------------------------------------------------------
 
@@ -161,8 +130,8 @@ class BRegion;
 class BPoint;
 class BPolygon;
 
-class BView : public BReceiver {
-	B_DECLARE_CLASS_INFO(BReceiver);
+class BView : public BHandler {
+	B_DECLARE_CLASS_INFO(BHandler);
 
 public:
 						BView(	BRect frame,
@@ -173,17 +142,15 @@ virtual					~BView();
 
 virtual	void			AttachedToWindow();
 
-		const char		*Name() const;
-		void			SetName(const char *name);
-	
 virtual	void			AddChild(BView *aView);
 virtual	bool			RemoveChild(BView *childView);
 		long			CountChildren() const;
 		BView			*ChildAt(long index) const;
+		BView			*NextSibling() const;
+		BView			*PreviousSibling() const;
 		bool			RemoveSelf();
 
 		BWindow			*Window() const;
-virtual	BLooper			*Looper() const;
 
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
@@ -207,12 +174,14 @@ virtual	bool			MessageDropped(	BMessage *aMessage,
 		void			GetMouse(	BPoint* location,
 									ulong *buttons,
 									bool checkMessageQueue = TRUE) const;
-		void			GetKeys(key_info *info, bool checkMessageQueue);
-		ulong			Modifiers() const;
-		void			DragMessage(BMessage *aMessage, BRect dragRect);
+		long			GetKeys(key_info *info, bool checkMessageQueue);
+		void			DragMessage(BMessage *aMessage,
+									BRect dragRect,
+									BHandler *reply_to = NULL);
 		void			DragMessage(BMessage *aMessage,
 									BBitmap *anImage,
-									BPoint offset);
+									BPoint offset,
+									BHandler *reply_to = NULL);
 
 		BView			*FindView(const char *name) const;
 		BView			*Parent() const;
@@ -253,96 +222,99 @@ virtual	void			SetLowColor(rgb_color a_color);
 		void			MovePenBy(float x, float y);
 		BPoint			PenLocation() const;
 		void			StrokeLine(	BPoint toPt,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			StrokeLine(	BPoint pt0,
 									BPoint pt1,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			BeginLineArray(long count);
 		void			AddLine(BPoint pt0, BPoint pt1, rgb_color col);
 		void			EndLineArray();
 	
 		void			StrokePolygon(	const BPolygon *aPolygon,
-										const pattern *p = &B_SOLID_HIGH);
+									    bool  closed = TRUE,
+										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										long numPts,
-										const pattern *p = &B_SOLID_HIGH);
+									    bool  closed = TRUE,
+										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										long numPts,
 										BRect bounds,
-										const pattern *p = &B_SOLID_HIGH);
+									    bool  closed = TRUE,
+										pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPolygon *aPolygon,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
 									long numPts,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
 									long numPts,
 									BRect bounds,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 	
 		void			StrokeTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
 										BRect bounds,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 		void			StrokeTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 		void			FillTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 		void			FillTriangle(	BPoint pt1,
 										BPoint pt2,
 										BPoint pt3,
 										BRect bounds,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 
-		void			StrokeRect(BRect r, const pattern *p = &B_SOLID_HIGH);
-		void			FillRect(BRect r, const pattern *p = &B_SOLID_HIGH);
+		void			StrokeRect(BRect r, pattern p = B_SOLID_HIGH);
+		void			FillRect(BRect r, pattern p = B_SOLID_HIGH);
 		void			InvertRect(BRect r);
 
 		void			StrokeRoundRect(BRect r,
 										float xRadius,
 										float yRadius,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 		void			FillRoundRect(	BRect r,
 										float xRadius,
 										float yRadius,
-										const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
 
 		void			StrokeEllipse(	BPoint center,
 										float xRadius,
 										float yRadius,
-										const pattern *p = &B_SOLID_HIGH);
-		void			StrokeEllipse(BRect r, const pattern *p = &B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
+		void			StrokeEllipse(BRect r, pattern p = B_SOLID_HIGH);
 		void			FillEllipse(BPoint center,
 									float xRadius,
 									float yRadius,
-									const pattern *p = &B_SOLID_HIGH);
-		void			FillEllipse(BRect r, const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
+		void			FillEllipse(BRect r, pattern p = B_SOLID_HIGH);
 				
 		void			StrokeArc(	BPoint center,
 									float xRadius,
 									float yRadius,
 									float start_angle,
 									float arc_angle,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			StrokeArc(	BRect r,
 									float start_angle,
 									float arc_angle,
-									const pattern *p = &B_SOLID_HIGH);
+									pattern p = B_SOLID_HIGH);
 		void			FillArc(BPoint center,
 								float xRadius,
 								float yRadius,
 								float start_angle,
 								float arc_angle,
-								const pattern *p = &B_SOLID_HIGH);
+								pattern p = B_SOLID_HIGH);
 		void			FillArc(BRect r,
 								float start_angle,
 								float arc_angle,
-								const pattern *p = &B_SOLID_HIGH);
+								pattern p = B_SOLID_HIGH);
 			
 		void			CopyBits(BRect src, BRect dst);
 		void			DrawBitmap(	const BBitmap *aBitmap,
@@ -362,7 +334,7 @@ virtual void			SetSymbolSet(const char* name);
 		float			StringWidth(const char *aString, long length) const;
 		void			GetCharEscapements(	char charArray[],
 											long numChars,
-											short escapementArray[],
+											float escapementArray[],
 											float* escapementUnits) const;
 		void			GetCharEdges(	char charArray[],
 										long numChars,
@@ -406,13 +378,13 @@ virtual	void			Hide();
 		void			Flush() const;
 		void			Sync() const;
 
+virtual	void			HandlersRequested(BMessage *msg);
+
 // ------------------------------------------------------------------
 
 private:
 
-friend class BListView;
 friend class BScrollBar;
-friend class BRadioButton;
 friend class BWindow;
 friend class BBitmap;
 
@@ -433,26 +405,23 @@ friend class BBitmap;
 		char		*test_area(long length);
 		void		remove_comm_array();
 		void		*new_comm_array(long cnt);
+		BView		*RealParent() const;
 
 		long		server_token;
-		long		client_token;
 		BRect		f_bound;
 		long		f_type;
 		float		origin_h;
 		float		origin_v;
 
-		char*		view_name;
-
 		BWindow*	owner;
 		BView*		parent;
 		BView*		next_sibling;
+		BView*		prev_sibling;
 		BView*		first_child;
 
 		short 		fShowLevel;
-
-		long		id;
-		long		resType;
-		BPicture	*cp;
+		bool		top_level_view;
+		BPicture	*cpicture;
 		void		*comm_array;
 		void		*comm_array_list;
 		long		comm_array_size;

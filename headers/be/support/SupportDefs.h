@@ -10,10 +10,16 @@
 
 #ifndef _SUPPORT_DEFS_H
 #define _SUPPORT_DEFS_H
+#ifndef _ERRORS_H
+#include <Errors.h>
+#endif
 
+#ifndef _SYS_TYPES_H
 typedef unsigned long			ulong;
 typedef unsigned int			uint;
 typedef unsigned short			ushort;
+#endif  /* _SYS_TYPES_H */
+
 typedef unsigned char			uchar;
 typedef unsigned char			bool;
 
@@ -48,13 +54,49 @@ extern const char *B_EMPTY_STRING;		/* global variable for "" */
 #define min(a,b) ((a)>(b)?(b):(a))
 #define max(a,b) ((a)>(b)?(a):(b))
 
-/* ??? remove */
+/* Function pointer types */
 typedef void	(*B_PFV)();
 typedef int		(*B_PFI)();
 typedef long	(*B_PFL)();
 
-#ifndef _ERRORS_H
-#include <Errors.h>
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+/* ----------
+   Time functions
+
+	time is represented at the number of seconds since 00:00:00
+	Jan 1 1970 Coordinated Universal Time (UTC).  The time zone is kept
+	as an offset in seconds from the system time.  Library functions
+	convert these to the local time.
+----- */
+
+ulong	real_time_clock (void);
+void	set_real_time_clock (ulong secs_since_jan1_1970);
+
+long	time_zone (void);
+void	set_time_zone (long offset_from_utc);
+
+/* ------
+	Useful assembly language routines
+
+	The atomic functions return the old value found in the value arg. 
+----- */
+
+extern long atomic_add(long *value, long addvalue);
+extern long atomic_and(long *value, long andvalue);
+extern long atomic_or(long *value, long orvalue);	
+
+extern short	read_16_swap (short *address);
+extern long		read_32_swap (long *address);
+extern void		write_16_swap (short *address, short value);
+extern void		write_32_swap (long *address, long value);
+
+#ifdef __cplusplus
+}
+#endif
+
+
 
 #endif

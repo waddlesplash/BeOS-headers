@@ -1,5 +1,8 @@
 /* ++++++++++
 	FILE:	joystick.h
+	REVS:	$Revision: 1.1 $
+	NAME:	herold
+	DATE:	Tue Nov 14 11:48:18 PST 1995
 	Copyright (c) 1995-96 by Be Incorporated.  All Rights Reserved.
 +++++ */
 

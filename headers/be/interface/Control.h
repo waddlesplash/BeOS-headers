@@ -60,8 +60,9 @@ virtual	void		SetMessage(BMessage *message);
 		BMessage	*Message() const;
 		ulong		Command() const;
 
-virtual long		SetTarget(BReceiver *target, BLooper *looper = NULL);
-		BReceiver	*Target(BLooper **looper = NULL) const;
+virtual long		SetTarget(BHandler *target);
+virtual long		SetTarget(BLooper *target, bool preferred);
+		BHandler	*Target(BLooper **looper = NULL) const;
 
 //-----------------------------------------------------------------------------
 
@@ -74,7 +75,7 @@ private:
 	BMessage		*fMessage;
 	char			*fLabel;
 	long			fValue;
-	BReceiver		*fTarget;
+	BHandler		*fTarget;
 	BLooper			*fLooper;
 	bool			fEnabled;
 };

@@ -9,6 +9,8 @@
 #ifndef _SOCKET_H
 #define _SOCKET_H
 
+#include <sys/time.h>       /* for timeval/timezone structs & gettimeofday */
+
 #if __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -19,6 +21,7 @@ extern "C" {
 
 #define SO_DEBUG 1
 #define SO_REUSEADDR 2
+#define SO_NONBLOCK 3
 
 #define MSG_OOB 0x1
 
@@ -50,20 +53,6 @@ struct sockaddr_in {
 	char sin_zero[4];
 };
 
-struct timeval {
-	unsigned long tv_sec;
-	unsigned long tv_usec;
-};
-
-/*
- * If you depend on timezones, you are in trouble because we don't
- * support them!  Everything is currently in local time and there is
- * no concept of GMT.
- */
-struct timezone {
-	int tz_minuteswest;
-	int tz_dsttime;
-};
 
 #define ntohs(x) x
 #define htons(x) x

@@ -40,5 +40,4 @@ long stop_sound(sound_handle handle);
 
 long wait_for_sound(sound_handle handle);
 
-
 #endif			// #ifndef _BEEP_H

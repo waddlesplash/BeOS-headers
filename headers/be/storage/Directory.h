@@ -59,6 +59,8 @@ virtual					~BDirectory();
 		long			GetFiles(long index, long num, record_ref *buf);
 		long			GetDirectories(long index, long num, record_ref *buf);
 
+		long			GetRefForPath(const char *path, record_ref *ref);
+
 private:
 virtual	bool			is_file();
 		int				create(const char *name, BStore *item,

@@ -49,48 +49,29 @@ class BSubscriber : public BObject {
 	B_DECLARE_CLASS_INFO(BObject);
 
 public:
-
-					BSubscriber(char *name);
+					BSubscriber(const char *name=NULL);
 	virtual			~BSubscriber();
 
 	/* return most recent error (including initialization time) */
 	long			Error();
 
-	/* Get/Set the server */
-	BMessenger		*Server();
-	void			SetServer(BMessenger *server);
 
 /* ================
    Gaining access to the Buffer Stream
    ================ */
 
-    subscriber_id	ID();
-
-	long			Name(subscriber_id id, char *name);
-
 	virtual long	Subscribe(long resource,
 							  subscriber_id clique, 
 							  bool willWait);
-
 	virtual long	Unsubscribe(void);
-							
 
-	virtual long	CountSubscribers(void);
+
 	subscriber_id	Clique(void);
+    subscriber_id	ID(void);
+	const char 		*Name(void);
 
-	double			Timeout(void);
 	void			SetTimeout(double microseconds);
-
-	long			GetStreamParameters(long *bufferSize,
-										long *bufferCount,
-										bool *isRunning,
-										long *subscriberCount,
-										subscriber_id *clique);
-
-	long			SetStreamBuffers(long bufferSize, long bufferCount);
-
-	long			StartStreaming();
-	long			StopStreaming();
+	double			Timeout(void);
 
 /* ================
    Streaming functions.
@@ -101,16 +82,32 @@ public:
 								void *userData,
 								StreamFn streamFunction,
 								CompletionFn completionFunction,
+
 								bool background);
+	virtual long	ExitStream(bool synch=FALSE);
 
+	bool			IsInStream(void);
+/* Stream info */
 
-	virtual long	ExitStream();
+	long			GetStreamParameters(long *bufferSize,
+										long *bufferCount,
+										bool *isRunning,
+										long *subscriberCount,
+										subscriber_id *clique);
+	long			SetStreamBuffers(long bufferSize, long bufferCount);
+	long			StartStreaming();
+	long			StopStreaming();
+
 
 
 /* ================
    Protected members (may be used by inherited classes)
    ================ */
 protected:
+
+	/* Get/Set the server */
+	BMessenger		*Server();
+	void			SetServer(BMessenger *server);
 
 	/* send standard reply to server */
 	long			SendRPC(BMessage *msg);
@@ -129,15 +126,13 @@ private:
 	long			RequestEnter(subscriber_id neighbor, bool before);
 	long			RequestExit();
 
-	/* return a handle to the buffer stream associated with the server */
-	long			FindStream(BStream **stream);
-
 	/****************************************************************
 	 * Private member variables
 	 */
 	char			*fName;			/* name given to constructor */
 	BMessenger		*fServer; 		/* message pipe to server */
 	BStream			*fStream;		/* buffer stream */
+
 	long			fError;			/* for Error() member fn */
 	subscriber_id	fID;		 	/* our subscriber_id */
 	subscriber_id	fClique;
@@ -146,7 +141,10 @@ private:
 	StreamFn		fStreamFn;		/* per-buffer user function */
 	CompletionFn	fCompletionFn;	/* called after streaming stops */
 	bool			fCallStreamFn;	/* true while we should call fStreamFn */
-	long			fTimeout;		/* time out while awaiting buffers */
+	double			fTimeout;		/* time out while awaiting buffers */
+	sem_id			fSynchLock;
+	thread_id		fBackThread;
+
   };
 
 #endif	// #ifdef _SUBSCRIBER_H

@@ -71,20 +71,25 @@ virtual					~BStore();
 		BStore &		operator=(const BStore &item);
 
 protected:
-	friend class	BDirectory;
+		long			SetError(long err);
+
+private:
 	friend int		_bfile_cleanup_();
-	friend int		_add_volume_(long, long, int *);
+	friend int		_add_volume_(long, long, long *);
 	friend int		_remove_volume_(long);
 
 						BStore();
 
+	friend class	BDirectory;
+	friend class 	BFile;
+
 virtual	bool			is_file() = 0;
 virtual long			set_ref(long volid, record_id id);
 
-		long			fErr;
 		record_id		fRecid;
 		BRecord			*fRec;
 		long			fVolID;
+   		long			fErr;
 };
 
 #endif

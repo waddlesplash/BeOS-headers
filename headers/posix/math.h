@@ -12,6 +12,7 @@
 #pragma direct_destruction off
 
 #include <ansi_parms.h>
+#include <be_math.h>       /* useful constants like M_PI, etc */
 
 #define HUGE_VAL	(* (double *) __huge_val)
 

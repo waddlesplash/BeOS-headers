@@ -22,9 +22,20 @@ typedef unsigned long	clock_t;
 
 #elif __dest_os == __be_os
 
-#define CLOCKS_PER_SEC	1000000
+#define CLOCKS_PER_SEC	1000
+#define CLK_TCK         CLOCKS_PER_SEC
+typedef long clock_t;
 
-typedef double	clock_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void tzset(void);
+extern char *tzname[2];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

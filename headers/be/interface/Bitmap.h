@@ -54,14 +54,18 @@ virtual	bool		RemoveChild(BView *view);
 private:
 friend class BView;
 friend class BCursor;
+friend void  _get_screen_bitmap_(BBitmap *,BRect);
 
 		char		*get_shared_pointer() const;
 		void		set_bits(long offset, char *data, long length);
 		void		set_bits_24(long offset, char *data, long length);
 		void		set_bits_24_local_gray(long offset, char *data, long len);
 		void		set_bits_24_local_256(long offset, uchar *data, long len);
+		void		set_bits_24_24(long offset, char *data, long length);
+		void		set_bits_8_24(long offset, char *data, long length);
+		void		set_bits_gray_24(long offset, char *data, long length);
 		long		get_server_token() const;
-
+		
 		void		*fBasePtr;
 		long		fSize;
 		color_space	fType;

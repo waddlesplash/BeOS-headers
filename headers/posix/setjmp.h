@@ -42,6 +42,14 @@ extern "C" {
 
 void __longjmp_ldestr(jmp_buf,int);
 
+#include <ansi_parms.h>
+#if __dest_os == __be_os
+#define sigjmp_buf  jmp_buf
+#define sigsetjmp   setjmp
+#define siglongjmp  longjmp
+#endif
+	
+
 #ifdef __cplusplus
 }
 #endif

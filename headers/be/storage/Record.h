@@ -24,7 +24,7 @@
 
 /*-----------------------------------------------------------------*/
 
-bool does_ref_conform(record_ref ref, char* table_name);
+bool does_ref_conform(record_ref ref, const char* table_name);
 
 /*-----------------------------------------------------------------*/
 
@@ -91,12 +91,17 @@ virtual				~BRecord();
 		void		SetRaw(const char *field_name, const void *data, long size);
 		void		SetRaw(field_key, const void *data, long size);
 
+		void		SetExtra(const char *field_name, const void *data, long data_size);
+		void		*FindExtra(const char *name, long *size);
+		void		RemoveExtra(const char *name);
+		long		GetExtraInfo(long index, char **name, long *size);
+
 /*-----------------------------------------------------------------*/
 private:
 
 friend class BDatabase;
 
-		int			lock;
+		long		lock;
 		BTable		*the_table;
 		char		*data_ptr;
 		long		data_size;
@@ -120,6 +125,10 @@ friend class BDatabase;
 					BRecord();
 		void		private_unlock();
 		void		private_lock();
+		//int		WriteExtra(char *data, long offset, long size);
+		//int		ReadExtra(char *data, long offset, long size);
+		void		remove_extra_data(const char *name);
+		void		add_extra_data(const char *name, const char *new_data, long new_size, short type);
 };
 
 /*-----------------------------------------------------------------*/

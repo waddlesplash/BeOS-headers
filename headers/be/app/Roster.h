@@ -67,36 +67,35 @@ class BRoster {
 public:
 		bool		IsRunning(ulong signature) const;
 		bool		IsRunning(record_ref ref) const;
-		thread_id	ThreadFor(ulong signature) const;
-		thread_id	ThreadFor(record_ref ref) const;
-		void		GetThreadList(BList *threads) const;
-		void		GetThreadList(ulong signature, BList *threads) const;
+		team_id		TeamFor(ulong signature) const;
+		team_id		TeamFor(record_ref ref) const;
+		void		GetAppList(BList *team_id_list) const;
+		void		GetAppList(ulong signature, BList *team_id_list) const;
 		long		GetAppInfo(ulong signature, app_info *info) const;
 		long		GetAppInfo(record_ref ref, app_info *info) const;
-		long		GetRunningAppInfo(thread_id thread, app_info *info) const;
+		long		GetRunningAppInfo(team_id team, app_info *info) const;
 		long		GetActiveAppInfo(app_info *info) const;
 		long		Launch(	ulong signature,
 							BMessage *initial_message = NULL,
-							thread_id *app_thread = NULL);
+							team_id *app_team = NULL);
 		long		Launch(	ulong signature,
 							BList *message_list,
-							thread_id *app_thread = NULL);
+							team_id *app_team = NULL);
 		long		Launch(	ulong signature,
 							long argc,
 							char **args,
-							thread_id *app_thread = NULL);
+							team_id *app_team = NULL);
 		long		Launch(	record_ref ref,
 							BMessage *initial_message = NULL,
-							thread_id *app_thread = NULL);
+							team_id *app_team = NULL);
 		long		Launch(	record_ref ref,
 							BList *message_list,
-							thread_id *app_thread = NULL);
+							team_id *app_team = NULL);
 		long		Launch(	record_ref ref,
 							long argc,
 							char **args,
-							thread_id *app_thread = NULL);
-		void		RemoveApplication(thread_id thread);
-		void		RemoveTeam(team_id team);
+							team_id *app_team = NULL);
+		void		RemoveApp(team_id team);
 
 //------------------------------------------------------------------------------
 private:
@@ -105,9 +104,6 @@ friend class BApplication;
 friend class BWindow;
 friend class _BAppInit_;
 friend int	_init_roster_();
-
-		void		Lock();
-		void		Unlock();
 
 		void		*operator new(size_t size);
 		void		operator delete(void *p, size_t size);
@@ -118,14 +114,17 @@ friend int	_init_roster_();
 		ulong		AddApplication(	ulong signature,
 									record_ref ref,
 									ulong flags,
-									thread_id thread,
+									team_id team,
 									port_id port,
 									bool full_reg);
 		void		SetSignature(thread_id thread, ulong signature);
-		void		SetThread(ulong entry_token, thread_id thread);
-		thread_id	CompleteRegistration(thread_id thread, port_id port);
+		void		SetThread(team_id team, thread_id tid);
+		void		SetThreadAndTeam(ulong entry_token,
+									 thread_id tid,
+									 team_id team);
+		void		CompleteRegistration(team_id team, port_id port);
 		bool		IsAppPreRegistered(	record_ref ref,
-										thread_id thread,
+										team_id team,
 										app_info *info) const;
 		void		RemovePreRegApp(ulong signature, record_ref ref);
 		long		IndexOfApp(ulong signature) const;
@@ -141,16 +140,16 @@ friend int	_init_roster_();
 										BList* msg_list,
 										long cargs,
 										char **args,
-										thread_id *app_thread);
+										team_id *app_team);
 		long		FindRecord(	ulong signature,
 								record_ref ref,
 								BRecord **rec) const;
 		void		NotifyBrowser(	ulong signature,
-									thread_id thread,
+									team_id team,
 									ulong flags,
 									record_ref ref);
-		bool		UpdateActiveApp(thread_id thread);
-		void		SetAppFlags(thread_id thread, ulong flags);
+		bool		UpdateActiveApp(team_id team);
+		void		SetAppFlags(team_id team, ulong flags);
 
 		BLocker		fLock;
 		long		fCount;
@@ -159,7 +158,7 @@ friend int	_init_roster_();
 		ulong		fListeners[50];
 		BMessenger	*fBrowser;
 		ulong		fEntryToken;
-		thread_id	fActiveApp;
+		team_id		fActiveApp;
 };
 
 extern BRoster *be_roster;

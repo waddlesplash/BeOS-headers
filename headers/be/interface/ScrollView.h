@@ -29,7 +29,7 @@ class BScrollView : public BView {
 public:
 					BScrollView(const char *name,
 								BView *target,
-								ulong resizeMask = B_FOLLOW_LEFT_TOP,
+								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								ulong flags = 0,
 								bool horizontal = FALSE,
 								bool vertical = FALSE, 
@@ -37,6 +37,7 @@ public:
 virtual				~BScrollView();
 
 virtual	void		Draw(BRect updateRect);
+virtual	void		AttachedToWindow();
 		BScrollBar	*ScrollBar(orientation flag) const;
 
 //------------------------------------------------------------------------------

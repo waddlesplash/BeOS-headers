@@ -29,7 +29,7 @@ class BAudioSubscriber : public BSubscriber {
 
 public:
 
-					BAudioSubscriber(char *name);
+					BAudioSubscriber(const char *name=NULL);
 	virtual			~BAudioSubscriber();
 
 	long			ADCInput(void);

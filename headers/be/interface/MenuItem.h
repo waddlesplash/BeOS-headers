@@ -46,14 +46,15 @@ public:
 virtual					~BMenuItem();
 	
 virtual	void			SetLabel(const char *name);
-virtual	long			SetTarget(BReceiver *target, BLooper *looper = NULL);
+virtual	long			SetTarget(BHandler *target);
+virtual long			SetTarget(BLooper *target, bool preferred);
 virtual	void			SetEnabled(bool state);
 virtual	void			SetMarked(bool state);
 virtual void			SetMessage(BMessage *message);
 virtual void			SetTrigger(char ch);
 
 		const char		*Label() const;
-		BReceiver		*Target(BLooper **looper = NULL) const;
+		BHandler		*Target(BLooper **looper = NULL) const;
 		bool			IsEnabled() const;
 		bool			IsMarked() const;
 		ulong			Command() const;
@@ -95,12 +96,14 @@ friend	BMenuBar;
 		BMessage	*fMessage;
 		BMenu		*fSubmenu;
 		BWindow		*fWindow;
-		BReceiver	*fTarget;
+		BHandler	*fTarget;
 		BLooper		*fLooper;
 		BMenu		*fSuper;
 		BRect		fBounds;		// in coord system of Super menu view
 		ulong		fModifiers;
-		short		fOffset;
+		float		fAscent;
+		float		fDescent;
+		float		fFontHeight;
 		short		fTriggerIndex;
 		char		fUserTrigger;
 		char		fSysTrigger;

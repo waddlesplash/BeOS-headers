@@ -14,54 +14,65 @@
 #ifndef _OS_H
 #include <OS.h>
 #endif
-#ifndef _RECEIVER_H
-#include <Receiver.h>
+#ifndef _LIST_H
+#include <List.h>
+#endif
+#ifndef _HANDLER_H
+#include <Handler.h>
 #endif
 #ifndef _MESSAGE_H
 #include <Message.h>
 #endif
 
-class BReceiver;
+class BHandler;
 class BMessageQueue;
+class BMessenger;
 class BList;
 struct _loop_data_;
 
-class BLooper : public BReceiver {
-	B_DECLARE_CLASS_INFO(BReceiver);
+class BLooper : public BHandler {
+	B_DECLARE_CLASS_INFO(BHandler);
 
 public:
-						BLooper(long priority = B_DISPLAY_PRIORITY);
+						BLooper(const char *name = NULL,
+								long priority = B_NORMAL_PRIORITY);
 virtual					~BLooper();
 
 		bool			Lock();
 		void			Unlock();
-		thread_id		LockOwner();
+		thread_id		LockOwner() const;
+		bool			CheckLock() const;
 
-virtual	long			PostMessage(BMessage *message,
-									BReceiver *receiver = NULL);
+		long			PostMessage(BMessage *message,
+									BHandler *handler = NULL);
 		long			PostMessage(ulong command,
-									BReceiver *receiver = NULL);
-virtual	void			DispatchMessage(BMessage *message, BReceiver *receiver);
+									BHandler *handler = NULL);
+virtual	void			DispatchMessage(BMessage *message, BHandler *handler);
 		BMessage		*CurrentMessage() const;
 		BMessage		*DetachCurrentMessage();
 
 		BMessageQueue	*MessageQueue() const;
 
 		thread_id		Thread() const;
+		team_id			Team() const;
 
-virtual	BLooper			*Looper() const;
-virtual	BReceiver		*PreferredReceiver() const;
+virtual	void			AddHandler(BHandler *handler);
+virtual	bool			RemoveHandler(BHandler *handler);
+virtual	BHandler		*PreferredHandler() const;
 
 virtual	thread_id		Run();
 virtual	void			Quit();
 virtual	bool			QuitRequested();
+virtual	void			HandlersRequested(BMessage *msg);
 		
 private:
 friend class BWindow;
 friend class BApplication;
+friend class BMessenger;
+friend inline port_id _get_handler_port_(const BHandler *);
 
 						// private constructor for BApplication
-						BLooper(long priority, port_id port);
+						BLooper(const char *name, long priority, port_id port);
 
 		void			InitData();
 		void			AddMessage(BMessage *msg);
@@ -79,23 +90,29 @@ static	void			AddLooper(BLooper *l);
 static	bool			IsLooperValid(BLooper *l);
 static	void			RemoveLooper(BLooper *l);
 static	void			GetLooperList(BList *list);
+static	BLooper			*FindLooper(const char *name);
 		
-		long			fLooperIndex;
 		long			fLooperID;
 		BMessageQueue	*fQueue;
 		BMessage		*fLastMessage;
 		port_id			fMsgPort;
+		long			fAtomicCount;
 		sem_id			fLockSem;
 		long			fOwnerCount;
 		thread_id		fOwner;
 		thread_id		fTaskID;
+		team_id			fTeamID;
 		bool			fTerminating;
 		bool			fRunCalled;
 		sem_id			fCloseSem;
 		long			fInitPriority;
+		BList			fHandlers;
 };
 
-inline thread_id BLooper::LockOwner()
+inline thread_id BLooper::LockOwner() const
 	{ return fOwner; }
+
+inline bool BLooper::CheckLock() const
+	{ return (fOwner == find_thread(NULL)); }
 
 #endif

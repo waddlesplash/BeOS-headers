@@ -86,10 +86,8 @@ virtual	void			AppActivated(bool active);
 virtual	void			RefsReceived(BMessage *a_message);
 virtual	void			FilePanelClosed(BMessage *a_message);
 virtual	void			AboutRequested();
-virtual	void			ReplyReceived(	BMessage *reply,
-										BMessage *original,
-										ulong signature,
-										thread_id thread);
+
+virtual	void			HandlersRequested(BMessage *msg);
 
 		bool			IsLaunching() const;
 
@@ -97,13 +95,13 @@ virtual	void			ReplyReceived(	BMessage *reply,
 
 		long			RunFilePanel(	const char* title = NULL,
 										const char* button_name = NULL,
+										const char* cancel_button_name = NULL,
 										bool directories_only = FALSE,
 										BMessage* configuration = NULL);
 
-		bool			IsFilePanelRunning() const;
+		bool			IsFilePanelRunning();
 		void			CloseFilePanel();
 
-		ulong			Modifiers();
 		void			ShowCursor();
 		void			HideCursor();
 		void			ObscureCursor();
@@ -111,22 +109,16 @@ virtual	void			ReplyReceived(	BMessage *reply,
 		void			SetCursor(const void *cursor);
 		long			CountWindows() const;
 		BWindow			*WindowAt(long index) const;
-		long			IdleTime() const;
 virtual	void			DispatchMessage(BMessage *an_event,
-										BReceiver *receiver);
-		void			SetPulseRate(long rate);
+										BHandler *handler);
+		void			SetPulseRate(double rate);
 
-virtual	void			VolumeMounted(BMessage *an_event);
-virtual	void			VolumeUnmounted(BMessage *an_event);
+virtual	void			VolumeMounted(long volid);
+virtual	void			VolumeUnmounted(long volid);
 
 		void			SetMainMenu(BPopUpMenu *menu);
 		BPopUpMenu		*MainMenu();
 virtual	void			MenusWillShow();
-
-		void			Zoom(	BRect from_rect,
-								BRect to_rect,
-								long num_frames,
-								bool restore_last);
 
 // ------------------------------------------------------------------
 
@@ -142,9 +134,8 @@ friend BView *EditViewCreate(	BRect frame,
 friend class BWindow;
 friend class BView;
 friend class BScrollBar;
-friend long _flush_task_(void *arg);
 friend long _main_menu_task_(void *arg);
-friend _BSession *_app_session_();
+friend long _pulse_task_(void *arg);
 
 		void			run_task();
 		long			OpenResourceFile(char *name = (char *) 0);
@@ -153,36 +144,41 @@ friend _BSession *_app_session_();
 		long			DeleteResource(ulong type, ulong id);
 		void			BeginRectTracking(BRect r, bool trackWhole);
 		void			EndRectTracking();
-		void			flush_task();
+		void			pulse_task();
 		void			get_scs();
 		void			get_key_trans_maps();
-		_BSession		*session();
 		void			send_drag(	BMessage *msg,
 									long vs_token,
 									BPoint offset,
-									BRect drag_rect);
+									BRect drag_rect,
+									BHandler *reply_to);
 		void			send_drag(	BMessage *msg,
 									long vs_token,
 									BPoint offset,
-									long bitmap_token);
+									long bitmap_token,
+									BHandler *reply_to);
 		void			write_drag(_BSession *the_session, BMessage *a_message);
 		bool			quit_all_windows(bool makeRequest);
 		void			do_argv(BMessage *msg);
 		BPopUpMenu		*MakeDefaultMainMenu();
 		void			SetAppCursor();
+		void			enable_pulsing(bool enable);
+		ulong			InitialWorkspace();
 
 		BPopUpMenu		*fMainMenu;
-		long			server_from;
-		long			server_to;
-		thread_id		flush_task_id;
-		thread_id		main_menu_task_id;
-		_BSession		*main_session;
+		const char		*fAppName;
+		long			fServerFrom;
+		long			fServerTo;
 		void			*fCursorData;
-		bool			fIgnoreBase;
-		long			pulse_rate;
-		long			pulse_phase;
+		thread_id		fMainMenuTaskID;
+		sem_id			fMainMenuSem;
+		thread_id		fPulseTaskID;
+		long			fPulseEnabledCount;
+		double			fPulseRate;
+		long			fPulsePhase;
+		ulong			fInitialWorkspace;
 		bool			fReadyToRunCalled;
-		bool			fFilePanelOpen;
+		BMessenger		fPanelMessenger;
 		record_ref		fLastOpenPanelDir;
 };
 

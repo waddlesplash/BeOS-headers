@@ -17,10 +17,9 @@
 #include <Errors.h>
 #endif
 
-#define		B_MEDIA_LEVEL	41
+#define		B_MEDIA_LEVEL	B_REAL_TIME_PRIORITY
 
 #define 	B_NO_CHANGE (-1)
-
 /* ================
    Subscriber IDs and special values
    ================ */
@@ -72,7 +71,7 @@ enum {
 	B_MIC_IN 
   };
 
-/* Audio Subscriber stream codes */
+
 enum {
   B_DAC_STREAM = 2354,
   B_ADC_STREAM

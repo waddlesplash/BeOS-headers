@@ -44,6 +44,7 @@ enum {
 	B_NAME_NOT_FOUND,			/* given name not found */
 	B_NAME_IN_USE,				/* for named token creation functions */
 	B_TIMED_OUT,				/* time-out limit expired */
+    B_INTERRUPTED,              /* call was interrupted by a signal */
 
 	B_ERROR = -1,				/* for the very lazy */
 	B_NO_ERROR = 0
@@ -72,8 +73,11 @@ enum {
 								/* operation request on an invalid port */
 	B_NO_MORE_PORTS,			/* all port ids are taken */
 
+/* image errors */
+	B_BAD_IMAGE_ID = B_OS_ERROR_BASE + 0x300,
+
 /* debugger interface errors */
-	B_DEBUGGER_ALREADY_INSTALLED = B_OS_ERROR_BASE + 0x300
+	B_DEBUGGER_ALREADY_INSTALLED = B_OS_ERROR_BASE + 0x400
 								/* debugger already installed for this team */
 };
 
@@ -86,10 +90,11 @@ enum {
 enum
 {
 /* message/messenger errors */
-	B_UNEXPECTED_REPLY = B_APP_ERROR_BASE,
-								/* replying to message that didn't want one */
+	B_BAD_REPLY = B_APP_ERROR_BASE,
+								/* an invalid or unwanted reply */
 	B_DUPLICATE_REPLY,			/* sending 1 replies to the same message */
 	B_MESSAGE_TO_SELF,			/* can't send message to self (same pid) */
+	B_BAD_HANDLER,
 	B_ALREADY_RUNNING,
 	B_LAUNCH_FAILED
 };

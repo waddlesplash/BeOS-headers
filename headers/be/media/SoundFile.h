@@ -31,7 +31,7 @@
 #include <StorageDefs.h>
 #endif
 
-enum { B_UNKNOWN_FILE, B_AIFF_FILE, B_WAV_FILE, B_UNIX_FILE };
+enum { B_UNKNOWN_FILE, B_AIFF_FILE, B_WAVE_FILE, B_UNIX_FILE };
 
 class BSoundFile : public BFile {
 
@@ -42,6 +42,9 @@ public:
 					BSoundFile();
 					BSoundFile(record_ref ref);
 	virtual			~BSoundFile();
+
+virtual long		Open(long open_mode);
+virtual	long		Close();
 
 	long			FileFormat();
 	long			SamplingRate();		/* aka sampling rate */
@@ -63,8 +66,8 @@ public:
 	virtual long	SetByteOrder(long bord);
 	virtual long	SetSampleFormat(long fmt);
 	virtual long	SetCompressionType(long type);
-	virtual long   	SetCompressionName(char *name);
-	virtual long	SetIsCompressed(bool tf);
+	virtual char   	*SetCompressionName(char *name);
+	virtual bool	SetIsCompressed(bool tf);
 	virtual	long	SetDataLocation(long offset);
 	virtual long	SetFrameCount(long count);
 
@@ -73,11 +76,7 @@ public:
 	long 			FrameIndex();
 	long			FramesRemaining();
 
-/* ================
-   Protected members accessed directly by subclasses
-   ================ */
-protected:
-virtual long 		set_ref(long volid, record_id id);
+private:
 	long			fFileFormat;
 	long			fSamplingRate;
 	long 			fChannelCount;
@@ -93,9 +92,9 @@ virtual long 		set_ref(long volid, record_id id);
 	bool			fIsCompressed;
 	long			fCompressionType;
 	char			*fCompressionName;
-private:
 
-	void Initialize(void);
+	void _init_sound_stats(void);
+	void _init_raw_stats(void);
 };
 
 inline bool BSoundFile::IsCompressed()

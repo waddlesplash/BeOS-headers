@@ -111,6 +111,19 @@ struct _FILE {
 
 __extern_c
 
+#if __dest_os == __be_os
+
+#define L_ctermid  32
+#define L_cuserid  32
+#define STREAM_MAX FOPEN_MAX
+
+FILE   *popen(const char *cmd, const char *type);
+int     pclose(FILE *fp);
+
+
+#endif /* __be_os */
+
+
 extern FILE *	stdin;
 extern FILE *	stdout;
 extern FILE *	stderr;
@@ -129,6 +142,9 @@ int			fflush(FILE * file);
 
 FILE *	fopen  (const char * name, const char * mode);
 FILE *	freopen(const char * name, const char * mode, FILE * file);
+
+FILE *  fdopen(int fd, const char *type);
+int     fileno(FILE *fd);
 
 void		setbuf (FILE * file, char * buff);
 int			setvbuf(FILE * file, char * buff, int mode, size_t size);
@@ -191,8 +207,8 @@ __end_extern_c
 #define getchar()			getc(stdin)
 #define putchar(c)		putc(c, stdout)
 
-#define feof(file)		(file->state.eof)
-#define ferror(file)	(file->state.error)
+#define feof(file)		((file)->state.eof)
+#define ferror(file)	((file)->state.error)
 
 #pragma options align=reset
 

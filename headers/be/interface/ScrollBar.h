@@ -21,6 +21,9 @@
 
 class BApplication;
 
+#define B_V_SCROLL_BAR_WIDTH	14.0
+#define B_H_SCROLL_BAR_HEIGHT	14.0
+
 //------------------------------------------------------------------------------
 
 class BScrollBar : public BView {
@@ -37,6 +40,8 @@ virtual				~BScrollBar();
 			
 		void		SetValue(long value);
 		long		Value() const;
+		void		SetProportion(float);
+		float		Proportion() const;
 virtual	void		ValueChanged(long newValue);
 
 		void		SetRange(long min, long max);
@@ -44,7 +49,7 @@ virtual	void		ValueChanged(long newValue);
 		void		SetSteps(long smallStep, long largeStep);
 		void		GetSteps(long *smallStep, long *largeStep) const;
 		void		SetTarget(BView *target);
-		void		SetTarget(char *targetName);
+		void		SetTarget(const char *targetName);
 		BView		*Target() const;
 		orientation	Orientation() const;
 
@@ -60,6 +65,7 @@ friend BApplication;
 		long		fSmallStep;
 		long		fLargeStep;
 		long		fValue;
+		float		fProportion;
 		BView*		fTarget;	
 		orientation	fOrientation;
 		char		*fTargetName;

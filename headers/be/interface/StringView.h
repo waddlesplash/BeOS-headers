@@ -29,7 +29,8 @@ public:
 					BStringView(BRect bounds,
 								const char *name, 
 								const char *text,
-								ulong resizeFlags = B_FOLLOW_LEFT_TOP,
+								ulong resizeFlags =
+									B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								ulong flags = B_WILL_DRAW);
 virtual 			~BStringView();
 virtual void		AttachedToWindow();

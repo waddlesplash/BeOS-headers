@@ -65,7 +65,7 @@ virtual void			AttachedToWindow();
 		BMenuItem		*FindItem(ulong command) const;
 		BMenuItem		*FindItem(const char *name) const;
 
-virtual	long			SetTarget(BReceiver *target, BLooper *looper = NULL);
+virtual	long			SetTargetForItems(BHandler *target);
 virtual	void			SetEnabled(bool state);
 virtual	void			SetRadioMode(bool state);
 virtual	void			SetTriggersEnabled(bool state);

@@ -31,7 +31,7 @@ public:
 							const char *name,
 							const char *label,
 							BMessage *message,
-							ulong resizeMask = B_FOLLOW_LEFT_TOP, 
+							ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP, 
 							ulong flags = B_WILL_DRAW); 
 
 virtual	void	Draw(BRect updateRect);
