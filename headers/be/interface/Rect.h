@@ -12,9 +12,11 @@
 #define	_RECT_H
 
 #include <BeBuild.h>
+#include <Insets.h>
+
 #include <math.h>
-#include <SupportDefs.h>
-#include <Point.h>
+
+class BDataIO;
 
 /*----------------------------------------------------------------*/
 /*----- BRect class ----------------------------------------------*/
@@ -34,6 +36,7 @@ public:
 
 		BRect		&operator=(const BRect &from);
 		void		Set(float l, float t, float r, float b);
+		void		SetAsSize(float l, float t, float w, float h);
 
 		void		PrintToStream() const;
 
@@ -52,6 +55,7 @@ public:
 /* transformation */
 		void		InsetBy(BPoint);
 		void		InsetBy(float dx, float dy);
+		void		InsetBy(const BInsets& d);
 		void		OffsetBy(BPoint);
 		void		OffsetBy(float dx, float dy);
 		void		OffsetTo(BPoint);
@@ -60,16 +64,18 @@ public:
 /* expression transformations */
 		BRect &		InsetBySelf(BPoint);
 		BRect &		InsetBySelf(float dx, float dy);
-		BRect		InsetByCopy(BPoint);
-		BRect		InsetByCopy(float dx, float dy);
+		BRect &		InsetBySelf(const BInsets& d);
+		BRect		InsetByCopy(BPoint) const;
+		BRect		InsetByCopy(float dx, float dy) const;
+		BRect		InsetByCopy(const BInsets& d) const;
 		BRect &		OffsetBySelf(BPoint);
 		BRect &		OffsetBySelf(float dx, float dy);
-		BRect		OffsetByCopy(BPoint);
-		BRect		OffsetByCopy(float dx, float dy);
+		BRect		OffsetByCopy(BPoint) const;
+		BRect		OffsetByCopy(float dx, float dy) const;
 		BRect &		OffsetToSelf(BPoint);
 		BRect &		OffsetToSelf(float dx, float dy);
-		BRect		OffsetToCopy(BPoint);
-		BRect		OffsetToCopy(float dx, float dy);
+		BRect		OffsetToCopy(BPoint) const;
+		BRect		OffsetToCopy(float dx, float dy) const;
 
 /* comparison */
 		bool		operator==(BRect) const;
@@ -88,7 +94,24 @@ public:
 		int32		IntegerHeight() const;
 		bool		Contains(BPoint) const;
 		bool		Contains(BRect) const;
+		BInsets		InsetOf(const BRect& interior) const;
+		
+/* a few helpful operators */
+		BRect		operator * (const float f) const;
+		BRect		operator + (const BPoint& p) const;
+		BRect		operator + (const BInsets& i) const;
+		BRect		operator - (const BPoint& p) const;
+		BRect		operator - (const BInsets& i) const;
+		BRect		operator / (const float f) const;
+		BRect &		operator *= (const float f);
+		BRect &		operator += (const BPoint& p);
+		BRect &		operator += (const BInsets& i);
+		BRect &		operator -= (const BPoint& p);
+		BRect &		operator -= (const BInsets& i);
+		BRect &		operator /= (const float f);
 };
+
+BDataIO& operator<<(BDataIO& io, const BRect& rect);
 
 /*----------------------------------------------------------------*/
 /*----- inline definitions ---------------------------------------*/

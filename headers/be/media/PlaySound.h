@@ -26,6 +26,12 @@ sound_handle play_sound(const entry_ref *soundRef,
 						);
 
 _IMPEXP_MEDIA
+sound_handle play_sound(const entry_ref *soundRef,
+						bool background=true,
+						float gain=1.0f
+						);
+
+_IMPEXP_MEDIA
 status_t stop_sound(sound_handle handle);
 
 _IMPEXP_MEDIA

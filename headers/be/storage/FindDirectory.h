@@ -28,6 +28,12 @@ typedef enum {
 	B_TRASH_DIRECTORY,
 
 	/* ---
+		Special case for the root directory.
+	--- */
+
+	B_ROOT_DIRECTORY				= 999,
+
+	/* ---
 		BeOS directories.  These are mostly accessed read-only.
 	--- */
 

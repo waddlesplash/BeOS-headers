@@ -56,7 +56,9 @@ private:
 		char * m_buffer;
 		size_t m_buffer_phys;
 		size_t m_buffer_used;
-		uint32 _reserved_ints[6];
+		off_t m_seek_pos;			// _reserved_ints[0-1]
+		off_t m_len;				// _reserved_ints[2-3]
+		uint32 _reserved_ints[2];	// was 6.
 		bool m_buffer_dirty;
 		bool m_owns_stream;
 		bool _reserved_bools[6];

@@ -19,6 +19,14 @@
 
 class BView;
 struct _BPictureExtent_;
+namespace BPrivate {
+class IKAccess;
+}
+namespace B {
+namespace Interface2 {
+class BDrawable;
+}
+}
 
 /*----------------------------------------------------------------*/
 /*----- BPicture class -------------------------------------------*/
@@ -33,6 +41,9 @@ static	BArchivable			*Instantiate(BMessage *data);
 virtual	status_t			Archive(BMessage *data, bool deep = true) const;
 virtual	status_t			Perform(perform_code d, void *arg);
 
+		B::Interface2::BDrawable*	BeginDrawing();
+		void						EndDrawing(B::Interface2::BDrawable* handle);
+		
 		status_t			Play(void **callBackTable,
 								int32 tableEntries,
 								void *userData);
@@ -43,8 +54,7 @@ virtual	status_t			Perform(perform_code d, void *arg);
 /*----- Private or reserved -----------------------------------------*/
 private:
 
-friend class BWindow;
-friend class BView;
+friend class BPrivate::IKAccess;
 friend class BPrintJob;
 
 virtual	void				_ReservedPicture1();
@@ -69,10 +79,12 @@ virtual	void				_ReservedPicture3();
 		void				usurp(BPicture *lameDuck);
 		BPicture			*step_down();
 
-		int32				token;
-		_BPictureExtent_	*extent;
-		BPicture			*usurped;
-		uint32				_reserved[3];
+		int32				fToken;
+		_BPictureExtent_	*fExtent;
+		BPicture			*fUsurped;
+		B::Interface2::BDrawable
+							*fDrawing;
+		uint32				_reserved[2];
 };
 
 /*-------------------------------------------------------------*/

@@ -19,6 +19,9 @@
 class BMessage;
 class BMessageQueue;
 struct _loop_data_;
+namespace BPrivate {
+class BLooperTarget;
+}
 
 /*-------------------------------------------------------------*/
 /*----- Port (Message Queue) Capacity -------------------------*/
@@ -69,15 +72,18 @@ virtual	void			MessageReceived(BMessage *msg);
 		void			SetPreferredHandler(BHandler *handler);
 
 /* Loop control */
+		thread_id		RunInCurrentThread();	// the BLooper won't be deleted upon return
 virtual	thread_id		Run();
 virtual	void			Quit();
 virtual	bool			QuitRequested();
 		bool			Lock();
+		lock_status_t	LockWithStatus();
 		void			Unlock();
 		bool			IsLocked() const;
-		status_t		LockWithTimeout(bigtime_t timeout);
+		lock_status_t	LockWithTimeout(bigtime_t timeout, bool dummy=true);
 		thread_id		Thread() const;
 		team_id			Team() const;
+		bool			IsRunningInCurrentThread();
 static	BLooper			*LooperForThread(thread_id tid);
 
 /* Loop debugging */
@@ -104,9 +110,24 @@ virtual	void			SetCommonFilterList(BList *filters);
 virtual status_t		Perform(perform_code d, void *arg);
 
 protected:
+/* Low-level looper control. */
+		struct loop_state {
+			bigtime_t	next_loop_time;
+		
+		private:
+			friend class BLooper;
+			friend class BWindow;
+			loop_state();
+			~loop_state();
+			void reset();
+			
+			int32		_reserved[10];
+		};
+virtual	status_t		ReadyToLoop(loop_state* outState);
+
 /* called from overridden task_looper */
 		BMessage		*MessageFromPort(bigtime_t = B_INFINITE_TIMEOUT);
-
+		
 private:
 typedef BHandler _inherited;
 friend class BWindow;
@@ -117,8 +138,9 @@ friend class BHandler;
 friend port_id _get_looper_port_(const BLooper *);
 friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 friend team_id	_find_cur_team_id_();
+friend status_t _call_ready_to_loop_(BLooper *, loop_state *);
+friend struct _looper_list_nuker_;
 
-virtual	void			_ReservedLooper1();
 virtual	void			_ReservedLooper2();
 virtual	void			_ReservedLooper3();
 virtual	void			_ReservedLooper4();
@@ -134,22 +156,22 @@ virtual	void			_ReservedLooper6();
 									BHandler *handler,
 									BHandler *reply_to);
 
-static	status_t		_Lock(BLooper *loop,
+static	lock_status_t	_Lock(BLooper *loop,
 								port_id port,
 								bigtime_t timeout);
-static	status_t		_LockComplete(BLooper *loop,
+static	lock_status_t	_LockComplete(BLooper *loop,
 										int32 old,
 										thread_id this_tid,
 										sem_id sem,
 										bigtime_t timeout);
+static	void			_UnlockFunc(BLooper *loop);
+
 		void			InitData();
 		void			InitData(const char *name, int32 prio, int32 capacity);
 		void			AddMessage(BMessage *msg);
 		void			_AddMessagePriv(BMessage *msg);
 static	status_t		_task0_(void *arg);
 
-		void			*ReadRawFromPort(int32 *code,
-										bigtime_t tout = B_INFINITE_TIMEOUT);
 		BMessage		*ReadMessageFromPort(bigtime_t tout = B_INFINITE_TIMEOUT);
 virtual	BMessage		*ConvertToMessage(void *raw, int32 code);
 virtual	void			task_looper();
@@ -164,6 +186,8 @@ virtual	void			task_looper();
 		BHandler		*resolve_specifier(BHandler *target, BMessage *msg);
 		void			UnlockFully();
 
+		void			InstallLooperTarget(BHandler* rec);
+		
 static	uint32			sLooperID;
 static	uint32			sLooperListSize;
 static	uint32			sLooperCount;
@@ -196,8 +220,14 @@ static	BLooper			*LooperForPort(port_id port);
 		bool			fRunCalled;
 		thread_id		fCachedPid;
 		size_t			fCachedStack;
-		void			*fMsgBuffer;
-		size_t			fMsgBufferSize;
+		BPrivate::BLooperTarget* fTarget;
+
+		enum
+		{
+			STEAL_CURRENT_THREAD = 0x00000001
+		};
+		
+		uint32			fFlags;
 		uint32			_reserved[6];
 };
 

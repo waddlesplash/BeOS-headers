@@ -28,11 +28,19 @@ public:
 					BLocker(const char *name);
 virtual				~BLocker();	
 
-		bool		Lock();
-		void		Unlock();
-		bool		IsLocked() const;
-		status_t	LockWithTimeout(bigtime_t timeout);
+		status_t	InitCheck() const;
+		
+		bool			Lock();
+		lock_status_t	LockWithStatus();
+		void			Unlock();
+		bool			IsLocked() const;
+		lock_status_t	LockWithTimeout(bigtime_t timeout, bool dummy=true);
 
+		// Return the number of levels that this thread has
+		// nested the lock; if the caller isn't holding the
+		// lock, 0 is returned.
+		int32		NestingLevel() const;
+		
 /* -- For debugging (only!) -- */
 		thread_id	LockingThread() const;
 		int32		CountLocks() const;
@@ -41,8 +49,9 @@ virtual				~BLocker();
 
 /*----- Private or reserved ---------------*/
 private:
-		void		InitData(const char *name, bool benaphore, bool ipc);
-		bool		_Lock(bigtime_t timeout, status_t *error);
+		void			InitData(const char *name, bool benaphore, bool ipc);
+		lock_status_t	_Lock(bigtime_t timeout);
+static	void			_UnlockFunc(BLocker* This);
 
 		int32		fCount;
 		sem_id		fSem;

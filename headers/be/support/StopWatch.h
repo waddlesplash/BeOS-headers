@@ -12,14 +12,20 @@
 #define _STOP_WATCH_H
 
 #include <BeBuild.h>
+#include <OS.h>
 #include <SupportDefs.h>
+
+enum {
+	B_SILENT_STOP_WATCH		= (1<<0),
+	B_THREAD_STOP_WATCH		= (1<<1)
+};
 
 /*-------------------------------------------------------------*/
 /*----- BStopWatch class --------------------------------------*/
 
 class BStopWatch {
 public:
-					BStopWatch(const char *name, bool silent = false);
+					BStopWatch(const char *name, uint32 flags);
 virtual				~BStopWatch();
 
 		void		Suspend();
@@ -27,6 +33,7 @@ virtual				~BStopWatch();
 		bigtime_t	Lap();
 		bigtime_t	ElapsedTime() const;
 		void		Reset();
+		void		Reset(uint32 flags);
 		const char	*Name() const;
 
 /*----- Private or reserved ---------------*/
@@ -35,16 +42,20 @@ private:
 virtual	void		_ReservedStopWatch1();
 virtual	void		_ReservedStopWatch2();
 
+		void		InitData(const char* name, uint32 flags);
+		bigtime_t	CurrentTime(bigtime_t* base) const;
+
 					BStopWatch(const BStopWatch &);
 		BStopWatch	&operator=(const BStopWatch &);
-
+		
 		bigtime_t	fStart;
 		bigtime_t	fSuspendTime;
 		bigtime_t	fLaps[10];
 		int32		fLap;
 		const char	*fName;
-		uint32		_reserved[2];
-		bool		fSilent;
+		thread_id	fThread;
+		uint32		fFlags;
+		bool		_reserved;
 };
 
 /*-------------------------------------------------------------*/

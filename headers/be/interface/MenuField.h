@@ -14,9 +14,14 @@
 
 #include <BeBuild.h>
 #include <Menu.h>		/* For convenience */
+#include <String.h>
 #include <View.h>
 
 class BMenuBar;
+
+namespace BPrivate {
+class BMCMenuBar;
+}
 
 /*----------------------------------------------------------------*/
 /*----- BMenuField class -----------------------------------------*/
@@ -82,6 +87,8 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
+virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
+
 virtual void			ResizeToPreferred();
 virtual void			GetPreferredSize(float *width, float *height);
 
@@ -90,7 +97,7 @@ virtual void			GetPreferredSize(float *width, float *height);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
-friend class _BMCMenuBar_;
+friend class BPrivate::BMCMenuBar;
 
 virtual	void			_ReservedMenuField1();
 virtual	void			_ReservedMenuField2();
@@ -102,21 +109,34 @@ virtual	void			_ReservedMenuField3();
 		void			InitObject(const char *label);
 		void			InitObject2();
 		void			DrawLabel(BRect bounds, BRect update);
-static	void			InitMenu(BMenu *menu);
+		void			DistributeFont(const BFont* font = 0,
+									   uint32 mask = B_FONT_ALL);
+static	void			DistributeMenuFont(BMenu *menu, const BFont* font,
+										   uint32 mask = B_FONT_ALL);
 static	long			MenuTask(void *arg);
-
+		void			LayoutViews(bool attach=false, bool initial=false);
+		
+		BRect			GetBorderFrame() const;
+		
+		bool			ExtendPartialMatch(const char* bytes, int32 numBytes=-1);
+		BMenuItem*		FindPartialMatch(const char* prefix);
+		void			ClearPartialMatch();
+		
 		char			*fLabel;
 		BMenu			*fMenu;
-		BMenuBar		*fMenuBar;
+		BPrivate::BMCMenuBar *fMenuBar;
 		alignment		fAlign;
 		float			fDivider;
 		float			fStringWidth;
 		bool			fEnabled;
 		bool			fSelected;
-		bool			fTransition;
 		bool			fFixedSizeMB;
+		bool			_reservedBool;
 		thread_id		fMenuTaskID;
-		uint32			_reserved[3];
+		bool			fPopUpMarker;	// was _reserved[0]
+		bool			fHasLabel;
+		BString			fPartialMatch;	// was _reserved[1]
+		uint32			_reserved[1];
 };
 
 /*-------------------------------------------------------------*/

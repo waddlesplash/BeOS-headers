@@ -21,7 +21,9 @@ struct tty_module_info {
 			(*ttyfree)( struct ttyfile *, struct ddrover *),
 			(*ttyread)( struct ttyfile *, struct ddrover *, char *, size_t *),
 			(*ttywrite)( struct ttyfile *, struct ddrover *, const char *, size_t *),
-			(*ttycontrol)( struct ttyfile *, struct ddrover *, ulong, void *, size_t);
+			(*ttycontrol)( struct ttyfile *, struct ddrover *, ulong, void *, size_t),
+			(*ttyselect)( struct ttyfile *, struct ddrover *, uint8, uint32, selectsync *),
+			(*ttydeselect)( struct ttyfile *, struct ddrover *, uint8, selectsync *);
 	void		(*ttyinit)( struct tty *, bool),
 			(*ttyilock)( struct tty *, struct ddrover *, bool),
 			(*ttyhwsignal)( struct tty *, struct ddrover *, int, bool),

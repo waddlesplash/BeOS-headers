@@ -15,7 +15,8 @@
 #include <KernelKit.h>
 #include <MediaKit.h>
 #include <MidiKit.h>
-#include <NetKit.h>
+#include <sys/socket.h>
+#include <netdb.h>
 #include <StorageKit.h>
 #include <SupportKit.h>
 #include <TranslationKit.h>

@@ -153,6 +153,7 @@ virtual void				SetOrientation(orientation);
 virtual void				SetBarThickness(float thickness);
 
 virtual void				SetFont(const BFont *font, uint32 properties = B_FONT_ALL);
+
 /*----- Private or reserved -----------------------------------------*/
 private:
 		void				_DrawBlockThumb();
@@ -180,6 +181,7 @@ virtual	void				_ReservedSlider12();
 		BSlider				&operator=(const BSlider &);
 
 		void 				_InitObject();
+		void 				_InitColors();
 									
 		BMessage*			fModificationMessage;
 		int32				fSnoozeAmount;
@@ -208,8 +210,10 @@ virtual	void				_ReservedSlider12();
 		
 		orientation			fOrientation;
 		float				fBarThickness;
-				
-		uint32				_reserved[8];
+		
+		rgb_color			fFocusColor;
+		
+		uint32				_reserved[6];
 };
 
 /*-------------------------------------------------------------*/

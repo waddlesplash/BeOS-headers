@@ -64,6 +64,13 @@ enum {
 	B_SCREEN_TO_SCREEN_SCALED_FILTERED_BLIT,	/* optional.  NOTE: source and dest may NOT overlap */
 	
 	/* 3D acceleration */
+	B_3D_INIT_ACCELERANT,
+	B_3D_SHUTDOWN,
+	B_3D_GET_DEVICE_INFO,
+	B_3D_GET_MODES,
+	B_3D_GET_BUILD_ID,
+	
+	
 	B_ACCELERANT_PRIVATE_START = (int)0x80000000
 };
 
@@ -187,6 +194,17 @@ typedef struct {
 	char	opaque[12];		/* 12 bytes of private storage */
 } sync_token;
 
+typedef struct
+{
+	int width;
+	int height;
+	int refresh;
+	int color;
+	int depth;
+	int stencil;
+	int accum;
+} video_mode;
+
 /* Masks for color info */
 /* B_CMAP8    - 0x000000ff */
 /* B_RGB15/16 - 0x0000ffff */
@@ -240,6 +258,13 @@ typedef void (*fill_span)(engine_token *et, uint32 color, uint16 *list, uint32 c
 		list[N+2]  Right x co-ordinate of span
 	where N is in the range 0 to count-1.
 */
+
+
+typedef status_t (*_3D_init)( char *device_path, void *glContext );
+typedef status_t (*_3D_shutdown)( char *device_path, void *glContext );
+typedef void (*_3D_get_device_info)( char *device_path, const char **name, uint8 *depth, uint8 *stencil, uint8 *accum );
+typedef void (*_3D_get_modes)( char *device_path, void (* callback)(video_mode *modes), uint32 min_color, uint32 min_depth, uint32 min_stencil, uint32 min_accum );
+typedef uint32 (*_3D_get_build_id)( char *device_path );
 
 
 #if defined(__cplusplus)

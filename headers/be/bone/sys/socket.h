@@ -15,7 +15,9 @@
 #include <OS.h>
 #include <ByteOrder.h>
 
-__extern_c_start
+#if __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* The BeOS Networking Environment version number */
 #define BONE_VERSION	0x010a      /* 1.0a */
@@ -80,7 +82,6 @@ __extern_c_start
 #define	SO_ERROR		0x40000007
 #define	SO_TYPE			0x40000008
 #define SO_NONBLOCK		0x40000009
-#define SO_BINDTODEVICE	0x4000000a
 
 struct linger {
 	int l_onoff;
@@ -121,8 +122,6 @@ struct sockaddr {
 #define SHUTDOWN_SEND	0x1
 #define SHUTDOWN_BOTH	0x2
 
-#ifndef _KERNEL_MODE
-
 /*
  * the sockets API, alphabetized for your reading pleasure
  */
@@ -142,8 +141,72 @@ int		setsockopt(int sock, int level, int option, const void *optval, int optlen)
 int		shutdown(int sock, int direction);
 int		socket(int family, int type, int proto);
 
-#endif	/* _KERNEL_MODE */
 
-__extern_c_end
+/******************************************************************************
+ * THIS SECTION SHOULD BE IN UNISTD.H!  REMOVE WHEN IT IS.
+ */
+
+int gethostname(char *hname, size_t namelen);
+int sethostname(const char *hname, size_t namelen);
+
+
+/******************************************************************************
+ *	THIS SECTION SHOULD BE IN SYS/IOCTL.H!  REMOVE WHEN IT IS.
+ */
+
+#define FIONBIO 	0xbe000000
+#define FIONREAD	0xbe000001
+ 
+/******************************************************************************
+ *  THIS SECTION SHOULD BE IN SYS/PARAM.H!  REMOVE WHEN IT IS.
+ */
+
+#define MAXHOSTNAMELEN 256
+
+/******************************************************************************/
+
+
+/******************************************************************************
+ *  THIS SECTION SHOULD BE IN SYS/TYPES.H!  REMOVE THIS WHEN IT IS.
+ */
+
+
+#ifndef FD_SET
+/* 
+ * Select uses bit masks of file descriptors in uint32's.  These macros 
+ * manipulate such bit fields (the filesystem macros use chars). 
+ * FD_SETSIZE may be defined by the user, but the default here should 
+ * be enough for most uses. 
+ */ 
+#ifndef        FD_SETSIZE 
+#define        FD_SETSIZE      1024 
+#endif 
+
+typedef uint32        fd_mask; 
+#define NFDBITS        (sizeof(fd_mask) * 8)       /* bits per mask */ 
+
+#ifndef howmany 
+#define        howmany(x, y)  (((x) + ((y) - 1)) / (y)) 
+#endif 
+
+typedef        struct fd_set { 
+        fd_mask fds_bits[howmany(FD_SETSIZE, NFDBITS)]; 
+} fd_set; 
+
+#define        FD_SET(n, p)  ((p)->fds_bits[(n)/NFDBITS] |= (1 << ((n) % NFDBITS))) 
+#define        FD_CLR(n, p)    ((p)->fds_bits[(n)/NFDBITS] &= ~(1 << ((n) % NFDBITS))) 
+#define        FD_ISSET(n, p)  ((p)->fds_bits[(n)/NFDBITS] & (1 << ((n) % NFDBITS))) 
+#define        FD_COPY(f, t)   memcpy(t, f, sizeof(*(f))) 
+#define        FD_ZERO(p)      memset(p, 0, sizeof(*(p))) 
+
+#endif /*FD_SET*/
+
+int select(int fd, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *timeout);
+
+/******************************************************************************/
+
+#if __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* H_SYS_SOCKET */

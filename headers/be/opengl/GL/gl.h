@@ -3,12 +3,16 @@
 
 #include <BeBuild.h>
 
-#if ( __INTEL__ && __GNUC__ )
-//	#include <gl_fastcall.h>
-	#define __GL_USE_FASTCALL__  0
-#else
-	#define __GL_USE_FASTCALL__  0
+#if __GL_USE_FASTCALL__
+	#include <gl_fastcall.h>
 #endif
+
+//#if ( __INTEL__ && __GNUC__ ) && (!(__NO_TLS__))
+//	#include <gl_fastcall.h>
+//	#define __GL_USE_FASTCALL__  0
+//#else
+//	#define __GL_USE_FASTCALL__  0
+//#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -588,6 +592,7 @@ typedef void GLvoid;
 #define GL_MAP2_GRID_SEGMENTS             0x0DD3
 #define GL_TEXTURE_1D                     0x0DE0
 #define GL_TEXTURE_2D                     0x0DE1
+#define GL_TEXTURE_3D                     0x806F
 #define GL_FEEDBACK_BUFFER_POINTER        0x0DF0
 #define GL_FEEDBACK_BUFFER_SIZE           0x0DF1
 #define GL_FEEDBACK_BUFFER_TYPE           0x0DF2
@@ -1124,6 +1129,86 @@ typedef void GLvoid;
 #define GL_T2F_C4F_N3F_V3F                0x2A2C
 #define GL_T4F_C4F_N3F_V4F                0x2A2D
 
+
+/* 1.2 stuff */
+#define GL_CONSTANT_COLOR                 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR       0x8002
+#define GL_CONSTANT_ALPHA                 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA       0x8004
+#define GL_BLEND_COLOR                    0x8005
+#define GL_FUNC_ADD                       0x8006
+#define GL_MIN                            0x8007
+#define GL_MAX                            0x8008
+#define GL_BLEND_EQUATION                 0x8009
+#define GL_FUNC_SUBTRACT                  0x800A
+#define GL_FUNC_REVERSE_SUBTRACT          0x800B
+#define GL_CONVOLUTION_1D                 0x8010
+#define GL_CONVOLUTION_2D                 0x8011
+#define GL_SEPARABLE_2D                   0x8012
+#define GL_CONVOLUTION_BORDER_MODE        0x8013
+#define GL_CONVOLUTION_FILTER_SCALE       0x8014
+#define GL_CONVOLUTION_FILTER_BIAS        0x8015
+#define GL_REDUCE                         0x8016
+#define GL_CONVOLUTION_FORMAT             0x8017
+#define GL_CONVOLUTION_WIDTH              0x8018
+#define GL_CONVOLUTION_HEIGHT             0x8019
+#define GL_MAX_CONVOLUTION_WIDTH          0x801A
+#define GL_MAX_CONVOLUTION_HEIGHT         0x801B
+#define GL_POST_CONVOLUTION_RED_SCALE     0x801C
+#define GL_POST_CONVOLUTION_GREEN_SCALE   0x801D
+#define GL_POST_CONVOLUTION_BLUE_SCALE    0x801E
+#define GL_POST_CONVOLUTION_ALPHA_SCALE   0x801F
+#define GL_POST_CONVOLUTION_RED_BIAS      0x8020
+#define GL_POST_CONVOLUTION_GREEN_BIAS    0x8021
+#define GL_POST_CONVOLUTION_BLUE_BIAS     0x8022
+#define GL_POST_CONVOLUTION_ALPHA_BIAS    0x8023
+#define GL_HISTOGRAM                      0x8024
+#define GL_PROXY_HISTOGRAM                0x8025
+#define GL_HISTOGRAM_WIDTH                0x8026
+#define GL_HISTOGRAM_FORMAT               0x8027
+#define GL_HISTOGRAM_RED_SIZE             0x8028
+#define GL_HISTOGRAM_GREEN_SIZE           0x8029
+#define GL_HISTOGRAM_BLUE_SIZE            0x802A
+#define GL_HISTOGRAM_ALPHA_SIZE           0x802B
+#define GL_HISTOGRAM_LUMINANCE_SIZE       0x802C
+#define GL_HISTOGRAM_SINK                 0x802D
+#define GL_MINMAX                         0x802E
+#define GL_MINMAX_FORMAT                  0x802F
+#define GL_MINMAX_SINK                    0x8030
+#define GL_TABLE_TOO_LARGE                0x8031
+#define GL_RESCALE_NORMAL                 0x803A
+#define GL_COLOR_MATRIX                   0x80B1
+#define GL_COLOR_MATRIX_STACK_DEPTH       0x80B2
+#define GL_MAX_COLOR_MATRIX_STACK_DEPTH   0x80B3
+#define GL_POST_COLOR_MATRIX_RED_SCALE    0x80B4
+#define GL_POST_COLOR_MATRIX_GREEN_SCALE  0x80B5
+#define GL_POST_COLOR_MATRIX_BLUE_SCALE   0x80B6
+#define GL_POST_COLOR_MATRIX_ALPHA_SCALE  0x80B7
+#define GL_POST_COLOR_MATRIX_RED_BIAS     0x80B8
+#define GL_POST_COLOR_MATRIX_GREEN_BIAS   0x80B9
+#define GL_POST_COLOR_MATRIX_BLUE_BIAS    0x80BA
+#define GL_COLOR_TABLE                    0x80D0
+#define GL_POST_CONVOLUTION_COLOR_TABLE   0x80D1
+#define GL_POST_COLOR_MATRIX_COLOR_TABLE  0x80D2
+#define GL_PROXY_COLOR_TABLE              0x80D3
+#define GL_PROXY_POST_CONVOLUTION_COLOR_TABLE 0x80D4
+#define GL_PROXY_POST_COLOR_MATRIX_COLOR_TABLE 0x80D5
+#define GL_COLOR_TABLE_SCALE              0x80D6
+#define GL_COLOR_TABLE_BIAS               0x80D7
+#define GL_COLOR_TABLE_FORMAT             0x80D8
+#define GL_COLOR_TABLE_WIDTH              0x80D9
+#define GL_COLOR_TABLE_RED_SIZE           0x80DA
+#define GL_COLOR_TABLE_GREEN_SIZE         0x80DB
+#define GL_COLOR_TABLE_BLUE_SIZE          0x80DC
+#define GL_COLOR_TABLE_ALPHA_SIZE         0x80DD
+#define GL_COLOR_TABLE_LUMINANCE_SIZE     0x80DE
+#define GL_COLOR_TABLE_INTENSITY_SIZE     0x80DF
+#define GL_CLAMP_TO_EDGE                  0x812F
+#define GL_TEXTURE_MIN_LOD                0x813A
+#define GL_TEXTURE_MAX_LOD                0x813B
+#define GL_TEXTURE_BASE_LEVEL             0x813C
+#define GL_TEXTURE_MAX_LEVEL              0x813D
+
 /* Extensions */
 #define GL_EXT_abgr                       1
 #define GL_EXT_blend_color                1
@@ -1444,145 +1529,150 @@ _IMPEXP_GL void glMultiTexCoord4iARB (GLenum tmu, GLint s, GLint t, GLint r, GLi
 _IMPEXP_GL void glMultiTexCoord4ivARB (GLenum tmu, const GLint *v);
 _IMPEXP_GL void glMultiTexCoord4sARB (GLenum tmu, GLshort s, GLshort t, GLshort r, GLshort q);
 _IMPEXP_GL void glMultiTexCoord4svARB (GLenum tmu, const GLshort *v);
+_IMPEXP_GL void glClientActiveTextureARB(GLenum tmu);
 _IMPEXP_GL void glActiveTextureARB(GLenum tmu);
 
 
 #ifndef __PRIVATE_GL_NO_STATICS__
 
 #if __GL_USE_FASTCALL__
+#include <TLS.h>
+extern GLint __gl_tlIndex;
+#define GC (tls_get(__gl_tlIndex))
 static inline void glNormal3fv(const GLfloat *v)
 {
-	GLIM_NORMAL3FV( __gl, v );
+	GLIM_NORMAL3FV( GC, v );
 }
 static inline void glVertex2fv (const GLfloat *v)
 {
-	GLIM_VERTEX2FV( __gl, v );
+	GLIM_VERTEX2FV( GC, v );
 }
 static inline void glVertex2f (GLfloat x, GLfloat y)
 {
-	GLIM_VERTEX2F( __gl, x, y );
+	GLIM_VERTEX2F( GC, x, y );
 }
 static inline void glVertex3fv (const GLfloat *v)
 {
-	GLIM_VERTEX3FV( __gl, v );
+	GLIM_VERTEX3FV( GC, v );
 }
 static inline void glVertex3f (GLfloat x, GLfloat y, GLfloat z)
 {
-	GLIM_VERTEX3F( __gl, x, y, z );
+	GLIM_VERTEX3F( GC, x, y, z );
 }
 static inline void glVertex4fv (const GLfloat *v)
 {
-	GLIM_VERTEX4FV( __gl, v );
+	GLIM_VERTEX4FV( GC, v );
 }
 static inline void glVertex4f (GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 {
-	GLIM_VERTEX4F( __gl, x, y, z, w );
+	GLIM_VERTEX4F( GC, x, y, z, w );
 }
 static inline void glTexCoord1fv (const GLfloat *v)
 {
-	GLIM_TEXCOORD1FV( __gl, v );
+	GLIM_TEXCOORD1FV( GC, v );
 }
 static inline void glTexCoord1f (GLfloat s)
 {
-	GLIM_TEXCOORD1F( __gl, s );
+	GLIM_TEXCOORD1F( GC, s );
 }
 static inline void glTexCoord2fv (const GLfloat *v)
 {
-	GLIM_TEXCOORD2FV( __gl, v );
+	GLIM_TEXCOORD2FV( GC, v );
 }
 static inline void glTexCoord2f (GLfloat s, GLfloat t)
 {
-	GLIM_TEXCOORD2F( __gl, s, t );
+	GLIM_TEXCOORD2F( GC, s, t );
 }
 static inline void glTexCoord3fv (const GLfloat *v)
 {
-	GLIM_TEXCOORD3FV( __gl, v );
+	GLIM_TEXCOORD3FV( GC, v );
 }
 static inline void glTexCoord3f (GLfloat s, GLfloat t, GLfloat r)
 {
-	GLIM_TEXCOORD3F( __gl, s, t, r );
+	GLIM_TEXCOORD3F( GC, s, t, r );
 }
 static inline void glTexCoord4fv (const GLfloat *v)
 {
-	GLIM_TEXCOORD4FV( __gl, v );
+	GLIM_TEXCOORD4FV( GC, v );
 }
 static inline void glTexCoord4f (GLfloat s, GLfloat t, GLfloat r, GLfloat q)
 {
-	GLIM_TEXCOORD4F( __gl, s, t, r, q );
+	GLIM_TEXCOORD4F( GC, s, t, r, q );
 }
 static inline void glColor3bv (const GLbyte *v)
 {
-	GLIM_COLOR3BV( __gl, v );
+	GLIM_COLOR3BV( GC, v );
 }
 static inline void glColor3dv (const GLdouble *v)
 {
-	glColor3f( v[0], v[1], v[2] );
+	GLIM_COLOR3DV( GC, v );
 }
 static inline void glColor3fv (const GLfloat *v)
 {
-	GLIM_COLOR3FV( __gl, v );
+	GLIM_COLOR3FV( GC, v );
 }
 static inline void glColor3iv (const GLint *v)
 {
-	GLIM_COLOR3IV( __gl, v );
+	GLIM_COLOR3IV( GC, v );
 }
 static inline void glColor3sv (const GLshort *v)
 {
-	GLIM_COLOR3SV( __gl, v );
+	GLIM_COLOR3SV( GC, v );
 }
 static inline void glColor3ubv (const GLubyte *v)
 {
-	GLIM_COLOR3UBV( __gl, v );
+	GLIM_COLOR3UBV( GC, v );
 }
 static inline void glColor3uiv (const GLuint *v)
 {
-	GLIM_COLOR3UIV( __gl, v );
+	GLIM_COLOR3UIV( GC, v );
 }
 static inline void glColor3usv (const GLushort *v)
 {
-	GLIM_COLOR3USV( __gl, v );
+	GLIM_COLOR3USV( GC, v );
 }
 static inline void glColor4bv (const GLbyte *v)
 {
-	GLIM_COLOR4BV( __gl, v );
+	GLIM_COLOR4BV( GC, v );
 }
 static inline void glColor4dv (const GLdouble *v)
 {
-	glColor4f( v[0], v[1], v[2], v[3] );
+	GLIM_COLOR4DV( GC, v );
 }
 static inline void glColor4fv (const GLfloat *v)
 {
-	GLIM_COLOR4FV( __gl, v );
+	GLIM_COLOR4FV( GC, v );
 }
 static inline void glColor4sv (const GLshort *v)
 {
-	GLIM_COLOR4SV( __gl, v );
+	GLIM_COLOR4SV( GC, v );
 }
 static inline void glColor4iv (const GLint *v)
 {
-	GLIM_COLOR4IV( __gl, v );
+	GLIM_COLOR4IV( GC, v );
 }
 static inline void glColor4ubv (const GLubyte *v)
 {
-	GLIM_COLOR4UBV( __gl, v );
+	GLIM_COLOR4UBV( GC, v );
 }
 static inline void glColor4uiv (const GLuint *v)
 {
-	GLIM_COLOR4UIV( __gl, v );
+	GLIM_COLOR4UIV( GC, v );
 }
 static inline void glColor4usv (const GLushort *v)
 {
-	GLIM_COLOR4USV( __gl, v );
+	GLIM_COLOR4USV( GC, v );
 }
 static inline void glBegin( GLenum prim )
 {
-	GLIM_BEGIN( __gl, prim );
+	GLIM_BEGIN( GC, prim );
 }
 
 static inline void glEnd()
 {
-	GLIM_END( __gl );
+	GLIM_END( GC );
 }
+#undef GC
 #else
 _IMPEXP_GL void glNormal3fv(const GLfloat *v);
 _IMPEXP_GL void glVertex2fv (const GLfloat *v);

@@ -14,6 +14,7 @@
 #include <BeBuild.h>
 #include <SupportDefs.h>
 
+class BDataIO;
 class BRect;
 
 /*----------------------------------------------------------------*/
@@ -35,17 +36,24 @@ public:
 		void		ConstrainTo(BRect rect);
 
 		void		PrintToStream() const;
-			
+		
+		BPoint		operator-() const;
 		BPoint		operator+(const BPoint&) const;
 		BPoint		operator-(const BPoint&) const;
 		BPoint&		operator+=(const BPoint&);
 		BPoint&		operator-=(const BPoint&);
+		BPoint		operator*(const float f) const;
+		BPoint		operator/(const float f) const;
+		BPoint&		operator*=(const float f);
+		BPoint&		operator/=(const float f);
 
 		bool		operator!=(const BPoint&) const;
 		bool		operator==(const BPoint&) const;
 };
 
 extern _IMPEXP_BE const BPoint B_ORIGIN;
+
+BDataIO& operator<<(BDataIO& io, const BPoint& point);
 
 /*----------------------------------------------------------------*/
 /*----- inline definitions ---------------------------------------*/

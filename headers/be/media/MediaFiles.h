@@ -24,17 +24,25 @@ virtual		status_t GetNextType(
 virtual		status_t RewindRefs(
 				const char * type);
 virtual		status_t GetNextRef(
-				BString * out_type,
+				BString * out_item,
 				entry_ref * out_ref = NULL);
 
 virtual		status_t GetRefFor(
 				const char * type,
 				const char * item,
 				entry_ref * out_ref);
+			status_t GetAudioGainFor(
+				const char * type,
+				const char * item,
+				float * out_audio_gain);
 virtual		status_t SetRefFor(
 				const char * type,
 				const char * item,
 				const entry_ref & ref);
+			status_t SetAudioGainFor(
+				const char * type,
+				const char * item,
+				float audio_gain);
 virtual		status_t RemoveRefFor(		//	This might better be called "ClearRefFor"
 				const char * type,		//	but it's too late now...
 				const char * item,
@@ -45,7 +53,6 @@ static const char B_SOUNDS[];	/* for "types" */
 virtual		status_t RemoveItem(		//	new in 4.1, removes the whole item.
 				const char * type,
 				const char * item);
-
 
 private:
 

@@ -11,23 +11,30 @@
 #ifndef _BE_BUILD_H
 #define _BE_BUILD_H
 
-#define B_BEOS_VERSION_4	0x0400
-#define B_BEOS_VERSION_4_5	0x0450
-#define B_BEOS_VERSION_5	0x0500
+#define B_BEOS_VERSION_4		0x0400
+#define B_BEOS_VERSION_4_5		0x0450
+#define B_BEOS_VERSION_5		0x0500
+#define B_BEOS_VERSION_5_0_4	0x0504
+#define B_BEOS_VERSION_DANO		0x0510
 
-#define B_BEOS_VERSION		B_BEOS_VERSION_5
-#define B_BEOS_VERSION_MAUI B_BEOS_VERSION_5
+#define B_BEOS_VERSION_MAUI 	B_BEOS_VERSION_5
+
+#define B_BEOS_VERSION			B_BEOS_VERSION_DANO
 
 #if defined(__powerc) || defined(powerc)
 	#define _PR2_COMPATIBLE_ 1
 	#define _PR3_COMPATIBLE_ 1
 	#define _R4_COMPATIBLE_ 1
 	#define _R4_5_COMPATIBLE_ 1
+	#define _R5_COMPATIBLE_ 1
+	#define _R5_0_4_COMPATIBLE_ 1
 #else
 	#define _PR2_COMPATIBLE_ 0
 	#define _PR3_COMPATIBLE_ 0
 	#define _R4_COMPATIBLE_ 1
 	#define _R4_5_COMPATIBLE_ 1
+	#define _R5_COMPATIBLE_ 1
+	#define _R5_0_4_COMPATIBLE_ 1
 #endif
 
 
@@ -68,123 +75,34 @@
 
 #if __INTEL__
 
-#define	_EXPORT			__declspec(dllexport)
-#define	_IMPORT			__declspec(dllimport)
+#define	_EXPORT
+#define	_IMPORT
 
-#if _BUILDING_kernel
-#define	_IMPEXP_KERNEL	__declspec(dllexport)
-#else
-#define	_IMPEXP_KERNEL	__declspec(dllimport)
-#endif
-
-#if _BUILDING_root
-#define	_IMPEXP_ROOT	__declspec(dllexport)
-#else
-#define	_IMPEXP_ROOT	__declspec(dllimport)
-#endif
-
-#if _BUILDING_net
-#define	_IMPEXP_NET		__declspec(dllexport)
-#else
-#define	_IMPEXP_NET		__declspec(dllimport)
-#endif
-
-#if _BUILDING_netdev
-#define	_IMPEXP_NETDEV	__declspec(dllexport)
-#else
-#define	_IMPEXP_NETDEV	__declspec(dllimport)
-#endif
-
-#if _BUILDING_atalk
-#define	_IMPEXP_ATALK	__declspec(dllexport)
-#else
-#define	_IMPEXP_ATALK	__declspec(dllimport)
-#endif
-
-#if _BUILDING_be
-#define	_IMPEXP_BE		__declspec(dllexport)
-#else
-#define	_IMPEXP_BE		__declspec(dllimport)
-#endif
-
-#if _BUILDING_gl
-#define	_IMPEXP_GL		__declspec(dllexport)
-#else
-#define	_IMPEXP_GL		__declspec(dllimport)
-#endif
-
-#if _BUILDING_tracker
-#define	_IMPEXP_TRACKER	__declspec(dllexport)
-#else
-#define	_IMPEXP_TRACKER	__declspec(dllimport)
-#endif
-
-#if _BUILDING_mail
-#define	_IMPEXP_MAIL	__declspec(dllexport)
-#else
-#define	_IMPEXP_MAIL	__declspec(dllimport)
-#endif
-
-#if _BUILDING_device
-#define	_IMPEXP_DEVICE	__declspec(dllexport)
-#else
-#define	_IMPEXP_DEVICE	__declspec(dllimport)
-#endif
-
-#if _BUILDING_media
-#define	_IMPEXP_MEDIA	__declspec(dllexport)
-#else
-#define	_IMPEXP_MEDIA	__declspec(dllimport)
-#endif
-
-#if _BUILDING_midi2
-#define	_IMPEXP_MIDI2	__declspec(dllexport)
-#else
-#define	_IMPEXP_MIDI2	__declspec(dllimport)
-#endif
-
-#if _BUILDING_midi
-#define	_IMPEXP_MIDI	__declspec(dllexport)
-#else
-#define	_IMPEXP_MIDI	__declspec(dllimport)
-#endif
-
-#if _BUILDING_game
-#define	_IMPEXP_GAME	__declspec(dllexport)
-#else
-#define	_IMPEXP_GAME	__declspec(dllimport)
-#endif
-
-#if _BUILDING_gsound
-#define	_IMPEXP_GSOUND	__declspec(dllexport)
-#else
-#define	_IMPEXP_GSOUND	__declspec(dllimport)
-#endif
-
-#if _BUILDING_translation
-#define _IMPEXP_TRANSLATION	__declspec(dllexport)
-#else
-#define _IMPEXP_TRANSLATION	__declspec(dllimport)
-#endif
-
-#if _BUILDING_textencoding
-#define _IMPEXP_TEXTENCODING	__declspec(dllexport)
-#else
-#define _IMPEXP_TEXTENCODING	__declspec(dllimport)
-#endif
-
-#if _BUILDING_input
-#define _IMPEXP_INPUT	__declspec(dllexport)
-#else
-#define _IMPEXP_INPUT	__declspec(dllimport)
-#endif
+#define	_IMPEXP_KERNEL
+#define	_IMPEXP_ROOT
+#define	_IMPEXP_NET
+#define	_IMPEXP_NETDEV
+#define	_IMPEXP_ATALK
+#define	_IMPEXP_BE
+#define	_IMPEXP_GL
+#define	_IMPEXP_TRACKER
+#define	_IMPEXP_MAIL
+#define	_IMPEXP_DEVICE
+#define	_IMPEXP_MEDIA
+#define	_IMPEXP_MIDI2
+#define	_IMPEXP_MIDI
+#define	_IMPEXP_GAME
+#define	_IMPEXP_GSOUND
+#define	_IMPEXP_TRANSLATION
+#define	_IMPEXP_TEXTENCODING
+#define	_IMPEXP_INPUT
 
 #endif /* __INTEL__ */
 
 #if __POWERPC__
 
-#define	_EXPORT                 __declspec(dllexport)
-#define	_IMPORT					__declspec(dllimport)
+#define	_EXPORT	__declspec(dllexport)
+#define	_IMPORT	__declspec(dllimport)
 
 #define _IMPEXP_KERNEL
 #define	_IMPEXP_GL
@@ -263,7 +181,9 @@ class _IMPEXP_ROOT overflow_error;
 
 /* support kit */
 class _IMPEXP_BE BArchivable;
+namespace B { namespace Support {
 class _IMPEXP_BE BAutolock;
+} }
 class _IMPEXP_BE BBlockCache;
 class _IMPEXP_BE BBufferIO;
 class _IMPEXP_BE BDataIO;

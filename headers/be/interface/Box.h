@@ -46,6 +46,8 @@ virtual	void			SetBorder(border_style style);
 		const char		*Label() const;
 		BView			*LabelView() const;
 
+		BInsets			FrameInset() const;
+		
 virtual	void			Draw(BRect bounds);
 virtual	void			AttachedToWindow();
 virtual	void			DetachedFromWindow();
@@ -86,12 +88,15 @@ virtual	void			_ReservedBox2();
 		void			DrawPlain();
 		void			DrawFancy();
 		void			ClearAnyLabel();
-
+		void			SetUpColors();
+		void			SetUpLabelView();
+		void			GetHeaderInfo(font_height* out_finfo, float* out_bottom) const;
+		
 		char			*fLabel;
 		BRect			fBounds;
 		border_style	fStyle;
 		BView			*fLabelView;
-		uint32			_reserved[1];
+		void			*m_private;
 };
 
 /*-------------------------------------------------------------*/

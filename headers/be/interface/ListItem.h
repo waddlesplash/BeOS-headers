@@ -95,6 +95,8 @@ virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 virtual	void		DrawItem(BView *owner, BRect frame, bool complete = false);
 virtual	void		SetText(const char *text);
 		const char	*Text() const;
+		void		SetBaselineOffset(float off);
+		float		BaselineOffset() const;
 virtual	void		Update(BView *owner, const BFont *font);
 
 virtual status_t	Perform(perform_code d, void *arg);

@@ -23,7 +23,7 @@
 
 #if __INTEL__
 # define __CONCAT(x,y)  x ## y     
-# define __GLIBC__			-2
+# define __GLIBC__		2
 # define __GLIBC_MINOR__	1
 #endif
 

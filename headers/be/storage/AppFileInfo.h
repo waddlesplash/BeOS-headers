@@ -33,6 +33,15 @@ struct	version_info {
 	char	long_info[256];
 };
 
+enum version_variety {
+	B_DEVELOPMENT_VERSION = 0,
+	B_ALPHA_VERSION,
+	B_BETA_VERSION,
+	B_GAMMA_VERSION,
+	B_GOLDEN_MASTER_VERSION,
+	B_FINAL_VERSION
+};
+
 enum info_location {
 	B_USE_ATTRIBUTES = 0x1,
 	B_USE_RESOURCES = 0x2,

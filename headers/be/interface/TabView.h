@@ -140,7 +140,7 @@ virtual void 			GetPreferredSize( float *width, float *height);
 virtual void 			ResizeToPreferred();
 
 virtual BHandler		*ResolveSpecifier(BMessage *msg, int32 index,
-							BMessage *specifier, int32 form, const char *property);
+						BMessage *specifier, int32 form, const char *property);
 virtual	status_t		GetSupportedSuites(BMessage *data);
 			
 virtual	void 			AddTab(BView* tabContents, BTab* tab=NULL);
@@ -161,6 +161,13 @@ virtual	void			SetTabHeight(float height);
 		
 		int32			CountTabs() const;
 		BView*			ViewForTab(int32 tabIndex) const;
+
+
+		int32			IndexForTab(const BTab *tab) const;
+		BTab*			RemoveTab(const BTab *tab);
+		void 			Select(const BTab *tab);
+		void			SetFocusTab(const BTab *tab, bool focusState);
+		BRect			TabFrame(const BTab *tab) const;
 
 /*----- Private or reserved -----------------------------------------*/
 private:

@@ -27,12 +27,65 @@ extern _IMPEXP_BE const pattern B_SOLID_LOW;
 
 /*----------------------------------------------------------------*/
 
-typedef struct rgb_color {
+_IMPEXP_BE typedef struct rgb_color {
 	uint8		red;
 	uint8		green;
 	uint8		blue;
 	uint8		alpha;
+	
+#if defined(__cplusplus)
+	// nice things those backwards C programmers can't have.
+	
+	inline rgb_color& set_to(uint8 r, uint8 g, uint8 b, uint8 a=255)
+	{
+		red = r; green = g; blue = b; alpha = a;
+		return *this;
+	}
+
+	inline bool operator==(const rgb_color& o) const
+	{
+		return (*((uint32*)this)) == (*((uint32*)&o));
+	}
+	
+	inline bool operator!=(const rgb_color& o) const
+	{
+		return (*((uint32*)this)) != (*((uint32*)&o));
+	}
+	
+	rgb_color&	mix(const rgb_color other, uint8 amount);
+	rgb_color	mix_copy(const rgb_color other, uint8 amount) const;
+	
+	rgb_color&	blend(const rgb_color other, uint8 amount);
+	rgb_color	blend_copy(const rgb_color other, uint8 amount) const;
+	
+	rgb_color&	tint(float tint);
+	rgb_color	tint_copy(float tint) const;
+	
+	rgb_color&	disable(const rgb_color background);
+	rgb_color	disable_copy(const rgb_color background) const;
+	
+#endif
+	
 } rgb_color;
+
+#if defined(__cplusplus)
+inline rgb_color make_color(uint8 red, uint8 green, uint8 blue, uint8 alpha=255)
+{
+	rgb_color c;
+	c.red = red;
+	c.green = green;
+	c.blue = blue;
+	c.alpha = alpha;
+	return c;
+}
+
+class BDataIO;
+BDataIO& operator<<(BDataIO& io, rgb_color color);
+#endif
+
+_IMPEXP_BE rgb_color mix_color(rgb_color color1, rgb_color color2, uint8 amount);
+_IMPEXP_BE rgb_color blend_color(rgb_color color1, rgb_color color2, uint8 amount);
+_IMPEXP_BE rgb_color disable_color(rgb_color color, rgb_color background);
 
 /*----------------------------------------------------------------*/
 

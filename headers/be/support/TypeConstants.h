@@ -24,6 +24,7 @@ enum {
 	B_COLOR_8_BIT_TYPE 			= 'CLRB',
 	B_DOUBLE_TYPE 				= 'DBLE',
 	B_FLOAT_TYPE 				= 'FLOT',
+	B_FONT_TYPE					= 'FONt',
 	B_GRAYSCALE_8_BIT_TYPE		= 'GRYB',
 	B_INT64_TYPE 				= 'LLNG',
 	B_INT32_TYPE 				= 'LONG',
@@ -54,6 +55,8 @@ enum {
 	B_MEDIA_PARAMETER_TYPE		= 'BMCT',
 	B_MEDIA_PARAMETER_WEB_TYPE	= 'BMCW',
 	B_MEDIA_PARAMETER_GROUP_TYPE= 'BMCG',
+	B_ATOM_TYPE 				= 'ATOM',
+	B_ATOMREF_TYPE 				= 'ATMR',
 
 	/* deprecated, do not use */
 	B_ASCII_TYPE 				= 'TEXT'	/* use B_STRING_TYPE instead */

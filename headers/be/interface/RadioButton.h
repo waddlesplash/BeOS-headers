@@ -19,6 +19,10 @@
 /*----------------------------------------------------------------*/
 /*----- BRadioButton class ---------------------------------------*/
 
+#define B_DEFAULT_RADIO_GROUP NULL
+
+/*----------------------------------------------------------------*/
+
 class BRadioButton : public BControl {
 
 public:
@@ -27,13 +31,16 @@ public:
 								const char *label,
 								BMessage *message,
 								uint32 resizMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-								uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
+								uint32 flags = B_WILL_DRAW | B_NAVIGABLE);
 
 						BRadioButton(BMessage *data);
 virtual					~BRadioButton();
 
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
+		void			SetGroupID(const char *groupID);
+const	char *			GroupID() const;
 
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
@@ -68,16 +75,20 @@ virtual status_t		GetSupportedSuites(BMessage *data);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
+
 friend	status_t		_init_interface_kit_();
+friend	void			_fini_interface_kit_();
 
 virtual	void			_ReservedRadioButton1();
 virtual	void			_ReservedRadioButton2();
 
 		BRadioButton	&operator=(const BRadioButton &);
-static	BBitmap			*sBitmaps[2][3];
 
-		bool			fOutlined;
-		uint32			_reserved[2];
+		bool			_reserved1;
+		uint8			fState;
+		uint8			fChanged;
+		uint16			_reserved2;
+		char *			fGroupID;
 };
 
 /*-------------------------------------------------------------*/

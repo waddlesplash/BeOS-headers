@@ -12,7 +12,7 @@ __extern_c_start
 typedef void (* __signal_func_ptr)(int);
 
 __signal_func_ptr signal(int  signal, __signal_func_ptr signal_func);
-int				  raise(int  signal);
+int				  raise(int  sigid);
 
 __extern_c_end
 

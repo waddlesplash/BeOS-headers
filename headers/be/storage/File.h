@@ -56,6 +56,17 @@ virtual off_t			Seek(off_t position, uint32 seek_mode);
 virtual	off_t			Position() const;
 virtual	status_t		SetSize(off_t size);
 
+virtual	ssize_t			MetaWrite(	const char *in_name, type_code in_type,
+									int32 in_index, off_t in_offset,
+									const void *in_buf, size_t in_size);
+virtual	ssize_t			MetaRead(	const char *in_name, type_code in_type,
+									int32 in_index, off_t in_offset,
+									void *out_buf, size_t in_size) const;
+virtual	status_t		MetaRemove(	const char *in_name, int32 in_index);
+virtual	status_t		MetaGetInfo(const char *in_name, int32 in_index,
+									meta_info *out_info, BString *out_name,
+									void **inout_cookie) const;
+		
 		BFile &			operator=(const BFile &file);
 
 private:

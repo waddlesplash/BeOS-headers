@@ -108,6 +108,13 @@
 #define	_PATH_PROTOCOLS	"/etc/protocols"
 #define	_PATH_SERVICES	"/etc/services"
 
+#ifdef _REENTRANT
+extern int * __h_errno __P((void));
+#define	h_errno (*__h_errno())
+#else
+extern int h_errno;
+#endif
+
 /*
  * Structures returned by network data base library.  All addresses are
  * supplied in host order, and returned in network order (suitable for
@@ -213,6 +220,7 @@ struct	addrinfo {
 #define	NI_DGRAM	0x00000010
 
 
+#ifdef _REENTRANT
 #if defined (__hpux) || defined(__osf__)
 #define	_MAXALIASES	35
 #define	_MAXLINELEN	1024
@@ -302,12 +310,8 @@ struct	servent_data {
 #endif
 };
 #endif
-
+#endif
 __BEGIN_DECLS
-
-extern int * __h_errno __P((void));
-#define	h_errno (*__h_errno())
-
 void		endhostent __P((void));
 void		endnetent __P((void));
 void		endprotoent __P((void));
@@ -339,6 +343,7 @@ int		getnameinfo __P((const struct sockaddr *, size_t, char *,
 void		freeaddrinfo __P((struct addrinfo *));
 char		*gai_strerror __P((int));
 
+#ifdef _REENTRANT
 #if defined(__hpux) || defined(__osf__)
 int		gethostbyaddr_r __P((const char *, int, int, struct hostent *,
 					struct hostent_data *));
@@ -393,7 +398,7 @@ int		endservent_r __P((struct servent_data *));
 void		endservent_r __P((struct servent_data *));
 #endif
 #endif
-#if defined(sun) || defined(bsdi)|| defined(__BEOS__)
+#if defined(sun) || defined(bsdi)
 struct hostent	*gethostbyaddr_r __P((const char *, int, int, struct hostent *,
 					char *, int, int *));
 struct hostent	*gethostbyname_r __P((const char *, struct hostent *,
@@ -427,7 +432,7 @@ void		setservent_r __P((int));
 void		endservent_r __P((void));
 
 #endif
-
+#endif
 __END_DECLS
 
 /* This is nec'y to make this include file properly replace the sun version. */

@@ -14,7 +14,8 @@
 #include <BeBuild.h>
 #include <SupportDefs.h>
 #include <Archivable.h>
-#include <socket.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 
 /*

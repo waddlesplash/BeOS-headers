@@ -18,6 +18,7 @@
 #include <Synth.h>
 #include <MidiDefs.h>
 
+class BAEMidiSynth;
 
 class BMidiSynth : public BMidi
 {
@@ -49,8 +50,6 @@ public:
 	status_t		LoadInstrument(int16 instrument);
 	status_t		UnloadInstrument(int16 instrument);
 	status_t		RemapInstrument(int16 from, int16 to);
-
-	void		FlushInstrumentCache(bool startStopCache);
 
 	/* get current midi tick in microseconds*/
 	uint32	Tick(void) const;
@@ -94,7 +93,8 @@ virtual	void	PitchBend(uchar channel,
 virtual void	AllNotesOff(bool controlOnly, uint32 time = B_NOW);
 
 protected:
-	void*			fSongVariables;
+//	void*			fSongVariables;
+	BAEMidiSynth*	fSynth;
 	void*			fPerformanceVariables;
 	bool			fMidiQueue;
 
@@ -109,7 +109,11 @@ friend class BSynth;
 
 	virtual	void		Run();
 	bool fInputEnabled;
-	uint32	_reserved[4];
+	uint32	_reserved[3];
+
+	/* calls that were obsoleted in the transition to the new Beatnik engine */
+	void		FlushInstrumentCache(bool startStopCache);
+
 };
 
 #endif

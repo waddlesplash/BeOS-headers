@@ -26,7 +26,7 @@ public:
 									BMessage * model,
 									int32 channels = 1,
 									uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-									uint32 flags = B_WILL_DRAW);
+									uint32 flags = B_WILL_DRAW | B_NAVIGABLE);
 							BChannelSlider(
 									BRect area,
 									const char * name,
@@ -35,7 +35,7 @@ public:
 									orientation o,
 									int32 channels = 1,
 									uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-									uint32 flags = B_WILL_DRAW);
+									uint32 flags = B_WILL_DRAW | B_NAVIGABLE);
 							BChannelSlider(
 									BMessage * from);
 virtual						~BChannelSlider();
@@ -127,8 +127,6 @@ virtual	status_t _Reserved_BChannelSlider_7(void *, ...);
 		BBitmap * _m_left_knob;
 		BBitmap * _m_mid_knob;
 		BBitmap * _m_right_knob;
-		BBitmap * _m_backing;
-		BView * _m_backing_view;
 		bool _m_vertical;
 		bool _m_padding_[3];
 		BPoint _m_click_delta;
@@ -139,7 +137,7 @@ virtual	status_t _Reserved_BChannelSlider_7(void *, ...);
 		float 	fMinpoint;
 		int32	fFocusChannel;
 		
-		uint32 _reserved_[12];
+		uint32 _reserved_[14];
 
 		void InitData();
 		

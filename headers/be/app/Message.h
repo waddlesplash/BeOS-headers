@@ -23,10 +23,30 @@
 #include <AppDefs.h>		/* For convenience */
 #include <TypeConstants.h>	/* For convenience */
 
+// This must be included to get at the rgb_color structure.
+// Perhaps rgb_color should be moved to SupportDefs.h, where
+// the other base types are defined.
+#include <GraphicsDefs.h>
+
 class	BBlockCache;
-class	BMessenger;
+class	BDataIO;
 class	BHandler;
+class	BMessenger;
 class	BString;
+class	BAtom;
+template <class TYPE> class atom;
+template <class TYPE> class atomref;
+namespace BPrivate {
+	struct message_target;
+	struct message_write_context;
+	struct header_args;
+	class BMessageBody;
+	class BDirectMessageTarget;
+	class BSyncReplyTarget;
+}
+namespace std {
+	struct nothrow_t;
+}
 
 /*-----------------------------------------*/
 /*----- Private or reserved ---------------*/
@@ -56,6 +76,13 @@ enum {
 	/* app-defined specifiers start at B_SPECIFIERS_END+1 */
 };
 
+// These are the types of flattened BMessage formats.
+enum message_version {
+	B_MESSAGE_VERSION_ANY		= 0,					// Don't care.
+	B_MESSAGE_VERSION_1			= 1,					// R5 and before.
+	B_MESSAGE_VERSION_2			= 2,					// Post-R5.
+	B_MESSAGE_VERSION_CURRENT	= B_MESSAGE_VERSION_2
+};
 
 /*-------------------------------------------------------------*/
 /* --------- BMessage class----------------------------------- */
@@ -72,12 +99,20 @@ virtual				~BMessage();
 
 		BMessage	&operator=(const BMessage &msg);
 
+/* Mass updates */
+		status_t	Update(const BMessage& from, bool recursive = false);
+		status_t	FillIn(const BMessage& from, bool recursive = false);
+		
 /* Statistics and misc info */
 		status_t	GetInfo(type_code typeRequested, int32 which, char **name,
 							type_code *typeReturned, int32 *count = NULL) const;
 
 		status_t	GetInfo(const char *name, type_code *type, int32 *c = 0) const;
 		status_t	GetInfo(const char *name, type_code *type, bool *fixed_size) const;
+		// TO DO: Fix const-ness of 'name'!  (This is being put off because it also
+		// needs to be done in-sync with IAD.)
+		status_t	GetNextName(void **cookie, char **outName,
+								type_code *outType=NULL, int32 *outCount=NULL) const;
 
 		int32		CountNames(type_code type) const;
 		bool		IsEmpty() const;
@@ -89,21 +124,40 @@ virtual				~BMessage();
 
 /* Delivery info */
 		bool		WasDelivered() const;
+		bool		IsReplyRequested() const;
 		bool		IsSourceWaiting() const;
 		bool		IsSourceRemote() const;
+		bool		CompareDestination(const BMessenger& test) const;
 		BMessenger	ReturnAddress() const;
 		const BMessage	*Previous() const;
 		bool		WasDropped() const;
 		BPoint		DropPoint(BPoint *offset = NULL) const;
 
+/* Time stamp */
+		bool		HasWhen() const;
+		bigtime_t	When() const;
+		void		SetWhen(bigtime_t time);
+		
 /* Replying */
-		status_t	SendReply(uint32 command, BHandler *reply_to = NULL);
+		status_t	SendReply(const BMessage& the_reply,
+							const BMessenger& reply_to,
+							uint32 flags = B_TIMEOUT,
+							bigtime_t timeout = B_INFINITE_TIMEOUT);
+		status_t	SendReply(uint32 command);
+		status_t	SendReply(uint32 command, const BMessenger& reply_to);
+	
+		status_t	SendReply(const BMessage& the_reply, BMessage* reply_to_reply,
+							uint32 flags = B_TIMEOUT,
+							bigtime_t send_timeout = B_INFINITE_TIMEOUT,
+							bigtime_t reply_timeout = B_INFINITE_TIMEOUT);
+		status_t	SendReply(uint32 command, BMessage* reply_to_reply);
+
+/* Deprecated replying API */
+		status_t	SendReply(uint32 command, BHandler *reply_to);
 		status_t	SendReply(BMessage *the_reply, BHandler *reply_to = NULL,
 							bigtime_t timeout = B_INFINITE_TIMEOUT);
 		status_t	SendReply(BMessage *the_reply, BMessenger reply_to,
 							bigtime_t timeout = B_INFINITE_TIMEOUT);
-	
-		status_t	SendReply(uint32 command, BMessage *reply_to_reply);
 		status_t	SendReply(BMessage *the_reply, BMessage *reply_to_reply,
 							bigtime_t send_timeout = B_INFINITE_TIMEOUT,
 							bigtime_t reply_timeout = B_INFINITE_TIMEOUT);
@@ -115,7 +169,18 @@ virtual				~BMessage();
 		status_t	Unflatten(const char *flat_buffer);
 		status_t	Unflatten(BDataIO *stream);
 
+		ssize_t		FlattenedSize(message_version format) const;
+		status_t	Flatten(message_version format, char *buffer, ssize_t size) const;
+		status_t	Flatten(message_version format, BDataIO *stream, ssize_t *size = NULL) const;
 
+/* Flattening and unflattening with raw ports */
+		status_t	WritePort(port_id port, int32 code,
+							  uint32 flags=0, bigtime_t timeout=B_INFINITE_TIMEOUT) const;
+		status_t	ReadPort(port_id port, ssize_t size=-1, int32* outCode=NULL,
+							 uint32 flags=0, bigtime_t timeout=B_INFINITE_TIMEOUT);
+		size_t		RawPortSize() const;
+		const void*	RawPortData() const;
+		
 /* Specifiers (scripting) */
 		status_t	AddSpecifier(const char *property);
 		status_t	AddSpecifier(const char *property, int32 index);
@@ -141,13 +206,19 @@ virtual				~BMessage();
 		status_t	AddBool(const char *name, bool a_boolean);
 		status_t	AddFloat(const char *name, float a_float);
 		status_t	AddDouble(const char *name, double a_double);
+		status_t	AddRGBColor(const char* name, rgb_color a_color,
+								type_code type = B_RGB_COLOR_TYPE);
 		status_t	AddPointer(const char *name, const void *ptr);
 		status_t	AddMessenger(const char *name, BMessenger messenger);
 		status_t	AddRef(const char *name, const entry_ref *ref);
 		status_t	AddMessage(const char *name, const BMessage *msg);
-		status_t	AddFlat(const char *name, BFlattenable *obj, int32 count = 1);
+		status_t	AddFlat(const char *name, const BFlattenable *obj, int32 count = 1);
+		status_t	AddAtom(const char *name, const BAtom* atom);
+		status_t	AddAtomRef(const char *name, const BAtom* atom);
+
 		status_t	AddData(const char *name, type_code type, const void *data,
 						ssize_t numBytes, bool is_fixed_size = true, int32 count = 1);
+
 
 /* Removing data */
 		status_t	RemoveData(const char *name, int32 index = 0);
@@ -177,6 +248,14 @@ virtual				~BMessage();
 		status_t	FindFloat(const char *name, int32 index, float *f) const;
 		status_t	FindDouble(const char *name, double *d) const;
 		status_t	FindDouble(const char *name, int32 index, double *d) const;
+		status_t	FindRGBColor(const char *name, rgb_color *c,
+								 bool allow_int32_type = false) const;
+		status_t	FindRGBColor(const char *name, int32 index, rgb_color *c,
+								 bool allow_int32_type = false) const;
+		status_t	FindAtom(const char *name, BAtom** atom) const;
+		status_t	FindAtom(const char *name, int32 index, BAtom** atom) const;
+		status_t	FindAtomRef(const char *name, BAtom** atom) const;
+		status_t	FindAtomRef(const char *name, int32 index, BAtom** atom) const;
 		status_t	FindPointer(const char *name, void **ptr) const;
 		status_t	FindPointer(const char *name, int32 index,  void **ptr) const;
 		status_t	FindMessenger(const char *name, BMessenger *m) const;
@@ -215,6 +294,14 @@ virtual				~BMessage();
 		status_t	ReplaceFloat(const char *name, int32 index, float a_float);
 		status_t	ReplaceDouble(const char *name, double a_double);
 		status_t	ReplaceDouble(const char *name, int32 index, double a_double);
+		status_t	ReplaceRGBColor(const char *name, rgb_color a_color,
+									bool allow_int32_type = false);
+		status_t	ReplaceRGBColor(const char *name, int32 index, rgb_color a_color,
+									bool allow_int32_type = false);
+		status_t	ReplaceAtom(const char *name, const BAtom* atom);
+		status_t	ReplaceAtom(const char *name,int32 index, const BAtom* atom);
+		status_t	ReplaceAtomRef(const char *name, const BAtom* atom);
+		status_t	ReplaceAtomRef(const char *name,int32 index, const BAtom* atom);
 		status_t	ReplacePointer(const char *name, const void *ptr);
 		status_t	ReplacePointer(const char *name,int32 index,const void *ptr);
 		status_t	ReplaceMessenger(const char *name, BMessenger messenger);
@@ -223,14 +310,16 @@ virtual				~BMessage();
 		status_t	ReplaceRef(	const char *name, int32 index, const entry_ref *ref);
 		status_t	ReplaceMessage(const char *name, const BMessage *msg);
 		status_t	ReplaceMessage(const char *name, int32 index, const BMessage *msg);
-		status_t	ReplaceFlat(const char *name, BFlattenable *obj);
-		status_t	ReplaceFlat(const char *name, int32 index, BFlattenable *obj);
+		status_t	ReplaceFlat(const char *name, const BFlattenable *obj);
+		status_t	ReplaceFlat(const char *name, int32 index, const BFlattenable *obj);
 		status_t	ReplaceData(const char *name, type_code type,
 								const void *data, ssize_t data_size);
 		status_t	ReplaceData(const char *name, type_code type, int32 index,
 								const void *data, ssize_t data_size);
 
 		void		*operator new(size_t size);
+		void		*operator new(size_t size, const std::nothrow_t&);
+		void		*operator new(size_t, void * arg);
 		void		operator delete(void *ptr, size_t size);
 
 /*----- Private, reserved, or obsolete ------------------------------*/
@@ -244,6 +333,10 @@ virtual				~BMessage();
 		bool		HasBool(const char *, int32 n = 0) const;
 		bool		HasFloat(const char *, int32 n = 0) const;
 		bool		HasDouble(const char *, int32 n = 0) const;
+		bool		HasRGBColor(const char *name, int32 n = 0,
+								bool allow_int32_type = false) const;
+		bool		HasAtom(const char *, int32 n = 0) const;
+		bool		HasAtomRef(const char *, int32 n = 0) const;
 		bool		HasPointer(const char *, int32 n = 0) const;
 		bool		HasMessenger(const char *, int32 n = 0) const;
 		bool		HasRef(const char *, int32 n = 0) const;
@@ -262,18 +355,45 @@ virtual				~BMessage();
 		float		FindFloat(const char *, int32 n = 0) const;
 		double		FindDouble(const char *, int32 n = 0) const;
 
+		status_t	AddAtom(const char *name, const atom<BAtom> &obj);
+		status_t	AddAtomRef(const char *name, const atom<BAtom> &obj);
+		status_t	AddAtomRef(const char *name, const atomref<BAtom> &obj);
+		status_t	FindAtom(const char *name, atom<BAtom> &atom) const;
+		status_t	FindAtom(const char *name, int32 index, atom<BAtom> &atom) const;
+		status_t	FindAtomRef(const char *name, atomref<BAtom> &atom) const;
+		status_t	FindAtomRef(const char *name, int32 index, atomref<BAtom> &atom) const;
+		status_t	ReplaceAtom(const char *name, const atom<BAtom> &atom);
+		status_t	ReplaceAtom(const char *name,int32 index, const atom<BAtom> &atom);
+		status_t	ReplaceAtomRef(const char *name, const atomref<BAtom> &atom);
+		status_t	ReplaceAtomRef(const char *name,int32 index, const atomref<BAtom> &atom);
+		template <class TYPE> inline status_t	FindAtom(const char *name, atom<TYPE> &atom) const;
+		template <class TYPE> inline status_t	FindAtom(const char *name, int32 index, atom<TYPE> &atom) const;
+		template <class TYPE> inline status_t	FindAtomRef(const char *name, atomref<TYPE> &atom) const;
+		template <class TYPE> inline status_t	FindAtomRef(const char *name, int32 index, atomref<TYPE> &atom) const;
+
 private:
 
-friend class	BMessageQueue;
+// optimization for gcc
+#if __GNUC__
+#define STANDARD_CALL __attribute__((stdcall))
+#define ARITHMETIC_CALL __attribute__((stdcall,const))
+#else
+#define STANDARD_CALL
+#define ARITHMETIC_CALL
+#endif
+
+friend class	BMessageList;
 friend class	BMessenger;
 friend class	BApplication;
+friend class	BParcel;
 
 friend			void		_msg_cache_cleanup_();
-friend			BMessage 	*_reconstruct_msg_(uint32,uint32,uint32);
+friend			BMessage 	*_reconstruct_msg_(uint32,uint32);
 friend inline	void		_set_message_target_(BMessage *, int32, bool);
 friend inline	void		_set_message_reply_(BMessage *, BMessenger);
 friend inline	int32		_get_message_target_(BMessage *);
 friend inline	bool		_use_preferred_target_(BMessage *);
+friend			BDataIO&	operator<<(BDataIO& io, const BMessage& message);
 
 					/* deprecated */
 					BMessage(BMessage *a_message);
@@ -282,140 +402,127 @@ virtual	void		_ReservedMessage1();
 virtual	void		_ReservedMessage2();
 virtual	void		_ReservedMessage3();
 
-		void		init_data();
-		int32		flatten_hdr(uchar *result,
-								ssize_t size,
-								uchar flags) const;
-		status_t	real_flatten(char *result,
-								ssize_t size,
-								uchar flags) const;
-		status_t	real_flatten(BDataIO *stream,
-								ssize_t size,
-								uchar flags) const;
-		char		*stack_flatten(char *stack_ptr,
-									ssize_t stack_size,
-									bool incl_reply,
-									ssize_t *size = NULL) const;
-		ssize_t		calc_size(uchar flags) const;
-		ssize_t		calc_hdr_size(uchar flags) const;
-		ssize_t		min_hdr_size() const;
-		status_t	nfind_data(	const char *name,
-								type_code type,
-								int32 index,
-								const void **data,
-								ssize_t *data_size) const;
-		status_t	copy_data(	const char *name,
-								type_code type,
-								int32 index,
-								void *data,
-								ssize_t data_size) const;
+		void		init_data() STANDARD_CALL;
+		void		make_real_empty() STANDARD_CALL;
+		
+		BPrivate::BMessageBody* edit_body() STANDARD_CALL;
+		BPrivate::BMessageBody* reset_body() STANDARD_CALL;
+		
+		void		get_args(BPrivate::header_args* into) const STANDARD_CALL;
+		void		get_args(BPrivate::header_args* into, bigtime_t when) const STANDARD_CALL;
+		void		set_args(const BPrivate::header_args* from) STANDARD_CALL;
+		
+		status_t	fast_add_data(const char *name, type_code type, const void *data,
+									ssize_t numBytes, bool is_fixed_size=true) STANDARD_CALL;
+		status_t	fast_find_data(const char *name, type_code type, int32 index,
+									const void **data, ssize_t *numBytes) const STANDARD_CALL;
+		status_t	fast_replace_data(const char *name, type_code type, int32 index,
+										const void *data, ssize_t data_size) STANDARD_CALL;
+		
+		status_t	flatten_no_check(char *buffer, ssize_t size) const STANDARD_CALL;
+		
+		status_t	start_writing(BPrivate::message_write_context* context,
+								  bool include_target=true, bool fixed_size=true) const STANDARD_CALL;
+		void		finish_writing(BPrivate::message_write_context* context) const STANDARD_CALL;
+		
+		void		reply_if_needed() STANDARD_CALL;
+		
+		status_t	send_asynchronous(BPrivate::BDirectMessageTarget* direct,
+									  bigtime_t when,
+									  port_id port,
+									  int32 token,
+									  const BMessenger& reply_to,
+									  uint32 target_flags,
+									  bigtime_t timeout) const STANDARD_CALL;
+		status_t	send_synchronous(BPrivate::BDirectMessageTarget* direct,
+									 bigtime_t when,
+									 port_id port,
+									 team_id port_owner,
+									 int32 token,
+									 uint32 target_flags,
+									 BMessage *reply,
+									 bigtime_t send_timeout,
+									 bigtime_t reply_timeout) const STANDARD_CALL;
+		
+static	BDataIO&	print_message(BDataIO& io, const BMessage & msg, int32 level);
 
-		status_t	_send_(port_id port,
-							int32 token,
-							bool preferred,
-							bigtime_t timeout,
-							bool reply_required,
-							BMessenger &reply_to) const;
-		status_t	send_message(port_id port,
-								team_id port_owner,
-								int32 token,
-								bool preferred,
-								BMessage *reply,
-								bigtime_t send_timeout,
-								bigtime_t reply_timeout) const;
+		// avoid app_server depencies on BMessage's data fields.
+		const BPrivate::message_target&	target_struct() const ARITHMETIC_CALL;
+		BPrivate::message_target&		target_struct() ARITHMETIC_CALL;
+		void							set_body(const BPrivate::BMessageBody* body) STANDARD_CALL;
+		const BPrivate::BMessageBody*	body() const ARITHMETIC_CALL;
+		void							set_read_only(bool state) STANDARD_CALL;
+		bool							read_only() const ARITHMETIC_CALL;
+		void							set_flatten_with_target(bool state) STANDARD_CALL;
+		bool							flatten_with_target() const ARITHMETIC_CALL;
+		
+		enum				{ sNumReplyPorts = 3 };
+static	BPrivate::BSyncReplyTarget*	sReplyPorts[sNumReplyPorts];
+static	int32				sReplyPortInUse[sNumReplyPorts];
+static	int32				sGetCachedReplyPort();
 
-		enum		{ sNumReplyPorts = 3 };
-static	port_id		sReplyPorts[sNumReplyPorts];
-static	long		sReplyPortInUse[sNumReplyPorts];
-static	int32		sGetCachedReplyPort();
+friend	int					_init_message_();
+friend	int					_delete_message_();
+static	BBlockCache*		sMsgCache;
 
-friend	int _init_message_();
-friend	int _delete_message_();
-static	BBlockCache	*sMsgCache;
+#undef STANDARD_CALL
+#undef ARITHMETIC_CALL
 
-		struct dyn_array {
-			int32		fLogicalBytes;
-			int32		fPhysicalBytes;
-			int32		fChunkSize;		
-			int32		fCount;
-			int32		fEntryHdrSize;	
-		};
+		BMessage			*fNext;
+		BMessage			*fPrevious;
+mutable	BMessage			*fOriginal;
 
-		struct entry_hdr  : public dyn_array {
-			entry_hdr	*fNext;
-			uint32		fType;
-			uchar		fNameLength;	
-			char		fName[1];
-		};
-
-		struct var_chunk {
-			int32	fDataSize;				
-			char	fData[1];
-		};
-
-		void		*da_create(int32 header_size, int32 chunk_size,
-								bool fixed, int32 nchunks);
-		status_t	da_add_data(dyn_array **da, const void *data, int32 size);
-		void		*da_find_data(dyn_array *da, int32 index,
-									int32 *size = NULL) const;
-		status_t	da_delete_data(dyn_array **pda, int32 index);
-		status_t	da_replace_data(dyn_array **pda, int32 index,
-									const void *data, int32 dsize);
-		int32		da_calc_size(int32 hdr_size, int32 chunksize,
-								bool is_fixed, int32 nchunks) const;
-		void		*da_grow(dyn_array **pda, int32 increase);
-		void		da_dump(dyn_array *da);
-
-		int32		da_chunk_hdr_size() const
-						{ return sizeof(int32); }
-		int32		da_chunk_size(var_chunk *v) const
-						{ return (v->fDataSize + da_chunk_hdr_size() + 7) & ~7; }
-		var_chunk	*da_first_chunk(dyn_array *da) const
-						{ return (var_chunk *) da_start_of_data(da); }
-		var_chunk	*da_next_chunk(var_chunk *v) const
-						{ return (var_chunk *) (((char*) v) + da_chunk_size(v)); }
-		var_chunk	*da_chunk_ptr(void *data) const
-						{ return (var_chunk*) (((char *) data) - da_chunk_hdr_size()); }
-
-		int32		da_pad_8(int32 val) const
-						{ return (val + 7) & ~7; }
-		int32		da_total_size(dyn_array *da) const
-						{ return (int32)sizeof(dyn_array) + da->fEntryHdrSize +
-											da->fPhysicalBytes; }
-		char		*da_start_of_data(dyn_array *da) const
-						{ return ((char *) da) + (sizeof(dyn_array) +
-											da->fEntryHdrSize); }
-		bool		da_is_mini_data(dyn_array *da) const
-						{ return ((da->fLogicalBytes <= (int32) UCHAR_MAX) &&
-											(da->fCount <= (int32) UCHAR_MAX));}
-		void		da_swap_var_sized(dyn_array *da);
-		void		da_swap_fixed_sized(dyn_array *da);
-
-		BMessage			*link;
-		int32				fTarget;	
-		BMessage			*fOriginal;
-		uint32				fChangeCount;
+		bigtime_t			fWhen;
+		
 		int32				fCurSpecifier;
-		uint32				fPtrOffset;
-		uint32				_reserved[3];
+		
+		const BPrivate::BMessageBody	*fBody;
 
-		BMessage::entry_hdr	*fEntries;
+		uint32				fTarget[6];
+		
+		uint32				_reserved[2];
 
-		struct {
-			port_id				port;
-			int32				target;
-			team_id				team;
-			bool				preferred;
-		} fReplyTo;
-
-		bool				fPreferred;
-		bool				fReplyRequired;
-		bool				fReplyDone;
-		bool				fIsReply;
-		bool				fWasDelivered;
+		bool				fHasWhen;
 		bool				fReadOnly;
-		bool				fHasSpecifiers;	
+		bool				fFlattenWithTarget;
+		bool				_reservedBool;
 };
+
+template <class TYPE> inline status_t BMessage::FindAtom(const char *name, int32 index, atom<TYPE> &a) const
+{
+	BAtom* obj;
+	status_t r = FindAtom(name,index,&obj);
+	if (r == B_OK) {
+		TYPE *t = dynamic_cast<TYPE*>(obj);
+		if (t) a = t;
+		else r = B_ERROR;
+	};
+	return r;
+};
+
+template <class TYPE> inline status_t BMessage::FindAtom(const char *name, atom<TYPE> &a) const
+{
+	return FindAtom(name,0,a);
+};
+
+template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, atomref<TYPE> &atom) const
+{
+	BAtom* obj;
+	status_t r = FindAtomRef(name,index,&obj);
+	if (r == B_OK) {
+		TYPE *t = dynamic_cast<TYPE*>(obj);
+		if (t) atom = t;
+		else r = B_ERROR;
+	};
+	return r;
+};
+
+template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, int32 index, atomref<TYPE> &atom) const
+{
+	return FindAtomRef(name,0,atom);
+};
+
+_IMPEXP_BE BDataIO& operator<<(BDataIO& io, const BMessage& message);
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

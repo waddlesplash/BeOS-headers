@@ -57,7 +57,6 @@ virtual ~BSynth();
 	status_t 	LoadSynthData(synth_mode synth);
 	synth_mode SynthMode(void);
 
-	void	Unload(void);
 	bool	IsLoaded(void) const;
 	
 	/* change audio modes*/
@@ -102,10 +101,6 @@ virtual ~BSynth();
 	/* reengage to audio output streams*/
 	void		Resume(void);
 	
-	/* Set a call back on controller events*/
-	void		SetControllerHook(int16 controller,
-								  synth_controller_hook cback);
-	
 	int32		CountClients(void) const;
 
  private:
@@ -133,6 +128,12 @@ virtual	void		_ReservedSynth4();
 	reverb_mode 			fReverb;
 	sem_id					fSetupLock;
 	uint32					_reserved[4];
+
+	/* calls that were obsoleted in the transition to the new Beatnik engine */
+	void	Unload(void);
+	void		SetControllerHook(int16 controller,
+								  synth_controller_hook cback);
+	
 };
 
 extern _IMPEXP_MIDI BSynth *be_synth;

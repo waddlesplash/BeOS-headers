@@ -192,6 +192,7 @@ virtual void        _ReservedWindowScreen4();
 		wait_engine_idle      m_wei;
 		acquire_engine        m_ae;
 		release_engine        m_re;
+		move_display_area     m_md;
 		fill_rectangle        fill_rect;
 		screen_to_screen_blit blit_rect;
 		screen_to_screen_transparent_blit trans_blit_rect;

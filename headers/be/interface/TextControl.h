@@ -16,6 +16,7 @@
 #include <TextView.h>		/* For convenience */
 
 class _BTextInput_;
+class BTextListControl;
 
 /*----------------------------------------------------------------*/
 /*----- BTextControl class ---------------------------------------*/
@@ -53,6 +54,10 @@ virtual	void			SetDivider(float dividing_line);
 		float			Divider() const;
 
 virtual	void			Draw(BRect updateRect);
+
+		void			DrawTextInputBorder();
+		void			DrawLabel();
+
 virtual	void			MouseDown(BPoint where);
 virtual	void			AttachedToWindow();
 virtual	void			MakeFocus(bool focusState = true);
@@ -85,8 +90,19 @@ virtual void			SetFlags(uint32 flags);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
-friend	class _BTextInput_;
 
+friend	class _BTextInput_;
+friend	class BTextListControl;
+
+						BTextControl(BRect frame,
+									const char *name,
+									const char *label, 
+									const char *initial_text, 
+									BMessage *message,
+									_BTextInput_ *textInput,
+									uint32 rmask,
+									uint32 flags);
+									
 virtual	void			_ReservedTextControl1();
 virtual	void			_ReservedTextControl2();
 virtual	void			_ReservedTextControl3();
@@ -94,7 +110,7 @@ virtual	void			_ReservedTextControl4();
 
 		BTextControl	&operator=(const BTextControl &);
 
-		void			CommitValue();
+		void			CommitValue(bool enterPressed);
 		void			InitData(const char *label,
 								const char *initial_text,
 								BMessage *data = NULL);

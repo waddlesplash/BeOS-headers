@@ -49,10 +49,12 @@ virtual	void		AttachedToWindow();
 virtual	void		MessageReceived(BMessage *msg);
 virtual void		MakeFocus(bool state = true);
 virtual	void		KeyDown(const char *bytes, int32 numBytes);
+virtual	void		KeyUp(const char *bytes, int32 numBytes);
 virtual	void		MouseDown(BPoint pt);
 virtual	void		MouseUp(BPoint pt);
 virtual	void		MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void		DetachedFromWindow();
+virtual void		SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 
 virtual	void		SetLabel(const char *text);
 		const char	*Label() const;
@@ -62,6 +64,9 @@ virtual	void		SetValue(int32 value);
 
 virtual void		SetEnabled(bool on);
 		bool		IsEnabled() const;
+
+virtual void		SetPressed(bool on);
+		bool		IsPressed() const;
 
 virtual	void		GetPreferredSize(float *width, float *height);
 virtual void		ResizeToPreferred();
@@ -86,10 +91,11 @@ protected:
 		void		SetTracking(bool state);
 
 		void		SetValueNoUpdate(int32 value);
+		void		SetInvalidate(bool invalidate);
 /*----- Private or reserved -----------------------------------------*/
 private:
-
-virtual	void		_ReservedControl1();
+		void		UpdateView();
+		
 virtual	void		_ReservedControl2();
 virtual	void		_ReservedControl3();
 virtual	void		_ReservedControl4();
@@ -103,8 +109,10 @@ virtual	void		_ReservedControl4();
 		bool		fEnabled;
 		bool		fFocusChanging;
 		bool		fTracking;
-		bool		fWantsNav;
-		uint32		_reserved[4];
+		bool		fInvalidate;
+		bool		fPressed;
+		uint8		_reserved1[3];
+		uint32		_reserved2[3];
 };
 
 /*-------------------------------------------------------------*/

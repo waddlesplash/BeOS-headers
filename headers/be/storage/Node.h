@@ -99,7 +99,7 @@ virtual	void		_RudeNode4();
 virtual	void		_RudeNode5();
 virtual	void		_RudeNode6();
 
-		uint32		_rudeData[4];
+		uint32		_rudeData[3];
 
 			status_t		set_fd(int fd);
 	virtual	void			close_fd();
@@ -116,6 +116,7 @@ virtual	void		_RudeNode6();
 			int				fFd;
 			int				fAttrFd;
 			status_t		fCStatus;
+			int32			fAttrIndex;
 };
 
 

@@ -37,6 +37,8 @@ virtual					~BMenuItem();
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 	
+virtual	status_t		Invoke(BMessage *msg = NULL);
+
 virtual	void			SetLabel(const char *name);
 virtual	void			SetEnabled(bool state);
 virtual	void			SetMarked(bool state);
@@ -53,9 +55,10 @@ virtual void			SetShortcut(char ch, uint32 modifiers);
 		BMenu			*Menu() const;
 		BRect			Frame() const;
 
+virtual	void			GetContentSize(float *width, float *height);
+
 protected:
 
-virtual	void			GetContentSize(float *width, float *height);
 virtual	void			TruncateLabel(float max, char *new_label);
 virtual	void			DrawContent();
 virtual	void			Draw();
@@ -81,10 +84,6 @@ virtual	void		_ReservedMenuItem4();
 		void		InitMenuData(BMenu *menu);
 		void		Install(BWindow *window);
 
-/*----- Protected function -----------------------------------------*/
-protected:
-virtual	status_t	Invoke(BMessage *msg = NULL);
-
 /*----- Private or reserved -----------------------------------------*/
 private:
 		void		Uninstall();
@@ -102,7 +101,6 @@ private:
 		BMenu		*fSuper;
 		BRect		fBounds;
 		uint32		fModifiers;
-		float		fCachedWidth;
 		int16		fTriggerIndex;
 		char		fUserTrigger;
 		char		fSysTrigger;
@@ -110,8 +108,11 @@ private:
 		bool		fMark;
 		bool		fEnabled;
 		bool		fSelected;
-
-		uint32		_reserved[4];
+		bool		_reservedBool;
+		float		fCachedWidth;
+		float		fCachedHeight;	// was _reserved[0]
+		
+		uint32		_reserved[3];
 };
 
 /*----------------------------------------------------------------*/
@@ -127,9 +128,10 @@ virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	void			SetEnabled(bool state);
 
+virtual	void			GetContentSize(float *width, float *height);
+
 protected:
 
-virtual	void			GetContentSize(float *width, float *height);
 virtual	void			Draw();
 
 /*----- Private or reserved -----------------------------------------*/

@@ -24,6 +24,8 @@ class BMediaEncoder {
 		                   media_file_format *mfi = NULL);
 		status_t Encode(const void *buffer, int64 frame_count,
 		                media_encode_info *info);
+		// returns a copy of the parameter web (which the caller is responsible for deleting)
+		status_t GetParameterWeb(BParameterWeb** outWeb);
 		status_t GetEncodeParameters(encode_parameters *parameters) const;
 		status_t SetEncodeParameters(encode_parameters *parameters);
 	protected:

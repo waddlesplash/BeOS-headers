@@ -42,8 +42,14 @@
 #   include <new>
 #   define __THROW_BAD_ALLOC throw bad_alloc()
 #elif !defined(__THROW_BAD_ALLOC)
+#  if __BEOS__
+#   include <stdio.h>
+#   include <stdlib.h>
+#   define __THROW_BAD_ALLOC fprintf(stderr, "out of memory\n"); exit(1)
+#  else
 #   include <iostream.h>
 #   define __THROW_BAD_ALLOC cerr << "out of memory" << endl; exit(1)
+#  endif
 #endif
 
 #ifdef __STL_WIN32THREADS

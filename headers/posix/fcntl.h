@@ -62,6 +62,9 @@ __extern_c_start
 
 extern int	creat(const char *path, mode_t mode);
 extern int	open(const char *pathname, int oflags, ...);
+/* the third argument is the permissions of the created file when O_CREAT
+   is passed in oflags */
+
 extern int	fcntl(int fd, int op, ...);
 
 __extern_c_end

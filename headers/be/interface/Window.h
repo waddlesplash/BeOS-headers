@@ -18,6 +18,7 @@
 #include <List.h>
 #include <Looper.h>
 #include <Rect.h>
+#include <String.h>
 
 /*----------------------------------------------------------------*/
 /*-----  window definitions --------------------------------------*/
@@ -79,7 +80,8 @@ enum {
 	B_NO_WORKSPACE_ACTIVATION	= 0x00000100,
 	B_NOT_ANCHORED_ON_ACTIVATE	= 0x00020000,
 	B_ASYNCHRONOUS_CONTROLS		= 0x00080000,
-	B_QUIT_ON_WINDOW_CLOSE		= 0x00100000
+	B_QUIT_ON_WINDOW_CLOSE		= 0x00100000,
+	B_VIEWS_CAN_OVERLAP			= 0x00200000
 };
 
 #define B_CURRENT_WORKSPACE	0
@@ -87,18 +89,21 @@ enum {
 
 /*----------------------------------------------------------------*/
 
-class _BSession_;
 class BButton;
 class BMenuBar;
 class BMenuItem;
 class BMessage;
-class BMessageRunner;
 class BMessenger;
 class BView;
 
-struct message;
 struct _cmd_key_;
 struct _view_attr_;
+
+namespace BPrivate {
+class AppSession;
+struct win_tip_info;
+struct win_pulse_state;
+}
 
 /*----------------------------------------------------------------*/
 /*----- BWindow class --------------------------------------------*/
@@ -163,6 +168,7 @@ virtual	void			MenusEnded();
 		BView			*FindView(const char *view_name) const;
 		BView			*FindView(BPoint) const;
 		BView			*CurrentFocus() const;
+		void			ClearExplicitFocus();
 		void			Activate(bool = true);
 virtual	void			WindowActivated(bool state);
 		void			ConvertToScreen(BPoint *pt) const;
@@ -183,9 +189,16 @@ virtual	void			Hide();
 		bool			IsHidden() const;
 		bool			IsMinimized() const;
 
+		void			SetWindowColor(rgb_color color);
+		rgb_color		WindowColor() const;
+		
 		void			Flush() const;
 		void			Sync() const;
 
+		// XXX TO DO: These should be moved to BLooper.
+		void			SetCurrentBeep(const char* name);
+		const char*		CurrentBeep() const;
+		
 		status_t		SendBehind(const BWindow *window);
 
 		void			DisableUpdates();
@@ -193,6 +206,9 @@ virtual	void			Hide();
 
 		void			BeginViewTransaction();
 		void			EndViewTransaction();
+		
+		status_t		ClipWindowToPicture(BPicture *picture,
+											BPoint offset, uint32 flags);
 
 		BRect			Bounds() const;
 		BRect			Frame() const;
@@ -263,13 +279,22 @@ virtual status_t		Perform(perform_code d, void *arg);
 virtual	bool			QuitRequested();
 virtual thread_id		Run();
 
+virtual	status_t		UISettingsChanged(const BMessage* changes, uint32 flags);
+
 /*----- Private or reserved -----------------------------------------*/
+
+		void		DequeueAll();
+		bool		find_token_and_handler(BMessage *msg,
+											int32 *token,
+											BHandler **handler);
+
 private:
 
 typedef BLooper inherited;
 
 friend class BApplication;
 friend class BBitmap;
+friend class BControl;
 friend class BScrollBar;
 friend class BView;
 friend class BMenuItem;
@@ -280,7 +305,6 @@ friend class _CEventPort_;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
 friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 
-virtual	void			_ReservedWindow1();
 virtual	void			_ReservedWindow2();
 virtual	void			_ReservedWindow3();
 virtual	void			_ReservedWindow4();
@@ -295,6 +319,10 @@ virtual	void			_ReservedWindow8();
 					
 					BWindow(BRect frame, color_space depth,
 							uint32 bitmapFlags, int32 rowBytes);
+		void		PreInitData(const char *title, 
+							window_look look,
+							window_feel feel,
+							uint32 flags);
 		void		InitData(BRect frame,
 							const char *title, 
 							window_look look,
@@ -343,25 +371,30 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 								BMenuItem *item);
 		void		post_message(BMessage *message);
 		void		SetLocalTitle(const char *new_title);
+		bigtime_t	next_pulse() const;
 		void		enable_pulsing(bool enable);
 		BHandler	*determine_target(BMessage *msg, BHandler *target, bool pref);
 		void		kb_navigate();
 		void		navigate_to_next(int32 direction, bool group = false);
 		void		set_focus(BView *focus, bool notify_input_server);
 		bool		InUpdate();
-		void		DequeueAll();
-		bool		find_token_and_handler(BMessage *msg,
-											int32 *token,
-											BHandler **handler);
 		window_type	compose_type(window_look look, 
 								 window_feel feel) const;
 		void		decompose_type(window_type type, 
 								   window_look *look,
 								   window_feel *feel) const;
 
+		void		set_async_beep(const char* name);
+		
 		void		SetIsFilePanel(bool panel);
 		bool		IsFilePanel() const;
 
+		/* Tool tip handling */
+		status_t	SendToolTipInfo(const BView* who=NULL);
+		void		MoveTipCursor(BView* v, BPoint view_loc);
+		void		HideTip();
+		void		KillTip();
+	
 		/* 3 deprecated calls */
 		void			AddFloater(BWindow *a_floating_window);
 		void			RemoveFloater(BWindow *a_floating_window);
@@ -380,18 +413,22 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		BView			*top_view;
 		BView			*fFocus;
 		BView			*fLastMouseMovedView;
-		_BSession_		*a_session;
+		BPrivate::AppSession	*a_session;
 		BMenuBar		*fKeyMenuBar;
 		BButton			*fDefaultButton;
 		BList			accelList;
 		int32			top_view_token;
-		bool			pulse_enabled;
-		bool			fViewsNeedPulse;
-		bool			fIsFilePanel;
-		bool			fUnused1;
-		bigtime_t		pulse_rate;
+		int32			_more_more_reserved;
+		BPrivate::win_pulse_state* fPulseState;
+#if _R5_COMPATIBLE_
+		BControl*		fKeyIntercept;
+#else
+		int32			_more_more_more_reserved;
+#endif
 		bool			fWaitingForMenu;
 		bool			fOffscreen;
+		bool			fIsNavigating;
+		bool			fIsFilePanel;
 		sem_id			fMenuSem;
 		float			fMaxZoomH;
 		float			fMaxZoomV;
@@ -405,10 +442,11 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		window_feel		fFeel;
 		int32			fLastViewToken;
 		_CEventPort_ *	fEventPort;
-		BMessageRunner	*fPulseRunner;
 		BRect			fCurrentFrame;
-
-		uint32			_reserved[2];	/* was 8 */
+		BString			fEventBeep;
+		BPrivate::win_tip_info*	fTipInfo;
+		rgb_color		fWindowColor;
+		
 #if !_PR3_COMPATIBLE_
 		uint32			_more_reserved[4];
 #endif

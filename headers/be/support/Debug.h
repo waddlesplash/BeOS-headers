@@ -65,12 +65,14 @@ extern "C" {
 	#endif
 
 	#define ASSERT_WITH_MESSAGE(expr, msg) \
-								(!(expr) ? _debuggerAssert( __FILE__,__LINE__, msg) \
+									(!(expr) ? _debuggerAssert( __FILE__,__LINE__, msg) \
 										: (int)0)	
 	
-	#define TRESPASS()			DEBUGGER("Should not be here");
+	#define VALIDATE(x, recover)	if (!(x)) { ASSERT(x); recover; }
 	
-	#define DEBUG_ONLY(arg)		arg
+	#define TRESPASS()				DEBUGGER("Should not be here");
+	
+	#define DEBUG_ONLY(arg)			arg
 
 #else /* DEBUG == 0 */
 	#define SET_DEBUG_ENABLED(FLAG)	(void)0
@@ -88,6 +90,7 @@ extern "C" {
 	#endif
 	#define ASSERT_WITH_MESSAGE(expr, msg) \
 									(void)0
+	#define VALIDATE(x, recover)	if (!(x)) { recover; }
 	#define TRESPASS()				(void)0
 	#define DEBUG_ONLY(x)
 #endif

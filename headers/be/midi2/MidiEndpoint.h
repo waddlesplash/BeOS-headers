@@ -53,8 +53,8 @@ private:
 	
 	BMidiEndpoint(const char *name);
 	virtual	~BMidiEndpoint();
-	BMidiEndpoint(const BMidiEndpoint &) {}
-	BMidiEndpoint& operator=(const BMidiEndpoint &) { return *this; }
+	BMidiEndpoint(const BMidiEndpoint &);// {}
+	BMidiEndpoint& operator=(const BMidiEndpoint &);// { return *this; }
 	
 	virtual void _Reserved1();
 	virtual void _Reserved2();

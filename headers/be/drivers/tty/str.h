@@ -14,7 +14,6 @@ struct str {
 #define	sclear( s)	((s)->count = 0)
 
 bool	salloc( struct str *, uint),
-	sfree( struct str *),
 	sputb( struct str *, uint),
 	sputs( struct str *, uchar [], uint);
 uint	sgetb( struct str *),
@@ -22,4 +21,5 @@ uint	sgetb( struct str *),
 	sseglen( struct str *);
 uchar	*sgets( struct str *, uint);
 void	sinit( struct str *, uchar [], uint),
+	sfree( struct str *),
 	sungets( struct str *, uint);

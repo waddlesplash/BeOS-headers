@@ -24,11 +24,19 @@
 class BCursor;
 class BList;
 class BWindow;
-class _BSession_;
 class BResources;
 class BMessageRunner;
 struct _server_heap_;
 struct _drag_data_;
+namespace BPrivate {
+class AppSession;
+}
+namespace B {
+namespace Interface2 {
+class BControl;
+class BWindow;
+}
+}
 
 /*----- BApplication class --------------------------------------------*/
 
@@ -37,6 +45,7 @@ class BApplication : public BLooper {
 public:
 						BApplication(const char *signature);
 						BApplication(const char *signature, status_t *error);
+						BApplication(const char *signature, status_t *error, bool connectToAppServer);
 virtual					~BApplication();
 
 /* Archiving */
@@ -88,6 +97,8 @@ virtual	void			DispatchMessage(BMessage *an_event,
 virtual status_t		GetSupportedSuites(BMessage *data);
 
 
+virtual	status_t		UISettingsChanged(const BMessage* changes, uint32 flags);
+
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
@@ -96,7 +107,9 @@ private:
 typedef BLooper _inherited;
 
 friend class BWindow;
+friend class B::Interface2::BWindow;
 friend class BView;
+friend class B::Interface2::BControl;
 friend class BBitmap;
 friend class BScrollBar;
 friend class BPrivateScreen;
@@ -107,7 +120,6 @@ friend void _toggle_handles_(bool);
 						BApplication(const BApplication &);
 		BApplication	&operator=(const BApplication &);
 
-virtual	void			_ReservedApplication1();
 virtual	void			_ReservedApplication2();
 virtual	void			_ReservedApplication3();
 virtual	void			_ReservedApplication4();
@@ -122,7 +134,7 @@ virtual	bool			ScriptReceived(BMessage *msg,
 										int32 form,
 										const char *property);
 		void			run_task();
-		void			InitData(const char *signature, status_t *error);
+		void			InitData(const char *signature, status_t *error, bool connectToAppServer);
 		void			BeginRectTracking(BRect r, bool trackWhole);
 		void			EndRectTracking();
 		void			get_scs();
@@ -135,14 +147,14 @@ virtual	bool			ScriptReceived(BMessage *msg,
 									int32 vs_token,
 									BPoint offset,
 									BRect drag_rect,
-									BHandler *reply_to);
+									BMessenger reply_to);
 		void			send_drag(	BMessage *msg,
 									int32 vs_token,
 									BPoint offset,
 									int32 bitmap_token,
 									drawing_mode dragMode,
-									BHandler *reply_to);
-		void			write_drag(_BSession_ *session, BMessage *a_message);
+									BMessenger reply_to);
+		void			write_drag(BPrivate::AppSession *session, BMessage *a_message);
 		bool			quit_all_windows(bool force);
 		bool			window_quit_loop(bool, bool);
 		void			do_argv(BMessage *msg);

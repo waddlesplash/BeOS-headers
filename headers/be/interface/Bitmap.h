@@ -19,6 +19,9 @@
 #include <Rect.h>
 
 class BWindow;
+namespace BPrivate {
+class IKAccess;
+}
 
 enum {
 	B_BITMAP_CLEAR_TO_WHITE				= 0x00000001,
@@ -44,13 +47,9 @@ public:
 							color_space depth,
 							int32 bytesPerRow=B_ANY_BYTES_PER_ROW,
 							screen_id screenID=B_MAIN_SCREEN_ID);
-					BBitmap(BRect bounds,
-							color_space depth,
-							bool accepts_views = false,
-							bool need_contiguous = false);
-					BBitmap(const BBitmap* source,
-							bool accepts_views = false,
-							bool need_contiguous = false);
+					BBitmap(const BBitmap &source);
+					BBitmap(const BBitmap &source,
+							uint32 flags);
 virtual				~BBitmap();
 
 /* Archiving */
@@ -76,6 +75,10 @@ virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 							int32 offset,
 							color_space cs);
 
+		status_t	Upload(BBitmap *from, BRect fromRect, BPoint toPoint);
+
+		status_t	Freeze();
+		status_t	Thaw();
 
 		status_t	GetOverlayRestrictions(overlay_restrictions *restrict) const;
 
@@ -90,12 +93,22 @@ virtual	bool		RemoveChild(BView *view);
 		void		Unlock();
 		bool		IsLocked() const;
 
+/*----- Deprecated --------------------------------------------------*/
+	
+					BBitmap(BRect bounds,
+							color_space depth,
+							bool accepts_views = false,
+							bool need_contiguous = false);
+					BBitmap(const BBitmap* source,
+							bool accepts_views = false,
+							bool need_contiguous = false);
+							
 /*----- Private or reserved -----------------------------------------*/
 	
 virtual status_t	Perform(perform_code d, void *arg);
 
 private:
-friend class BView;
+friend class BPrivate::IKAccess;
 friend class BApplication;
 friend void  _IMPEXP_BE _get_screen_bitmap_(BBitmap *,BRect,bool);
 
@@ -103,7 +116,6 @@ virtual	void		_ReservedBitmap1();
 virtual	void		_ReservedBitmap2();
 virtual	void		_ReservedBitmap3();
 
-					BBitmap(const BBitmap &);
 		BBitmap		&operator=(const BBitmap &);
 
 		char		*get_shared_pointer() const;

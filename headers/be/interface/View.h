@@ -17,14 +17,20 @@
 #include <Font.h>
 #include <Handler.h>
 #include <Rect.h>
+#include <String.h>
 
 /*----------------------------------------------------------------*/
 /*----- view definitions -----------------------------------------*/
 
 enum {
-	B_PRIMARY_MOUSE_BUTTON = 0x01,
-	B_SECONDARY_MOUSE_BUTTON = 0x02,
-	B_TERTIARY_MOUSE_BUTTON = 0x04
+	B_FIRST_MOUSE_BUTTON = 0x01,
+	B_SECOND_MOUSE_BUTTON = 0x02,
+	B_THIRD_MOUSE_BUTTON = 0x04,
+	
+	// or if you prefer...
+	B_MOUSE_BUTTON_1 = B_FIRST_MOUSE_BUTTON,
+	B_MOUSE_BUTTON_2 = B_SECOND_MOUSE_BUTTON,
+	B_MOUSE_BUTTON_3 = B_THIRD_MOUSE_BUTTON
 };
 
 enum {
@@ -35,6 +41,14 @@ enum {
 };
 
 enum {
+	B_UPDATE_INVALIDATED	= 0x00000001,
+	B_UPDATE_SCROLLED		= 0x00000002,
+	B_UPDATE_RESIZED		= 0x00000004,
+	B_UPDATE_EXPOSED		= 0x00000008
+};
+
+enum {
+	B_NO_EVENTS				= 0x00000000,
 	B_POINTER_EVENTS		= 0x00000001,
 	B_KEYBOARD_EVENTS		= 0x00000002
 };
@@ -50,18 +64,6 @@ enum {
 	B_TRACK_RECT_CORNER
 };
 
-enum {
-	B_FONT_FAMILY_AND_STYLE	= 0x00000001,
-	B_FONT_SIZE				= 0x00000002,
-	B_FONT_SHEAR			= 0x00000004,
-	B_FONT_ROTATION			= 0x00000008,
-	B_FONT_SPACING     		= 0x00000010,
-	B_FONT_ENCODING			= 0x00000020,
-	B_FONT_FACE				= 0x00000040,
-	B_FONT_FLAGS			= 0x00000080,
-	B_FONT_ALL				= 0x000000FF
-};
-
 const uint32 B_FULL_UPDATE_ON_RESIZE 	= 0x80000000UL;	/* 31 */
 const uint32 _B_RESERVED1_ 				= 0x40000000UL;	/* 30 */
 const uint32 B_WILL_DRAW 				= 0x20000000UL;	/* 29 */
@@ -71,12 +73,13 @@ const uint32 B_FRAME_EVENTS				= 0x04000000UL;	/* 26 */
 const uint32 B_NAVIGABLE 				= 0x02000000UL;	/* 25 */
 const uint32 B_SUBPIXEL_PRECISE 		= 0x01000000UL;	/* 24 */
 const uint32 B_DRAW_ON_CHILDREN 		= 0x00800000UL;	/* 23 */
-const uint32 B_INPUT_METHOD_AWARE 		= 0x00400000UL;	/* 23 */
-const uint32 _B_RESERVED7_ 				= 0x00200000UL;	/* 22 */
+const uint32 B_INPUT_METHOD_AWARE 		= 0x00400000UL;	/* 22 */
+const uint32 _B_RESERVED7_ 				= 0x00200000UL;	/* 21 */
+const uint32 B_OVERLAPPING_CHILDREN		= 0x00100000UL;	/* 20 */
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
 		 	B_PULSE_NEEDED|B_NAVIGABLE_JUMP|B_FRAME_EVENTS|B_NAVIGABLE|\
-			B_SUBPIXEL_PRECISE|B_DRAW_ON_CHILDREN|B_INPUT_METHOD_AWARE|_B_RESERVED7_)
+			B_SUBPIXEL_PRECISE|B_DRAW_ON_CHILDREN|B_INPUT_METHOD_AWARE|_B_RESERVED7_|B_OVERLAPPING_CHILDREN)
 
 const uint32 _VIEW_TOP_ 	= 1UL;
 const uint32 _VIEW_LEFT_ 	= 2UL;
@@ -113,6 +116,8 @@ class BScrollView;
 class BShape;
 class BShelf;
 class BString;
+class BToolTipInfo;
+class BTransform2d;
 class BWindow;
 struct _view_attr_;
 struct _array_data_;
@@ -135,6 +140,9 @@ virtual					~BView();
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
+		void			SetToolTipText(const char* text);
+		const char*		ToolTipText() const;
+	
 virtual	void			AttachedToWindow();
 virtual	void			AllAttached();
 virtual	void			DetachedFromWindow();
@@ -151,6 +159,8 @@ virtual	void			MessageReceived(BMessage *msg);
 		bool			RemoveSelf();
 
 		BWindow			*Window() const;
+
+		uint32			GetUpdateHints();
 
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
@@ -218,6 +228,9 @@ virtual	void			ConstrainClippingRegion(BRegion *region);
 												BPoint where = B_ORIGIN,
 												bool sync = true);
 
+		uint32			DoubleBuffering();
+		void			SetDoubleBuffering(uint32 updateTypes);
+
 virtual	void			SetDrawingMode(drawing_mode mode);
 		drawing_mode 	DrawingMode() const;
 
@@ -252,6 +265,9 @@ virtual	void			SetViewColor(rgb_color c);
 										uint32 options=0);
 		void			ClearViewOverlay();
 
+		rgb_color		NextFocusColor() const;
+		bigtime_t		NextFocusTime() const;
+		
 virtual	void			SetHighColor(rgb_color a_color);
 		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		HighColor() const;
@@ -266,6 +282,9 @@ virtual	void			SetLowColor(rgb_color a_color);
 		join_mode		LineJoinMode() const;
 		cap_mode		LineCapMode() const;
 		float			LineMiterLimit() const;
+
+		void			SetTransform(const BTransform2d& transform);
+		void			GetTransform(BTransform2d* target) const;
 
 		void			SetOrigin(BPoint pt);
 		void			SetOrigin(float x, float y);
@@ -435,6 +454,10 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 		void			Invalidate(const BRegion *invalRegion);
 		void			Invalidate();
 
+		void			DelayedInvalidate(bigtime_t delay, BRect invalRect=BRect());
+		void			InvalidateAtTime(bigtime_t time, BRect invalRect=BRect());
+		bool			IsInvalidatePending() const;
+		
 		void			SetDiskMode(char *filename, long offset);
 
 		void			BeginPicture(BPicture *a_picture);
@@ -464,9 +487,19 @@ virtual	void			SetResizingMode(uint32 mode);
 		void			ScrollBy(float dh, float dv);
 		void			ScrollTo(float x, float y);
 virtual	void			ScrollTo(BPoint where);
+
 virtual	void			MakeFocus(bool focusState = true);
+		void			MakeFocusNoScroll(bool focusState = true);
 		bool			IsFocus() const;
-	
+		bool			IsNavigating() const;
+		
+		// After your view has focus, you can set the "explicit" state.
+		// Having explicit focus means that the user has directly requested
+		// focus, so nobody else should take focus away from you unless
+		// also explicitly directed by the user.
+		void			SetExplicitFocus(bool explicitState = true);
+		bool			IsExplicitFocus() const;
+		
 virtual	void			Show();
 virtual	void			Hide();
 		bool			IsHidden() const;
@@ -495,6 +528,36 @@ virtual status_t		Perform(perform_code d, void *arg);
 
 virtual	void			DrawAfterChildren(BRect r);
 
+	// This method is called in two sitations --
+	// * To figure out how the pointer is moving around tipable
+	//   objects, GetToolTipInfo() will be called with outInfo
+	//   set to NULL.  In this case, you should just quickly return
+	//   the rectangle corresponding to the tipable area containing
+	//   the point 'screenWhere'.  This point is in screen
+	//   coordinates, so you will probably need to convert it to
+	//   your view's coordinates; outViewRegion is in your view's
+	//   coordinates.
+	// * To actually display a tool tip, GetToolTipInfo() is called
+	//   with a non-zero outInfo object.  You should then fill in
+	//   the object with the information to display.  Any
+	//   coordinates you supply to outInfo are relative to
+	//   outViewRegion.
+	//
+	// The default implementation of this simply returns the view's
+	// frame rectangle (offset to (0,0)) as the region, and plugs
+	// the current ToolTipText() into outInfo.
+	
+virtual	status_t		GetToolTipInfo(	BPoint screenWhere,
+										BRect* outViewRegion,
+										BToolTipInfo* outInfo = NULL);
+
+	// Cause your view's GetToolTipInfo() to be called (if your tip
+	// is currently being shown), to change what is being displayed.
+	
+		void			RefreshToolTipInfo() const;
+
+virtual	status_t		UISettingsChanged(const BMessage* changes, uint32 flags);
+
 private:
 
 friend class BScrollBar;
@@ -504,8 +567,6 @@ friend class BPrintJob;
 friend class BShelf;
 friend class BTabView;
 
-virtual	void			_ReservedView2();
-virtual	void			_ReservedView3();
 virtual	void			_ReservedView4();
 virtual	void			_ReservedView5();
 virtual	void			_ReservedView6();
@@ -544,6 +605,7 @@ virtual	void			_ReservedView16();
 		void		check_lock_no_pick() const;
 		void		movesize(uint32 code, int32 h, int32 v);
 		void		handle_tick();
+		void		handle_ui_settings(const BMessage* changes, uint32 flags);
 		char		*test_area(int32 length);
 		void		remove_comm_array();
 		_array_hdr_	*new_comm_array(int32 cnt);
@@ -580,8 +642,8 @@ virtual	void			_ReservedView16();
 		BScrollBar		*fHorScroller;
 		bool			f_is_printing;
 		bool			attached;
-		bool			_unused_bool1;
-		bool			_unused_bool2;
+		bool			fFocusNoScroll;
+		bool			fExplicitFocus;
 		_view_attr_		*fPermanentState;
 		_view_attr_		*fState;
 		BRect			fCachedBounds;
@@ -589,7 +651,12 @@ virtual	void			_ReservedView16();
 		void			*pr_state;
 		uint32			fEventMask;
 		uint32			fEventOptions;
-		uint32			_reserved[4];
+		uint32			m_doubleBuffering;
+		BString			fToolTipText;
+mutable	bool			fPulseDir;
+mutable	uint8			fPulseValue;
+		uint16			_reserved1;
+		uint32			_reserved2;
 #if !_PR3_COMPATIBLE_
 		uint32			_more_reserved[3];
 #endif
@@ -625,6 +692,15 @@ inline void	BView::SetLowColor(uchar r, uchar g, uchar b, uchar a)
 	a_color.blue = b;		a_color.alpha = a;
 	SetLowColor(a_color);
 }
+
+/*----------------------------------------------------------------*/
+/*----- backwards compatibility ----------------------------------*/
+
+enum {
+	B_PRIMARY_MOUSE_BUTTON = B_FIRST_MOUSE_BUTTON,
+	B_SECONDARY_MOUSE_BUTTON = B_SECOND_MOUSE_BUTTON,
+	B_TERTIARY_MOUSE_BUTTON = B_THIRD_MOUSE_BUTTON
+};
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

@@ -15,6 +15,8 @@
 #include <InterfaceDefs.h>
 #include <Rect.h>
 
+class BDataIO;
+
 /*----------------------------------------------------------------*/
 /*----- BPolygon class -------------------------------------------*/
 
@@ -31,6 +33,7 @@ virtual				~BPolygon();
 		BRect		Frame() const;
 		void		AddPoints(const BPoint *ptArray, int32 numPoints);
 		int32		CountPoints() const;
+		BPoint		PointAt(int32 index) const;
 		void		MapTo(BRect srcRect, BRect dstRect);
 		void		PrintToStream() const;
 
@@ -47,6 +50,8 @@ friend class BView;
 		int32	fCount;
 		BPoint	*fPts;
 };
+
+BDataIO& operator<<(BDataIO& io, const BPolygon& poly);
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

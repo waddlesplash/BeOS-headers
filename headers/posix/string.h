@@ -58,6 +58,10 @@ char   *strdup(const char *str);
 char   *stpcpy(char *dest, const char *src);
 const char *strtcopy(char *dest, const char *src, int size);	/* terminated strncpy() */
 
+size_t	 strlcat(char *dst, const char *src, size_t len);
+size_t	 strlcpy(char *dst, const char *src, size_t len);
+
+char 	 *strsep(char **stringp, const char *delim);
 __extern_c_end
 
 #define __max_errstr	64   /* for internal use (ppc) */

@@ -26,6 +26,8 @@ class BMenuFrame;
 
 class _ExtraMenuData_;
 
+extern "C" status_t _init_interface_kit_();
+
 enum menu_layout {
 	B_ITEMS_IN_ROW = 0,
 	B_ITEMS_IN_COLUMN,
@@ -111,6 +113,7 @@ virtual void			SetMaxContentWidth(float max);
 virtual void			MessageReceived(BMessage *msg);
 virtual	void			KeyDown(const char *bytes, int32 numBytes);
 virtual void			Draw(BRect updateRect);
+virtual void			SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 virtual void			GetPreferredSize(float *width, float *height);
 virtual void			ResizeToPreferred();
 virtual	void			FrameMoved(BPoint new_position);
@@ -130,6 +133,20 @@ virtual void		MakeFocus(bool state = true);
 virtual void		AllAttached();
 virtual void		AllDetached();
 
+		void		SetItemMargins(	float left, 
+									float top, 
+									float right, 
+									float bottom);
+		void		GetItemMargins(	float *left, 
+									float *top, 
+									float *right, 
+									float *bottom) const;
+
+		void		GetFrameMargins(float *left, 
+									float *top, 
+									float *right, 
+									float *bottom) const;
+									
 protected:
 				
 					BMenu(	BRect frame,
@@ -140,15 +157,6 @@ protected:
 							bool resizeToFit);
 
 virtual	BPoint		ScreenLocation();
-
-		void		SetItemMargins(	float left, 
-									float top, 
-									float right, 
-									float bottom);
-		void		GetItemMargins(	float *left, 
-									float *top, 
-									float *right, 
-									float *bottom) const;
 
 		menu_layout	Layout() const;
 
@@ -168,17 +176,20 @@ virtual	bool		AddDynamicItem(add_state s);
 virtual void		DrawBackground(BRect update);
 
 		void		SetTrackingHook(menu_tracking_hook func, void *state);
-						
+		
+virtual void		AdjustSubmenuLocation(BPoint* inout_location,
+										  BMenu* submenu);
+
 /*----- Private or reserved -----------------------------------------*/
 private:
 friend BWindow;
 friend BMenuBar;
 friend BMenuItem;
-friend status_t _init_interface_kit_();
+friend BMenuFrame;
 friend status_t	set_menu_info(menu_info *);
 friend status_t	get_menu_info(menu_info *);
+friend void		_b_cache_menu_info(const BMessage& src);
 
-virtual	void			_ReservedMenu3();
 virtual	void			_ReservedMenu4();
 virtual	void			_ReservedMenu5();
 virtual	void			_ReservedMenu6();
@@ -256,7 +267,20 @@ virtual	void			_ReservedMenu6();
 		status_t	DoCreateMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
 						BMessage *r, bool menu) const;
 
-static	menu_info	sMenuInfo;
+		bool 		DrawSnakeSelection() const;
+		bool		DrawNewLook() const;
+		void 		ClipDrawSnakeCommon(BView *, bool);
+		void 		DrawItemDirect(BRect);
+		void 		ClipBackgroundSnake(BView *);
+		void 		DrawBackgroundSnake(BView *);
+
+		struct p_menu_info : public menu_info {
+			menu_info	info;
+			BFont		item_font;
+			bool		zsnake;
+		};
+		
+static	p_menu_info	sMenuInfo;
 static	bool		sSwapped;
 
 		BMenuItem	*fChosenItem;
@@ -275,22 +299,27 @@ static	bool		sSwapped;
 		BRect		*fExtraRect;
 		float		fMaxContentWidth;
 		BPoint		*fInitMatrixSize;
+		uint32		fDrawItemClipWindow;	// temporarily here, move it to space saved
+											// by stuffing fLayout and fState in the same word
+											
 		_ExtraMenuData_	*fExtraMenuData;	// !!
-
 		uint32		_reserved[2];
 
 		char		fTrigger;
-		bool		fResizeToFit;
-		bool		fUseCachedMenuLayout;
-		bool		fEnabled;
-		bool		fDynamicName;
-		bool		fRadioMode;
-		bool		fTrackNewBounds;
-		bool		fStickyMode;
-		bool		fIgnoreHidden;
-		bool		fTriggerEnabled;
-		bool		fRedrawAfterSticky;
-		bool		fAttachAborted;
+		char		_reserved_char[3];
+		bool		fResizeToFit : 1;
+		bool		fUseCachedMenuLayout : 1;
+		bool		fEnabled : 1;
+		bool		fDynamicName : 1;
+		bool		fRadioMode : 1;
+		bool		fTrackNewBounds : 1;
+		bool		fStickyMode : 1;
+		bool		fIgnoreHidden : 1;
+		bool		fTriggerEnabled : 1;
+		bool		fRedrawAfterSticky : 1;
+		bool		fAttachAborted : 1;
+		bool		fKeyPressed : 1;
+		int			_reserved_bool : 20;
 };
 
 /*-------------------------------------------------------------*/

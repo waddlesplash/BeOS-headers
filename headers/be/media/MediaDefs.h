@@ -15,11 +15,13 @@
 #include <SupportDefs.h>
 #include <OS.h>
 #include <ByteOrder.h>
+#include <audio_base.h>
 
 #if defined(__cplusplus)
 #include <GraphicsDefs.h>
 #include <Looper.h>
 #endif
+
 
 
 #define B_MEDIA_NAME_LENGTH 64
@@ -148,32 +150,6 @@ enum media_frame_flags {
 #define B_MEDIA_HIGH_QUALITY 1.0f
 
 
-#if !defined(_MULTI_AUDIO_H)	/* #define in protocol header */
-enum media_multi_channels {
-	B_CHANNEL_LEFT = 0x1,
-	B_CHANNEL_RIGHT = 0x2,
-	B_CHANNEL_CENTER = 0x4,				/* 5.1+ or fake surround */
-	B_CHANNEL_SUB = 0x8,				/* 5.1+ */
-	B_CHANNEL_REARLEFT = 0x10,			/* quad surround or 5.1+ */
-	B_CHANNEL_REARRIGHT = 0x20,			/* quad surround or 5.1+ */
-	B_CHANNEL_FRONT_LEFT_CENTER = 0x40,
-	B_CHANNEL_FRONT_RIGHT_CENTER = 0x80,
-	B_CHANNEL_BACK_CENTER = 0x100,		/* 6.1 or fake surround */
-	B_CHANNEL_SIDE_LEFT = 0x200,
-	B_CHANNEL_SIDE_RIGHT = 0x400,
-	B_CHANNEL_TOP_CENTER = 0x800,
-	B_CHANNEL_TOP_FRONT_LEFT = 0x1000,
-	B_CHANNEL_TOP_FRONT_CENTER = 0x2000,
-	B_CHANNEL_TOP_FRONT_RIGHT = 0x4000,
-	B_CHANNEL_TOP_BACK_LEFT = 0x8000,
-	B_CHANNEL_TOP_BACK_CENTER = 0x10000,
-	B_CHANNEL_TOP_BACK_RIGHT = 0x20000
-};
-enum media_multi_matrix {
-	B_MATRIX_PROLOGIC_LR = 0x1,
-	B_MATRIX_AMBISONIC_WXYZ = 0x4
-};
-#endif
 
 
 typedef int32 media_node_id;
@@ -461,8 +437,12 @@ enum media_format_flags {
 	B_MEDIA_MAUI_UNDEFINED_FLAGS = ~0xf /* always deny these */
 };
 
-/* typically, a field of 0 means "anything" or "wildcard" */
-struct media_format {	/* no more than 192 bytes */
+/* Typically, a field of 0 means "anything" or "wildcard". */
+/* Don't use "naked" _media_format if you can avoid it, as it requires */
+/* certain magic which is neither documented nor obvious. Apologies for */
+/* having to expose it at all in the public API. Use media_format (below) */
+/* with confidence you're doing the right thing! */
+struct _media_format {	/* no more than 192 bytes */
 	media_type						type;
 	type_code						user_data_type;
 	uchar							user_data[48];
@@ -470,7 +450,8 @@ struct media_format {	/* no more than 192 bytes */
 	uint16							require_flags;			//	media_format_flags
 	uint16							deny_flags;				//	media_format_flags
 
-	private:
+private:
+friend struct media_format;
 
 	void *							meta_data;
 	int32							meta_data_size;
@@ -479,7 +460,7 @@ struct media_format {	/* no more than 192 bytes */
 	team_id							team;
 	void *							thisPtr;
 
-	public:
+public:
 
 	union {
 		media_multi_audio_format	raw_audio;
@@ -489,7 +470,10 @@ struct media_format {	/* no more than 192 bytes */
 		media_encoded_video_format	encoded_video;
 		char						_reserved_[96];	 // pad to 96 bytes
 	} u;
-	
+};
+
+struct media_format : public _media_format {
+
 	bool 			IsVideo() const		{ return (type==B_MEDIA_ENCODED_VIDEO)||(type==B_MEDIA_RAW_VIDEO); };
 	uint32  		Width() const		{ return (type==B_MEDIA_ENCODED_VIDEO)?u.encoded_video.output.display.line_width:u.raw_video.display.line_width; };
 	uint32 			Height() const		{ return (type==B_MEDIA_ENCODED_VIDEO)?u.encoded_video.output.display.line_count:u.raw_video.display.line_count; };

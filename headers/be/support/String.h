@@ -15,6 +15,8 @@
 #include <SupportDefs.h>
 #include <string.h>
 
+class BDataIO;
+
 class BString {
 public:
 						BString();
@@ -36,7 +38,6 @@ public:
 /*---- Assignment ----------------------------------------------------------*/
 	BString 			&operator=(const BString &);
 	BString 			&operator=(const char *);
-	BString 			&operator=(char);
 	
 	BString				&SetTo(const char *);
 	BString 			&SetTo(const char *, int32 length);
@@ -51,6 +52,8 @@ public:
 		
 	BString 			&SetTo(char, int32 count);
 
+	void				Swap(BString& with);
+	
 /*---- Substring copying ---------------------------------------------------*/
 	BString 			&CopyInto(BString &into, int32 fromOffset,
 							int32 length) const;
@@ -110,6 +113,10 @@ public:
 	BString 			&RemoveAll(const char *);
 	
 	BString 			&RemoveSet(const char *setOfCharsToRemove);
+	
+	BString				&Compact(const char *setOfCharsToCompact);
+	BString				&Compact(const char *setOfCharsToCompact,
+								 char* replacementChar);
 	
 	BString 			&MoveInto(BString &into, int32 from, int32 length);
 	void				MoveInto(char *into, int32 from, int32 length);
@@ -282,6 +289,7 @@ private:
 	char 			*_OpenAtBy(int32, int32);
 	char 			*_ShrinkAtBy(int32, int32);
 	void 			_DoPrepend(const char *, int32);
+	void			_DoCompact(const char* set, const char* replace);
 	
 	int32 			_FindAfter(const char *, int32, int32) const;
 	int32 			_IFindAfter(const char *, int32, int32) const;
@@ -289,18 +297,16 @@ private:
 	int32 			_FindBefore(const char *, int32, int32) const;
 	int32 			_IFindBefore(const char *, int32, int32) const;
 	void 			_SetLength(int32);
-
-#if DEBUG
+	
 	void			_SetUsingAsCString(bool);
 	void 			_AssertNotUsingAsCString() const;
-#else
-	void 			_SetUsingAsCString(bool) {}
-	void			_AssertNotUsingAsCString() const {}
-#endif
 
 protected:
 	char *_privateData;
 };
+
+/*----- STL utilities --------------------------------------*/
+void				swap(BString& x, BString& y);
 
 /*----- Comutative compare operators --------------------------------------*/
 bool 				operator<(const char *, const BString &);
@@ -316,7 +322,9 @@ int 				ICompare(const BString &, const BString &);
 int 				Compare(const BString *, const BString *);
 int 				ICompare(const BString *, const BString *);
 
+/*----- Streaming into BDataIO --------------------------------------------*/
 
+BDataIO& operator<<(BDataIO& io, const BString& string);
 
 
 /*-------------------------------------------------------------------------*/
@@ -327,7 +335,7 @@ BString::Length() const
 {
 	return _privateData ? (*((int32 *)_privateData - 1) & 0x7fffffff) : 0;
 		/* the most significant bit is reserved; accessing
-		 * it in any way will case the computer to explode
+		 * it in any way will cause the computer to explode
 		 */
 }
 
@@ -419,6 +427,12 @@ inline bool
 BString::operator!=(const char *str) const
 {
 	return !operator==(str);
+}
+
+inline void
+swap(BString& x, BString& y)
+{
+	x.Swap(y);
 }
 
 inline bool 

@@ -40,6 +40,7 @@ enum {
 	B_CANCEL					= '_CNC',
 	B_KEY_DOWN 					= '_KYD',
 	B_KEY_UP 					= '_KYU',
+	B_INVALIDATE				= '_IVL',
 	B_UNMAPPED_KEY_DOWN 		= '_UKD',
 	B_UNMAPPED_KEY_UP 			= '_UKU',
 	B_MODIFIERS_CHANGED			= '_MCH',
@@ -56,7 +57,9 @@ enum {
 	B_REFS_RECEIVED 			= '_RRC',
 	B_RELEASE_OVERLAY_LOCK		= '_ROV',
 	B_ACQUIRE_OVERLAY_LOCK		= '_AOV',
+	B_REQUEST_TOOL_INFO			= '_RQT',
 	B_SCREEN_CHANGED 			= '_SCH',
+	B_UI_SETTINGS_CHANGED		= '_UIC',
 	B_VALUE_CHANGED 			= '_VCH',
 	B_VIEW_MOVED 				= '_VMV',
 	B_VIEW_RESIZED 				= '_VRS',
@@ -81,7 +84,13 @@ enum {
 	_UPDATE_IF_NEEDED_			= '_UPN',
 	_PRINTER_INFO_				= '_PIN',
 	_SETUP_PRINTER_				= '_SUP',
-	_SELECT_PRINTER_			= '_PSL'
+	_SELECT_PRINTER_			= '_PSL',
+	
+	/* This code is returned when reading from a port that does not
+	   contain a valid message.  The resulting message has the raw
+	   port data stored in "be:port_data" (B_RAW_TYPE). */
+	B_RAW_PORT_DATA				= 'RAWP'
+	
 	/* Media Kit reserves all reserved codes starting in '_TR' */
 };
 
@@ -98,9 +107,11 @@ enum {
 	B_EXECUTE_PROPERTY			= 'PEXE',
 	B_GET_SUPPORTED_SUITES		= 'SUIT',
 	B_UNDO						= 'UNDO',
+	B_REDO						= 'REDO',
 	B_CUT 						= 'CCUT',
 	B_COPY 						= 'COPY',
 	B_PASTE 					= 'PSTE',
+	B_CLEAR						= 'CLER',
 	B_SELECT_ALL				= 'SALL',
 	B_SAVE_REQUESTED 			= 'SAVE',
 	B_MESSAGE_NOT_UNDERSTOOD	= 'MNOT',

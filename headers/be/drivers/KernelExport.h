@@ -21,8 +21,13 @@ extern "C" {
 
 
 /* ---
-	kernel threads
+	DPC and kernel threads
 --- */
+
+extern _IMPEXP_KERNEL thread_id	spawn_kernel_dpc (
+	thread_entry	function,
+	void			*arg
+);
 
 extern _IMPEXP_KERNEL thread_id spawn_kernel_thread (
 	thread_entry	function, 
@@ -47,10 +52,19 @@ extern _IMPEXP_KERNEL void			restore_interrupts(cpu_status status);
 	interrupts disabled.
 --- */
 
-typedef vint32	spinlock;
+typedef vlong	spinlock;
+
+#if _SUPPORTS_SMP
 
 extern _IMPEXP_KERNEL void			acquire_spinlock (spinlock *lock);
 extern _IMPEXP_KERNEL void			release_spinlock (spinlock *lock);
+
+#else
+
+#define	acquire_spinlock(x)			(void)0
+#define	release_spinlock(x)			(void)0
+
+#endif
 
 
 /* ---
@@ -157,6 +171,7 @@ extern _IMPEXP_KERNEL long		get_memory_map (
 ----- */
 
 #define	B_ANY_KERNEL_BLOCK_ADDRESS	((B_ANY_KERNEL_ADDRESS)+1)
+
 
 /* -----
 	MTR attributes for mapping physical memory (Intel Architecture only)

@@ -15,6 +15,12 @@
 #include <InterfaceDefs.h>
 #include <Archivable.h>
 
+namespace B {
+namespace Interface2 {
+class BControl;
+}
+}
+
 /*----------------------------------------------------------------*/
 /*----- BCursor class --------------------------------------------*/
 
@@ -40,7 +46,8 @@ virtual	void			_ReservedCursor4();
 
 		friend class	BApplication;
 		friend class	BView;
-
+		friend class	B::Interface2::BControl;
+		
 		int32			m_serverToken;
 		int32			m_needToFree;
 		uint32			_reserved[6];

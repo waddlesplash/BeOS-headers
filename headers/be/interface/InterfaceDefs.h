@@ -279,6 +279,7 @@ _IMPEXP_BE bigtime_t	idle_time();
 _IMPEXP_BE void			run_select_printer_panel();	
 _IMPEXP_BE void			run_add_printer_panel();	
 _IMPEXP_BE void			run_be_about();	
+_IMPEXP_BE status_t		set_default_printer(const char *printer_name);
 
 _IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
 _IMPEXP_BE bool			focus_follows_mouse();	
@@ -293,6 +294,30 @@ enum mode_mouse {
 _IMPEXP_BE void			set_mouse_mode(mode_mouse mode);	
 _IMPEXP_BE mode_mouse	mouse_mode();	
 
+extern _IMPEXP_BE const char *B_UI_PANEL_BACKGROUND_COLOR;			/* be:c:Panel Background */
+extern _IMPEXP_BE const char *B_UI_KEYBOARD_NAVIGATION_COLOR;		/* be:c:Keyboard Navigation */
+extern _IMPEXP_BE const char *B_UI_SUCCESS_COLOR;					/* be:c:Success */
+extern _IMPEXP_BE const char *B_UI_FAILURE_COLOR;					/* be:c:Failure */
+
+extern _IMPEXP_BE const char *B_UI_MENU_BACKGROUND_COLOR;		 	/* be:c:Menu Background */
+extern _IMPEXP_BE const char *B_UI_MENU_SELECTION_BACKGROUND_COLOR;	/* be:c:Menu Selection Background */
+extern _IMPEXP_BE const char *B_UI_MENU_ITEM_TEXT_COLOR;			/* be:c:Menu Item Text */
+extern _IMPEXP_BE const char *B_UI_MENU_SELECTED_ITEM_TEXT_COLOR;	/* be:c:Menu Selected Item Text */
+extern _IMPEXP_BE const char *B_UI_MENU_ITEM_TEXT_FONT;				/* be:f:Menu Item Text */
+extern _IMPEXP_BE const char *B_UI_MENU_SEPARATOR;					/* be:Menu Separator */
+extern _IMPEXP_BE const char *B_UI_MENU_SHOW_TRIGGERS;				/* be:Show Menu Triggers */
+extern _IMPEXP_BE const char *B_UI_MENU_ZSNAKE;						/* be:Menu ZSnake */
+
+enum {
+	B_APPLY_UI_SETTINGS		= 0x00000001,
+	B_SAVE_UI_SETTINGS		= 0x00000002
+};
+
+_IMPEXP_BE status_t		update_ui_settings(const BMessage& changes,
+							uint32 flags = B_APPLY_UI_SETTINGS | B_SAVE_UI_SETTINGS);
+_IMPEXP_BE status_t		get_ui_settings(BMessage* dest);
+_IMPEXP_BE status_t		get_default_settings(BMessage* dest);
+
 enum color_which {
 	B_PANEL_BACKGROUND_COLOR = 1,
 	B_MENU_BACKGROUND_COLOR = 2,
@@ -301,13 +326,17 @@ enum color_which {
 	B_MENU_SELECTED_ITEM_TEXT_COLOR = 8,
 	B_WINDOW_TAB_COLOR = 3,
 	B_KEYBOARD_NAVIGATION_COLOR = 4,
-	B_DESKTOP_COLOR = 5
+	B_DESKTOP_COLOR = 5,
+	B_SUCCESS_COLOR = 100,
+	B_FAILURE_COLOR = 101
 };
 
 _IMPEXP_BE rgb_color	ui_color(color_which which);
 _IMPEXP_BE rgb_color	tint_color(rgb_color color, float tint);
 
 extern "C" status_t	_init_interface_kit_();
+extern "C" void		_fini_interface_kit_();
+
 											/* effects on standard gray level */
 const float B_LIGHTEN_MAX_TINT	= 0.0F;		/* 216 --> 255.0 (255) */
 const float B_LIGHTEN_2_TINT	= 0.385F;	/* 216 --> 240.0 (240) */

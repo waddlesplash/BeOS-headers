@@ -23,6 +23,11 @@
 
 class BWindow;
 class BPrivateScreen;
+namespace B {
+namespace Interface2 {
+class BWindow;
+}
+}
 
 /*----------------------------------------------------------------*/
 /*----- BScreen class --------------------------------------------*/
@@ -31,6 +36,7 @@ class BScreen {
 public:  
         BScreen( screen_id id=B_MAIN_SCREEN_ID );
         BScreen( BWindow *win );
+        BScreen( B::Interface2::BWindow *win );
         ~BScreen();
 
         bool   			IsValid();

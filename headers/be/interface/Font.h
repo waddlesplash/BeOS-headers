@@ -14,6 +14,7 @@
 
 #include <BeBuild.h>
 #include <SupportDefs.h>
+#include <Flattenable.h>
 #include <InterfaceDefs.h>
 
 /*----------------------------------------------------------------*/
@@ -28,7 +29,9 @@ enum {
 	B_CHAR_SPACING		= 0,
 	B_STRING_SPACING	= 1,
 	B_BITMAP_SPACING	= 2,
-	B_FIXED_SPACING		= 3
+	B_FIXED_SPACING		= 3,
+	
+	B_SPACING_COUNT		= 4
 };
 
 enum font_direction {
@@ -37,8 +40,16 @@ enum font_direction {
 };
 
 enum {
-	B_DISABLE_ANTIALIASING	= 0x00000001,
-	B_FORCE_ANTIALIASING	= 0x00000002
+	B_DISABLE_ANTIALIASING		= 0x00000001,
+	B_NORMAL_ANTIALIASING		= 0x00000002,
+	B_TV_ANTIALIASING			= 0x00000003,
+	B_ANTIALIASING_MASK			= 0x00000007,
+	
+	B_DISABLE_HINTING			= 0x00000100,
+	B_ENABLE_HINTING			= 0x00000200,
+	B_DISABLE_GLOBAL_OVERLAY	= 0x00010000,
+	
+	B_FORCE_ANTIALIASING		= B_NORMAL_ANTIALIASING	// backwards compatibility
 };
 
 enum {
@@ -72,7 +83,8 @@ enum {
 
 enum {
 	B_HAS_TUNED_FONT         = 0x0001,
-	B_IS_FIXED               = 0x0002
+	B_IS_FIXED               = 0x0002,
+	B_IS_FULL_AND_HALF_FIXED = 0x0004
 };
 
 enum {
@@ -85,6 +97,29 @@ enum {
 	B_REGULAR_FACE		= 0x0040
 };
 
+enum {
+	B_FONT_FAMILY_AND_STYLE	= 0x00000001,
+	B_FONT_SIZE				= 0x00000002,
+	B_FONT_SHEAR			= 0x00000004,
+	B_FONT_ROTATION			= 0x00000008,
+	B_FONT_SPACING     		= 0x00000010,
+	B_FONT_ENCODING			= 0x00000020,
+	B_FONT_FACE				= 0x00000040,
+	B_FONT_FLAGS			= 0x00000080,
+	B_FONT_OVERLAY			= 0x00000100,
+	B_FONT_ALL				= 0x000001FF
+};
+
+enum font_which {
+	B_PLAIN_FONT			= 0,
+	B_BOLD_FONT				= 1,
+	B_FIXED_FONT			= 2,
+	B_SYMBOL_FONT			= 3,
+	B_SERIF_FONT			= 4,
+	
+	B__NUM_FONT				= 5
+};
+
 enum font_metric_mode {
 	B_SCREEN_METRIC		= 0,
 	B_PRINTING_METRIC	= 1
@@ -92,7 +127,8 @@ enum font_metric_mode {
 
 enum font_file_format {
 	B_TRUETYPE_WINDOWS			= 0,
-	B_POSTSCRIPT_TYPE1_WINDOWS	= 1
+	B_POSTSCRIPT_TYPE1_WINDOWS	= 1,
+	B_BITSTREAM_STROKE_WINDOWS	= 2
 };
 
 class unicode_block {
@@ -144,8 +180,31 @@ struct tuned_font_info {
 	uint16   face;
 };
 
+struct font_overlay {
+	uint32   first_char;
+	uint32   last_char;
+	uint16   family_id;
+
+	status_t set_family(const font_family family);
+	status_t get_family(font_family* family) const;
+	
+	         font_overlay();
+	         ~font_overlay();
+	font_overlay& operator=(const font_overlay& o);
+	
+private:
+	uint16   _pad;
+	int32    _reserved[32];
+};
+
+class BDataIO;
 class BShape;
 class BString;
+namespace BPrivate {
+class IKAccess;
+struct font_extra;
+class BFontProxy;
+}
 
 /*----------------------------------------------------------------*/
 /*----- Private --------------------------------------------------*/
@@ -155,15 +214,33 @@ _IMPEXP_BE void _font_control_(BFont *font, int32 cmd, void *data);
 /*----------------------------------------------------------------*/
 /*----- BFont class ----------------------------------------------*/
 
-class BFont {
+class BFont : public BFlattenable {
 public:
 							BFont();
 							BFont(const BFont &font);	
 							BFont(const BFont *font);			
 
+virtual						~BFont();
+
+		// Call this function to indicate that you are a modern Be
+		// application, who will do polite things like call the
+		// BFont constructor and destructor.  This allows you to use
+		// the font overlay features.
+static	void				UseModernFonts();
+
+static	void				GetStandardFont(font_which which, BFont* into);
+static	void				SetStandardFont(font_which which, const BFont& from);
+
+static	void				GetGlobalOverlay(BFont* into);
+static	void				SetGlobalOverlay(const BFont& from);
+
+		BFont&				SetTo(const BFont &source, uint32 mask = B_FONT_ALL);
+		BFont&				SetTo(font_which which, uint32 mask = B_FONT_ALL);
+		
+		status_t			ApplyCSS(const char* css_style, uint32 mask = B_FONT_ALL);
+		
 		status_t			SetFamilyAndStyle(const font_family family, 
 											  const font_style style);
-		void				SetFamilyAndStyle(uint32 code);
 		status_t			SetFamilyAndFace(const font_family family, uint16 face);
 		
 		void				SetSize(float size);
@@ -176,7 +253,6 @@ public:
 
 		void				GetFamilyAndStyle(font_family *family,
 											  font_style *style) const;
-		uint32				FamilyAndStyle() const;
 		float				Size() const;
 		float				Shear() const;
 		float				Rotation() const;
@@ -184,6 +260,15 @@ public:
 		uint8				Encoding() const;
 		uint16				Face() const;
 		uint32				Flags() const;
+		
+		status_t			AddOverlay(const font_overlay& overlay);
+		status_t			FindOverlay(uint32 for_char, font_overlay* into) const;
+		status_t			RemoveOverlay(uint32 for_char);
+		status_t			RemoveOverlays(uint32 from_char, uint32 to_char);
+		void				RemoveAllOverlays();
+		
+		int32				CountOverlays() const;
+		status_t			OverlayAt(int32 index, font_overlay* into) const;
 		
 		font_direction		Direction() const; 
 		bool				IsFixed() const;	
@@ -265,13 +350,27 @@ public:
 		bool				operator==(const BFont &font) const;
 		bool				operator!=(const BFont &font) const; 
 
+		int					Compare(const BFont &font,
+									uint32 mask = B_FONT_ALL) const;
+		
 		void				PrintToStream() const;
-	
+		
+		// BFlattenable interface.
+virtual	bool				IsFixedSize() const;
+virtual	type_code			TypeCode() const;
+virtual	ssize_t				FlattenedSize() const;
+virtual	status_t			Flatten(void *buffer, ssize_t size) const;
+virtual	bool				AllowsTypeCode(type_code code) const;
+virtual	status_t			Unflatten(type_code c, const void *buf, ssize_t size);
+
 /*----- Private or reserved -----------------------------------------*/
 private:
 
 friend class BApplication;
-friend class BView;
+friend class BPrivate::IKAccess;
+friend class BPrivate::BFontProxy;
+friend class DecorVariableFont;
+friend class DecorStream;
 friend void _font_control_(BFont*, int32, void*);
 
 		uint16				fFamilyID;
@@ -285,9 +384,11 @@ friend void _font_control_(BFont*, int32, void*);
 		uint32				fFlags;
 		font_height			fHeight;
 		int32				fPrivateFlags;
-		uint32				_reserved[2];
+		BPrivate::font_extra* fExtra;
 
-		void           		SetPacket(void *packet) const;
+		void				SetFamilyAndStyle(uint32 code);
+		uint32				FamilyAndStyle() const;
+		void				Reset();
 		void           		GetTruncatedStrings64(const char *stringArray[], 
 												  int32 numStrings, 
 												  uint32 mode,
@@ -339,6 +440,8 @@ _IMPEXP_BE bool        update_font_families(bool check_only);
 
 _IMPEXP_BE status_t    get_font_cache_info(uint32 id, void  *set);
 _IMPEXP_BE status_t    set_font_cache_info(uint32 id, void  *set);
+
+BDataIO& operator<<(BDataIO& io, const BFont& font);
 
 /*----------------------------------------------------------------*/
 /*----- unicode_block inlines ------------------------------------*/

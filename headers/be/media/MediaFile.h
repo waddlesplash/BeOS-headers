@@ -20,6 +20,7 @@ namespace BPrivate {
 class BMediaTrack;
 class BParameterWeb;
 class BView;
+class Detractor;
 
 
 // flags for the BMediaFile constructor
@@ -28,6 +29,11 @@ enum {
 	B_MEDIA_FILE_NO_READ_AHEAD   = 0x00000002,
 	B_MEDIA_FILE_UNBUFFERED      = 0x00000006,
 	B_MEDIA_FILE_BIG_BUFFERS     = 0x00000008
+};
+
+// flags for BMediaFile::CreateTrack()
+enum {
+	B_CODEC_INHIBIT_RAW_ENCODER  = 0x00000001
 };
 
 // BMediaFile represents a media file (AVI, Quicktime, MPEG, AIFF, WAV, etc)
@@ -53,13 +59,18 @@ public:
 					BMediaFile(	BDataIO * source,
 								int32 flags);     // BFile is a BDataIO
 
-					//	these two constructors are for read-write access
-					BMediaFile(const entry_ref *ref,   // these two are write-only
+					//	these three constructors are for write access
+					BMediaFile(const entry_ref *ref,
 							   const media_file_format * mfi,
 							   int32 flags=0);
 					BMediaFile(BDataIO	*destination,  // BFile is a BDataIO
 							   const media_file_format * mfi,
 							   int32 flags=0);
+					BMediaFile(const media_file_format * mfi, // set file later using SetTo()
+							   int32 flags=0);
+
+					status_t SetTo(const entry_ref *ref);
+					status_t SetTo(BDataIO	*destination);  // BFile is a BDataIO
 
 	virtual			~BMediaFile();
 
@@ -90,9 +101,9 @@ public:
 
 
 	// Create and add a track to the media file
-	BMediaTrack 	*CreateTrack(media_format *mf, const media_codec_info *mci);
+	BMediaTrack 	*CreateTrack(media_format *mf, const media_codec_info *mci, uint32 flags=0);
 	// Create and add a raw track to the media file (it has no encoder)
-	BMediaTrack 	*CreateTrack(media_format *mf);
+	BMediaTrack 	*CreateTrack(media_format *mf, uint32 flags=0);
 
 	// Lets you set the copyright info for the entire file
 	status_t		AddCopyright(const char *data);
@@ -107,7 +118,9 @@ public:
 	status_t        CloseFile(void);
 
 	// This is for controlling file format parameters
-	BParameterWeb	*Web();
+	
+	// returns a copy of the parameter web
+	status_t		GetParameterWeb(BParameterWeb** outWeb);
 	status_t 		GetParameterValue(int32 id,	void *valu, size_t *size);
 	status_t		SetParameterValue(int32 id,	const void *valu, size_t size);
 	BView			*GetParameterView();
@@ -116,9 +129,14 @@ public:
 	// For the future...
 	virtual	status_t Perform(int32 selector, void * data);
 
+	//	Please make really sure you know which extractor/writer you're talking
+	//	to before using this function.
+	status_t		ControlFile(int32 selector, void * io_data, size_t size);
+
 private:
 	BPrivate::MediaExtractor *fExtractor;
-	int32					_reserved_BMediaFile_was_fExtractorID;
+	Detractor				*fDetractor;
+	image_id				fDetractorImage;
 	int32					fTrackNum;
 	status_t				fErr;
 
@@ -141,12 +159,15 @@ private:
 	BMediaFile(const BMediaFile&);
 	BMediaFile& operator=(const BMediaFile&);
 
+	// deprecated
+	BParameterWeb	*Web();
+
 	BFile					*fFile;
 
 
 	/* fbc data and virtuals */
 
-	uint32 _reserved_BMediaFile_[32];
+	uint32 _reserved_BMediaFile_[31];
 
 virtual	status_t _Reserved_BMediaFile_0(int32 arg, ...);
 virtual	status_t _Reserved_BMediaFile_1(int32 arg, ...);

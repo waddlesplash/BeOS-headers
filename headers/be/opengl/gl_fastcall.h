@@ -244,7 +244,6 @@ extern struct __glContextRec * __gl;
 		: "=d"(t1), "=c"(t2) 										\
 		: "0"(v), "1"(gc) 											\
 		: "%eax", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)" ); }
-#if 0
 #define GLIM_COLOR3DV( gc, v ) {									\
 		GLuint t1, t2;												\
 		__asm__ __volatile__ ( 										\
@@ -253,7 +252,6 @@ extern struct __glContextRec * __gl;
 		: "=d"(t1), "=c"(t2) 										\
 		: "0"(v), "1"(gc) 											\
 		: "%eax", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)" ); }
-#endif
 #define GLIM_COLOR3FV( gc, v ) {									\
 		GLuint t1, t2;												\
 		__asm__ __volatile__ ( 										\
@@ -318,7 +316,6 @@ extern struct __glContextRec * __gl;
 		: "0"(v), "1"(gc) 											\
 		: "%eax", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)" ); }
 
-#if 0
 #define GLIM_COLOR4DV( gc, v ) {									\
 		GLuint t1, t2;												\
 		__asm__ __volatile__ ( 										\
@@ -327,7 +324,6 @@ extern struct __glContextRec * __gl;
 		: "=d"(t1), "=c"(t2) 										\
 		: "0"(v), "1"(gc) 											\
 		: "%eax", "st", "st(1)", "st(2)", "st(3)", "st(4)", "st(5)", "st(6)", "st(7)" ); }
-#endif
 
 #define GLIM_COLOR4FV( gc, v ) {									\
 		GLuint t1, t2;												\

@@ -188,7 +188,7 @@
 #  endif
 #endif
 
-#if defined (__BEOS__)
+#if defined (__BEOS__) && defined (__POWERPC__)
 #  if defined (ZLIB_DLL)
 #    define ZEXTERN extern __declspec(dllexport)
 #  else

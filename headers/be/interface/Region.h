@@ -24,6 +24,11 @@ typedef struct {
 	int32		bottom;
 } clipping_rect;
 
+namespace BPrivate {
+	class TestView;
+}
+
+class BDataIO;
 
 /*----------------------------------------------------------------*/
 /*----- BRegion class --------------------------------------------*/
@@ -40,9 +45,9 @@ virtual			~BRegion();
 
 		BRect	Frame() const;
 clipping_rect	FrameInt() const;
-		BRect	RectAt(int32 index);
-clipping_rect	RectAtInt(int32 index);
-		int32	CountRects();
+		BRect	RectAt(int32 index) const;
+clipping_rect	RectAtInt(int32 index) const;
+		int32	CountRects() const;
 		void	Set(BRect newBounds);
 		void	Set(clipping_rect newBounds);
 		bool	Intersects(BRect r) const;
@@ -64,30 +69,23 @@ clipping_rect	RectAtInt(int32 index);
 
 private:
 
-friend class BView;
-friend class BDirectWindow;
-friend void zero_region(BRegion *a_region);
-friend void clear_region(BRegion *a_region);
-friend void cleanup_region_1(BRegion *region_in);
-friend void cleanup_region(BRegion *region_in);
-friend void sort_rects(clipping_rect *rects, long count);
-friend void sort_trans(long *lptr1, long *lptr2, long count);
-friend void cleanup_region_horizontal(BRegion *region_in);
-friend void copy_region(BRegion *src_region, BRegion *dst_region);
-friend void copy_region_n(BRegion*, BRegion*, long);
-friend void and_region_complex(BRegion*, BRegion*, BRegion*);
-friend void and_region_1_to_n(BRegion*, BRegion*, BRegion*);
-friend void and_region(BRegion*, BRegion*, BRegion*);
-friend void append_region(BRegion*, BRegion*, BRegion*);
-friend void r_or(long, long, BRegion*, BRegion*, BRegion*, long*, long *);
-friend void or_region_complex(BRegion*, BRegion*, BRegion*);
-friend void or_region_1_to_n(BRegion*, BRegion*, BRegion*);
-friend void or_region_no_x(BRegion*, BRegion*, BRegion*);
-friend void or_region(BRegion*, BRegion*, BRegion*);
-friend void sub(long, long, BRegion*, BRegion*, BRegion*, long*, long*);
-friend void sub_region_complex(BRegion*, BRegion*, BRegion*);
-friend void r_sub(long , long, BRegion*, BRegion*, BRegion*, long*, long*);
-friend void sub_region(BRegion*, BRegion*, BRegion*);
+struct region;
+friend	class	DecorImagePart;
+friend	class	BPrivate::TestView;
+friend	void	region2BRegion(region *r, BRegion *b);
+
+friend	class	BView;
+friend	class	BDirectWindow;
+friend	void	clear_region(BRegion *a_region);
+friend	void	copy_region(BRegion *src_region, BRegion *dst_region);
+friend	void	copy_region_n(BRegion*, BRegion*, long);
+friend	void	and_region(BRegion*, BRegion*, BRegion*);
+friend	void	or_region(BRegion*, BRegion*, BRegion*);
+friend	void	sub_region(BRegion*, BRegion*, BRegion*);
+friend	void	set_region(BRegion *, clipping_rect *);
+friend	int32	find_span_between(const BRegion *, int32, int32);
+friend	void	set_size(BRegion *, int32);
+friend	void	compress_spans(BRegion *spans);
 
 		void	_AddRect(clipping_rect r);
 		void	set_size(long new_size);
@@ -99,6 +97,8 @@ private:
 		clipping_rect	bound;
 		clipping_rect	*data;
 };
+
+BDataIO& operator<<(BDataIO& io, const BRegion& region);
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

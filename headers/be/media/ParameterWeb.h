@@ -80,12 +80,14 @@ extern _IMPEXP_MEDIA const char * const B_WEB_BUFFER_OUTPUT;
 extern _IMPEXP_MEDIA const char * const B_SIMPLE_TRANSPORT;
 
 class BList;
+class BMimeType;
 class BParameterGroup;
 class BParameter;
 class BNullParameter;
 class BContinuousParameter;
 class BDiscreteParameter;
-
+class BTextParameter;
+class BLocalControllable;
 
 /*	Set these flags on parameters and groups to control how a Theme will	*/
 /*	render the Web. Hidden means, generally, "don't show". Advanced means,	*/
@@ -104,6 +106,7 @@ public:
 		~BParameterWeb();
 
 		media_node Node();
+		int32 LocalID();
 
 		BParameterGroup * MakeGroup(
 				const char * name);
@@ -114,6 +117,21 @@ public:
 		int32 CountParameters();
 		BParameter * ParameterAt(
 				int32 index);
+
+		status_t StartWatching(
+				const BMessenger & where,
+				int32 notificationType);
+		status_t StopWatching(
+				const BMessenger & where,
+				int32 notificationType);
+
+		status_t ApplyParameterData(
+				const void * value,
+				size_t size);
+
+		status_t MakeParameterData(
+				void * buf,
+				size_t * ioSize);
 
 virtual	bool		IsFixedSize() const;
 virtual	type_code	TypeCode() const;
@@ -126,6 +144,7 @@ private:
 
 	friend class BParameterGroup;
 	friend class BControllable;
+	friend class BLocalControllable;
 
 		BParameterWeb(
 				const BParameterWeb & clone);
@@ -144,7 +163,10 @@ virtual		status_t _Reserved_ControlWeb_7(void *);
 
 		BList * mGroups;
 		media_node mNode;
-		uint32 _reserved_control_web_[8];
+		int32 mLocalID;
+		team_id mLocalTeam;
+		uint32 mLocalChangeCount;
+		uint32 _reserved_control_web_[5];
 
 		BList * mOldRefs;
 		BList * mNewRefs;
@@ -192,6 +214,13 @@ public:
 				media_type m_type,
 				const char * name,
 				const char * kind);
+		BTextParameter * MakeTextParameter(
+				int32 id,
+				media_type m_type,
+				const char * name,
+				const char * kind,
+				size_t max_bytes);
+
 		BParameterGroup * MakeGroup(
 				const char * name);
 
@@ -253,7 +282,8 @@ public:
 		{
 			B_NULL_PARAMETER,
 			B_DISCRETE_PARAMETER,
-			B_CONTINUOUS_PARAMETER
+			B_CONTINUOUS_PARAMETER,
+			B_TEXT_PARAMETER
 		};
 
 		media_parameter_type Type() const;
@@ -266,6 +296,9 @@ public:
 
 		void SetFlags(uint32 flags);
 		uint32 Flags() const;
+		
+		void SetProperties(const BMessage* props);
+		BMessage* Properties();
 
 virtual	type_code ValueType() = 0;
 		/* These functions are typically used by client apps; they will result in */
@@ -307,6 +340,7 @@ private:
 	friend class BNullParameter;
 	friend class BContinuousParameter;
 	friend class BDiscreteParameter;
+	friend class BTextParameter;
 	friend class BParameterGroup;
 	friend class BParameterWeb;
 
@@ -346,7 +380,8 @@ virtual		status_t _Reserved_Control_7(void *);
 		media_type mMediaType;
 		int32 mChannels;
 		uint32 mFlags;
-		uint32 _reserved_control_[7];
+		BMessage* mProperties;
+		uint32 _reserved_control_[6];
 
 virtual	void FixRefs(
 				BList & old,
@@ -480,6 +515,45 @@ virtual		status_t _Reserved_DiscreteParameter_7(void *);
 				const char * name,
 				const char * kind);
 		~BDiscreteParameter();
+};
+
+class BTextParameter :
+	public BParameter
+{
+public:
+
+	size_t MaxBytes() const;
+
+virtual	type_code ValueType();
+
+virtual	ssize_t		FlattenedSize() const;
+virtual	status_t	Flatten(void *buffer, ssize_t size) const;
+virtual	status_t	Unflatten(type_code c, const void *buf, ssize_t size);
+
+private:
+		/* Mmmh, stuffing! */
+virtual		status_t _Reserved_TextParameter_0(void *);
+virtual		status_t _Reserved_TextParameter_1(void *);
+virtual		status_t _Reserved_TextParameter_2(void *);
+virtual		status_t _Reserved_TextParameter_3(void *);
+virtual		status_t _Reserved_TextParameter_4(void *);
+virtual		status_t _Reserved_TextParameter_5(void *);
+virtual		status_t _Reserved_TextParameter_6(void *);
+virtual		status_t _Reserved_TextParameter_7(void *);
+
+	friend class BParameterGroup;
+
+		uint32 _max_bytes;
+		uint32 _reserved_control_text_[8];
+
+		BTextParameter(
+				int32 id,
+				media_type m_type,
+				BParameterWeb * web,
+				const char * name,
+				const char * kind,
+				size_t max_bytes);
+		~BTextParameter();
 };
 
 

@@ -50,7 +50,16 @@ extern _IMPEXP_ROOT uint16 __swap_int16(uint16 uarg);
 
 
 /*-------------------------------------------------------------*/
-/*--------- Host is Little  --------------------------------------*/
+/*--------- Enforced Swapping  --------------------------------*/
+
+#define B_BYTE_SWAP_DOUBLE(arg)			__swap_double(arg)
+#define B_BYTE_SWAP_FLOAT(arg)			__swap_float(arg)
+#define B_BYTE_SWAP_INT64(arg)			__swap_int64(arg)
+#define B_BYTE_SWAP_INT32(arg)			__swap_int32(arg)
+#define B_BYTE_SWAP_INT16(arg)			__swap_int16(arg)
+
+/*-------------------------------------------------------------*/
+/*--------- Host is Little  -----------------------------------*/
 
 #if BYTE_ORDER == __LITTLE_ENDIAN
 #define B_HOST_IS_LENDIAN 1
@@ -135,7 +144,7 @@ extern _IMPEXP_ROOT uint16 __swap_int16(uint16 uarg);
 
 
 /*-------------------------------------------------------------*/
-/*---------Berkeley macros -----------------------------------*/
+/*---------Berkeley macros ------------------------------------*/
 #define htonl(x) B_HOST_TO_BENDIAN_INT32(x)
 #define ntohl(x) B_BENDIAN_TO_HOST_INT32(x)
 #define htons(x) B_HOST_TO_BENDIAN_INT16(x)

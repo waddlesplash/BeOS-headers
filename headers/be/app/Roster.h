@@ -22,6 +22,11 @@
 class BList;
 class BMessage;
 class BNodeInfo;
+namespace B {
+namespace Interface2 {
+class BWindow;
+}
+}
 
 extern "C" int	_init_roster_();
 
@@ -54,13 +59,18 @@ struct app_info {
 enum {
 	B_REQUEST_LAUNCHED = 0x00000001,
 	B_REQUEST_QUIT = 0x00000002,
-	B_REQUEST_ACTIVATED = 0x00000004
+	B_REQUEST_APP_ACTIVATED = 0x00000004,
+	B_REQUEST_WINDOW_ACTIVATED = 0x00000008,
+	
+	// Synonym for backwards compatibility
+	B_REQUEST_ACTIVATED = B_REQUEST_APP_ACTIVATED
 };
 
 enum {
 	B_SOME_APP_LAUNCHED		= 'BRAS',
 	B_SOME_APP_QUIT			= 'BRAQ',
-	B_SOME_APP_ACTIVATED	= 'BRAW'
+	B_SOME_APP_ACTIVATED	= 'BRAW',
+	B_SOME_WINDOW_ACTIVATED	= 'BRAZ'
 };
 
 /*-------------------------------------------------------------*/
@@ -84,6 +94,8 @@ public:
 		status_t	GetActiveAppInfo(app_info *info) const;
 		status_t	FindApp(const char *mime_type, entry_ref *app) const;
 		status_t	FindApp(entry_ref *ref, entry_ref *app) const;
+		BMessenger	ActiveApp() const;
+		BMessenger	ActiveWindow(bool preferred_target = false) const;
 
 /* Launching, activating, and broadcasting to apps */
 		status_t	Broadcast(BMessage *msg) const;
@@ -127,6 +139,7 @@ private:
 
 friend class BApplication;
 friend class BWindow;
+friend class B::Interface2::BWindow;
 friend class _BAppCleanup_;
 friend int	_init_roster_();
 friend status_t _send_to_roster_(BMessage *, BMessage *, bool);
@@ -142,6 +155,7 @@ friend status_t BClipboard::StopWatching(BMessenger);
 			USE_GIVEN
 		};
 
+		status_t	_GetActiveAppInfo(app_info *info, BMessenger* out_window) const;
 		status_t	_StartWatching(mtarget t, BMessenger *roster_mess, uint32 what,
 									BMessenger notify, uint32 event_mask) const;
 		status_t	_StopWatching(mtarget t, BMessenger *roster_mess, uint32 what,
@@ -173,7 +187,7 @@ friend status_t BClipboard::StopWatching(BMessenger);
 										int cargs,
 										char **args,
 										team_id *app_team) const;
-		bool		UpdateActiveApp(team_id team) const;
+		bool		UpdateActiveApp(team_id team, const BMessenger& window) const;
 		void		SetAppFlags(team_id team, uint32 flags) const;
 		void		DumpRoster() const;
 		status_t	resolve_app(const char *in_type,

@@ -3,11 +3,11 @@
 
 #include <float.h>		/* for DBL_DIG, FLT_DIG, etc */
 
-#if __INTEL__
-# ifndef _GCC_LIMITS_H_ /* This is what GCC's file defines. */
+#if defined (__GNUC__)
+# if !defined (_GCC_LIMITS_H_)  /* `_GCC_LIMITS_H_' is what GCC's file defines.  */
 #  include_next <limits.h>
 # endif
-#else
+#else	/* not __GNUC__ */
 
 #define CHAR_BIT		(8)
 
@@ -35,7 +35,7 @@
 #define INT_MAX			LONG_MAX
 #define UINT_MAX		ULONG_MAX
 
-#endif /* else not INTEL */
+#endif /* __GNUC__ */
 
 #define LONGLONG_MIN    (-9223372036854775807LL - 1)  /* these are Be specific */
 #define LONGLONG_MAX    (9223372036854775807LL)

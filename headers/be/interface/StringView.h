@@ -12,6 +12,8 @@
 #define _STRING_VIEW_H
 
 #include <BeBuild.h>
+#include <Font.h>		// for truncate flags
+#include <String.h>
 #include <View.h>
 
 /*----------------------------------------------------------------*/
@@ -27,6 +29,12 @@ public:
 								uint32 resizeFlags =
 									B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								uint32 flags = B_WILL_DRAW);
+					BStringView(BRect bounds,
+								const char *name, 
+								const char *text,
+								uint32 truncation_mode,
+								uint32 resizeFlags,
+								uint32 flags);
 					BStringView(BMessage *data);
 virtual 			~BStringView();
 static	BArchivable	*Instantiate(BMessage *data);
@@ -36,7 +44,11 @@ virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 		const char	*Text() const;
 		void		SetAlignment(alignment flag);
 		alignment	Alignment() const;
-
+		void		SetTruncation(uint32 mode);
+		void		ClearTruncation();
+		uint32		Truncation();
+		bool		HasTruncation();
+		
 virtual	void		AttachedToWindow();
 virtual	void		Draw(BRect bounds);
 
@@ -47,6 +59,7 @@ virtual	void		MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void		DetachedFromWindow();
 virtual	void		FrameMoved(BPoint new_position);
 virtual	void		FrameResized(float new_width, float new_height);
+virtual void		SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 
 virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 index,
@@ -67,15 +80,21 @@ virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
+		const char*	GetShownText();
+		
 virtual	void		_ReservedStringView1();
 virtual	void		_ReservedStringView2();
 virtual	void		_ReservedStringView3();
 
 		BStringView	&operator=(const BStringView &);
-
-		char		*fText;
+		
+		BString		fText;
 		alignment	fAlign;
-		uint32		_reserved[3];
+		uint16		fTruncationMode;	// was _reserved[0]
+		bool		fValidTruncation;
+		bool		_reservedBool1;
+		BString		fTruncatedText;		// was _reserved[1]
+		uint32		_reserved[1];		// was 3
 };
 
 /*-------------------------------------------------------------*/

@@ -43,6 +43,7 @@ virtual				~BClipboard();
 		
 		status_t	Clear();
 		status_t	Commit();
+		status_t	Commit(BMessenger dataSource);
 		status_t	Revert();
 
 		BMessenger	DataSource() const;
@@ -59,7 +60,7 @@ virtual	void		_ReservedClipboard3();
 
 		bool		AssertLocked() const;
 		status_t	DownloadFromSystem(bool force = false);
-		status_t	UploadToSystem();
+		status_t	UploadToSystem(const BMessenger& dataSource);
 
 		uint32		fCount;
 		BMessage	*fData;

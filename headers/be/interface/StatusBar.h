@@ -12,6 +12,7 @@
 #define	_STATUS_BAR_H
 
 #include <BeBuild.h>
+#include <String.h>
 #include <View.h>
 
 /*----------------------------------------------------------------*/
@@ -44,6 +45,9 @@ virtual	void		Update(	float delta,
 							const char *trailing_text = NULL);
 virtual	void		Reset(	const char *label = NULL,
 							const char *trailing_label = NULL);
+virtual	void		SetTo(	float value,
+							const char *main_text = NULL,
+							const char *trailing_text = NULL);
 
 		float		CurrentValue() const;
 		float		MaxValue() const;
@@ -80,7 +84,7 @@ virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
-virtual	void		_ReservedStatusBar1();
+//virtual	void		_ReservedStatusBar1();
 virtual	void		_ReservedStatusBar2();
 virtual	void		_ReservedStatusBar3();
 virtual	void		_ReservedStatusBar4();
@@ -88,27 +92,39 @@ virtual	void		_ReservedStatusBar4();
 		BStatusBar	&operator=(const BStatusBar &);
 
 		void		InitObject(const char *l, const char *aux_l);
-		void		SetTextData(char **pp, const char *str);
-		void		FillBar(BRect r);
 		void		Resize();
-		void		_Draw(BRect updateRect, bool bar_only);
+		bool		SetAndInvalidate(BString* into, const char* text,
+									 float* width, float pos, bool trailing,
+									 const font_height* fh = 0);
+		void		InvalidateLabel(float left, float width,
+									const font_height* fh = 0);
+		
+		float		LabelPos() const;
+		float		TextPos() const;
+		float		TrailingTextPos() const;
+		float		TrailingLabelPos() const;
+		float		TextBaseline(const font_height& fh) const;
+		BRect		BarRect(const BRect& bounds, const font_height& fh) const;
+		float		BarPos(const BRect& bar_rect, float value) const;
+		void		_Draw(BRect updateRect);
 
-		char		*fLabel;
-		char		*fTrailingLabel;
-		char		*fText;
-		char		*fTrailingText;
+		BString		fLabel;
+		BString		fTrailingLabel;
+		BString		fText;
+		BString		fTrailingText;
 		float		fMax;
 		float		fCurrent;
 		float		fBarHeight;
-		float		fTrailingWidth;
+		float		fLabelWidth;
+		float		fTrailingLabelWidth;
+		float		fTextWidth;
+		float		fTrailingTextWidth;
 		rgb_color	fBarColor;
-		float		fEraseText;
-		float		fEraseTrailingText;
 		bool		fCustomBarHeight;
 		bool		_pad1;
 		bool		_pad2;
 		bool		_pad3;
-		uint32		_reserved[3];		// was 4
+		uint32		_reserved[2];		// was 4
 };
 
 /*-------------------------------------------------------------*/

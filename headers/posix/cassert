@@ -3,4 +3,4 @@
 
 #include <assert.h>
 
-#endif _CASSERT
+#endif /* _CASSERT */

@@ -47,6 +47,7 @@ void	srandom(unsigned int seed);
 int		random(void);
 char 	*initstate(unsigned int seed, char *state, int n);
 char 	*setstate(char *state);
+char 	*realpath(const char *path, char *resolved);
 
 #if __INTEL__
 
@@ -181,7 +182,12 @@ void	exit(int status);
 extern  char **environ;
 char *	getenv(const char *name); 
 int 	putenv(const char *string);
+int 	setenv(const char *name, const char *value, int rewrite);
+void	unsetenv(const char *name);
+void 	setproctitle(const char *fmt, ...);
 
+int 	daemon(int nochdir, int noclose);
+     
 int		system(const char *command); 
 
 char   *mktemp(char *name);

@@ -22,6 +22,7 @@
 #include <Statable.h>
 #include <Node.h>
 
+class	BDataIO;
 class	BDirectory;
 class	BPath;
 struct	entry_ref;
@@ -46,6 +47,8 @@ struct entry_ref {
 	ino_t				directory;
 	char				*name;
 };
+
+_IMPEXP_BE BDataIO& operator<<(BDataIO& io, const entry_ref& ref);
 
 class BEntry : public BStatable {
 public:

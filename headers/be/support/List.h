@@ -21,7 +21,7 @@
 class BList {
 
 public:
-				BList(int32 itemsPerBlock = 20);
+				BList(int32 initialAllocSize = 0);
 				BList(const BList&);
 virtual			~BList();
 
@@ -35,6 +35,8 @@ virtual			~BList();
 		bool	RemoveItem(void *item);
 		void	*RemoveItem(int32 index);
 		bool	RemoveItems(int32 index, int32 count);
+		bool	RemoveItems(int32 index, int32 count,
+							bool (*func)(void *, void *), void *);
 		bool	ReplaceItem(int32 index, void *newItem);
 		void	MakeEmpty();
 
@@ -48,7 +50,7 @@ virtual			~BList();
 		void	*ItemAtFast(int32) const;
 		void	*FirstItem() const;
 		void	*LastItem() const;
-		void	*Items() const;
+		void	**Items() const;
 
 /* Querying the list. */
 		bool	HasItem(void *item) const;
@@ -66,13 +68,17 @@ private:
 virtual	void			_ReservedList1();
 virtual	void			_ReservedList2();
 
-		void	Resize(int32 count);
-
+		void	Alloc(int32 initialAllocSize);
+		void	Cleanup();
+		void	Grow(int32 neededCount);
+		void	Shrink(int32 neededCount);
+		
 		void**	fObjectList;
 		size_t	fPhysicalSize;
 		int32	fItemCount;
-		int32	fBlockSize;
-		uint32	_reserved[2];
+		void*	fSingleItem;		// was fBlockSize
+		int32	fInitialSize;		// was _reserved[0]
+		uint32	_reserved[1];		// was 2
 };
 
 /*-------------------------------------------------------------*/

@@ -14,6 +14,7 @@ namespace BPrivate {
 
 class BView;
 class BParameterWeb;
+class Detractor;
 
 enum media_seek_type {
 	B_MEDIA_SEEK_CLOSEST_FORWARD = 1,
@@ -175,7 +176,9 @@ public:
 	status_t		Flush();
 
 	// These are for controlling the underlying encoder and track parameters
-	BParameterWeb	*Web();
+
+	// returns a copy of the parameter web
+	status_t		GetParameterWeb(BParameterWeb** outWeb);
 	status_t 		GetParameterValue(int32 id, void *valu, size_t *size);
 	status_t		SetParameterValue(int32 id, const void *valu, size_t size);
 	BView			*GetParameterView();
@@ -188,12 +191,16 @@ public:
 	status_t 		GetEncodeParameters(encode_parameters *parameters) const;
 	status_t 		SetEncodeParameters(encode_parameters *parameters);
 
-
 virtual	status_t Perform(int32 selector, void * data);
+
+	//	Please make really sure you know which codec you're talking to before
+	//	using this function.
+	status_t		ControlCodec(int32 selector, void * io_data, size_t size);
 
 private:
 					// for read-only access to a track
 					BMediaTrack(BPrivate::MediaExtractor *extractor, int32 stream);
+					BMediaTrack(Detractor *detractor, int32 stream);
 
 					// for write-only access to a BMediaTrack
 					BMediaTrack(BPrivate::MediaWriter *writer,
@@ -204,11 +211,13 @@ private:
 
 	status_t		TrackInfo(media_format *out_format, void **out_info,
 							  int32 *out_infoSize);
+    status_t		CommitHeader(void);
 
 	status_t				fErr;
 	BPrivate::Decoder		*fDecoder;
 	int32					fDecoderID;
 	BPrivate::MediaExtractor *fExtractor;
+	Detractor				*fDetractor;
 
 	int32					fStream;
 	int64					fCurFrame;
@@ -221,6 +230,7 @@ private:
 	BPrivate::MediaWriter	*fWriter;
 	media_format			fWriterFormat;
 	void					*fExtractorCookie;
+	bool					fEncoderStarted;
 
 protected:
 	int32			EncoderID() { return fEncoderID; };
@@ -234,11 +244,14 @@ friend class BPrivate::Decoder;
 	BMediaTrack(const BMediaTrack&);
 	BMediaTrack& operator=(const BMediaTrack&);
 
+	// deprecated
+	BParameterWeb	*Web();
+
 static	BPrivate::Decoder *	find_decoder(BMediaTrack *track, int32 *id);
 
 	/* fbc data and virtuals */
 
-	uint32 _reserved_BMediaTrack_[31];
+	uint32 _reserved_BMediaTrack_[29];
 
 virtual	status_t _Reserved_BMediaTrack_0(int32 arg, ...);
 virtual	status_t _Reserved_BMediaTrack_1(int32 arg, ...);

@@ -28,6 +28,14 @@ enum color_control_layout {
 	B_CELLS_64x4 = 64
 };
 
+enum
+{
+	B_CC_8BIT_MODE = 1,
+	B_CC_32BIT_MODE = 2,
+	B_CC_LIVE_GRADIENT = 4,
+	B_CC_SHOW_SWATCH = 8
+};
+
 class BTextControl;
 
 /*----------------------------------------------------------------*/
@@ -85,6 +93,8 @@ virtual void			MakeFocus(bool state = true);
 virtual void			AllAttached();
 virtual void			AllDetached();
 
+		void 			SetModeFlags( uint8 flags );
+		uint8			ModeFlags() const;
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
@@ -102,6 +112,11 @@ virtual	void			_ReservedColorControl4();
 		void			UpdateOffscreen();
 		void			UpdateOffscreen(BRect update);
 		void			DrawColorArea(BView *target, BRect update);
+		
+		void			DrawColorSlider(BRect where, BView *target, rgb_color c1, rgb_color c2, bool focused);
+		void			DrawThumb(BRect where, uint8 value, BView *target);
+		void			DrawSwatch(BRect where, BView *target, rgb_color c);
+		
 		void			ColorRamp(	BRect r,
 									BRect where,
 									BView *target,
@@ -130,6 +145,7 @@ static	BRect			CalcFrame(	BPoint start,
 			int32		cur_color;
 			int32		prev_color;
 			int32		bar_index;
+			bigtime_t	refresh_clock;
 			BRect		active_area;
 			BRect		r;
 			rgb_color	rgb;
@@ -147,7 +163,7 @@ static	BRect			CalcFrame(	BPoint start,
 		int32			fCachedIndex;
 		uint32			_reserved[3];
 		track_state		*fTState;
-		bool			fUnused;	// fTracking;
+		uint8			fModeFlags;
 		bool			fFocused;
 		bool			fRetainCache;
 		bool			fFastSet;
@@ -159,7 +175,7 @@ static	BRect			CalcFrame(	BPoint start,
 inline void BColorControl::SetValue(rgb_color color)
 {
 	/* OK, no private parts */
-	int32 c = (color.red << 24) + (color.green << 16) + (color.blue << 8);
+	int32 c = (color.red << 24) + (color.green << 16) + (color.blue << 8) + color.alpha;
 	SetValue(c);
 }
 

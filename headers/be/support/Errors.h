@@ -29,6 +29,8 @@
 #define B_MAIL_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x8000
 #define B_PRINT_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x9000
 #define B_DEVICE_ERROR_BASE			B_GENERAL_ERROR_BASE + 0xa000
+#define B_WWW_ERROR_BASE			B_GENERAL_ERROR_BASE + 0xb000
+#define B_DIALER_ERROR_BASE			B_GENERAL_ERROR_BASE + 0xc000
 
 /*--- Developer-defined errors start at (B_ERRORS_END+1)----*/
 
@@ -54,7 +56,8 @@ enum {
 	B_NO_INIT,			
 	B_BUSY,					
 	B_NOT_ALLOWED,				
-
+	B_BAD_DATA,
+	
 	B_ERROR = -1,				
 	B_OK = 0,
 	B_NO_ERROR = 0
@@ -104,7 +107,8 @@ enum
 	B_LAUNCH_FAILED_APP_IN_TRASH,
 	B_LAUNCH_FAILED_NO_PREFERRED_APP,
 	B_LAUNCH_FAILED_FILES_APP_NOT_FOUND,
-	B_BAD_MIME_SNIFFER_RULE
+	B_BAD_MIME_SNIFFER_RULE,
+	B_NOT_A_MESSAGE
 };
 
 
@@ -234,7 +238,21 @@ enum
 /*----- Printing Errors --------------------------------------*/
 enum
 {
-	B_NO_PRINT_SERVER = B_PRINT_ERROR_BASE
+	B_NO_PRINT_SERVER = B_PRINT_ERROR_BASE,
+	B_PAPER_JAM,
+	B_NO_PAPER,
+	B_NO_INK,
+	B_NO_TRANSPORT,
+	B_BAD_TRANSPORT,
+	B_TRANSPORT_INIT_ERROR,
+	B_PRINTER_BUSY,
+	B_NO_PRINTER,
+	B_INVALID_PRINT_SETTINGS,
+	B_INVALID_PRINTER,
+	B_NO_SPOOL_FILE,
+	B_BAD_SPOOL_FILE,
+	B_NO_DRIVER,
+	B_BAD_DRIVER
 };
 
 /*-------------------------------------------------------------*/
@@ -259,7 +277,49 @@ enum
 	B_DEV_RESOURCE_CONFLICT,
 	B_DEV_CONFIGURATION_ERROR,
 	B_DEV_DISABLED_BY_USER,
-	B_DEV_DOOR_OPEN
+	B_DEV_DOOR_OPEN,
+	
+	B_DEV_INVALID_PIPE,
+	B_DEV_CRC_ERROR,
+	B_DEV_STALLED,
+	B_DEV_BAD_PID,
+	B_DEV_UNEXPECTED_PID,
+	B_DEV_DATA_OVERRUN,
+	B_DEV_DATA_UNDERRUN,
+	B_DEV_FIFO_OVERRUN,
+	B_DEV_FIFO_UNDERRUN,
+	B_DEV_PENDING
+};
+
+
+/*-------------------------------------------------------------*/
+/*----- WWW Kit Errors -------------------------------------*/
+enum
+{
+	B_AUTHENTICATION_ERROR = B_WWW_ERROR_BASE,
+	B_FINISH_STREAM,
+	B_NO_RANDOM_ACCESS,
+	B_NO_CONTENT,
+
+	/* compatibility for RealPlayer.  Remove after next version */
+	FINISH_STREAM = B_FINISH_STREAM
+};
+
+
+/*-------------------------------------------------------------*/
+/*-----Dialer Errors (typically returned from modems)----------*/
+
+enum
+{
+	B_MODEM_NO_CARRIER = B_DIALER_ERROR_BASE,
+	B_MODEM_BUSY,
+	B_MODEM_NO_DIALTONE,
+	B_MODEM_NO_ANSWER,
+	B_MODEM_ERROR,
+	B_MODEM_RINGING,
+	B_MODEM_UNKNOWN,
+	B_MODEM_BAD_LOGIN,
+	B_MODEM_TIMEOUT
 };
 
 /*-------------------------------------------------------------*/

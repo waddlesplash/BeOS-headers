@@ -11,113 +11,130 @@
 #ifndef	_PRINTSESSION_H
 #define	_PRINTSESSION_H
 
-#include <BeBuild.h>
-#include <Picture.h>		/* For convenience */
+#include <OS.h>
+#include <image.h>
+#include <Node.h>
+#include <Message.h>
 #include <Rect.h>
 
+class BPicture;
 class BView;
+class BPrintJobSettings;
+class BPositionIO;
 
-/*----------------------------------------------------------------*/
-/*----- BPrintJob related structures -----------------------------*/
+namespace BPrivate
+{
+	struct printjob_private;
+}
 
-struct	print_file_header {
-	int32	version;
-	int32	page_count;
-	off_t	first_page;
-	int32	_reserved_3_;
-	int32	_reserved_4_;
-	int32	_reserved_5_;
-};
 
-struct _page_header_;
-
-/*----------------------------------------------------------------*/
-/*----- BPrintJob class ------------------------------------------*/
-
-class BPrintJob {
+class BPrintJob
+{
 public:
+			BPrintJob(const char *job_name = NULL);
+			BPrintJob(const BMessage& settings, const char *job_name = NULL, bool preview = false);
+	virtual	~BPrintJob();
+	status_t InitCheck() const;
+	status_t Reset(const char *job_name = NULL);	// Returns what InitCheck() would return
+	void HandleError(status_t error) const;
 
-	enum 	// These values are returned by PrinterType()
-	{
-		B_BW_PRINTER = 0,
-		B_COLOR_PRINTER
-	};
+
+	// //////////////////////////////////////////////////////
+	// Settings query
+	const BPrintJobSettings& JobSettings();
+	// ----- wrappers around querying JobSettings() ---------
+	BRect		PaperRect();
+	BRect		PrintableRect();
+	status_t	GetResolution(int32 *xdpi, int32 *ydpi);
+	int32		FirstPage();
+	int32		LastPage();
+	int32		PrinterType(void * = NULL) const;
+		enum
+		{ // These values are returned by PrinterType() -  deprecated
+			B_BW_PRINTER = 0,
+			B_COLOR_PRINTER
+		};
 
 
-					BPrintJob(const char *job_name);
-virtual				~BPrintJob();
+	// //////////////////////////////////////////////////////
+	// Job creation / Spooling
+	status_t	BeginJob();	
+	status_t	SetScale(float scale_factor = 1.0f);	// SetScale might be called _prior_ DrawView()
+	status_t	SpoolPage();
+	status_t	CommitJob();	
+	void		CancelJob();
+	bool		CanContinue();
 
-		void		BeginJob();	
-		void		CommitJob();	
-		status_t	ConfigJob();
-		void		CancelJob();
+virtual	status_t	DrawView(		BView *view,
+									BRect clip,
+									BPoint where);
 
-		status_t	ConfigPage();
-		void		SpoolPage();
+		status_t	DrawPictures(	BPicture * const *pictures,
+	                                const BRect *clips,
+	                                const BPoint *where,
+	                                const uint32 nb_pictures = 1);
+ 		
+	// //////////////////////////////////////////////////////
+	// User Interface 
+	// ----- deprecated calls, use BPrintPanel instead -----
+	status_t	ConfigPage();
+	status_t	ConfigJob();
+	BMessage 	*Settings();
+	status_t	SetSettings(BMessage *msg);
+	bool		IsSettingsMessageValid(BMessage *msg) const;
 
-		bool		CanContinue();
+//----- Private or reserved -----------------------------------------
 
-virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
-
-		BMessage	*Settings()	/* const */ ;
-		void		SetSettings(BMessage *a_msg);
-		bool		IsSettingsMessageValid(BMessage *a_msg) const;
-
-		BRect		PaperRect();
-		BRect		PrintableRect();
-		void		GetResolution(int32 *xdpi, int32 *ydpi);
-
-		int32		FirstPage()	/* const */ ;
-		int32		LastPage()	/* const */ ;
-		int32		PrinterType(void * = NULL) const;
-		
-
-/*----- Private or reserved -----------------------------------------*/
 private:
+	friend class BRawPrintJob;
+	virtual void _ReservedPrintJob1();
+	virtual void _ReservedPrintJob2();
+	virtual void _ReservedPrintJob3();
+	virtual void _ReservedPrintJob4();
 
-virtual void		_ReservedPrintJob1();
-virtual void		_ReservedPrintJob2();
-virtual void		_ReservedPrintJob3();
-virtual void		_ReservedPrintJob4();
+				BPrintJob(const BPrintJob &);
+				BPrintJob(const char *printer, const char *job_name);
+	BPrintJob&	operator = (const BPrintJob &);
 
-					BPrintJob(const BPrintJob &);
-		BPrintJob	&operator=(const BPrintJob &);
+	void RecurseView(BView *, BPoint, BPicture *, BRect);
+	void MangleName(char *);
+	status_t EndLastPage();
+	void AddSetupSpec();
+	void AddPicture(BPicture *, BRect, BPoint);
+	image_id load_driver_addon(BNode *node, BNode *job = NULL);
+	inline BNode& PrinterNode() const;
+	inline BMessenger& ServerMessenger() const;
+	status_t update_settings(const BMessage&);
+	status_t InitObject();
+	status_t get_default_settings();
+	void check_status(const char *);
+	static void cleanup_spool_list(BList *, BList *);
+	status_t CleanUpSpoolData();
+	static long _take_job_add_on_thread(BMessage *);
+	status_t SetPrinter(const char * = NULL);
+	BPositionIO* spool_file() const;
 
-		void				RecurseView(BView *v, BPoint origin, BPicture *p, BRect r, int32 stage);
-		void				MangleName(char *filename);
-		void				HandlePageSetup(BMessage *setup);
-		bool				HandlePrintSetup(BMessage *setup);
+private:
+	BPrivate::printjob_private *_m_private;
+	BPrivate::printjob_private& _m_rprivate;
+	uint32 _reserved0[3];
 
-		void				NewPage();
-		void				EndLastPage();
-
-		void				AddSetupSpec();
-		void				AddPicture(BPicture *picture, BRect *rect, BPoint where);
-
-		char*				GetCurrentPrinterName() const;
-		void				LoadDefaultSettings();
-
-		char *				print_job_name;
-		int32				page_number;
-		BFile *				spoolFile;
-		print_file_header	current_header;
-		BRect				paper_size;
-		BRect				usable_size;
-		int					pr_error;
-		char				spool_file_name[256];	
-		BMessage			*setup_msg;
-		BMessage			*default_setup_msg;
-		char				stop_the_show;
-		int32				first_page;
-		int32				last_page;
-		short				v_xres;
-		short				v_yres;
-		_page_header_ *		m_curPageHeader;
-		off_t				m_curPageHeaderOffset;
-		uint32				_reserved[2];
+	#if _R5_COMPATIBLE_
+	uint32 _reserved1[89];
+	public:
+	// Just here for compatibility with old drivers
+	struct print_file_header
+	{ // Needed by printer old drivers
+		int32	version;
+		int32	page_count;
+		off_t	first_page;
+		int32	_reserved_3_;
+		int32	_reserved_4_;
+		int32	_reserved_5_;
+	};
+	#endif
 };
- 
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
 
-#endif /* _PRINTSESSION_H */
+
+#endif
+

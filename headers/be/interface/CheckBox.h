@@ -74,8 +74,11 @@ virtual	void		_ReservedCheckBox3();
 
 		BCheckBox	&operator=(const BCheckBox &);
 
-		bool		fOutlined;
-		uint32		_reserved[2];
+		bool		_reserved1;
+		uint8		fState;
+		uint8		fChanged;
+		uint16		_reserved2;
+		uint32		_reserved3;
 };
 
 /*-------------------------------------------------------------*/

@@ -22,7 +22,8 @@
 enum menu_bar_border {
 	B_BORDER_FRAME,
 	B_BORDER_CONTENTS,
-	B_BORDER_EACH_ITEM
+	B_BORDER_EACH_ITEM,
+	B_BORDER_OFF
 };
 
 class BMenu;

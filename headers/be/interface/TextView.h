@@ -1,4 +1,3 @@
-//depot/maui/headers/interface/TextView.h#4 - edit change 36576 (text)
 /*******************************************************************************
 /
 /	File:			TextView.h
@@ -17,6 +16,9 @@
 
 /*----------------------------------------------------------------*/
 /*----- BTextView structures and definitions ---------------------*/
+
+// Note that you MUST ALWAYS allocate and fre these structures using
+// BTextView::AllocRunArray() and BTextView::FreeRunArray().
 
 struct text_run {
 	int32			offset;		/* byte offset of first character of run*/
@@ -85,6 +87,9 @@ virtual					~BTextView();
 	
 static	BArchivable*	Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
+virtual	void			SetViewColor(rgb_color c);
+		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 255);
 
 virtual	void			AttachedToWindow();
 virtual	void			DetachedFromWindow();
@@ -237,6 +242,10 @@ virtual void			GetPreferredSize(float *width, float *height);
 virtual void			AllAttached();
 virtual void			AllDetached();
 
+static	text_run_array*	AllocRunArray(int32 entryCount, int32 *outSize = NULL);
+static	text_run_array*	CopyRunArray(const text_run_array *orig, int32 countDelta=0);
+static	void			FreeRunArray(text_run_array *array);
+
 static	void*			FlattenRunArray(const text_run_array *inArray, 
 										int32				 *outSize = NULL);
 static	text_run_array*	UnflattenRunArray(const void	*data,
@@ -262,6 +271,7 @@ virtual	void			GetDragParameters(BMessage	*drag,
 /*----- Private or reserved -----------------------------------------*/
 private:
 friend status_t	_init_interface_kit_();
+friend void		_fini_interface_kit_();
 friend class _BTextTrackState_;
 
 #if _PR2_COMPATIBLE_
@@ -393,18 +403,21 @@ static	void			UnlockWidthBuffer();
 		uint8					fCursor;
 		bool					fActive;
 		bool					fStylable;
+		bool					fResizable;
 		float					fTabWidth;
 		bool					fSelectable;
 		bool					fEditable;
-		bool					fWrap;
+		bool					fWrap:1;
+		bool					fViewColorSet:7;
 		int32					fMaxBytes; 
 		BList*					fDisallowedChars;
 		alignment				fAlignment;
 		bool					fAutoindent;
 		BBitmap* 				fOffscreen;
 		color_space				fColorSpace;
-		bool					fResizable;
+		BMessageRunner *		fPulseRunner;
 		BView*					fContainerView;
+		rgb_color				fViewColor;
 		_BUndoBuffer_*			fUndo;			/* was _reserved[0] */
 		_BInlineInput_*			fInline;		/* was _reserved[1] */
 		BMessageRunner *		fDragRunner;	/* was _reserved[2] */
@@ -412,7 +425,6 @@ static	void			UnlockWidthBuffer();
 		BPoint					fWhere;
 		_BTextTrackState_*		fTrackingMouse;	/* was _reserved[6] */
 		_BTextChangeResult_*	fTextChange;	/* was _reserved[7] */
-		uint32					_reserved[1];	/* was 8 */
 #if !_PR3_COMPATIBLE_
 		uint32					_more_reserved[8];
 #endif
@@ -425,4 +437,13 @@ static	int32					sWidthAtom;
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 
+
+inline void	BTextView::SetViewColor(uchar r, uchar g, uchar b, uchar a)
+{
+	rgb_color	a_color;
+	a_color.red = r;		a_color.green = g;
+	a_color.blue = b;		a_color.alpha = a;
+	SetViewColor(a_color);
+}
+	
 #endif /* _TEXT_VIEW_H */

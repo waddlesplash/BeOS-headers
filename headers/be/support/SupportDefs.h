@@ -66,6 +66,24 @@ typedef int64					bigtime_t;
 typedef uint32					type_code;
 typedef uint32					perform_code;
 
+struct lock_status_t {
+	void (*unlock_func)(void* data);	// unlock function, NULL if lock failed
+	union {
+		status_t error;					// error if "unlock_func" is NULL
+		void* data;						// locked object if "unlock_func" is non-NULL
+	} value;
+	
+#ifdef __cplusplus
+	inline lock_status_t(void (*f)(void*), void* d)	{ unlock_func = f; value.data = d; }
+	inline lock_status_t(status_t e)			{ unlock_func = NULL; value.error = e; }
+	
+	inline bool is_locked() const				{ return (unlock_func != NULL); }
+	inline status_t status() const				{ return is_locked() ? B_OK : value.error; }
+	inline void unlock() const					{ if (unlock_func) unlock_func(value.data); }
+	
+	inline operator status_t() const			{ return status(); }
+#endif
+};
 
 /*-----------------------------------------------*/
 /*----- Empty string ("") -----------------------*/ 

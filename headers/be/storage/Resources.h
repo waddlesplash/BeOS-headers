@@ -125,6 +125,9 @@ virtual	void			_ReservedResources7();
 virtual	void			_ReservedResources8();
 #endif
 
+					BResources(const BResources &);
+		BResources	&operator=(const BResources &);
+
 		BFile		fFile;
 		struct _res_map * m_map;
 		void			*unused_1;
