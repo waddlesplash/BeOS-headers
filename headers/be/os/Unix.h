@@ -23,7 +23,13 @@ typedef short			nlink_t;
 typedef	short			dev_t;		/* <old device number> type */
 typedef	long			off_t;		/* ?<offset> type */
 
+/* Hack for PowerPC, until Metaware fixes .cnf file to be like hobbit. If
+   UID_T already defined, skip this (likely incompatible) definition.  This
+   may cause some wierdness with uid's, but who cares? */
+#ifndef _UID_T
 typedef unsigned short		uid_t;
+#define _UID_T
+#endif
 typedef unsigned short		gid_t;
 
 typedef short			pid_t;		/* used for process ids */
@@ -63,6 +69,8 @@ struct	stat {
 
 #define	S_ISUID	04000		/* set user id on execution */
 #define	S_ISGID	02000		/* set group id on execution */
+
+#define	S_ISVTX	01000		/* save swapped text even after use */
 
 #define	S_IRWXU	00700		/* read, write, execute: owner */
 #define	S_IRUSR	00400		/* read permission: owner */
@@ -108,6 +116,31 @@ struct	direct
 {
 	unsigned short	d_ino;
 	char		d_name[DIRSIZ];
+};
+
+struct group {
+       char *gr_name;
+       char *gr_passwd;
+       int gr_gid;
+       char **gr_mem;
+};
+
+/* major part of a device */
+#define	major(x)	(int)((unsigned)((x)>>8)&0x7F)
+#define	bmajor(x)	(int)((unsigned)((x)>>8)&0x7F)
+
+/* minor part of a device */
+#define	minor(x)	(int)((x)&0xFF)
+
+/* make a device number */
+#define	makedev(x,y)	(dev_t)(((x)<<8) | (y))
+
+typedef long	clock_t;
+struct tms {
+	clock_t	tms_utime;		/* user time */
+	clock_t	tms_stime;		/* system time */
+	clock_t	tms_cutime;		/* user time, children */
+	clock_t	tms_cstime;		/* system time, children */
 };
 
 #endif	/* _UNIX_H */

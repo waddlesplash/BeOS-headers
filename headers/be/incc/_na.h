@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 1993 MetaWare, Incorporated
  *
- * $Id: _na.h,v 1.2 1993/12/14 00:27:24 steve Exp $
+ * $Id: _na.h,v 1.1 1994/08/19 17:51:05 ming Exp $
  *
  */
 

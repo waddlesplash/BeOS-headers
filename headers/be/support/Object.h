@@ -4,30 +4,29 @@
 //
 //	Description:	top object 
 //
-//	Written by:	Benoit Schillings
-//
-//	Copyright 1992-3, Be Incorporated
+//	Copyright 1992-94, Be Incorporated
 //
 //******************************************************************************
 
 #ifndef	_OBJECT_H
 #define	_OBJECT_H
 
-#ifndef _BE_DEFS_H
-#include "BeDefs.h"
+#ifndef _SUPPORT_DEFS_H
+#include <support/SupportDefs.h>
+#endif
+
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BObject {
+	DECLARE_ROOT_CLASS_INFO();
 public:
-			BObject();
+				BObject();
 virtual			~BObject();	
-virtual	char		*ClassName();
-	bool		IsInstanceOf(char* objectType);
 };
-
-inline char		*BObject::ClassName() { return "BObject"; };
 
 //------------------------------------------------------------------------------
 

@@ -1,0 +1,107 @@
+
+From lbj Fri Nov  4 11:45:21 1994
+Received: from be.be.com by milo.be.com id aa25645; 4 Nov 94 11:45 PST
+Received: from avarice by be.be.com id aa04944; 4 Nov 94 11:45 PST
+From: notluF guoD <lbj@be.com>
+X-Mailer: SCO System V Mail (version 3.2)
+To: benoit@be.com, steve@be.com
+Date: Fri, 4 Nov 94 11:45:08 PST
+Message-ID:  <9411041145.aa04666@avarice.be.com>
+Status: R
+
+Database.h
+- MAX_TABLE -> MAX_TABLE_COUNT.  Hide the declaration, if possible.
+
+- Is BMessenger inheritance going to go away?
+
+- Constructor's 'db_name' arg should be 'name'.
+
+- Add: CreateTable(char *table_name, BTable *parent)
+
+- Move RemoveTable() to Table.h; if you don't like this, then add
+	a RemoveTable(BTable *a_table) function.
+
+
+
+Table.h
+- #include <IntefaceKit.h> -> #include <AppKit.h>
+
+- Get rid of NON_INDEXED.
+
+- PTR_TYPE -> REF_TYPE
+
+- PTR_TYPE, DATA_TYPE, and field_key declarations should move
+	into a new StorageDefs.h file.
+
+- friend BCollection -> friend BDatabase
+
+- BTable : public BObject
+
+- Add: CountChildren()
+
+- The existing RecordAt() should be RecordRefAt(); a new BRecord *RecordAt()
+	could be added. (CountRecords() needn't change.)
+
+- Add: Lock() and Unlock() 
+
+- Add: Remove() and Commit()
+
+- Perhaps add: PrintToStream()  (prints the table as a 2d array).
+	
+
+Record.h
+- Add: HasData(char *field_name)/HasData(field_key key).  Must distinguish
+	between data that isn't yet set and data that's been set as NULL.
+
+- GetLastestData... -> Update() 
+
+- Add: IsNew() (a record that was created by BRecord(BTable *) is new until
+		it has been committed; you can't update or remove a new
+		record.)
+
+- create a record_ref type (declared in StorageDefs.h)
+
+
+
+Query.h
+- MAX_ARG -> MAX_ARG_COUNT (hide)
+
+- MAX_QTABLE -> MAX_QTABLE_COUNT (hide)
+
+- Can FIELD_NAME, STRING_ARG etc defines be private?  
+
+- move ops to StorageDefs.h
+
+- get rid of op_gt style ops
+
+- What are FIRST_CMP and LAST_CMP?
+
+- Do we need grouping operators? 
+
+- Inheritance?
+
+- friend BCollection -> friend BDatabase
+
+- persistant -> live
+
+- Add: IsLive()
+
+- Add:  AddTable(char *table_name)
+
+- CountItems() -> CountRecords()
+
+- ItemAt() -> RecordRefAt()
+
+- Add:  BRecord *RecordAt()
+
+- Add:  PushQuery(BQuery *q)  Perhaps this could be the way to declare
+		an operational group (obviating the need for grouping
+		operators).  I.e.:  
+				
+		Query1: NAME LT "NNNNN"
+		Query2: HATSIZE EQ 7
+		Query3: Query1 AND Query2
+				means
+			(NAME LT "NNNNN") AND (HATSIZE EQ 7)
+
+

@@ -4,9 +4,7 @@
 //
 //	Description:	client region class.
 //
-//	Written by:	Benoit Schillings
-//
-//	Copyright 1992-93, Be Incorporated
+//	Copyright 1992-94, Be Incorporated
 //
 //******************************************************************************
 
@@ -20,34 +18,41 @@
 #include "Rect.h"
 #endif
 #ifndef	_OBJECT_H
-#include <sys/Object.h>
+#include <support/Object.h>
+#endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BRegion : public BObject {
+	DECLARE_CLASS_INFO(BObject);
 
 public:
-			BRegion();
-			BRegion(const BRegion*);
+				BRegion();
+				BRegion(const BRegion &region);
 virtual			~BRegion();	
 
-virtual	char		*ClassName();
-		
-	void		GetFrame(BRect* r);	
-	void		SetToRect(const BRect *newBounds);
-	bool		Intersects(const BRect *r);
-	bool		Contains(BPoint pt);
-	void		PrintToStream();
-	void		OffsetBy(long dh, long dv);
-	void		MakeEmpty();
-	void		AddRect(const BRect *r);
-	void		SubtractRect(const BRect *r);
-	void		AddRegion(const BRegion*);
-	void		SubtractRegion(const BRegion*);
-	void		IntersectRegion(const BRegion*);
+		BRegion	&operator=(const BRegion &from);
+
+		BRect	Frame() const;	
+		void	Set(BRect newBounds);
+		bool	Intersects(BRect r) const;
+		bool	Contains(BPoint pt) const;
+		void	PrintToStream() const;
+		void	OffsetBy(long dh, long dv);
+		void	MakeEmpty();
+		void	Include(BRect r);
+		void	Include(const BRegion*);
+		void	Exclude(BRect r);
+		void	Exclude(const BRegion*);
+		void	IntersectWith(const BRegion*);
 
 //------------------------------------------------------------------------------
+
+private:
+
 friend class BView;
 friend void copy_region_n(BRegion*, BRegion*, long);
 friend void and_region_complex(BRegion*, BRegion*, BRegion*);
@@ -64,20 +69,16 @@ friend void sub_region_complex(BRegion*, BRegion*, BRegion*);
 friend void r_sub(long , long, BRegion*, BRegion*, BRegion*, long*, long*);
 friend void sub_region(BRegion*, BRegion*, BRegion*);
 
-private:
-	void		__AddRect(const BRect *r);
-	void		set_size(long new_size);
-	long		find_small_bottom(long y1, long y2, long *hint, long *where);
+		void	__AddRect(BRect r);
+		void	set_size(long new_size);
+		long	find_small_bottom(long y1, long y2, long *hint, long *where);
 
-	long		f_count;
-	long		f_data_size;
-	BRect		f_bound;
-	BRect		*f_data;
+		long	f_count;
+		long	f_data_size;
+		BRect	f_bound;
+		BRect	*f_data;
 };
 
-inline char		*BRegion::ClassName() { return "BRegion"; };
-
 //------------------------------------------------------------------------------
-
 
 #endif

@@ -4,9 +4,7 @@
 //
 //	Description:	Client window class.
 //
-//	Written by:	Benoit Schillings
-//
-//	Copyright 1992-93, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-94, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
@@ -16,23 +14,29 @@
 #ifndef _INTERFACE_DEFS_H
 #include "InterfaceDefs.h"
 #endif
-#ifndef	_PARCEL_H
-#include "Parcel.h"
-#endif
 #ifndef _RECT_H
 #include "Rect.h"
 #endif
 #ifndef _VIEW_H
 #include "View.h"
 #endif
-#ifndef	_EVENT_QUEUE_H
-#include "EventQueue.h"
+#ifndef	_MESSAGE_QUEUE_H
+#include <app/MessageQueue.h>
 #endif
 #ifndef	_OBJECT_H
-#include <sys/Object.h>
+#include <support/Object.h>
+#endif
+#ifndef _MESSAGE_H
+#include <app/Message.h>
+#endif
+#ifndef _LIST_H
+#include <support/List.h>
+#endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
 #endif
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
 
 typedef enum { SHADOWED_WINDOW,
        	       TITLED_WINDOW,
@@ -40,6 +44,17 @@ typedef enum { SHADOWED_WINDOW,
        	       MODAL_WINDOW,
        	       BACKDROP_WINDOW,
        	       QUERY_WINDOW } window_type;
+
+/*----------------------------------------------------------------*/
+/* window part codes */
+
+enum {
+	UNKNOWN_AREA,
+	TITLE_BAR,
+	CONTENT_AREA,
+	RESIZE_AREA,
+	CLOSE_BOX
+};
 
 /*----------------------------------------------------------------*/
 /* window manager flags for windows properties			  */
@@ -52,156 +67,190 @@ const long NOT_RESIZABLE = 0x00000002;
 const long ACCEPTS_FIRST_CLICK = 0x00000010;
 const long NOT_CLOSABLE = 0x00000020;
 const long NOT_ZOOMABLE = 0x00000040;
-const long FLOATING = 0x00000080;
+const long FLOATS = 0x00000080;
 
 /*----------------------------------------------------------------*/
 
 struct message;
-class BSession;
-class BList;
+class _BSession;
+class BMenuItem;
+class BMenuBar;
+struct CommandKey;
+
+/*----------------------------------------------------------------*/
 
 class BWindow : public BObject {
+	DECLARE_CLASS_INFO(BObject);
 
 public:
-			BWindow(const BRect *frame, char *title, 
-				window_type type, ulong flags);
-			BWindow();
-virtual	void		Close();
-virtual			~BWindow();
-virtual	char		*ClassName();
-	
-	long		Token();
+						BWindow(BRect frame,
+								const char *title, 
+								window_type type,
+								ulong flags);
+						BWindow();
+virtual					~BWindow();
 
-virtual	bool		FilterKeyDown(ulong *aKey);	
-virtual	bool		FilterMouseDown(BPoint*, BView *targetView);
-virtual	bool		FilterParcelDropped(BPoint *, BParcel *);
-virtual	bool		FilterMouseMoved(BPoint *, ulong code, bool has_parcel);
-	void		AddChild(BView *);
-	void		RemoveChild(BView *);
-virtual	void		DispatchEvent(BEvent *);
-virtual	void		CommandReceived(BCommandEvent *);
-virtual	void		FrameMoved(BPoint new_position);
-virtual	void		FrameResized(long new_width, long new_height);		
-virtual	void		CloseRequested();	
-	void		PostEvent(BEvent *);
-	void		PostEvent(BEvent *, BView *);
-	void		PostEvent(BEvent *, char *view_name);
-	void		PostCommand(long command);
-	void		PostCommand(long command, BView *);
-	void		PostCommand(long command, char *view_name);
-	BEvent		*CurrentEvent();
-	bool		LoadFromResource(long resID);
-	void		AddKeyCommand(ulong key, ulong modifiers, long cmd);
-	void		RemoveKeyCommand(ulong key, ulong modifiers);
-	ulong		ModifierKeys();
-	void		UpdateIfNeeded();
-	BView		*FindView(char *view_name);
-	BView		*FindView(BPoint);
-	BView		*FocusView();
-	void		Lock();
-	void		Unlock();
-	void		Activate(bool = TRUE);
-virtual	void		WindowActivated(bool state);
-	void		ConvertToScreen(BPoint* );
-	void		ConvertFromScreen(BPoint* );
-	void		ConvertToScreen(BRect *);
-	void		ConvertFromScreen(BRect *);
-	void		MoveBy(long dx, long dy);
-	void		MoveTo(BPoint);
-	void		MoveTo(long x, long y);
-	void		ResizeBy(long dx, long dy);
-	void		ResizeTo(long width, long height);
-	void		Show();
-	void		Hide();
-	bool		IsHidden();
-	void		GetBounds(BRect *);
-	void		GetFrame(BRect *);
-	void		GetTitle(char *);
-	void		SetTitle(char *);
-	bool		IsFront();
-	bool		IsActive();
-	BEventQueue	*EventQueue();
-	void		RemoveMouseEvents();
-//------------------------------------------------------------------------------
+virtual	void			Close();
+
+virtual	bool			FilterKeyDown(ulong *aKey, BView **targetView);	
+virtual	bool			FilterMouseDown(BPoint loc, BView **targetView);
+virtual	bool			FilterMessageDropped(	BPoint loc,
+												BMessage *a_message,
+												BView **targetView);
+virtual	bool			FilterMouseMoved(	BPoint loc,
+											ulong code,
+											BMessage *a_message,
+											BView **targetView);
+virtual	void			AddChild(BView *);
+virtual	bool			RemoveChild(BView *);
+		long			CountChildren() const;
+		BView			*ChildAt(long index) const;
+virtual	void			DispatchMessage(BMessage *);
+virtual void			MessageReceived(BMessage *);
+virtual	void			FrameMoved(BPoint new_position);
+virtual	void			FrameResized(long new_width, long new_height);		
+virtual	bool			CloseRequested(bool quitting = FALSE);	
+		void			SetPulseRate(long rate);
+		void			PostMessage(BMessage *);
+		void			PostMessage(BMessage *, BView *);
+		void			PostMessage(ulong command);
+		void			PostMessage(ulong command, BView *);
+		BMessage		*CurrentMessage() const;
+		BMessage		*DetachCurrentMessage();
+		bool			LoadFromResource(long resID);
+		void			AddShortcut(	ulong key,
+										ulong modifiers,
+										ulong cmd);
+		void			AddShortcut(	ulong key,
+										ulong modifiers,
+										BMenuItem *item);
+		void			RemoveShortcut(ulong key, ulong modifiers);
+virtual	void			SetupMenus();
+		ulong			Modifiers() const;
+		bool			NeedsUpdate() const;
+		void			UpdateIfNeeded();
+		BView			*FindView(const char *view_name) const;
+		BView			*FindView(BPoint) const;
+		BView			*CurrentFocus() const;
+		bool			Lock();
+		void			Unlock();
+		void			Flush() const;
+		void			Activate(bool = TRUE);
+virtual	void			WindowActivated(bool state);
+		void			ConvertToScreen(BPoint* ) const;
+		void			ConvertFromScreen(BPoint* ) const;
+		void			ConvertToScreen(BRect *) const;
+		void			ConvertFromScreen(BRect *) const;
+		void			MoveBy(long dx, long dy);
+		void			MoveTo(BPoint);
+		void			MoveTo(long x, long y);
+		void			ResizeBy(long dx, long dy);
+		void			ResizeTo(long width, long height);
+virtual	void			Show();
+virtual	void			Hide();
+		bool			IsHidden() const;
+		void			DisableUpdates();
+		void			EnableUpdates();
+		BRect			Bounds() const;
+		BRect			Frame() const;
+		void			GetTitle(char *) const;
+		void			SetTitle(const char *);
+		bool			IsFront() const;
+		bool			IsActive() const;
+		BMessageQueue	*MessageQueue() const;
+		void			RemoveMouseEvents();
+		void			SetMainMenuBar(BMenuBar *bar);
+
+// ------------------------------------------------------------------
+
+private:
 
 friend class BApplication;
-friend class PropWindow;
-friend class WindowSettings;
 friend class BImageBuffer;
 friend class BScrollBar;
 friend class BView;
-//??? temp menu stuff
-friend class TMenuBar;
-friend class TMenu;
-friend void _task0_();
-friend class EditView;
-friend class DlgWindow;
-friend class MainWindow;
-friend BView *EditViewCreate(BRect *frame, char *name, ulong resizeMask, 
-			     ulong flags, void *resData, long id);
+friend BView *EditViewCreate(BRect frame,
+								const char *name,
+								ulong resizeMask,
+								ulong flags,
+								void *resData,
+								long id);
 
+		long		Token() const;
+		bool		SaveAsResource(long resID);
+		void		close1();
+static	void		_task0_();
+		void		task();
+		void		set_brol(BMessage *msg, long vs_token, BRect track_rect);
+		void		set_brol(	BMessage *msg,
+								long vs_token,
+								long dh,
+								long dv,
+								long bitmap_token);
+		void		set_brol(BMessage *);
+		void		force_drag();
+		void		view_builder(BView *a_view);
+		long		get_server_token() const;
+		void		do_drop(BMessage *an_event);
+		void		movesize(long opcode, long h, long v);
+		//void		do_gen_event(message *a_message);
+		
+		void		handle_activate(BMessage *an_event);
+		void		do_view_frame(BMessage *an_event);
+		void		do_value_change(BMessage *an_event);
+		void		do_mouse_down(BMessage *an_event);
+		void		do_mouse_moved(BMessage *an_event);
+		void		do_key_down(BMessage *an_event);
+		void		do_draw_view(message *a_message);
+		void		do_close_requested();
+		void		queue_new_message(message *a_message);
+		void		queue_event_message(message *a_message);
+		void		dequeue_as_much_as_possible();
+		void		lock_private();
+		void		DoPulse();
+		CommandKey	*allocShortcut(ulong key, ulong modifiers);
+		void		post_message(BMessage *message);
+		
+		long			signature;
+		BWindow			*next_window;
+		BMessageQueue	*message_queue;
+		BMessage		*last_message;	
+		long			server_token;
+		long			client_token;
+		char			update_buzy;
+		char			f_active;
+		short			fShowLevel;
+		ulong			fFlags;
 
-private:
-	BWindow		*next_window;
-	BEventQueue	*event_queue;
-	BEvent		*last_event;	
-	long		server_token;
-	long		client_token;
-	char		update_buzy;
-	char		f_active;
-	short		fShowLevel;
+		long			send_port;
+		long			receive_port;
+		long			inter_port;
+		long			task_id;
+		long			lock_sem;
+		long			lock_owner_count;
+		long			lock_owner;
+		bool			closing;
+		long			close_sem;
 
-	long		send_port;
-	long		receive_port;
-	long		inter_port;
-	long		task_id;
-	long		lock_sem;
-	long		lock_owner_count;
-	long		lock_owner;
-
-	BView		*top_view;
-	BView		*focus;
-	BView		*last_mm_target;
-	BSession	*a_session;
-	BParcel		*last_tbrol;
-	BList		*accelList;
-	long		last_vs_token;
-	long		drag_bitmap_token;
-	BRect		last_drag_rect;
-	long		drag_dh;
-	long		drag_dv;
-	long		id;
-	long		top_view_token;
-
-	long		GetID(void) { return id; };
-	void		SetID(long newID) { id = newID; };
-	bool		SaveAsResource(long resID);
-
-	void		Flush();
-	void		close1();
-	void		task();
-	void		set_brol(BParcel *, long vs_token, BRect track_rect);
-	void		set_brol(BParcel *, long vs_token, long dh, long dv, long bitmap_token);
-	void		set_brol(BParcel *);
-	void		force_drag();
-	void		view_builder(BView *a_view);
-	long		get_server_token();
-	void		do_drop(BSysEvent *an_event);
-	void		movesize(long opcode, long h, long v);
-	void		do_gen_event(message *a_message);
-	
-	void		handle_activate(BSysEvent *an_event);
-	void		do_view_frame(BSysEvent *an_event);
-	void		do_value_change(BSysEvent *an_event);
-	void		do_mouse_down(BSysEvent *an_event);
-	void		do_mouse_moved(BSysEvent *an_event);
-	void		do_key_down(BSysEvent *an_event);
-	void		do_draw_view(message *a_message);
-	void		queue_event(message *a_message);
-	void		dequeue_as_much_as_possible();
+		BView			*top_view;
+		BView			*focus;
+		BView			*last_mm_target;
+		_BSession		*a_session;
+		BMessage		*last_tbrol;
+		BMenuBar		*fMainMenuBar;
+		BList			accelList;
+		long			last_vs_token;
+		long			drag_bitmap_token;
+		BRect			last_drag_rect;
+		long			drag_dh;
+		long			drag_dv;
+		long			id;
+		long			top_view_token;
+		long			pulse_phase;
+		long			pulse_rate;
+		bool			discipline;
 };
 
-inline char		*BWindow::ClassName() { return "BWindow"; };
-inline long		BWindow::Token() { return server_token; };
+//------------------------------------------------------------------------------
 
 #endif

@@ -12,8 +12,8 @@
 #ifndef _FS_H
 #define _FS_H
 
-#ifndef _BE_DEFS_H
-#include "BeDefs.h"
+#ifndef _SUPPORT_DEFS_H
+#include "support/SupportDefs.h"
 #endif
 
 /*#include <drivers.h>*/
@@ -21,6 +21,15 @@
 #define FILENAME_LEN	(32)		/* max length of a file name */
 #define VOLNAME_LEN	(32)		/* max length of a volume name */
 #define DRIVERNAME_LEN	(32)		/* max length of a driver name */
+
+/*---------------------------------------------------------------------------*/
+/* FILE_TYPE parcel struct */
+
+struct file_descriptor {
+	long vol_id;
+	long dir_id;
+	char name[32];
+};
 
 /*---------------------------------------------------------------------------*/
 /*
@@ -74,7 +83,7 @@ struct	FileEntry
 	long	ModificationDate;  	/* 48, 52		 */
 	long	LogicalSize;	   	/* 52, 56		 */
 	long	PhysicalSize;	   	/* 56, 60		 */
-	long	Filler2;	   	/* 60, 64		 */
+	long	Creator;		/* 60, 64		 */
 };
 
 /*-------------------------------------------------------------------*/

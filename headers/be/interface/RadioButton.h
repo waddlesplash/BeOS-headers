@@ -4,9 +4,7 @@
 //
 //	Description:	radio button class.
 //
-//	Written by:	Benoit Schillings
-//
-//	Copyright 1992-93, Be Incorporated
+//	Copyright 1992-94, Be Incorporated
 //
 //******************************************************************************
 
@@ -16,20 +14,28 @@
 #ifndef _CONTROL_H
 #include "Control.h"
 #endif
+#ifndef _WINDOW_H
+#include "Window.h"
+#endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
+#endif
 
 //------------------------------------------------------------------------------
 
 class BRadioButton : public BControl {
+	DECLARE_CLASS_INFO(BControl);
 
 public:
-			BRadioButton(BRect *frame, char *name, char *label, 
-				     long command = -1,
-				     ulong resizeMask = FOLLOW_LEFT_TOP, 
-				     ulong flags = WILL_DRAW); 
-virtual	char		*ClassName();
+				BRadioButton(	BRect frame,
+								const char *name,
+								const char *label,
+								ulong command = 'RADO',
+								ulong resizeMask = FOLLOW_LEFT_TOP,
+								ulong flags = WILL_DRAW); 
 
-virtual	void		Draw(BRect *updateRect);
-virtual	void		MouseDown(BPoint where);
+virtual	void	Draw(BRect updateRect);
+virtual	void	MouseDown(BPoint where);
 
 //------------------------------------------------------------------------------
 
@@ -37,7 +43,5 @@ private:
 	bool		fOutlined;
 	
 };
-
-inline char		*BRadioButton::ClassName() { return "BRadioButton"; };
 
 #endif

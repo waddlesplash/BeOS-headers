@@ -4,8 +4,6 @@
 //
 //	Description:	base control view class interface
 //
-//	Written by:	Eric Knight
-//
 //	Copyright 1993, Be Incorporated
 //
 //******************************************************************************
@@ -16,39 +14,47 @@
 #ifndef _VIEW_H
 #include "View.h"
 #endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
+#endif
 
 //------------------------------------------------------------------------------
 
 class BControl : public BView {
+	DECLARE_CLASS_INFO(BView);
+
 public:
-			BControl(BRect *frame, char *name, char *label, 
-				 long command, ulong resizeMask, ulong flags); 
-virtual			~BControl();
-virtual	char		*ClassName();
+					BControl(	BRect frame,
+								const char *name,
+								const char *label,
+								ulong command,
+								ulong resizeMask,
+								ulong flags); 
+virtual				~BControl();
+
 virtual	void		AttachedToWindow();
 
-	void		SetLabel(char *text);
-	char*		Label();
-	
-	void		SetValue(long value);
-	long		Value();
-	void		SetCommand(long command);
-	long		Command();
+		void		SetLabel(const char *text);
+		const char	*Label() const;
+		
+		void		SetValue(long value);
+		long		Value() const;
+		void		SetCommand(ulong command);
+		ulong		Command() const;
 virtual	void		ValueChanged(long newValue);
-virtual long		ResourceDataLength();
-virtual void		GetResourceData(void *buf);
+virtual long		ResourceDataLength() const;
+virtual void		GetResourceData(void *buf) const;
 virtual void		SetResourceData(void *buf, long len);
 
 //------------------------------------------------------------------------------
 
 private:
-	long		fCommand;
+	ulong		fCommand;
 	char		*fLabel;
 	long		fValue;
 };
 
-inline long		BControl::Command() { return(fCommand); };
-inline char		*BControl::ClassName() { return("BControl"); };
+inline ulong		BControl::Command() const { return(fCommand); }
 
 //------------------------------------------------------------------------------
 

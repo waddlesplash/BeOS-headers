@@ -73,10 +73,24 @@ extern  int             rand(void);
 extern  void            srand(unsigned int __seed);
 
 /* memory management functions */
+
+#ifdef DEBUG_ALLOC
+extern  void *          debug_calloc(size_t __nelem, size_t __size, char *file, int line);
+extern  void            debug_free(void *__ptr, char *file, int line);
+extern  void *          debug_malloc(size_t __size, char *file, int line);
+extern  void *          debug_realloc(void *__ptr, size_t __size, char *file, int line);
+
+#define calloc(a,b) debug_calloc((a),(b),__FILE__,__LINE__);
+#define free(a) debug_free((a), __FILE__, __LINE__);
+#define malloc(a) debug_malloc((a), __FILE__, __LINE__);
+#define realloc(a,b) debug_realloc((a),(b), __FILE__, __LINE__);
+
+#else
 extern  void *          calloc(size_t __nelem, size_t __size);
 extern  void            free(void *__ptr);
 extern  void *          malloc(size_t __size);
 extern  void *          realloc(void *__ptr, size_t __size);
+#endif
 
 /* shared memory functions */
 extern	void *		_smalloc(size_t __size);

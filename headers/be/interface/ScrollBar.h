@@ -4,9 +4,7 @@
 //
 //	Description:	ScrollBar control class.
 //
-//	Written by:	Benoit Schillings
-//
-//	Copyright 1992-93, Be Incorporated
+//	Copyright 1992-94, Be Incorporated
 //
 //******************************************************************************
 
@@ -17,47 +15,65 @@
 #ifndef _VIEW_H
 #include "View.h"
 #endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
+#endif
 
 class BApplication;
 
 //------------------------------------------------------------------------------
 
 class BScrollBar : public BView {
+	DECLARE_CLASS_INFO(BView);
 
 public:
-			BScrollBar(BRect *frame, char *name, BView *target, 
-				   long min, long max, orientation direction);
-virtual			~BScrollBar();
-virtual	char		*ClassName();
+					BScrollBar(	BRect frame,
+								const char *name,
+								BView *target,
+								long min,
+								long max,
+								orientation direction);
+virtual				~BScrollBar();
 			
-	void		SetValue(long value);
-	long		Value();
+		void		SetValue(long value);
+		long		Value() const;
 virtual	void		ValueChanged(long newValue);
-virtual long		ResourceDataLength();
+virtual long		ResourceDataLength() const;
 
-	void		SetRange(long min, long max);
-	void		GetRange(long* min, long* max);
-	void		SetTarget(BView *target);
-	void		SetTarget(char *targetName);
-	orientation Orientation() { return fOrientation; };
+		void		SetRange(long min, long max);
+		void		GetRange(long *min, long *max) const;
+		void		SetSteps(long smallStep, long largeStep);
+		void		GetSteps(long *smallStep, long *largeStep) const;
+		void		SetTarget(BView *target);
+		void		SetTarget(char *targetName);
+		BView		*Target() const;
+		orientation	Orientation() const;
 
-virtual void		GetResourceData(void *buf);
+virtual void		GetResourceData(void *buf) const;
 virtual void		SetResourceData(void *buf, long len);
 
 //------------------------------------------------------------------------------
+
+private:
+
 friend BWindow;
 friend BApplication;
 
-private:
-	long		min;
-	long		max;
-	long		fValue;
-	BView*		fTarget;	
-	orientation	fOrientation;
-	char		*fTargetName;
+		long		fMin;
+		long		fMax;
+		long		fSmallStep;
+		long		fLargeStep;
+		long		fValue;
+		BView*		fTarget;	
+		orientation	fOrientation;
+		char		*fTargetName;
 };
 
-inline char		*BScrollBar::ClassName() { return "BScrollBar"; };
+inline orientation	BScrollBar::Orientation() const 
+	{ return fOrientation; }
+
+inline BView		*BScrollBar::Target() const
+	{ return fTarget; }
 
 //------------------------------------------------------------------------------
 

@@ -4,17 +4,15 @@
 //
 //	Description:	BRect class header.
 //	
-//	Written by:	Steve Horowitz
-//
-//	Copyright 1993, Be Incorporated, All Rights Reserved.
+//	Copyright 1993-94, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
 
 #ifndef	_RECT_H
 #define	_RECT_H
 
-#ifndef _BE_DEFS_H
-#include <sys/BeDefs.h>
+#ifndef _SUPPORT_DEFS_H
+#include <support/SupportDefs.h>
 #endif
 #ifndef _POINT_H
 #include "Point.h"
@@ -23,59 +21,60 @@
 class BRect {
 
 public:
-	long		left;
-	long		top;
-	long		right;
-	long		bottom;
+		long		left;
+		long		top;
+		long		right;
+		long		bottom;
 
-	// constructors
-	BRect();
-	BRect(const BRect *);
-	BRect(long l, long t, long r, long b);
-	BRect(BPoint leftTop, BPoint rightBottom);
+		// constructors
+		BRect();
+		BRect(const BRect &);
+		BRect(long l, long t, long r, long b);
+		BRect(BPoint leftTop, BPoint rightBottom);
 
-	// assignment
-	void		Set(long l, long t, long r, long b);
+		// assignment
+		BRect		&operator=(const BRect &from);
+		void		Set(long l, long t, long r, long b);
 
-	// utility to print in text form
-	void		PrintToStream() const;
+		// utility to print in text form
+		void		PrintToStream() const;
 
-	// BPoint selectors
-	BPoint		LeftTop() const;
-	BPoint		RightBottom() const;
-	BPoint		LeftBottom() const;
-	BPoint		RightTop() const;
+		// BPoint selectors
+		BPoint		LeftTop() const;
+		BPoint		RightBottom() const;
+		BPoint		LeftBottom() const;
+		BPoint		RightTop() const;
 
-	// BPoint setters
-	void		SetLeftTop(const BPoint);
-	void		SetRightBottom(const BPoint);
-	void		SetLeftBottom(const BPoint);
-	void		SetRightTop(const BPoint);
+		// BPoint setters
+		void		SetLeftTop(const BPoint);
+		void		SetRightBottom(const BPoint);
+		void		SetLeftBottom(const BPoint);
+		void		SetRightTop(const BPoint);
 
-	// transformation
-	void		InsetBy(long dx, long dy);
-	void		OffsetBy(long dx, long dy);
-	void		OffsetTo(BPoint);
-	void		OffsetTo(long x, long y);
+		// transformation
+		void		InsetBy(BPoint);
+		void		InsetBy(long dx, long dy);
+		void		OffsetBy(BPoint);
+		void		OffsetBy(long dx, long dy);
+		void		OffsetTo(BPoint);
+		void		OffsetTo(long x, long y);
 
-	// comparison
-	bool		operator==(const BRect&) const;
-	bool		operator!=(const BRect&) const;
+		// comparison
+		bool		operator==(BRect) const;
+		bool		operator!=(BRect) const;
 
-	// intersection and union
-	BRect		operator&(const BRect&) const;
-	BRect		operator|(const BRect&) const;
+		// intersection and union
+		BRect		operator&(BRect) const;
+		BRect		operator|(BRect) const;
 
-	// utilities
-	bool		Intersects(const BRect* r) const;
-	bool		IsValid() const;
-	long		Width() const;
-	long		Height() const;
-	bool		Contains(BPoint) const;
-	bool		Contains(const BRect *) const;
-	void		ConstrainPoint(BPoint *);
+		// utilities
+		bool		Intersects(BRect r) const;
+		bool		IsValid() const;
+		long		Width() const;
+		long		Height() const;
+		bool		Contains(BPoint) const;
+		bool		Contains(BRect) const;
 };
-
 
 //------------------------------------------------------------------------------
 
@@ -114,12 +113,12 @@ inline BRect::BRect(long l, long t, long r, long b)
 	bottom = b;
 }
 
-inline BRect::BRect(const BRect* r)
+inline BRect::BRect(const BRect &r)
 {
-	left = r->left;
-	top = r->top;
-	right = r->right;
-	bottom = r->bottom;
+	left = r.left;
+	top = r.top;
+	right = r.right;
+	bottom = r.bottom;
 }
 
 inline BRect::BRect(BPoint leftTop, BPoint rightBottom)
@@ -128,6 +127,16 @@ inline BRect::BRect(BPoint leftTop, BPoint rightBottom)
 	top = leftTop.y;
 	right = rightBottom.x;
 	bottom = rightBottom.y;
+}
+
+inline BRect &BRect::operator=(const BRect& from)
+{
+	// don't need to worry about "this==from"
+	left = from.left;
+	top = from.top;
+	right = from.right;
+	bottom = from.bottom;
+	return *this;
 }
 
 inline void BRect::Set(long l, long t, long r, long b)

@@ -6,7 +6,7 @@
  *           Copyright (c) 1991-1992, MetaWare Incorporated
  */
 
-/*   $Id: new.h,v 1.1 1993/11/11 02:06:48 steve Exp $ */
+/*   $Id: new.h,v 1.1 1994/08/19 17:51:23 ming Exp $ */
 
 
 #ifndef __NEW_H

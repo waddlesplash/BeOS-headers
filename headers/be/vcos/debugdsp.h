@@ -30,7 +30,7 @@
 
 #else
 
-#define db_loc 0x60000100
+#define db_loc 0x60000050
 #define db_loc_reg r1
 #define db_val_reg r2
 #define debughere(constant_val) \

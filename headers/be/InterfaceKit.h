@@ -1,11 +1,21 @@
+/******************************************************************************
+//
+//	File:			InterfaceKit.h
+//
+//	Description:	All-in-one include for the Interface Kit.
+//
+//	Copyright 1992-94, Be Incorporated
+//
+*******************************************************************************/
+
 #ifndef _INTERFACE_KIT_H
 #define _INTERFACE_KIT_H
 
-#ifndef _SYS_H
-#include <Sys.h>
+#ifndef _SUPPORT_KIT_H
+#include <SupportKit.h>
 #endif
-#ifndef _APPLICATION_H
-#include <interface/Application.h>
+#ifndef _APP_KIT_H
+#include <AppKit.h>
 #endif
 #ifndef _BITMAP_H
 #include <interface/Bitmap.h>
@@ -24,9 +34,6 @@
 #endif
 #ifndef _INTERFACE_DEFS_H
 #include <interface/InterfaceDefs.h>
-#endif
-#ifndef _PARCEL_H
-#include <interface/Parcel.h>
 #endif
 #ifndef _POINT_H
 #include <interface/Point.h>
@@ -61,8 +68,26 @@
 #ifndef _WINDOW_H
 #include <interface/Window.h>
 #endif
-#ifndef _MENUBAR_H
-#include <interface/menubar.h>
+#ifndef _ALERT_H
+#include <interface/Alert.h>
+#endif
+#ifndef _MENU_BAR_H
+#include <interface/MenuBar.h>
+#endif
+#ifndef _MENU_ITEM_H
+#include <interface/MenuItem.h>
+#endif
+#ifndef _MENU_H
+#include <interface/Menu.h>
+#endif
+#ifndef _POP_UP_MENU_H
+#include <interface/PopUpMenu.h>
+#endif
+#ifndef _BOX_H
+#include <interface/Box.h>
+#endif
+#ifndef _CURSOR_H
+#include <interface/Cursor.h>
 #endif
 
 #endif

@@ -10,6 +10,10 @@
 #ifndef _audioh_
 #define _audioh_
 
+/* the dsp id where the audio card lives is hardcoded for now... */
+
+#define AUDIO_DSP_ID		3
+
 /* offsets to field in the param section for controlling the driver */
 
 #define audioparam_command	0	/* command to the driver */
@@ -25,6 +29,10 @@ struct audio_param {
 	long	status;			/* current driver status */
 	long	control;		/* control value to/from driver */
 	long	frame_control;		/* data mode control word */
+	long	lspeaker_buf;		/* -> left speaker AIAO buffer */
+	long	rspeaker_buf;		/* -> right speaker AIAO buffer */
+	long	lmic_buf;		/* -> left mic AIAO buffer */
+	long	rmic_buf;		/* -> right mic AIAO buffer */
 };
 #endif
 

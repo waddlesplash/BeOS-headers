@@ -4,9 +4,7 @@
 //
 //	Description:	auto-scrollbar(s) and bordered view class interface
 //
-//	Written by:	Eric Knight
-//
-//	Copyright 1993, Be Incorporated
+//	Copyright 1993-94, Be Incorporated
 //
 //******************************************************************************
  
@@ -19,37 +17,42 @@
 #ifndef _VIEW_H
 #include "View.h"
 #endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
+#endif
 
 //------------------------------------------------------------------------------
 
 class BScrollView : public BView {
+	DECLARE_CLASS_INFO(BView);
 
 public:
-			BScrollView(char *name, BView *target, 
-				    ulong resizeMask = FOLLOW_LEFT_TOP,
-				    ulong flags = 0, bool horizontal = FALSE, 
-				    bool vertical = FALSE, 
-				    bool bordered = TRUE);
-virtual			~BScrollView();
-virtual	char		*ClassName();
+					BScrollView(const char *name,
+								BView *target,
+								ulong resizeMask = FOLLOW_LEFT_TOP,
+								ulong flags = 0,
+								bool horizontal = FALSE,
+								bool vertical = FALSE, 
+								bool bordered = TRUE);
+virtual				~BScrollView();
 
-virtual	void		Draw(BRect *updateRect);
-	BScrollBar	*ScrollBar(orientation flag);
+virtual	void		Draw(BRect updateRect);
+		BScrollBar	*ScrollBar(orientation flag) const;
 
 //------------------------------------------------------------------------------
-friend class BView;
 
 private:
-	BRect*		ExpandRect(BRect*, bool, bool, bool);
-	void		RevertRect(BRect*, bool, bool, bool);
-	long		ModFlags(long, bool);
 
-	BView		*the_view;
-	BScrollBar	*fHSB;	
-	BScrollBar	*fVSB;	
+friend class BView;
+
+		BRect		CalcFrame(BView *, bool, bool, bool) const;
+		long		ModFlags(long, bool);
+
+		BView		*the_view;
+		BScrollBar	*fHSB;	
+		BScrollBar	*fVSB;	
+		bool		fFramed;
 };
-
-inline char		*BScrollView::ClassName() { return "BScrollView"; };
 
 //------------------------------------------------------------------------------
 

@@ -17,7 +17,7 @@ struct daaparam {
 	long	cadence;		/* ring line samples */
 	long	reserved1;		/* reserved */
 	long	reserved2;		/* reserved */
-	/* long	reserved3;		/* reserved */
+	/* long	reserved3;		   reserved */
 	long	bridge_attenuation;	/* bridging attenuation percentage */
 	long	oem_reserved;		/* reserved for oem */
 };
@@ -48,10 +48,11 @@ struct daaparam {
 
 /* commands unique to the Be phone card */
 
-#define daacmd_local_ring	0x40000001 /* ring local phone till offhook */
+#define daacmd_start_local_ring	0x40000001 /* ring local phone till offhook */
 #define daacmd_bridge_on	0x40000002 /* bridge local<=>CO lines */
 #define daacmd_bridge_off	0x40000003 /* stop bridging */
 #define daacmd_set_bridge_attn	0x40000004 /* set bridging attenuation percentage */
+#define daacmd_stop_local_ring	0x40000005 /* stop ringing local phone */
 
 
 /* status word bit definitions */
@@ -66,7 +67,6 @@ struct daaparam {
 #define daast_speaker_vol	0x00180	/* speaker volume bits */
 #define daast_co_ringing	0x00200	/* 1/0 co line ringing/not ringing */
 #define daast_local_offhook	0x00400	/* 1/0 local phone offhook/onhook */
-#define daast_ls_latched	0x02000	/* 1/0 line status is/isnt latched */
 #define daast_ringing_local	0x04000	/* 1/0 currently ringing local phone */
 #define daast_local_bridged	0x08000	/* 1/0 local line is/not bridged to CO */
 #define daast_ring_count	0xF0000	/* ring count (0-16) */

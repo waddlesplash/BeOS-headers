@@ -4,8 +4,6 @@
 //
 //	Description:	Client polygon class.
 //
-//	Written by:	Eric Knight
-//
 //	Copyright 1992-93, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
@@ -20,45 +18,50 @@
 #include "Rect.h"
 #endif
 #ifndef	_OBJECT_H
-#include <sys/Object.h>
+#include <support/Object.h>
+#endif
+#ifndef _CLASS_INFO_H
+#include <support/ClassInfo.h>
 #endif
 
 //------------------------------------------------------------------------------
 
 class BPolygon : public BObject {
+	DECLARE_CLASS_INFO(BObject);
 
 public:
-			BPolygon(BPoint *ptArray, long numPoints);
-			BPolygon();
-			BPolygon(const BPolygon*);
-virtual			~BPolygon();	
-virtual	char		*ClassName();
+					BPolygon(BPoint *ptArray, long numPoints);
+					BPolygon();
+					BPolygon(const BPolygon *poly);
+virtual				~BPolygon();	
 
-	void		GetFrame(BRect* frame);
-	void		AddPoints(BPoint *ptArray, long numPoints);
-	long		CountPoints();
-	void		MapToRect(BRect *srcRect, BRect *dstRect);
-	void		PrintToStream();
+		BPolygon	&operator=(const BPolygon &from);
+
+		BRect		Frame() const;
+		void		AddPoints(const BPoint *ptArray, long numPoints);
+		long		CountPoints() const;
+		void		MapTo(BRect srcRect, BRect dstRect);
+		void		PrintToStream() const;
 
 //------------------------------------------------------------------------------
-friend class BView;
 
 private:
-	void		compute_bounds();
-	void		map_pt(BPoint *, BRect *srcRect, BRect *dstRect);
-	void		map_rect(BRect *, BRect *srcRect, BRect *dstRect);
 
-	BRect		fBounds;
-	long		fCount;
-	BPoint		*fPts;
+friend class BView;
+
+		void	compute_bounds();
+		void	map_pt(BPoint *, BRect srcRect, BRect dstRect);
+		void	map_rect(BRect *, BRect srcRect, BRect dstRect);
+
+		BRect	fBounds;
+		long	fCount;
+		BPoint	*fPts;
 };
 
-inline char		*BPolygon::ClassName() { return "BPolygon"; };
+inline BRect BPolygon::Frame() const
+			{ return(fBounds); }
 
-inline void		BPolygon::GetFrame(BRect* frame)
-			{ *frame = fBounds; };
-
-inline long		BPolygon::CountPoints()
-			{ return(fCount); };
+inline long BPolygon::CountPoints() const
+			{ return(fCount); }
 
 #endif
