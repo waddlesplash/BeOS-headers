@@ -50,6 +50,7 @@ virtual	ssize_t			FlattenedSize() const;
 virtual	status_t		Flatten(void *buffer, ssize_t size) const;
 virtual	bool			AllowsTypeCode(type_code code) const;
 virtual	status_t		Unflatten(type_code c, const void *buf, ssize_t size);
+		const property_info *PropertyInfo() const;
 
 		void			PrintToStream() const;
 

@@ -320,6 +320,7 @@ class _IMPEXP_BE BShelf;
 class _IMPEXP_BE BSlider;
 class _IMPEXP_BE BStatusBar;
 class _IMPEXP_BE BStringView;
+class _IMPEXP_BE BTab;
 class _IMPEXP_BE BTabView;
 class _IMPEXP_BE BTextControl;
 class _IMPEXP_BE BTextView;
@@ -343,7 +344,7 @@ class _IMPEXP_NETDEV BTimeoutHandler;
 class _IMPEXP_NETDEV BPacketHandler;
 class _IMPEXP_NETDEV BNetProtocol;
 class _IMPEXP_NETDEV BNetDevice;
-class _IMPEXP_NETDEV BCallBackHandler;
+class _IMPEXP_NETDEV BCallbackHandler;
 class _IMPEXP_NETDEV BNetConfig;
 class _IMPEXP_NETDEV BIpDevice;
 

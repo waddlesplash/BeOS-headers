@@ -278,6 +278,10 @@ extern _IMPEXP_KERNEL ulong		parse_expression (char *str);           /* util for
 extern _IMPEXP_KERNEL int		add_debugger_command (char *name,       /* add a cmd to debugger */
 									int (*func)(int argc, char **argv), 
 									char *help);
+
+extern _IMPEXP_KERNEL int		remove_debugger_command (char *name,       /* remove a cmd from debugger */
+									int (*func)(int argc, char **argv)); 
+
 extern _IMPEXP_KERNEL int		load_driver_symbols(const char *driver_name);
 
 

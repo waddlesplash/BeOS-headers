@@ -45,8 +45,8 @@ class bad_alloc : public exception {
 #endif
 };
 
-	struct nothrow_t;					//970415 bkoz
-	extern nothrow_t nothrow;			//971010 vss
+	typedef struct nothrow_t { } nothrow_t;	//970415 bkoz // 980404 be-mani
+	_IMPEXP_ROOT extern const nothrow_t nothrow;//971010 vss  // 980404 be-mani
 		
 	typedef void (*new_handler)(); 
 	
@@ -119,4 +119,5 @@ Be-mani 970827b	Added "Allocation Failure" to bad_alloc initializer via exceptio
 vss   971006   namespace std
 vss   971010   Put in export of nothrow_t as per standards
 Be-mani 980107	Added _IMPEXP_ROOT and friends for Be shared libs.
+Be-mani 980404	Fixed nothrow (defined in new.cpp)
 */

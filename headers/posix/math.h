@@ -34,7 +34,7 @@ __namespace(__stdc_space(math))
 	have been depreciated
 */
 __extern_c
-#ifdef __INTEL__
+#if 1
 #define  cosf(x)       cos(x)
 #define  sinf(f)       sin(f)
 #define  tanf(f)       tan(f)
@@ -57,6 +57,7 @@ __extern_c
 #define  floorf(f)     floor(f)
 #define  fmodf(f,g)    fmod(f,g)
 #else
+# if __dest_os != __be_os /* Be-mani 980325 */
 _IMPEXP_ROOT float cosf(float);
 _IMPEXP_ROOT float sinf(float);
 _IMPEXP_ROOT float tanf(float);
@@ -78,13 +79,15 @@ _IMPEXP_ROOT float sqrtf(float);
 _IMPEXP_ROOT float ceilf(float);
 _IMPEXP_ROOT float floorf(float);
 _IMPEXP_ROOT float fmodf(float, float);
-
+# endif /* __dest_os != __be_os */ /* Be-mani 980325 */
 #endif 
 /* these are needed for performance reasons on PPC*/
 /* modff  needs to be written separately 
 since casting a float* to a double* isn't portable with our compilers */
 
+#if __dest_os != __be_os /* Be-mani 980325 */
 _IMPEXP_ROOT float modff(float, float*);
+#endif /* Be-mani 980325 */
 
 /* double declarations */
 _IMPEXP_ROOT double cos(double);
@@ -570,13 +573,14 @@ long __float_nan[];
 		long int __isnand ( double x );
 		long int __isnanf ( float x );
 	#else /*follow standard*/
+	 #if __dest_os != __be_os /* Be-mani 980325 */ 		
 		int __fpclassify  ( long double x ); 
 		int __fpclassifyd ( double x );
 		int __fpclassifyf ( float x );
 		int __signbit  ( long double x );
 		int __signbitd ( double x );
 		int __signbitf ( float x );
-#if !defined(__INTEL__) || __dest_os != __be_os  /* contraction works on INTEL so we don't need these */ /* Be-mani 980107 */
+#if !defined(__INTEL__) /* contraction works on INTEL so we don't need these */ /* Be-mani 980107 */
 		int __isfinite  ( long double x );
 		int __isfinited ( double x );
 		int __isfinitef ( float x );
@@ -587,7 +591,7 @@ long __float_nan[];
 		int __isnormal  ( long double x );
 		int __isnormald ( double x );
 		int __isnormalf ( float x );
-		
+     #endif /* __dest_os != __be_os */ /* Be-mani 980325 */
 	#endif	
 
 #if __dest_os != __be_os
@@ -648,6 +652,7 @@ long __float_nan[];
 	 _IMPEXP_ROOT double_t atanh ( double_t x ); 
 
 
+#if __dest_os != __be_os /* Be-mani 980325 */
 	/*
 	 * 7.x.6.2
 	 * EXP2
@@ -656,6 +661,7 @@ long __float_nan[];
 	 * a range error occurs if the magnitude of x is too large
 	 */
 	_IMPEXP_ROOT double_t exp2  ( double_t x );
+#endif /* Be-mani 980325 */
 	
 	/*
 	 * 7.x.5.2
@@ -678,6 +684,7 @@ long __float_nan[];
 	 */
 	_IMPEXP_ROOT double_t log1p ( double_t x );
 
+#if __dest_os != __be_os
 	/*
 	 * 7.x.6.9
 	 * LOG2
@@ -687,6 +694,7 @@ long __float_nan[];
 	 * a range error may occur if x == 0
 	 */
 	_IMPEXP_ROOT double_t log2 ( double_t x );
+#endif
 	
 	/*
 	 * 7.x.6.10
@@ -773,6 +781,7 @@ long __float_nan[];
 	 */
 	_IMPEXP_ROOT double_t rint ( double_t x );
 
+#if __dest_os != __be_os
 	/*
 	 * 7.x.9.5
 	 * RINTTOL
@@ -814,6 +823,7 @@ long __float_nan[];
 	#else
 		_IMPEXP_ROOT double_t trunc ( double_t x );
 	#endif
+#endif /* __dest_os != __be_os */ /* Be-mani 980325 */
 
 	/*
 	 * 7.x.10
@@ -823,6 +833,7 @@ long __float_nan[];
 	 */
 	_IMPEXP_ROOT double_t remainder ( double_t x, double_t y );
 
+#if __dest_os != __be_os /* Be-mani 980325 */
 	/*
 	 * 7.x.10.3
 	 * REMAINDER
@@ -830,6 +841,7 @@ long __float_nan[];
 	 * computes the remainder x REM y required by IEC 559
 	 */
 	_IMPEXP_ROOT double_t remquo    ( double_t x, double_t y, int *quo );
+#endif /* Be-mani 980325 */
 
 	/*
 	 * 7.x.11
@@ -872,6 +884,7 @@ long __float_nan[];
 	#endif
 
 
+/* #if __dest_os != __be_os Be-mani 980325 */
 	/*
 	 * 7.x.12.1
 	 * FDIM
@@ -898,7 +911,9 @@ long __float_nan[];
 	 * computes the minimum numeric value of its arguments
 	 */
 	_IMPEXP_ROOT double_t fmin ( double_t x, double_t y );
+/* #endif Be-mani 980325 */
 	__end_extern_c
+
 	#endif  /*__STDC_IEC_559__*/
 
 #endif /*__FP__*/
@@ -935,4 +950,5 @@ Be-mani 980107 	Added _IMPEXP_ROOT to export/import for shared libs. Added BeOS 
                 of FP constants. BeOS uses its own float.c which has correctly aligned
 				FP constants which are declared const. Redefined scalb to stay
 				backwards compatible.
+Be-mani 980325	Some functions declared here are not defined.
 */
