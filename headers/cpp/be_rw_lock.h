@@ -1,7 +1,5 @@
 //	be_rw_lock.h
 
-#pragma once
-
 #include <OS.h>
 
 typedef struct rw_lock {

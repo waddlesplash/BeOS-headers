@@ -8,7 +8,6 @@
 //
 //*****************************************************************************/
 
-#pragma once
 
 #ifndef	_WINDOW_SCREEN_H
 #define	_WINDOW_SCREEN_H

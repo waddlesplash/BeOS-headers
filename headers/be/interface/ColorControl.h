@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef _COLOR_CONTROL_H
 #define _COLOR_CONTROL_H

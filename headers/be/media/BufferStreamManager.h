@@ -5,7 +5,6 @@
 	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-#pragma once
 #ifndef _BUFFER_STREAM_MANAGER_H
 #define _BUFFER_STREAM_MANAGER_H
 

@@ -8,7 +8,6 @@
 //	Copyright 1997, Be Incorporated, All Rights Reserved.
 //
 //****************************************************************************
-#pragma once
 
 #ifndef	_FILE_PANEL_H
 #define _FILE_PANEL_H

@@ -8,7 +8,6 @@
 //	Copyright 1992-97, Be Incorporated
 //
 //****************************************************************************/
-#pragma once
 
 #ifndef _VOLUME_H
 #define _VOLUME_H

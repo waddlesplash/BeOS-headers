@@ -7,7 +7,6 @@
 */
 
 
-#pragma once
 
 #ifndef _CLASS_INFO_H
 #define _CLASS_INFO_H

@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated, All Rights Reserved.
 //
 //****************************************************************************/
-#pragma once
 
 #ifndef _MIME_H
 #define _MIME_H
@@ -49,6 +48,7 @@ enum icon_size {
 
 class BBitmap;
 class BResources;
+class BAppFileInfo;
 
 enum app_verb {
 	B_OPEN
@@ -120,6 +120,7 @@ private:
 friend	class BAppFileInfo;
 friend	class BRoster;
 friend	status_t	_update_mime_info_(const char *, bool);
+friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
 
 virtual	void		_ReservedMimeType1();
 virtual	void		_ReservedMimeType2();
@@ -132,11 +133,12 @@ virtual	void		_ReservedMimeType3();
 		status_t	OpenFile(bool create_file = FALSE,
 							dev_t dev = -1) const;
 		status_t	CloseFile() const;
+		status_t	GetSupportedTypes(BMessage *types);
 		status_t	SetSupportedTypes(const BMessage *types);
 
 		char		*fType;
 		BFile		*fMeta;
-		BResources	*fResources;
+		void		*_unused;
 		entry_ref	fRef;
 		int			fWhere;
 		status_t	fCStatus;

@@ -8,14 +8,13 @@
 //
 //*************************************************************************/
 
-#pragma once
 
 #ifndef _FILE_H
 #define _FILE_H
 
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <OS.h>
+#include <SupportDefs.h>
 #include <DataIO.h>
 #include <Node.h>
 

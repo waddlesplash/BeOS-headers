@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 #ifndef _E_MAIL_H
 #define _E_MAIL_H
 
@@ -140,7 +139,7 @@ private:
 		bool		fMultiPart;
 
 		int32		concatinate(char**, int32, char*);
-		int32		count_fields(char *name = NIL);
+		int32		count_fields(char *name = NULL);
 		status_t	find_field(char*, type_code*, char**, void**, int32*,
 							   char**, int32);
 		BList*		find_field(const char*);

@@ -7,7 +7,6 @@
 	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-#pragma once
 #ifndef _PLAY_SOUND_H
 #define _PLAY_SOUND_H
 

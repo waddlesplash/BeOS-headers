@@ -57,7 +57,7 @@ public:
 
 #elif defined(__BEOS__)	// MW-h+ 960731
 #  include <OS.h>
-#  include "be_rw_lock.h"
+#  include <be_rw_lock.h>
  
 #elif !defined (MSIPL_MULTITHREAD)
 #  error Mutex classes require multi-threaded operating system.

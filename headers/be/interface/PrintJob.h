@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef	_PRINTSESSION_H
 #define	_PRINTSESSION_H

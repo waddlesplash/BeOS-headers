@@ -5,7 +5,6 @@
 	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
 +++++ */
 
-#pragma once
 #ifndef _ENTRY_LIST_H
 #define _ENTRY_LIST_H
 

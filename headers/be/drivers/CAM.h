@@ -13,7 +13,6 @@
 	the same text as the standard, with Be-provided additions as needed.
 +++++ */
 
-#pragma once
 
 #ifndef _CAM_H
 #define _CAM_H

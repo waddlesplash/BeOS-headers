@@ -65,12 +65,14 @@ public :
 
 class domain_error : public logic_error {
 public :
+//    domain_error (const char *what_arg) : logic_error (what_arg) { } // 970630 mani
     domain_error (const string& what_arg) : logic_error (what_arg) { }
     virtual ~domain_error () MSIPL_THROW;
 };
 
 class invalid_argument : public logic_error {
 public :
+//    invalid_argument (const char *what_arg) : logic_error (what_arg) { } // 970630 mani
     invalid_argument (const string& what_arg) : logic_error (what_arg) { }
     virtual ~invalid_argument () MSIPL_THROW;
 };
@@ -92,6 +94,7 @@ public :
 class runtime_error : public exception {
 public :
     runtime_error (const string& what_arg) : exception (what_arg) { }
+//    runtime_error (const char *what_arg) : exception (what_arg) { } // 970630 mani
     virtual ~runtime_error () MSIPL_THROW;
 protected :
     runtime_error () : exception () { }
@@ -100,12 +103,14 @@ protected :
 class range_error : public runtime_error {
 public :
     range_error (const string& what_arg) : runtime_error (what_arg) { }
+//    range_error (const char *what_arg) : runtime_error (what_arg) { } // 970630 mani
     virtual ~range_error () MSIPL_THROW;
 };
 
 class overflow_error : public runtime_error {
 public :
     overflow_error (const string& what_arg) : runtime_error (what_arg) { }
+//    overflow_error (const char *what_arg) : runtime_error (what_arg) { } // 970630 mani
     virtual ~overflow_error () MSIPL_THROW;
 };
 
@@ -266,3 +271,5 @@ private :
 //960828 bkoz line 122 moved bad_cast, bad_typeid to typeinfo.h
 //961122 bkoz added const char * ctors for 3 classes for inlining...
 //961210 bkoz added alignment wrapper
+// 970630 mani Complete the 961122 for all classes. Why didn't bkoz
+//             do this in the first place?

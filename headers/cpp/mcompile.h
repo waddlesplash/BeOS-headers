@@ -164,7 +164,7 @@
 
 #ifndef MSIPL_BOOL_BUILTIN
 #  if defined(__BEOS__)
-#    include "SupportDefs.h"
+#    include <SupportDefs.h>
 #  else
 #    define bool unsigned char
 #  endif

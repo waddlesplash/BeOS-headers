@@ -5,7 +5,6 @@
    Copyright (c) 1995-1997 by Be Incorporated.  All Rights Reserved.
 
 +++++ */
-#pragma once
 #ifndef _BUFFER_MSGS_H
 #define _BUFFER_MSGS_H
 

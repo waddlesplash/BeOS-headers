@@ -8,7 +8,6 @@
 
 ******************************************************************************/
 
-#pragma once
 
 #ifndef _STORAGE_DEFS_H
 #define	_STORAGE_DEFS_H

@@ -56,12 +56,17 @@
 
 #if	__dest_os	== __win32_os
 #define	__tls	 __declspec(thread)
-#define __LITTLE_ENDIAN
+#define __LITTLE_ENDIAN 1
 #else
 #define	__tls 
 #endif
 
-#define __dest_os	__be_os
+#ifndef __dest_os
+# define __dest_os	__be_os
+# if __INTEL__
+#  define __LITTLE_ENDIAN 1
+# endif /* __INTEL__ */
+#endif /* __dest_os */
 
 #endif /* ndef __ansi_parms__ */
 

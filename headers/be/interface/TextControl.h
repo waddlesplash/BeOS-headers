@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef	_TEXT_CONTROL_H
 #define	_TEXT_CONTROL_H

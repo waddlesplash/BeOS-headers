@@ -8,7 +8,6 @@
 //	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 ******************************************************************************/
-#pragma once
 
 #ifndef _ROSTER_H
 #define _ROSTER_H

@@ -8,7 +8,6 @@
 //
 ******************************************************************************/
 
-#pragma once
 
 #ifndef _GRAPHICS_DEFS_H
 #define _GRAPHICS_DEFS_H

@@ -35,13 +35,15 @@
 #define SIGWINCH   20      /* tty window size changed */
 #define SIGKILLTHR 21      /* be specific: kill just the thread, not team */
 
+#define SIGBUS     SIGSEGV /* for old style code */
+
 /*
    Signal numbers 22-32 are currently free but may be used in future
    releases.  Use them at your own peril (if you do use them, at least
    be smart and use them backwards from signal 32).
 */
 #define __signal_max  21
-#define NSIG __signal_max
+#define NSIG (__signal_max+1)
 
 
 typedef long sigset_t;

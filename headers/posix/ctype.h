@@ -17,9 +17,9 @@ __namespace(__stdc_space(ctype))
 
 __extern_c
 
-unsigned char	__ctype_map[];
-unsigned char	__lower_map[];
-unsigned char	__upper_map[];
+extern unsigned char	__ctype_map[];
+extern unsigned char	__lower_map[];
+extern unsigned char	__upper_map[];
 
 __end_extern_c
 

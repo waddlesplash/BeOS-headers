@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated
 //
 //****************************************************************************
-#pragma once
 
 #ifndef _SAMPLES_H
 #define _SAMPLES_H

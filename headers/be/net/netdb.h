@@ -7,7 +7,6 @@
  * Do not expect total BSD compatibility from this interface!
  *
  */
-#pragma once
 #ifndef _NETDB_H
 #define _NETDB_H
 

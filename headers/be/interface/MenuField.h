@@ -4,7 +4,6 @@
 	
 */
 
-#pragma once
 
 #ifndef _MENU_FIELD_H
 #define _MENU_FIELD_H

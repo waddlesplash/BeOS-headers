@@ -39,6 +39,7 @@ extern int          exect(const char *path, char *const *argv);
 extern int          execvp(const char *file, char *const *argv);
 
 
+extern int			fchown(int fd, uid_t owner, gid_t group);
 extern pid_t		fork(void);
 extern long         fpathconf(int fd, int name);
 extern int          ftruncate(int fd, off_t newsize);

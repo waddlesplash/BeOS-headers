@@ -8,7 +8,6 @@
 //
 //*************************************************************************/
 
-#pragma once
 
 #ifndef _NODE_MONITOR_H
 #define _NODE_MONITOR_H

@@ -3,16 +3,15 @@
 
 	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
 +++++ */
-#pragma once
 
 #ifndef _QUERY_H
 #define _QUERY_H
 
 #include <limits.h>
 
-#include <OS.h>
 #include <SupportDefs.h>
 #include <EntryList.h>
+#include <OS.h>
 
 typedef enum {
 	B_INVALID_OP = 0,
@@ -34,7 +33,6 @@ typedef enum {
 class	BMessenger;
 class	BVolume;
 struct	entry_ref;
-
 class	BQueryStack;
 
 class BQuery : public BEntryList {

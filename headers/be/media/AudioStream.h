@@ -5,7 +5,6 @@
 	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-#pragma once
 #ifndef _AUDIO_STREAM_H
 #define _AUDIO_STREAM_H
 

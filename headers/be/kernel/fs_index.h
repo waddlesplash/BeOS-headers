@@ -5,7 +5,6 @@
    Copyright 1997 Be Inc.
 */
 
-#pragma once
 
 #ifndef _FS_INDEX_H
 #define _FS_INDEX_H

@@ -10,7 +10,6 @@
 //	Copyright 1997, Be Incorporated
 //
 //****************************************************************************
-#pragma once
 
 #ifndef	_DATA_IO_H
 #define	_DATA_IO_H

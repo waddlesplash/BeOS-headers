@@ -8,8 +8,6 @@
 //
 //******************************************************************************/
 
-#pragma once
-
 #ifndef _GRAPHICS_CARD_H
 #define _GRAPHICS_CARD_H
 

@@ -6,7 +6,6 @@
 	
 */
 
-#pragma once
 
 #ifndef _STOP_WATCH_H
 #define _STOP_WATCH_H

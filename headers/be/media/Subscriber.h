@@ -7,7 +7,6 @@
 	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-#pragma once
 
 #ifndef _SUBSCRIBER_H
 #define _SUBSCRIBER_H

@@ -4,7 +4,6 @@
 	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
 */
 
-#pragma once
 
 #ifndef _FS_INFO_H
 #define	_FS_INFO_H
@@ -38,5 +37,9 @@ struct fs_info {
 };
 
 typedef struct fs_info	fs_info;
+
+dev_t		dev_for_path(const char *path);
+dev_t		next_dev(int32 *pos);
+int			fs_stat_dev(dev_t dev, fs_info *info);
 
 #endif

@@ -6,12 +6,12 @@
  *
  * Do not expect total BSD compatibility from this interface!
  */
-#pragma once
 #ifndef _SOCKET_H
 #define _SOCKET_H
 
 #include <size_t.h>
 #include <sys/time.h>       /* for timeval/timezone structs & gettimeofday */
+#include <byteorder.h>
 
 #if __cplusplus
 extern "C" {
@@ -59,12 +59,6 @@ struct sockaddr_in {
 	struct in_addr sin_addr;
 	char sin_zero[4];
 };
-
-
-#define ntohs(x) x
-#define htons(x) x
-#define htonl(x) x
-#define ntohl(x) x
 
 /*
  * You can define your own FDSETSIZE if you want more bits

@@ -8,7 +8,6 @@
 //
 //*************************************************************************/
 
-#pragma once
 
 #ifndef _DIRECTORY_H
 #define _DIRECTORY_H
@@ -17,7 +16,7 @@
 #include <sys/types.h>
 #include <limits.h>
 
-#include <OS.h>
+#include <SupportDefs.h>
 #include <Node.h>
 #include <EntryList.h>
 #include <StorageDefs.h>

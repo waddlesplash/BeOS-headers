@@ -4,7 +4,6 @@
  * Copyright (c) 1995-1997 Be, Inc.	All Rights Reserved 
  *
  */
-#pragma once
 #ifndef _NET_SETTINGS_H
 #define _NET_SETTINGS_H
 #include <SupportDefs.h>

@@ -6,8 +6,6 @@
 
 */
 
-#pragma once
-
 #ifndef _ERRORS_H
 #define _ERRORS_H
 
@@ -109,7 +107,13 @@ enum
 	B_LAUNCH_FAILED,
 	B_AMBIGUOUS_APP_LAUNCH,
 	B_UNKNOWN_MIME_TYPE,
-	B_BAD_SCRIPT_SYNTAX
+	B_BAD_SCRIPT_SYNTAX,
+	B_LAUNCH_FAILED_NO_RESOLVE_LINK,
+	B_LAUNCH_FAILED_EXECUTABLE,
+	B_LAUNCH_FAILED_APP_NOT_FOUND,
+	B_LAUNCH_FAILED_APP_IN_TRASH,
+	B_LAUNCH_FAILED_NO_PREFERRED_APP,
+	B_LAUNCH_FAILED_FILES_APP_NOT_FOUND
 };
 
 
@@ -132,7 +136,8 @@ enum {
 	B_NO_MORE_FDS,				/* one too many open files */
 	B_CROSS_DEVICE_LINK,		/* no cross-device symlinks */
 	B_LINK_LIMIT,			    /* you hit the nested link limit */
-	B_BUSTED_PIPE				/* bits just spill on the ground */
+	B_BUSTED_PIPE,				/* bits just spill on the ground */
+	B_UNSUPPORTED				/* operation not supported by the file system*/
 };
 
 
@@ -178,6 +183,8 @@ enum {
 #define EHOSTUNREACH	(B_POSIX_ERROR_BASE + 33)
 #define ENOPROTOOPT		(B_POSIX_ERROR_BASE + 34)
 #define ENOBUFS			(B_POSIX_ERROR_BASE + 35)
+#define EINPROGRESS		(B_POSIX_ERROR_BASE + 36)
+#define EALREADY		(B_POSIX_ERROR_BASE + 37)
 
 #define ENOMEM			B_NO_MEMORY
 #define EACCES			B_PERMISSION_DENIED

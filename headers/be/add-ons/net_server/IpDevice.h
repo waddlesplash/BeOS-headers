@@ -3,7 +3,6 @@
  * Copyright (c) 1997 Be, Inc.	All Rights Reserved 
  *
  */
-#pragma once
 #ifndef _IP_DEVICE_H
 #define _IP_DEVICE_H
 

@@ -8,7 +8,6 @@
 
 ******************************************************************************/
 
-#pragma once
 
 #ifndef _SUPPORT_DEFS_H
 #define _SUPPORT_DEFS_H
@@ -90,9 +89,6 @@ typedef unsigned short          unichar;
 
 #ifndef NULL
 #define NULL 	(0)
-#endif
-#ifndef NIL
-#define NIL		(0)
 #endif
 
 #ifdef __cplusplus

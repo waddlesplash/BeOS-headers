@@ -8,7 +8,6 @@
 	PCI Special Interest Group, 1995.
 +++++ */
 
-#pragma once
 
 #ifndef _PCI_H
 #define _PCI_H

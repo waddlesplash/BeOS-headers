@@ -5,7 +5,6 @@
 	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-#pragma once
 #ifndef _MEDIA_DEFS_H
 #define _MEDIA_DEFS_H
 

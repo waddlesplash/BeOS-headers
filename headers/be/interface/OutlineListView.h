@@ -8,8 +8,6 @@
 **
 *******************************************************************************/
 
-#pragma once
-
 #ifndef _OUTLINE_LIST_VIEW_H
 #define _OUTLINE_LIST_VIEW_H
 
@@ -27,7 +25,7 @@ public:
 					BOutlineListView(BMessage *data);
 virtual 			~BOutlineListView();
 
-static	BListView	*Instantiate(BMessage *data);
+static	BOutlineListView *Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void 		MouseDown(BPoint where);
@@ -69,7 +67,7 @@ virtual	void		MakeEmpty();
 		void		FullListDoForEach(bool (*func)(BListItem *));
 		void		FullListDoForEach(bool (*func)(BListItem *, void *), void *);
 
-		BListItem*	Superitem(const BListItem *item);
+		BListItem	*Superitem(const BListItem *item);
 
 		void 		Expand(BListItem *item);
 		void 		Collapse(BListItem *item);
@@ -105,6 +103,9 @@ virtual void		DrawLatch(BRect itemRect, int32 level, bool collapsed,
 						// end collapse modes; may override to draw different
 						// latches
 virtual	void		DrawItem(BListItem *item, BRect cellRect, bool complete = false);
+
+		BListItem	*RemoveCommon(int32 fullListIndex);
+		BListItem	*RemoveOne(int32 fullListIndex);
 
 					// Mouse tracking
 static	void 		TrackInLatchItem(void *);

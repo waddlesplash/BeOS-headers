@@ -7,7 +7,6 @@
 //	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 //*************************************************************************/
-#pragma once
 
 #ifndef _ALIAS_H
 #define _ALIAS_H

@@ -3,7 +3,6 @@
  * Copyright (c) 1997 Be, Inc.	All Rights Reserved 
  *
  */
-#pragma once
 #ifndef _NET_PACKET_H
 #define _NET_PACKET_H
 

@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef	_DIGITAL_PORT_H
 #define	_DIGITAL_PORT_H

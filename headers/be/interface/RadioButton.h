@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef	_RADIO_BUTTON_H
 #define	_RADIO_BUTTON_H

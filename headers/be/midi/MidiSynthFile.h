@@ -8,7 +8,6 @@
 //
 //****************************************************************************
 
-#pragma once
 
 #ifndef _MIDI_SYNTH_FILE_H
 #define _MIDI_SYNTH_FILE_H

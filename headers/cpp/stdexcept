@@ -8,6 +8,8 @@
 #ifndef _STDEXCEPT_
 #define _STDEXCEPT_                  //MW-mm 960530
 
+#include <mflag.h>    //960514 bkoz  //MW-mm 960530 // Be-mani 970708
+
 #ifdef __MODENALIB__		//	Modena C++ Libes
 	#include <mexcept.h>
 #else						//	Plauger C++ Libes
@@ -110,3 +112,4 @@ extern void __priv_throwbadcast(void);
 /* Change record
 //MW-mm 960530 Moved some includes and flag settings to allow stdexcept to compile by itself
 */
+//Be-mani 970708		Otherwise stdexcept.cpp on Intel won't compile

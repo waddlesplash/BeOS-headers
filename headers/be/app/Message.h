@@ -9,7 +9,6 @@
 #ifndef	_MESSAGE_H
 #define	_MESSAGE_H
 
-#pragma once
 
 #include <stddef.h>
 #include <AppDefs.h>

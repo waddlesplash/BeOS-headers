@@ -14,12 +14,12 @@
 //
 //*************************************************************************/
 
-#pragma once
 
 #ifndef _PATH_H
 #define _PATH_H
 
 #include <sys/types.h>
+#include <SupportDefs.h>
 #include <StorageDefs.h>
 #include <Message.h>
 

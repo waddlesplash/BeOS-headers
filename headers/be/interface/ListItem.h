@@ -8,8 +8,6 @@
 **
 *******************************************************************************/
 
-#pragma once
-
 #ifndef _LIST_ITEM_H
 #define _LIST_ITEM_H
 
@@ -51,16 +49,21 @@ virtual status_t	Perform(uint32 d, void *arg);
 		bool 		IsExpanded() const;
 		void 		SetExpanded(bool expanded);
 		uint32 		OutlineLevel() const;
-		bool 		HasSubitems() const;
 
 private:
 friend class BOutlineListView;
+		bool 		HasSubitems() const;
+
 
 virtual	void		_ReservedListItem1();
 virtual	void		_ReservedListItem2();
 
 					BListItem(const BListItem &);
 		BListItem	&operator=(const BListItem &);
+
+		// calls used by BOutlineListView
+		bool 		IsItemVisible() const;
+		void 		SetItemVisible(bool);
 
 		float		fWidth;
 		float		fHeight;
@@ -69,7 +72,8 @@ virtual	void		_ReservedListItem2();
 		bool		fSelected;
 		bool		fEnabled;
 		bool 		fExpanded;
-		bool 		fHasSubitems;
+		bool 		fHasSubitems : 1;
+		bool 		fVisible : 1;
 };
 
 

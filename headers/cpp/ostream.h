@@ -222,7 +222,6 @@ template <class charT, class traits>
 inline
 basic_ostream<charT, traits>::~basic_ostream ()
 {
-	flush();					/* Be-mani 960829 */
     REMOVE(_mutex);
 }//961113 bkoz move inline to get around compiler error. . 
 /*
@@ -915,3 +914,4 @@ typedef basic_ostream<wchar_t, char_traits <wchar_t> >   wostream;
 //mm 970110   long long support
 */
 /* Be-mani 960829	Add a call to flush to basic_ostream destructor. */
+/* Be-mani 970829	Remove call to flush because we deadlock otherwise. */

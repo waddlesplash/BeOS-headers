@@ -7,7 +7,6 @@
 //	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 //*************************************************************************/
-#pragma once
 
 #ifndef _TYPE_CONSTANTS_H
 #define _TYPE_CONSTANTS_H

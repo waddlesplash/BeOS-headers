@@ -7,7 +7,6 @@
    Copyright 1997 Be Inc.
 */
 
-#pragma once
 
 #ifndef _FS_QUERY_H
 #define _FS_QUERY_H

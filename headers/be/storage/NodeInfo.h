@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated, All Rights Reserved.
 //
 //***************************************************************************/
-#pragma once
 
 #ifndef _NODE_INFO_H
 #define _NODE_INFO_H

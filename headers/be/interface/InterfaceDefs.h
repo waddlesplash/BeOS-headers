@@ -8,7 +8,6 @@
 //
 *******************************************************************************/
 
-#pragma once
 
 #ifndef	_INTERFACE_DEFS_H
 #define	_INTERFACE_DEFS_H

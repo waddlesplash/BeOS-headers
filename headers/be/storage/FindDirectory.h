@@ -6,7 +6,6 @@
 //
 //*************************************************************************/
 
-#pragma once
 
 #ifndef _FIND_DIRECTORY_H
 #define _FIND_DIRECTORY_H

@@ -8,7 +8,6 @@
 //
 //*****************************************************************************/
 
-#pragma once
 
 #ifndef	_VIEW_H
 #define	_VIEW_H
@@ -202,15 +201,15 @@ virtual	void			SetPenSize(float size);
 		float			PenSize() const;
 
 virtual	void			SetViewColor(rgb_color c);
-		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 0);
+		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		ViewColor() const;
 
 virtual	void			SetHighColor(rgb_color a_color);
-		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 0);
+		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		HighColor() const;
 
 virtual	void			SetLowColor(rgb_color a_color);
-		void			SetLowColor(uchar r, uchar g, uchar b, uchar a = 0);
+		void			SetLowColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		LowColor() const;
 
 		void			MovePenTo(BPoint pt);

@@ -6,7 +6,6 @@
 	
 */
 
-#pragma once
 
 #ifndef _MENU_ITEM_H
 #define _MENU_ITEM_H

@@ -8,13 +8,12 @@
 //
 //*************************************************************************/
 
-#pragma once
 #ifndef _NODE_H
 #define _NODE_H
 
+#include <SupportDefs.h>
 #include <StorageDefs.h>
 #include <Statable.h>
-#include <OS.h>
 
 struct node_ref {
 						node_ref();

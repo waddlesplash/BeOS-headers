@@ -8,14 +8,14 @@
 //	Copyright 1992-97, Be Incorporated
 //
 //****************************************************************************/
-#pragma once
 
 #ifndef _VOLUME_ROSTER_H
 #define _VOLUME_ROSTER_H
 
-#include <OS.h>
+#include <SupportDefs.h>
 #include <Volume.h>
 #include <Application.h>
+
 class BVolume;
 class BMessenger;
 

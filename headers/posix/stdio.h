@@ -133,6 +133,9 @@ __extern_c
 FILE   *popen(const char *cmd, const char *type);
 int     pclose(FILE *fp);
 
+char   *tempnam (char *dir, char *pfx);
+char   *mktemp(char *name);
+
 
 #endif /* __be_os */
 

@@ -7,7 +7,6 @@
 	Copyright 1996-97, Be Incorporated.
 +++++ */
 
-#pragma once
 
 #ifndef _KERNEL_EXPORT_H
 #define _KERNEL_EXPORT_H

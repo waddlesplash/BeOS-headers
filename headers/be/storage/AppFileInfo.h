@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated, All Rights Reserved.
 //
 /*****************************************************************************/
-#pragma once
 
 #ifndef _APP_FILE_INFO_H
 #define _APP_FILE_INFO_H
@@ -45,7 +44,6 @@ public:
 virtual				~BAppFileInfo();
 
 		status_t	SetTo(BFile *file);
-		status_t	InitCheck();
 
 virtual	status_t	GetType(char *type) const;
 		status_t	GetSignature(char *sig) const;
@@ -69,7 +67,8 @@ virtual	status_t	SetType(const char *type);
 
 private:
 friend	status_t	_update_mime_info_(const char *, bool);
-friend	status_t	_update_app_(const char *, bool);
+friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
+friend	class		BRoster;
 
 virtual	void		_ReservedAppFileInfo1();
 virtual	void		_ReservedAppFileInfo2();

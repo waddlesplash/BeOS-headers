@@ -8,7 +8,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef _SCREEN_H
 #define _SCREEN_H
@@ -54,6 +53,7 @@ const   color_map*		ColorMap();
         BPrivateScreen*	private_screen();
 
 private:
+        status_t		SetToNext();
         BPrivateScreen 	*screen;
 };
 

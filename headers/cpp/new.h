@@ -25,8 +25,8 @@ namespace std {
 
 class bad_alloc : public exception {
 	public :
-	    bad_alloc () MSIPL_THROW : exception () { }
-	    bad_alloc (const bad_alloc& ) MSIPL_THROW : exception () { }
+	    bad_alloc () MSIPL_THROW : exception ("Allocation Failure") { }	/* Be-mani 970827b */
+	    bad_alloc (const bad_alloc& ) MSIPL_THROW : exception ("Allocation Failure") { } /* Be-mani 970827b */
 	    bad_alloc& operator= (const bad_alloc& exarg) MSIPL_THROW;
 	    virtual ~bad_alloc () MSIPL_THROW;
 	    virtual const char* what () const MSIPL_THROW;
@@ -41,6 +41,7 @@ class bad_alloc : public exception {
 	    static  const string  alloc_msg;
 #endif
 };
+
 	
 	//old
 	//struct nothrow {};
@@ -110,4 +111,7 @@ mw-bk 960813   added andreas's changes for new throw bad_alloc()
 mw-bk 960902   moved class exception into exception header, including excpt instead of stdexcept
 mw-bk 961210 	added alignment wrapper
 mw-bk 961221	line 65 added moto wrapper (mmoss)
+Be-mani 970827	Added #ifdef WRONG to eliminate class-local static data
+Be-mani 970827b	Added "Allocation Failure" to bad_alloc initializer via exception
+                so exception::what behaves correctly.
 */

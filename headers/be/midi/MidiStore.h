@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated
 //
 //****************************************************************************
-#pragma once
 
 #ifndef _MIDI_STORE_H
 #define _MIDI_STORE_H

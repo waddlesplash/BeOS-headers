@@ -6,7 +6,6 @@
 	
 */
 
-#pragma once
 
 #ifndef _POP_UP_MENU_H
 #define _POP_UP_MENU_H

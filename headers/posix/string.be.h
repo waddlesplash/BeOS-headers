@@ -1,6 +1,6 @@
 /* ++++++++++
 	FILE:	be_string.h
-	REVS:	$Revision: 1.2 $
+	REVS:	$Revision: 1.1 $
 	NAME:	pierre
 	DATE:	Mon Dec 16 10:41:32 PST 1996
 	Copyright (c) 1996 by Be Incorporated.  All Rights Reserved.

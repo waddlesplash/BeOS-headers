@@ -6,7 +6,6 @@
 
 *****************************************************************************/
 
-#pragma once
 
 #ifndef	_PICTURE_BUTTON_H
 #define	_PICTURE_BUTTON_H

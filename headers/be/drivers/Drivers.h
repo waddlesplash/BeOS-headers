@@ -4,7 +4,6 @@
 	public driver-related API
 +++++ */
 
-#pragma once
 
 #ifndef _DRIVERS_H
 #define _DRIVERS_H

@@ -6,7 +6,6 @@
 //
 //******************************************************************************
 
-#pragma once
 
 #ifndef	_FLATTENABLE_H
 #define	_FLATTENABLE_H

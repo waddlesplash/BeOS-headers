@@ -1,4 +1,4 @@
-// $Header: /net/bally/be/rcs/srcx/gnu/flex-2.5.2/FlexLexer.h,v 1.1 1996/03/05 23:28:05 dbg Exp $
+// $Header: /home/daffy/u0/vern/flex/RCS/FlexLexer.h,v 1.18 95/04/24 13:25:54 vern Exp $
 
 // FlexLexer.h -- define interfaces for lexical analyzer classes generated
 //		  by flex

@@ -5,7 +5,6 @@
 	Copyright (c) 1995-97 by Be Incorporated.  All Rights Reserved.
 +++++ */
 
-#pragma once
 
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H

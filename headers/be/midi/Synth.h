@@ -7,7 +7,6 @@
 //	Copyright 1997, Be Incorporated
 //
 //****************************************************************************
-#pragma once
 
 #ifndef _SYNTH_H
 #define _SYNTH_H
