@@ -7,6 +7,9 @@
 #ifndef _QUERY_H
 #define _QUERY_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <limits.h>
 
 #include <SupportDefs.h>
@@ -51,7 +54,7 @@ virtual				~BQuery();
 		void	PushInt64(int64 c);
 		void	PushFloat(float c);
 		void	PushDouble(double c);
-		void	PushString(const char *c, bool case_insensitive = FALSE);
+		void	PushString(const char *c, bool case_insensitive = false);
 
 		status_t	SetVolume(const BVolume *vol);
 		status_t	SetPredicate(const char *expr);
@@ -64,7 +67,7 @@ virtual				~BQuery();
 					
 		status_t	Fetch();
 
-virtual	status_t	GetNextEntry(BEntry *entry, bool traverse = false);
+virtual	status_t	GetNextEntry(BEntry *entry, bool traverse = FALSE);
 virtual	status_t	GetNextRef(entry_ref *ref);
 virtual	int32		GetNextDirents(struct dirent *buf, size_t length, 
 						int32 num = INT_MAX);

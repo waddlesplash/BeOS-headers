@@ -1,6 +1,12 @@
 #ifndef _BE_MATH_H_
 #define _BE_MATH_H_
 
+#if (__INTEL__ || __SH__)
+# ifndef _SCALB_INT
+#  define _SCALB_INT
+# endif /* _SCALB_INT */
+#endif /* __INTEL__ */
+
 #ifndef M_E
 #define M_E         2.7182818284590452354   /* e */
 #endif
@@ -52,50 +58,54 @@ __extern_c
 
 /* the Berkeley standard math functions */
 
-extern double erf(double);
-extern double erfc(double);
-extern double gamma(double);
-extern double hypot(double, double);
-extern int isnan(double);
-extern int finite(double);
-extern double j0(double);
-extern double j1(double);
-extern double jn(int, double);
-extern double lgamma(double);
-extern double y0(double);
-extern double y1(double);
-extern double yn(int, double);
+extern _IMPEXP_ROOT double erf(double);
+extern _IMPEXP_ROOT double erfc(double);
+extern _IMPEXP_ROOT double gamma(double);
+extern _IMPEXP_ROOT double hypot(double, double);
+extern _IMPEXP_ROOT int isnan(double);
+extern _IMPEXP_ROOT int finite(double);
+extern _IMPEXP_ROOT double j0(double);
+extern _IMPEXP_ROOT double j1(double);
+extern _IMPEXP_ROOT double jn(int, double);
+extern _IMPEXP_ROOT double lgamma(double);
+extern _IMPEXP_ROOT double y0(double);
+extern _IMPEXP_ROOT double y1(double);
+extern _IMPEXP_ROOT double yn(int, double);
 
-extern double acosh(double);
-extern double asinh(double);
-extern double atanh(double);
-extern double cbrt(double);
-extern double logb(double);
-extern double nextafter(double, double);
-extern double remainder(double, double);
-extern double scalb(double, double);
+extern _IMPEXP_ROOT double acosh(double);
+extern _IMPEXP_ROOT double asinh(double);
+extern _IMPEXP_ROOT double atanh(double);
+extern _IMPEXP_ROOT double cbrt(double);
+extern _IMPEXP_ROOT double logb(double);
+extern _IMPEXP_ROOT double nextafter(double, double);
+extern _IMPEXP_ROOT double remainder(double, double);
+#ifdef _SCALB_INT
+extern _IMPEXP_ROOT double scalb (double, int);
+#else
+extern _IMPEXP_ROOT double scalb (double, double);
+#endif
 
-extern int matherr(struct exception *);
+extern _IMPEXP_ROOT int matherr(struct exception *);
 
 /*
  * IEEE Test Vector
  */
-extern double significand(double);
+extern _IMPEXP_ROOT double significand(double);
 
 /*
  * Functions callable from C, intended to support IEEE arithmetic.
  */
-extern double copysign(double, double);
-extern int ilogb(double);
-extern double rint(double);
-extern double scalbn(double, int);
+extern _IMPEXP_ROOT double copysign(double, double);
+extern _IMPEXP_ROOT int ilogb(double);
+extern _IMPEXP_ROOT double rint(double);
+extern _IMPEXP_ROOT double scalbn(double, int);
 
 /*
  * BSD math library entry points
  */
-extern double drem(double, double);
-extern double expm1(double);
-extern double log1p(double);
+extern _IMPEXP_ROOT double drem(double, double);
+extern _IMPEXP_ROOT double expm1(double);
+extern _IMPEXP_ROOT double log1p(double);
 
 __end_extern_c
 

@@ -1,20 +1,21 @@
 /******************************************************************************
-
-	File:			UTF8.h
-
-	Description:	UTF-8 conversion functions.
-
-	Copyright 1997, Be Incorporated
-
-******************************************************************************/
-
+/
+/	File:			UTF8.h
+/
+/	Description:	UTF-8 conversion functions.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _UTF8_H
 #define _UTF8_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
-
+/*------------------------------------------------------------*/
+/*------- Conversion Flavors ---------------------------------*/
 enum {
 	B_ISO1_CONVERSION,
 	B_ISO2_CONVERSION,
@@ -31,18 +32,22 @@ enum {
 	B_EUC_CONVERSION
 };
 
+/*-------------------------------------------------------------*/
+/*------- Conversion Functions ---------------------------------*/
 
-status_t convert_to_utf8(uint32		srcEncoding, 
+_IMPEXP_BE status_t convert_to_utf8(uint32		srcEncoding, 
 						 const char	*src, 
 						 int32		*srcLen, 
 						 char		*dst, 
 						 int32		*dstLen);
 
-status_t convert_from_utf8(uint32		dstEncoding,
+_IMPEXP_BE status_t convert_from_utf8(uint32		dstEncoding,
 						   const char	*src, 
 						   int32		*srcLen, 
 						   char			*dst, 
 						   int32		*dstLen);
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif			// #ifndef _UTF8_H
+#endif	/* _UTF8_H */

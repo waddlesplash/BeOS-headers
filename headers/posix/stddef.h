@@ -1,9 +1,9 @@
-/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 
 /*
  *	stddef.h
  *	
- *		Copyright © 1995-1996 Metrowerks, Inc.
+ *		Copyright © 1995-1997 Metrowerks, Inc.
  *		All rights reserved.
  */
  

@@ -1,18 +1,22 @@
-/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 
 /*
  *	locale.h
  *	
- *		Copyright © 1995-1996 Metrowerks, Inc.
+ *		Copyright © 1995-1997 Metrowerks, Inc.
  *		All rights reserved.
  */
  
 #ifndef __clocale__
 #define __clocale__
 
-
 #include <ansi_parms.h>
-#include <null.h>
+#include <null.h>				/* 980107 Be-mani */
+
+/* #pragma options align=native */
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import on
+#endif
 
 __namespace(__stdc_space(locale))
 
@@ -50,8 +54,8 @@ struct lconv {
 
 __extern_c
 
-char					* setlocale(int category, const char *locale);
-struct lconv	* localeconv(void);
+_IMPEXP_ROOT char		 *  setlocale(int category, const char *locale); /* Be-mani 980107 */
+_IMPEXP_ROOT struct lconv * localeconv(void); /* Be-mani 980107 */
 
 __end_extern_c
 
@@ -59,8 +63,12 @@ __end_namespace(stdc_space(locale))
 
 __import_stdc_into_std_space(locale)
 
-#pragma options align=reset
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import reset
+#endif
+/* #pragma options align=reset */
 
 #endif /* __clocale__ */
 /*     Change record
+ * 980107 Be-mani Merge in Be changes, shared libs etc.
 */

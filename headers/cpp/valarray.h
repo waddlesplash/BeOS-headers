@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -1111,7 +1112,6 @@ val_array_bool (const T& t, const valarray<T>& v, Function func)
 	#endif /*__MWERKS__*/
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const valarray& v)
 {
@@ -1134,7 +1134,6 @@ valarray<T>::operator= (const valarray& v)
 }
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const T& t)
 {
@@ -1149,7 +1148,6 @@ valarray<T>::operator= (const T& t)
 }
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const slice_array<T>& s)
 {
@@ -1164,7 +1162,6 @@ valarray<T>::operator= (const slice_array<T>& s)
 }
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const gslice_array<T>& g)
 {
@@ -1179,7 +1176,6 @@ valarray<T>::operator= (const gslice_array<T>& g)
 }
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const mask_array<T>& m)
 {
@@ -1194,7 +1190,6 @@ valarray<T>::operator= (const mask_array<T>& m)
 }
 
 template <class T>
-inline
 valarray<T>&
 valarray<T>::operator= (const indirect_array<T>& i)
 {
@@ -1213,7 +1208,6 @@ valarray<T>::operator= (const indirect_array<T>& i)
 // May be moved later to some other place
 //
 template <class T>
-inline
 T
 valarray<T>::mult (size_t len) const
 {
@@ -1230,7 +1224,6 @@ valarray<T>::mult (size_t len) const
 }
 
 template <class T>
-inline
 T
 valarray<T>::min () const
 {
@@ -1246,7 +1239,6 @@ valarray<T>::min () const
 }
 
 template <class T>
-inline
 T
 valarray<T>::max () const
 {
@@ -1262,7 +1254,6 @@ valarray<T>::max () const
 }
 
 template <class T>
-inline
 valarray<T>
 valarray<T>::shift (int i) const
 {
@@ -1288,7 +1279,6 @@ valarray<T>::shift (int i) const
 }
 
 template <class T>
-inline
 valarray<T>
 valarray<T>::cshift (int i) const
 {
@@ -1334,7 +1324,6 @@ valarray<T>::cshift (int i) const
 }
 
 template <class T>
-inline
 valarray<T>
 valarray<T>::apply (T func (T)) const
 {
@@ -1346,7 +1335,6 @@ valarray<T>::apply (T func (T)) const
 }
 
 template <class T>
-inline
 valarray<T>
 valarray<T>::apply (T func (const T&)) const
 {
@@ -1358,7 +1346,6 @@ valarray<T>::apply (T func (const T&)) const
 }
 
 template <class T>
-inline
 void
 valarray<T>::resize (size_t sz, const T& c)  //961113 bkoz
 {
@@ -1395,11 +1382,13 @@ valarray<T>::resize (size_t sz, const T& c)  //961113 bkoz
 
 //961214 bkoz
 //have to specialize valarray for float, double, long double so that bit ops not performed
+//code in c++ library, these are just decls
 #include <valarray_float.h>
 #include <valarray_double.h>
 #if !__MOTO__
 #include <valarray_longdouble.h>
 #endif
+
 
 //valarray unary templates
 template <class T>
@@ -2311,8 +2300,8 @@ T
 max (const valarray<T>& v)
 {
     T   max_val = T ();
-    if (length ()) max_val = *v._ptr;
-    for (size_t count = 1; count < length (); ++count)
+    if (v.length ()) max_val = *v._ptr;                     //970910 vss
+    for (size_t count = 1; count < v.length (); ++count)
     {
         if (max_val < (*(v._ptr+count)))
             max_val = (*(v._ptr+count));
@@ -3175,6 +3164,30 @@ indirect_array<T>::indirect_array (const valarray<T>& v,
         *(_ptr_ptr+count) = (T*)((v.operator const T* ())+vi[count]);
 }
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//970408 bkoz this is now instantiated in inst3.cpp in the c++ library
+	template __dont_instantiate class valarray <int>;
+	template __dont_instantiate class valarray <long>;
+	template __dont_instantiate class valarray <size_t>;
+	template __dont_instantiate class valarray <short>;
+	template __dont_instantiate class mask_array <short>;
+	template __dont_instantiate class mask_array <long>;
+	template __dont_instantiate class mask_array <int>;
+	template __dont_instantiate class mask_array <unsigned int>;
+	template __dont_instantiate class slice_array <short>;
+	template __dont_instantiate class slice_array <long>;
+	template __dont_instantiate class slice_array <int>;
+	template __dont_instantiate class slice_array <unsigned int>;
+	template __dont_instantiate class gslice_array <short>;
+	template __dont_instantiate class gslice_array <long>;
+	template __dont_instantiate class gslice_array <int>;
+	template __dont_instantiate class gslice_array <unsigned int>;
+	template __dont_instantiate class indirect_array <short>;
+	template __dont_instantiate class indirect_array <long>;
+	template __dont_instantiate class indirect_array <int>;
+	template __dont_instantiate class indirect_array <unsigned int>;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif
@@ -3193,3 +3206,4 @@ indirect_array<T>::indirect_array (const valarray<T>& v,
 //961210 bkoz added alignment wrapper
 //961214 bkoz line 1394 included specializations for float, double, long double
 //961221 bkoz line 1398 moto changes via mmoss
+//970910 vss  add class name to length function

@@ -2,6 +2,13 @@
 #define _PWD_H_
 
 #include <sys/types.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,11 +23,11 @@ struct passwd {
         char    *pw_shell;
 };
 
-extern void           setpwent(void);
-extern void           endpwent(void);
-extern struct passwd *getpwent(void);
-extern struct passwd *getpwnam(const char *name);
-extern struct passwd *getpwuid(uid_t uid);
+extern _IMPEXP_ROOT void           setpwent(void);
+extern _IMPEXP_ROOT void           endpwent(void);
+extern _IMPEXP_ROOT struct passwd *getpwent(void);
+extern _IMPEXP_ROOT struct passwd *getpwnam(const char *name);
+extern _IMPEXP_ROOT struct passwd *getpwuid(uid_t uid);
 
 #ifdef __cplusplus
 }

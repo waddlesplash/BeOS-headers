@@ -12,6 +12,9 @@
 #ifndef _DIRECTORY_H
 #define _DIRECTORY_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <limits.h>
@@ -26,7 +29,7 @@ class	BFile;
 class	BSymLink;
 struct	entry_ref;
 
-extern status_t create_directory(const char *path, mode_t mode);
+_IMPEXP_BE status_t create_directory(const char *path, mode_t mode);
 
 class BDirectory : public BNode, public BEntryList {
 public:
@@ -75,10 +78,6 @@ virtual	int32			CountEntries();
 		BDirectory &	operator=(const BDirectory &dir);
 
 private:
-
-friend class BEntry;
-friend class BVolume;
-
 
 		/* FBC */
 virtual	void		_ErectorDirectory1();

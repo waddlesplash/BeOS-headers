@@ -1,63 +1,68 @@
-/*
- * NetDevice.h
- * Copyright (c) 1997 Be, Inc.	All Rights Reserved 
- *
- */
+/******************************************************************************
+/
+/	File:			NetDevice.h
+/
+/	Description:	Pure virtual BNetDevice class defines the fundamental 
+/					protocol for network add-ons.
+/
+/					Pure virtual BNetConfig class defines the protocol for 
+/ 					configuring the device. 
+/
+/					BCallbackHandler is part of the BNetConfig implementation.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
+
 #ifndef _NET_DEVICE_H
 #define _NET_DEVICE_H
 
+#include <BeBuild.h>
 #include <NetPacket.h>
 #include <net_settings.h>
 #include <stdio.h>
 
-/*
- * Standard SNMP types here
- */
-typedef enum {
-	B_NULL_NET_DEVICE = 0x00,   /* not a real device */
-	B_ETHER_NET_DEVICE = 0x06,
-	B_PPP_NET_DEVICE = 0x17,
-	B_LOOP_NET_DEVICE = 0x18
-} net_device_type;
+class BIpDevice;
 
+/*-------- stuctures etc. -----------------------------*/
+
+typedef enum {
+ 	B_NULL_NET_DEVICE = 0x00,  
+	B_ETHER_NET_DEVICE = 0x06,
+ 	B_PPP_NET_DEVICE = 0x17,
+ 	B_LOOP_NET_DEVICE = 0x18
+} net_device_type;
+ 
 enum {
-	B_FLAGS_POINT_TO_POINT = 0x01
+ 	B_FLAGS_POINT_TO_POINT = 0x01
 };
 
+
+/*-------- BCallbackHandler Class -----------------------------*/
 
 class BCallbackHandler {
 public:
 	virtual void Done(status_t status) = 0;
 };
 
+/*---------- BNetConfig Class ----------------------------------*/
+
 class BNetConfig {
 public:
 	virtual bool IsIpDevice(void) = 0;
 
-	/*
-	 * Configure the device
-	 */
 	virtual status_t Config(const char *ifname,
 							net_settings *ncw,
 							BCallbackHandler *callback,
-							bool autoconfig = FALSE) = 0;
+							bool autoconfig = false) = 0;
 
-	/*
-	 * Get a pretty name for this device
-	 */
 	virtual int GetPrettyName(char *name, int len) = 0;
 
 	virtual ~BNetConfig(void);
 };
 
+/*--------- BNetDevice Class -------------------------------------*/
 
-class BIpDevice;
-
-/*
- * A dumb network device that just sends and receives
- * packets.  The caller of this device must know the type
- * of the media to use it (Ethernet, PPP, etc).
- */
 class BNetDevice {
 public:
 	virtual BNetPacket *ReceivePacket(void) = 0;
@@ -71,27 +76,22 @@ public:
 	virtual unsigned MaxPacketSize(void) = 0;
 	virtual net_device_type Type(void) = 0;
 
-	/*
-	 * Closes all resources
-	 */
 	virtual void Close(void) = 0;
 
-	/*
-	 * Open the IP device associated with this dev.
-	 * Ethernet devices should return NULL to use the built-in IP device.
-	 * All others should return something if they want IP to work on them.
-	 */
 	virtual BIpDevice *OpenIP(void) = 0;
 	virtual void Statistics(FILE *f) = 0;
 
 	virtual ~BNetDevice(void);
 };
 
+/*------------- Global Functions -----------------------------*/
 
-void deliver_packet(
-					BNetPacket *buf,
-					BNetDevice *dev
-					);
+_IMPEXP_NETDEV void deliver_packet(BNetPacket *buf, BNetDevice *dev);
+
+extern "C" _EXPORT BNetDevice *open_device(const char *device);
+extern "C" _EXPORT BNetConfig *open_config(const char *device);
+
+/*-------------------------------------------------------------*/
 
 #endif /* _NET_DEVICE_H */
 

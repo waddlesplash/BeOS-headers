@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -53,7 +54,7 @@ null_template class numeric_limits <int>;
 null_template class numeric_limits <unsigned int>;
 null_template class numeric_limits <long>;
 null_template class numeric_limits <unsigned long>;
-#ifdef MSIPL_64LONGLONG
+#ifdef __MSL_LONGLONG_SUPPORT__
 	null_template class numeric_limits <long long>;
 	null_template class numeric_limits <unsigned long long>;
 #endif
@@ -408,7 +409,7 @@ public:
 
 };
 
-#ifdef MSIPL_64LONGLONG
+#ifdef __MSL_LONGLONG_SUPPORT__
 
 null_template
 class numeric_limits <long long> {
@@ -499,7 +500,7 @@ public:
 
 };
 
-#endif //MSIPL_64LONGLONG
+#endif //__MSL_LONGLONG_SUPPORT__
 
 null_template
 class numeric_limits <short> {

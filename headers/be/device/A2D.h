@@ -12,6 +12,7 @@
 #ifndef	_A2D_H
 #define	_A2D_H
 
+#include <BeBuild.h>
 #include <stddef.h>
 #include <SupportDefs.h>
 

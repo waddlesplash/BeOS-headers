@@ -1,21 +1,22 @@
-//******************************************************************************
-//
-//	File:		Button.h
-//
-//	Description:	button class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			Button.h
+/
+/   Description:    BButton displays and controls a button in a window.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_BUTTON_H
 #define	_BUTTON_H
 
+#include <BeBuild.h>
 #include <Control.h>
 #include <Window.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BButton class --------------------------------------------*/
 
 class BButton : public BControl {
 
@@ -26,11 +27,11 @@ public:
 							BMessage *message,
 							uint32 resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP, 
 							uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
-
-					BButton(BMessage *data);
 virtual				~BButton();
 
-static	BButton		*Instantiate(BMessage *data);
+/* Archiving */
+					BButton(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		Draw(BRect updateRect);
@@ -59,7 +60,7 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 form,
 									const char *property);
 virtual	status_t	GetSupportedSuites(BMessage *data);
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -70,13 +71,14 @@ virtual	void		_ReservedButton3();
 		BButton		&operator=(const BButton &);
 
 		BRect		DrawDefault(BRect bounds, bool enabled);
+		status_t	Execute();
 
 		float		fCachedWidth;
 		bool		fDrawAsDefault;
 		uint32		_reserved[3];
 };
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-//------------------------------------------------------------------------------
-
-#endif
+#endif /* _BUTTON_H */

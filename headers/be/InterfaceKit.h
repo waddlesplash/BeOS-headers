@@ -38,8 +38,10 @@
 #include <ScrollBar.h>
 #include <ScrollView.h>
 #include <Shelf.h>
+#include <Slider.h>
 #include <StatusBar.h>
 #include <StringView.h>
+#include <TabView.h>
 #include <TextControl.h>
 #include <TextView.h>
 #include <View.h>

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -20,6 +21,7 @@ namespace std {
 #endif
 
 template <class charT>                    class  char_traits;
+typedef char_traits<char>	traits;		//970406 bkoz
 
 template <class charT, class traits>      class basic_ios;
 template <class charT, class traits>      class basic_istream;

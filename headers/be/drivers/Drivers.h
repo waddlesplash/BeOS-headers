@@ -8,6 +8,7 @@
 #ifndef _DRIVERS_H
 #define _DRIVERS_H
 
+#include <BeBuild.h>
 #include <sys/types.h>
 #include <SupportDefs.h>
 
@@ -44,11 +45,19 @@ typedef struct {
 } device_hooks;
 
 
-extern status_t		init_hardware(void);
-extern const char	**publish_devices();
-extern device_hooks	*find_device(const char *name);
-extern status_t		init_driver(void);
-extern void			uninit_driver(void);	
+#if __POWERPC__ && _BUILDING_driver
+#pragma export on
+#endif
+
+extern _EXPORT status_t		init_hardware(void);
+extern _EXPORT const char	**publish_devices();
+extern _EXPORT device_hooks	*find_device(const char *name);
+extern _EXPORT status_t		init_driver(void);
+extern _EXPORT void			uninit_driver(void);	
+
+#if __POWERPC__ && _BUILDING_driver
+#pragma export reset
+#endif
 
 /* ---
 	Be-defined opcodes for the control call.  Drivers should support
@@ -90,6 +99,14 @@ enum {
 	B_EJECT_DEVICE,					/* eject the media if supported */
 
 	B_GET_ICON,						/* return device icon (see struct below) */
+
+	B_GET_BIOS_GEOMETRY,			/* get info about device geometry */
+									/* as reported by the bios */
+									/*   returns struct geometry in *data */
+
+	B_AUDIO_DRIVER_BASE = 8000,		/* base for codes in audio_driver.h */
+	B_MIDI_DRIVER_BASE = 8100,		/* base for codes in midi_driver.h */
+	B_JOYSTICK_DRIVER_BASE = 8200,	/* base for codes in joystick.h */
 
 	B_DEVICE_OP_CODES_END = 9999	/* end of Be-defined contol id's */
 };
@@ -158,6 +175,12 @@ typedef struct {
 	void	*icon_data;			/* where to put 'em (usually BBitmap->Bits()) */
 } device_icon;
 
+
+#if __INTEL__
+
+#define __eieio()
+
+#endif /* __INTEL__ */
 
 
 #ifdef __cplusplus

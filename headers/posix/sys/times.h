@@ -1,6 +1,14 @@
 #ifndef _SYS_TIMES_H_
 #define _SYS_TIMES_H_
 
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
+
 #ifndef _CLOCK_T_DEFINED_
 
 typedef long	clock_t;
@@ -19,7 +27,7 @@ struct tms {
 extern "C" {
 #endif
 
-clock_t times(struct tms *buffer); 
+_IMPEXP_ROOT clock_t times(struct tms *buffer); 
 
 #ifdef __cplusplus
 }

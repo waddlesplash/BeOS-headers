@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -6,14 +7,9 @@
  **/
 
 #ifndef MSIPL_STDEXCEPT_H 
+#define MSIPL_STDEXCEPT_H
 
 #include <mcompile.h>
-
-#ifdef   MSIPL_EXCEPT
-#ifdef  __EDG_EXCEPT_CLASSES
-#include MOD_INCLUDE(typeinfo)
-#endif
-#endif
 
 #if __MWERKS__				// 960828 bkoz to cut the exception->string dependencies
 	#include <exception>
@@ -23,6 +19,12 @@
 	#else
 	#include MOD_INCLUDE(bstring)
 	#endif
+#endif
+
+#ifdef   MSIPL_EXCEPT
+#ifdef  __EDG_EXCEPT_CLASSES
+#include MOD_INCLUDE(typeinfo)
+#endif
 #endif
 
 #ifndef MSIPL_EXCEPTION_SEEN
@@ -65,14 +67,14 @@ public :
 
 class domain_error : public logic_error {
 public :
-//    domain_error (const char *what_arg) : logic_error (what_arg) { } // 970630 mani
+    domain_error (const char *what_arg) : logic_error (what_arg) { } // 980107 mani
     domain_error (const string& what_arg) : logic_error (what_arg) { }
     virtual ~domain_error () MSIPL_THROW;
 };
 
 class invalid_argument : public logic_error {
 public :
-//    invalid_argument (const char *what_arg) : logic_error (what_arg) { } // 970630 mani
+    invalid_argument (const char *what_arg) : logic_error (what_arg) { } // 980107 mani
     invalid_argument (const string& what_arg) : logic_error (what_arg) { }
     virtual ~invalid_argument () MSIPL_THROW;
 };
@@ -93,8 +95,8 @@ public :
 
 class runtime_error : public exception {
 public :
+    runtime_error (const char *what_arg) : exception (what_arg) { } // 980107 mani
     runtime_error (const string& what_arg) : exception (what_arg) { }
-//    runtime_error (const char *what_arg) : exception (what_arg) { } // 970630 mani
     virtual ~runtime_error () MSIPL_THROW;
 protected :
     runtime_error () : exception () { }
@@ -102,15 +104,15 @@ protected :
 
 class range_error : public runtime_error {
 public :
+    range_error (const char *what_arg) : runtime_error (what_arg) { } // 980107 mani
     range_error (const string& what_arg) : runtime_error (what_arg) { }
-//    range_error (const char *what_arg) : runtime_error (what_arg) { } // 970630 mani
     virtual ~range_error () MSIPL_THROW;
 };
 
 class overflow_error : public runtime_error {
 public :
+    overflow_error (const char *what_arg) : runtime_error (what_arg) { } // 980107 mani
     overflow_error (const string& what_arg) : runtime_error (what_arg) { }
-//    overflow_error (const char *what_arg) : runtime_error (what_arg) { } // 970630 mani
     virtual ~overflow_error () MSIPL_THROW;
 };
 
@@ -254,14 +256,13 @@ private :
 } /* namespace std */
 #endif
 
+#endif /* MSIPL_EXCEPTION_SEEN */
+
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
 	#pragma import reset
 #endif
 #pragma options align=reset
 
-#endif /* MSIPL_EXCEPTION_SEEN */
-
-#define MSIPL_STDEXCEPT_H
 
 #endif /* MSIPL_STDEXCEPT_H */
 
@@ -271,5 +272,5 @@ private :
 //960828 bkoz line 122 moved bad_cast, bad_typeid to typeinfo.h
 //961122 bkoz added const char * ctors for 3 classes for inlining...
 //961210 bkoz added alignment wrapper
-// 970630 mani Complete the 961122 for all classes. Why didn't bkoz
-//             do this in the first place?
+//980107 Be-mani Complete the 961122 for all classes. Why didn't bkoz
+//               do this in the first place?

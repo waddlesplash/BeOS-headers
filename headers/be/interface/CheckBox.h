@@ -1,21 +1,23 @@
-//******************************************************************************
-//
-//	File:		CheckBox.h
-//
-//	Description:	CheckBox class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			CheckBox.h
+/
+/   Description:    BCheckBox displays an on/off control.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 
 #ifndef	_CHECK_BOX_H
 #define	_CHECK_BOX_H
 
+#include <BeBuild.h>
 #include <Control.h>
 #include <Window.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BCheckBox class ------------------------------------------*/
 
 class BCheckBox : public BControl {
 
@@ -26,11 +28,11 @@ public:
 							BMessage *message,
 							uint32 resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP, 
 							uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
-
-					BCheckBox(BMessage *data);
 virtual				~BCheckBox();
 
-static	BCheckBox	*Instantiate(BMessage *data);
+/* Archiving */
+					BCheckBox(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		Draw(BRect updateRect);
@@ -56,7 +58,9 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 form,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
-virtual status_t	Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -70,7 +74,7 @@ virtual	void		_ReservedCheckBox3();
 		uint32		_reserved[2];
 };
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-//------------------------------------------------------------------------
-
-#endif
+#endif /* _CHECK_BOX_H */

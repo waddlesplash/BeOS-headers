@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -174,7 +175,6 @@ public:
         return (*((insert (value_type (k, T ()))).first)).second;
     }
 
-#pragma extended_errorcheck off
     const mapped_type& operator[] (const key_type& k) const
     {
         // return (*((insert (value_type (k, T ()))).first)).second;
@@ -188,12 +188,9 @@ public:
             exit (1);
 #endif
         }
-        else	
-        {
-            return (*iter).second;
-         }
+
+		return (*iter).second;
     }
-#pragma extended_errorcheck reset
 
     //
     // 23.3.1.6  modifiers

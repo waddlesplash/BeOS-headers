@@ -1,18 +1,23 @@
-/*
-	
-	MenuBar.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/*******************************************************************************
+/
+/	File:			Menubar.h
+/
+/   Description:    BMenuBar is a menu that's at the root of a menu hierarchy.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _MENU_BAR_H
 #define _MENU_BAR_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Menu.h>
 #include <OS.h>
+
+/*----------------------------------------------------------------*/
+/*----- BmenuBar declarations ------------------------------------*/
 
 enum menu_bar_border {
 	B_BORDER_FRAME,
@@ -25,24 +30,22 @@ class BWindow;
 class BMenuItem;
 class BMenuField;
 
+/*----------------------------------------------------------------*/
+/*----- BMenuBar class -------------------------------------------*/
+
 class BMenuBar : public BMenu
 {
 public:
-
-/* Public Interface for clients of this class */
-
 						BMenuBar(	BRect frame,
 									const char *title,
 									uint32 resizeMask =
 										B_FOLLOW_LEFT_RIGHT | B_FOLLOW_TOP,
 									menu_layout layout = B_ITEMS_IN_ROW,
-									bool resizeToFit = TRUE);
+									bool resizeToFit = true);
 						BMenuBar(BMessage *data);
 virtual					~BMenuBar();
-static	BMenuBar		*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
-
-/* Public Interface for derived classes and partner classes */
 
 virtual	void			SetBorder(menu_bar_border border);
 		menu_bar_border	Border() const;
@@ -65,12 +68,15 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
-virtual status_t		Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 friend BWindow;
 friend BMenuItem;
 friend BMenuField;
+friend BMenu;
 
 virtual	void			_ReservedMenuBar1();
 virtual	void			_ReservedMenuBar2();
@@ -80,16 +86,17 @@ virtual	void			_ReservedMenuBar4();
 		BMenuBar		&operator=(const BMenuBar &);
 
 		void			StartMenuBar(	int32 menuIndex,
-										bool sticky = TRUE,
-										bool show_menu = FALSE,
+										bool sticky = true,
+										bool show_menu = false,
 										BRect *special_rect = NULL);
 static	long			TrackTask(void *arg);
 		BMenuItem		*Track(	int32 *action,
 								int32 startIndex = -1,
-								bool showMenu = FALSE);
+								bool showMenu = false);
+		void			StealFocus();
 		void			RestoreFocus();
 		void			InitData(menu_layout layout);
-		
+
 		menu_bar_border	fBorder;
 		thread_id		fTrackingPID;
 		int32			fPrevFocusToken;
@@ -99,4 +106,7 @@ static	long			TrackTask(void *arg);
 		bool			fTracking;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MENU_BAR_H */

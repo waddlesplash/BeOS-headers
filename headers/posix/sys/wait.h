@@ -3,13 +3,20 @@
 
 
 #include <sys/types.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-pid_t wait(int *statloc);
-pid_t waitpid(pid_t pid, int *stat_loc, int options);
+_IMPEXP_ROOT pid_t wait(int *statloc);
+_IMPEXP_ROOT pid_t waitpid(pid_t pid, int *stat_loc, int options);
 
 #ifdef __cplusplus
 }

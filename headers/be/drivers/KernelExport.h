@@ -4,13 +4,14 @@
 	Functions exported from the kernel for driver use that are not already
 	prototyped elsewhere.
 	
-	Copyright 1996-97, Be Incorporated.
+	Copyright 1996-98, Be Incorporated.
 +++++ */
 
 
 #ifndef _KERNEL_EXPORT_H
 #define _KERNEL_EXPORT_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <OS.h>
 
@@ -23,7 +24,7 @@ extern "C" {
 	kernel threads
 --- */
 
-extern thread_id spawn_kernel_thread (
+extern _IMPEXP_KERNEL thread_id spawn_kernel_thread (
 	thread_entry	function, 
 	const char 		*thread_name, 
 	long			priority,
@@ -37,8 +38,8 @@ extern thread_id spawn_kernel_thread (
 
 typedef ulong		cpu_status;
 
-extern cpu_status	disable_interrupts();
-extern void			restore_interrupts(cpu_status status);
+extern _IMPEXP_KERNEL cpu_status	disable_interrupts();
+extern _IMPEXP_KERNEL void			restore_interrupts(cpu_status status);
 
 
 /* ---
@@ -48,10 +49,8 @@ extern void			restore_interrupts(cpu_status status);
 
 typedef vlong	spinlock;
 
-extern spinlock *		create_spinlock (void);
-extern void				delete_spinlock (spinlock *lock);
-extern void				acquire_spinlock (spinlock *lock);
-extern void				release_spinlock (spinlock *lock);
+extern _IMPEXP_KERNEL void			acquire_spinlock (spinlock *lock);
+extern _IMPEXP_KERNEL void			release_spinlock (spinlock *lock);
 
 
 /* ---
@@ -59,19 +58,6 @@ extern void				release_spinlock (spinlock *lock);
 --- */
 
 typedef bool (*interrupt_handler) (void *data);
-
-
-/* ---
-	ISA interrupts, access to ISA i/o space
---- */
-
-extern long		disable_isa_interrupt (long irq_number);
-extern long		enable_isa_interrupt (long irq_number);
-extern long		set_isa_interrupt_handler (
-	long				irq_number,
-	interrupt_handler	handler,
-	void				*data
-);
 
 /* ---
 	virtual memory buffer functions
@@ -85,19 +71,19 @@ typedef struct {
 	ulong		size;					/* size of block */
 } physical_entry;
 
-extern long		lock_memory (
+extern _IMPEXP_KERNEL long		lock_memory (
 	void		*buf,			/* -> virtual buffer to lock (make resident) */
 	ulong		num_bytes,		/* size of virtual buffer */
 	ulong		flags
 );
 
-extern long		unlock_memory (
+extern _IMPEXP_KERNEL long		unlock_memory (
 	void		*buf,			/* -> virtual buffer to unlock */
 	ulong		num_bytes,		/* size of virtual buffer */
 	ulong		flags
 );
 
-extern long		get_memory_map (
+extern _IMPEXP_KERNEL long		get_memory_map (
 	const void		*address,		/* -> virtual buffer to translate */
 	ulong			size,			/* size of virtual buffer */
 	physical_entry	*table,			/* -> caller supplied table */
@@ -115,7 +101,7 @@ extern long		get_memory_map (
 	call to map physical memory - typically used for memory-mapped i/o
 ----- */
 
-extern area_id	map_physical_memory (
+extern _IMPEXP_KERNEL area_id	map_physical_memory (
 	const char	*area_name,
 	void		*physical_address,
 	size_t		size,
@@ -124,11 +110,80 @@ extern area_id	map_physical_memory (
 	void		**mapped_address
 );
 
+
+/* -----
+	access to i/o space, both on PCI and ISA busses.  A driver must first map the
+	range they wish to access.  For ISA devices, they pass the starting port number and
+	size.  For PCI devices, they pass the base register value and the size.  Once mapped,
+	drivers can use any address in the returned mapped range with the read/write_io_xxx
+	calls to access the i/o space.
+
+	NOTE: not imeplemented yet.
+----- */
+
+extern _IMPEXP_KERNEL status_t	map_io_range (
+	uint32		start_of_range,		/* start of i/o range to be mapped */
+	size_t		size,				/* size of range to be mapped */
+	uint32		flags,				/* flags (see below) */
+	uint32		*mapped_io_address	/* returned: start of mapped range */
+);
+
+enum {
+	B_ALLOW_MULTIPLE_IO_MAPPING = 1
+};
+
+extern _IMPEXP_KERNEL status_t	unmap_io_range (
+	uint32		mapped_io_address	/* start of mapped range */
+);
+
+
+/* -----
+	allocate some space in the i/o address space map.  Used for unusual devices that
+	do NOT use a PCI base register to request i/o space, but instead expect the
+	allocation to be done later and filled in.  Most PCI devices will just use 
+	a base register, for which this allocation has already been done.
+
+	NOTE: not implemented yet.
+----- */
+
+extern _IMPEXP_KERNEL status_t	allocate_and_map_io_range (
+	uint32		address,				/* address (if needed - see flags) */
+	size_t		size,					/* size of range to be mapped */
+	uint32		alignment,				/* alignment desired (1,2,4,8 etc) */
+	uint32		flags,					/* flags (see below) */
+	uint32		*allocated_io_address,	/* returned: start of allocated, unmapped range */
+	uint32		*mapped_io_address		/* returned: start of mapped range */
+);
+
+extern _IMPEXP_KERNEL status_t	unallocate_io_range (
+	uint32		allocated_io_address	/* start of allocated, unmapped range */
+);
+
+enum {
+	B_ANY_IO_ADDRESS = 1,				/* map at any address */
+	B_EXACT_IO_ADDRESS = 2,				/* map at exactly passed address */
+	B_HIGHER_IO_ADDRESS = 4,			/* map above passed address */
+	B_LOWER_IO_ADDRESS = 8				/* map below passed address */
+};
+
+
+/* -----
+	i/o space access
+----- */
+
+extern _IMPEXP_KERNEL uint8		read_io_8 (int mapped_io_addr);
+extern _IMPEXP_KERNEL void		write_io_8 (int mapped_io_addr, uint8 value);
+extern _IMPEXP_KERNEL uint16	read_io_16 (int mapped_io_addr);
+extern _IMPEXP_KERNEL void		write_io_16 (int mapped_io_addr, uint16 value);
+extern _IMPEXP_KERNEL uint32	read_io_32 (int mapped_io_addr);
+extern _IMPEXP_KERNEL void		write_io_32 (int mapped_io_addr, uint32 value);
+
+
 /* ---
 	address of system memory when viewed from ISA or PCI (by bus masters).
 --- */
 
-extern void		*ram_address (const void *physical_address_in_system_memory);
+extern _IMPEXP_KERNEL void		*ram_address (const void *physical_address_in_system_memory);
 
 /* ---
 	ISA dma support
@@ -136,10 +191,10 @@ extern void		*ram_address (const void *physical_address_in_system_memory);
 
 #define B_MAX_ISA_DMA_COUNT	0x10000
 
-extern long		lock_isa_dma_channel (long channel);
-extern long		unlock_isa_dma_channel (long channel);
+extern _IMPEXP_KERNEL long		lock_isa_dma_channel (long channel);
+extern _IMPEXP_KERNEL long		unlock_isa_dma_channel (long channel);
 
-extern long start_isa_dma (
+extern _IMPEXP_KERNEL long start_isa_dma (
 	long	channel,				/* dma channel to use */
 	void	*buf,					/* buffer to transfer */
 	long	transfer_count,			/* # transfers */
@@ -166,7 +221,7 @@ enum {
 	B_16_BIT_TRANSFER
 };
 
-extern long		make_isa_dma_table (
+extern _IMPEXP_KERNEL long		make_isa_dma_table (
 	const void		*buffer,		/* buffer to make a table for */
 	long			buffer_size,	/* buffer size */
 	ulong			num_bits,		/* dma transfer size that will be used */
@@ -174,7 +229,7 @@ extern long		make_isa_dma_table (
 	long			num_entries		/* max # entries in table */
 );
 
-extern long		start_scattered_isa_dma (
+extern _IMPEXP_KERNEL long		start_scattered_isa_dma (
 	long				channel,	/* channel # to use */
 	const isa_dma_entry	*table,		/* -> scatter/gather table */
 	uchar				mode,		/* mode flags */
@@ -182,17 +237,17 @@ extern long		start_scattered_isa_dma (
 );
 
 
-/* ---
-	Be's onboard interrupt controller support
---- */
+/* interrupt handling support for device drivers */
 
-extern long		disable_io_interrupt (long interrupt_number);
-extern long		enable_io_interrupt (long interrupt_number);
-extern long		clear_io_interrupt (long interrupt_number);
-extern long		set_io_interrupt_handler (
-	long				interrupt_number,
-	interrupt_handler	handler,
-	void				*data
+extern _IMPEXP_KERNEL long 	install_io_interrupt_handler (
+	long 				interrupt_number, 
+	interrupt_handler	handler, 
+	void				*data, 
+	ulong 				flags
+);
+extern _IMPEXP_KERNEL long 	remove_io_interrupt_handler (
+	long 				interrupt_number,
+	interrupt_handler	handler
 );
 
 
@@ -202,9 +257,9 @@ extern long		set_io_interrupt_handler (
 
 /* platform_type return value is defined in OS.h */
 
-extern platform_type	platform();
-extern long				motherboard_version (void);
-extern long				io_card_version (void);
+extern _IMPEXP_KERNEL platform_type	platform();
+extern _IMPEXP_KERNEL long			motherboard_version (void);
+extern _IMPEXP_KERNEL long			io_card_version (void);
 
 
 /* ---
@@ -212,26 +267,28 @@ extern long				io_card_version (void);
 	at 19.2 kbaud, no parity, 8 bit, 1 stop bit.
 --- */
 
-extern void		dprintf (const char *format, ...);		/* just like printf */
-extern bool		set_dprintf_enabled (bool new_state);	/* returns old state */
+extern _IMPEXP_KERNEL void		dprintf (const char *format, ...);		/* just like printf */
+extern _IMPEXP_KERNEL bool		set_dprintf_enabled (bool new_state);	/* returns old state */
 
-extern void     panic(const char *format, ...);
+extern _IMPEXP_KERNEL void		panic(const char *format, ...);
 
-extern void		kernel_debugger (const char *message);	/* enter kernel debugger */
-extern void     kprintf (const char *fmt, ...);         /* only for debugger cmds */
-extern ulong    parse_expression (char *str);           /* util for debugger cmds */
-extern int      add_debugger_cmd (char *name,           /* add a cmd to debugger */
-                                  int (*func)(int argc, char **argv), 
-                                  char *help);
-extern int      load_driver_symbols(const char *driver_name);
+extern _IMPEXP_KERNEL void		kernel_debugger (const char *message);	/* enter kernel debugger */
+extern _IMPEXP_KERNEL void		kprintf (const char *fmt, ...);         /* only for debugger cmds */
+extern _IMPEXP_KERNEL ulong		parse_expression (char *str);           /* util for debugger cmds */
+extern _IMPEXP_KERNEL int		add_debugger_command (char *name,       /* add a cmd to debugger */
+									int (*func)(int argc, char **argv), 
+									char *help);
+extern _IMPEXP_KERNEL int		load_driver_symbols(const char *driver_name);
 
 
 /* -----
 	misc
 ----- */
 
-extern void		spin (bigtime_t num_microseconds);
-
+extern _IMPEXP_KERNEL void	spin (bigtime_t num_microseconds);
+extern _IMPEXP_KERNEL int	register_kernel_daemon(void (*func)(void *, int), void *arg, int freq);
+extern _IMPEXP_KERNEL int	unregister_kernel_daemon(void (*func)(void *, int), void *arg);
+extern _IMPEXP_KERNEL int	has_signals_pending(struct thread_rec *);
 
 #ifdef __cplusplus
 }

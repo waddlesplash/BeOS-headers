@@ -12,6 +12,9 @@
 #ifndef _MIDI_SYNTH_H
 #define _MIDI_SYNTH_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <Midi.h>
 #include <Synth.h>
 #include <MidiDefs.h>

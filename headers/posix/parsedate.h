@@ -89,14 +89,21 @@
 #ifndef __time__
 #include <time.h>
 #endif
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-time_t       parsedate(const char *s, time_t now);
-void         set_dateformats(const char *table[]);
-const char **get_dateformats();
+_IMPEXP_ROOT time_t       parsedate(const char *s, time_t now);
+_IMPEXP_ROOT void         set_dateformats(const char *table[]);
+_IMPEXP_ROOT const char **get_dateformats();
 
 #ifdef __cplusplus
 }

@@ -1,21 +1,23 @@
-//******************************************************************************
-//
-//	File:		ScrollView.h
-//
-//	Description:	auto-scrollbar(s) and bordered view class interface
-//
-//	Copyright 1993-97, Be Incorporated
-//
-//******************************************************************************
- 
+/*******************************************************************************
+/
+/	File:			ScrollView.h
+/
+/   Description:    BScrollView provides scrolling machinery for its contents
+/                   (where the "contents" is some other view).
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_SCROLL_VIEW_H
 #define	_SCROLL_VIEW_H
 
+#include <BeBuild.h>
 #include <ScrollBar.h>
 #include <View.h>
 
-/* --------------------------------------------------------------------- */
+/*----------------------------------------------------------------*/
+/*----- BScrollView class ----------------------------------------*/
 
 class BScrollView : public BView {
 
@@ -25,12 +27,12 @@ public:
 								uint32 resizeMask = B_FOLLOW_LEFT |
 													B_FOLLOW_TOP,
 								uint32 flags = 0,
-								bool horizontal = FALSE,
-								bool vertical = FALSE, 
+								bool horizontal = false,
+								bool vertical = false, 
 								border_style border = B_FANCY_BORDER);
 						BScrollView(BMessage *data);
 virtual					~BScrollView();
-static	BScrollView		*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Draw(BRect updateRect);
@@ -59,7 +61,9 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										BMessage *specifier,
 										int32 form,
 										const char *property);
-virtual status_t		Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -80,9 +84,15 @@ static	BRect			CalcFrame(BView *, bool, bool, border_style);
 		BScrollBar		*fHSB;	
 		BScrollBar		*fVSB;	
 		border_style	fBorder;
-		uint32			_reserved[4];
+		uint16			fPrevWidth;
+		uint16			fPrevHeight;
+
+		uint32			_reserved[3];	/* was 4 */
 
 		bool			fHighlighted;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _SCROLL_VIEW_H */

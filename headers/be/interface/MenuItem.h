@@ -1,15 +1,19 @@
-/*
-	
-	MenuItem.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/*******************************************************************************
+/
+/	File:			MenuItem.h
+/
+/   Description:    BMenuItem represents a single item in a BMenu.
+/                   BSeparatorItem is a cosmetic menu item that demarcates
+/                   groups of other items.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _MENU_ITEM_H
 #define _MENU_ITEM_H
-
+ 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Archivable.h>
 #include <Message.h>
@@ -22,11 +26,11 @@ class BMenu;
 class BPopUpMenu;
 class BMenuBar;
 
+/*----------------------------------------------------------------*/
+/*----- BMenuItem class ------------------------------------------*/
+
 class BMenuItem : public BArchivable, public BInvoker {
 public:
-
-/* Public Interface for clients of this class */
-
 						BMenuItem(	const char *label,
 									BMessage *message,
 									char shortcut = 0,
@@ -34,7 +38,7 @@ public:
 						BMenuItem(BMenu *menu, BMessage *message = NULL);
 						BMenuItem(BMessage *data);
 virtual					~BMenuItem();
-static	BMenuItem		*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 	
 virtual	void			SetLabel(const char *name);
@@ -63,6 +67,7 @@ virtual	void			Highlight(bool on);
 		bool			IsSelected() const;
 		BPoint			ContentLocation() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 friend	BMenu;
 friend	BPopUpMenu;
@@ -79,7 +84,13 @@ virtual	void		_ReservedMenuItem4();
 		void		InitData();
 		void		InitMenuData(BMenu *menu);
 		void		Install(BWindow *window);
+
+/*----- Protected function -----------------------------------------*/
+protected:
 virtual	status_t	Invoke(BMessage *msg = NULL);
+
+/*----- Private or reserved -----------------------------------------*/
+private:
 		void		Uninstall();
 		void		SetSuper(BMenu *super);
 		void		Select(bool on);
@@ -93,10 +104,10 @@ virtual	status_t	Invoke(BMessage *msg = NULL);
 		BMenu		*fSubmenu;
 		BWindow		*fWindow;
 		BMenu		*fSuper;
-		BRect		fBounds;		// in coord system of Super menu view
+		BRect		fBounds;
 		uint32		fModifiers;
 		float		fCachedWidth;
-		short		fTriggerIndex;
+		int16		fTriggerIndex;
 		char		fUserTrigger;
 		char		fSysTrigger;
 		char		fShortcutChar;
@@ -107,6 +118,9 @@ virtual	status_t	Invoke(BMessage *msg = NULL);
 		uint32		_reserved[4];
 };
 
+/*----------------------------------------------------------------*/
+/*----- BSeparatorItem class -------------------------------------*/
+
 class BSeparatorItem : public BMenuItem
 {
 public:
@@ -114,7 +128,7 @@ public:
 						BSeparatorItem(BMessage *data);
 virtual					~BSeparatorItem();
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
-static	BSeparatorItem	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	void			SetEnabled(bool state);
 
 protected:
@@ -122,6 +136,7 @@ protected:
 virtual	void			GetContentSize(float *width, float *height);
 virtual	void			Draw();
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 virtual	void		_ReservedSeparatorItem1();
 virtual	void		_ReservedSeparatorItem2();
@@ -131,4 +146,7 @@ virtual	void		_ReservedSeparatorItem2();
 		uint32		_reserved[1];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MENU_ITEM_H */

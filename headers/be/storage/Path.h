@@ -18,6 +18,9 @@
 #ifndef _PATH_H
 #define _PATH_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/types.h>
 #include <SupportDefs.h>
 #include <StorageDefs.h>
@@ -29,20 +32,20 @@ class BPath : public BFlattenable {
 public:
 						BPath();
 						BPath(const char *dir, const char *leaf = NULL,
-							bool normalize = FALSE);
+							bool normalize = false);
 						BPath(const BDirectory *dir, const char *leaf,
-							bool normalize = FALSE);
+							bool normalize = false);
 						BPath(const BPath &path);
 
-	virtual				~BPath();
+virtual					~BPath();
 
 			status_t	InitCheck() const;
 
 			status_t	SetTo(const char *path, const char *leaf = NULL,
-							bool normalize = FALSE);
+							bool normalize = false);
 			status_t	SetTo(const BDirectory *dir, const char *path,
-							bool normalize = FALSE);
-			status_t	Append(const char *path, bool normalize = FALSE);
+							bool normalize = false);
+			status_t	Append(const char *path, bool normalize = false);
 			void		Unset();
 
 			const char *Path() const;

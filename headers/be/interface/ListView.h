@@ -1,17 +1,18 @@
 /*******************************************************************************
-**
-**	File:		ListView.h
-**
-**	Description:	client list view class.
-**
-**	Copyright 1992-97, Be Incorporated
-**
-*******************************************************************************/
+/
+/	File:			ListView.h
+/
+/   Description:    BListView represents a one-dimensional list view.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 
 #ifndef _LIST_VIEW_H
 #define _LIST_VIEW_H
 
+#include <BeBuild.h>
 #include <View.h>
 #include <Looper.h>
 #include <List.h>
@@ -23,26 +24,29 @@ enum list_view_type {
 	B_MULTIPLE_SELECTION_LIST
 };
 
+/*----------------------------------------------------------------*/
+/*----- BListView class ------------------------------------------*/
+
 class BListView : public BView, public BInvoker
 {
 
 public:
-						BListView(	BRect frame,
-									const char *name,
-									list_view_type type = B_SINGLE_SELECTION_LIST,
-									uint32 resizeMask = B_FOLLOW_LEFT |
-														B_FOLLOW_TOP,
-									uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS |
+						BListView(BRect frame,
+								const char *name,
+								list_view_type type = B_SINGLE_SELECTION_LIST,
+								uint32 resizeMask = B_FOLLOW_LEFT |
+													B_FOLLOW_TOP,
+								uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS |
 													B_NAVIGABLE);
 						BListView(BMessage *data);
 virtual					~BListView();
-static	BListView		*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 virtual	void			Draw(BRect updateRect);
 virtual	void			MessageReceived(BMessage *msg);
 virtual	void			MouseDown(BPoint where);
 virtual	void			KeyDown(const char *bytes, int32 numBytes);
-virtual	void			MakeFocus(bool state = TRUE);
+virtual	void			MakeFocus(bool state = true);
 virtual	void			FrameResized(float newWidth, float newHeight);
 virtual	void			TargetedByScrollView(BScrollView *scroller);
 		void			ScrollTo(float x, float y);
@@ -81,8 +85,8 @@ virtual	void			MakeEmpty();
 		void			InvalidateItem(int32 index);
 		void			ScrollToSelection();
 
-		void			Select(int32 index, bool extend = FALSE);
-		void			Select(int32 from, int32 to, bool extend = FALSE);
+		void			Select(int32 index, bool extend = false);
+		void			Select(int32 from, int32 to, bool extend = false);
 		bool			IsItemSelected(int32 index) const;
 		int32			CurrentSelection(int32 index = 0) const;
 virtual	status_t		Invoke(BMessage *msg = NULL);
@@ -94,7 +98,13 @@ virtual	status_t		Invoke(BMessage *msg = NULL);
 virtual void			SelectionChanged();
 
 		void			SortItems(int (*cmp)(const void *, const void *));
-	
+
+
+/* These functions bottleneck through DoMiscellaneous() */
+		bool			SwapItems(int32 a, int32 b);
+		bool			MoveItem(int32 from, int32 to);
+		bool			ReplaceItem(int32 index, BListItem * item);
+
 virtual	void			AttachedToWindow();
 virtual	void			FrameMoved(BPoint new_position);
 
@@ -107,7 +117,7 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
-virtual status_t		Perform(uint32 d, void *arg);
+virtual status_t		Perform(perform_code d, void *arg);
 
 virtual void			WindowActivated(bool state);
 virtual	void			MouseUp(BPoint pt);
@@ -115,15 +125,23 @@ virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void			DetachedFromWindow();
 virtual bool			InitiateDrag(BPoint pt, int32 itemIndex, 
 										bool initialySelected);
-							// return false if list does not support drag and 
-							// drop else process drag and return true
 			
-// ------------------------------------------------------------------
+protected:
+
+		enum MiscCode { B_NO_OP, B_REPLACE_OP, B_MOVE_OP, B_SWAP_OP };
+		union MiscData {
+			struct Spare { int32 data[5]; };
+			struct Replace { int32 index; BListItem * item; } replace;
+			struct Move { int32 from; int32 to; } move;
+			struct Swap { int32 a; int32 b; } swap;
+		};
+virtual	bool			DoMiscellaneous(MiscCode code, MiscData * data);
+
+/*----- Private or reserved -----------------------------------------*/
 
 private:
 friend class BOutlineListView;
 
-virtual	void			_ReservedListView1();
 virtual	void			_ReservedListView2();
 virtual	void			_ReservedListView3();
 virtual	void			_ReservedListView4();
@@ -139,11 +157,17 @@ virtual	void			_ReservedListView4();
 		bool			_Select(int32 index, bool extend);
 		bool			_Select(int32 from, int32 to, bool extend);
 		bool			_Deselect(int32 index);
+		void			Deselect(int32 from, int32 to);
 		bool			_DeselectAll(int32 except_from, int32 except_to);
 		int32			CalcFirstSelected(int32 after);
 		int32			CalcLastSelected(int32 before);
 virtual void			DrawItem(BListItem *item, BRect itemRect, 
 							bool complete = false);
+
+		bool			DoSwapItems(int32 a, int32 b);
+		bool			DoMoveItem(int32 from, int32 to);
+		bool			DoReplaceItem(int32 index, BListItem * item);
+		void			RescanSelection(int32 from, int32 to);
 
 		BList			fList;
 		list_view_type	fListType;
@@ -156,7 +180,11 @@ virtual void			DrawItem(BListItem *item, BRect itemRect,
 		uint32			_reserved[4];
 };
 
-inline void	BListView::ScrollTo(float x, float y)		// OK, no private parts
+inline void	BListView::ScrollTo(float x, float y)
+	/* OK, no private parts */
 	{ ScrollTo(BPoint(x, y)); }
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _LIST_VIEW_H */

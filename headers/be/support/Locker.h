@@ -1,19 +1,22 @@
-//******************************************************************************
-//
-//	File:		Locker.h
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			Locker.h
+/
+/	Description:	BLocker class defines a nestable locking mechanism.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef	_LOCKER_H
 #define	_LOCKER_H
 
+#include <BeBuild.h>
 #include <OS.h>
 #include <SupportDefs.h>
 
-//------------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
+/*----- BLocker class -----------------------------------------*/
 
 class BLocker {
 public:
@@ -24,16 +27,15 @@ virtual				~BLocker();
 		bool		Lock();
 		void		Unlock();
 		bool		IsLocked() const;
-
-		// should only be used in special situations.
 		status_t		LockWithTimeout(bigtime_t timeout);
 
-		// following functions are useful for debugging.
+/* -- For debugging (only!) -- */
 		thread_id	LockingThread() const;
 		int32		CountLocks() const;
 		int32		CountLockRequests() const;
 		sem_id		Sem() const;
 
+/*----- Private or reserved ---------------*/
 private:
 		bool		_Lock(bigtime_t timeout, status_t *error);
 
@@ -43,4 +45,7 @@ private:
 		int32		fOwnerCount;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _LOCKER_H */

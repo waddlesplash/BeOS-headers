@@ -1,17 +1,19 @@
-/*******************************************************************************
-//
-//	File:			Application.h
-//
-//	Description:	Client application class.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//*****************************************************************************/
+/******************************************************************************
+/
+/	File:			Application.h
+/
+/	Description:	BApplication class is the center of the application
+/					universe.  The global be_app and be_app_messenger 
+/					variables are defined here as well.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
+#ifndef _APPLICATION_H
+#define _APPLICATION_H
 
-#ifndef	_APPLICATION_H
-#define	_APPLICATION_H
-
+#include <BeBuild.h>
 #include <StorageDefs.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
@@ -24,28 +26,24 @@
 #include <PopUpMenu.h>
 
 class BDirectory;
-
-//------------------------------------------------------------------------------
-
 class BView;
-class BRect;
 class BList;
 class _BSession_;
-class BWindow;
 
-//------------------------------------------------------------------------------
+/*----- BApplication class --------------------------------------------*/
 
 class BApplication : public BLooper {
 
 public:
-						BApplication(uint32 signature);
 						BApplication(const char *signature);
 virtual					~BApplication();
 
+/* Archiving */
 						BApplication(BMessage *data);
-static	BApplication	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
+/* App control and System Message handling */
 virtual	thread_id		Run();
 virtual	void			Quit();
 virtual bool			QuitRequested();
@@ -57,14 +55,14 @@ virtual	void			AppActivated(bool active);
 virtual	void			RefsReceived(BMessage *a_message);
 virtual	void			AboutRequested();
 
+/* Scripting */
 virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 index,
 										BMessage *specifier,
 										int32 form,
 										const char *property);
 
-		bool			IsLaunching() const;
-		status_t		GetAppInfo(app_info *info) const;
+/* Cursor control, window list, and app info */
 		void			ShowCursor();
 		void			HideCursor();
 		void			ObscureCursor();
@@ -72,14 +70,19 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 		void			SetCursor(const void *cursor);
 		int32			CountWindows() const;
 		BWindow			*WindowAt(int32 index) const;
+		bool			IsLaunching() const;
+		status_t		GetAppInfo(app_info *info) const;
+
 virtual	void			DispatchMessage(BMessage *an_event,
 										BHandler *handler);
 		void			SetPulseRate(bigtime_t rate);
 
+/* More scripting  */
 virtual status_t		GetSupportedSuites(BMessage *data);
-virtual status_t		Perform(uint32 d, void *arg);
 
-// ------------------------------------------------------------------
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -89,6 +92,7 @@ friend class BScrollBar;
 friend long _pulse_task_(void *arg);
 friend void _toggle_handles_(bool);
 						
+						BApplication(uint32 signature);
 						BApplication(const BApplication &);
 		BApplication	&operator=(const BApplication &);
 
@@ -123,7 +127,8 @@ virtual	bool			ScriptReceived(BMessage *msg,
 									int32 bitmap_token,
 									BHandler *reply_to);
 		void			write_drag(_BSession_ *session, BMessage *a_message);
-		bool			quit_all_windows(bool request, bool incl_menu = FALSE);
+		bool			quit_all_windows(bool force);
+		bool			window_quit_loop(bool, bool);
 		void			do_argv(BMessage *msg);
 		void			SetAppCursor();
 		void			enable_pulsing(bool enable);
@@ -131,13 +136,15 @@ virtual	bool			ScriptReceived(BMessage *msg,
 		int32			count_windows(bool incl_menus) const;
 		BWindow			*window_at(uint32 index, bool incl_menus) const;
 		status_t		get_window_list(BList *list, bool incl_menus) const;
+static	int32			async_quit_entry(void *);
+static	int32			sPulseEnabledCount;
 
 		const char		*fAppName;
 		int32			fServerFrom;
 		int32			fServerTo;
 		void			*fCursorData;
 		thread_id		fPulseTaskID;
-		int32			fPulseEnabledCount;
+		int32			_unused;
 		bigtime_t		fPulseRate;
 		int32			fPulsePhase;
 		uint32			fInitialWorkspace;
@@ -146,11 +153,12 @@ virtual	bool			ScriptReceived(BMessage *msg,
 		bool			fReadyToRunCalled;
 };
 
-//------------------------------------------------------------------------------
+/*----- Global Objects -----------------------------------------*/
 
-extern BApplication	*be_app;
-extern BMessenger	be_app_messenger;
+extern _IMPEXP_BE BApplication	*be_app;
+extern _IMPEXP_BE BMessenger	be_app_messenger;
 
-//------------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _APPLICATION_H */
+

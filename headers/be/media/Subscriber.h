@@ -11,6 +11,9 @@
 #ifndef _SUBSCRIBER_H
 #define _SUBSCRIBER_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <MediaDefs.h>
 #include <ClassInfo.h>
 #include <BufferStream.h>
@@ -57,7 +60,7 @@ public:
 									exit_stream_hook exitFunction,
 									bool background);
 
-	virtual status_t	ExitStream(bool synch=FALSE);
+	virtual status_t	ExitStream(bool synch=false);
 
 	bool				IsInStream() const;
 

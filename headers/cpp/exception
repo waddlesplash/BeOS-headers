@@ -1,9 +1,9 @@
-/*  Metrowerks Standard Library  Version 2.1  1996 December 29  */
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /************************************************************************/
 /*	Project...:	Standard C++ Library									*/
 /*	Name......:	exception												*/
 /*	Purpose...:	exception handling										*/
-/*  Copyright.: ©Copyright 1993-95 by metrowerks inc					*/
+/*  Copyright.: Copyright © 1993-1997 Metrowerks, Inc.					*/
 /************************************************************************/
 
 #ifndef _EXCEPTION_
@@ -39,7 +39,7 @@ class exception {
 public :
     exception () MSIPL_THROW : desc (0), alloced (false) { }
     exception (const exception& exarg) MSIPL_THROW;
-    exception (const char* str) MSIPL_THROW;			//960828 bkoz add this for string lits. 
+    exception (const char* str) MSIPL_THROW;			 
     exception& operator= (const exception& exarg) MSIPL_THROW;
     virtual ~exception () MSIPL_THROW;
     virtual const char* what () const MSIPL_THROW;
@@ -49,6 +49,49 @@ private :
     const string* desc;
     bool  alloced;
 };
+
+//970408 bkoz inlined exception class
+/*
+class exception {
+public :
+    exception () MSIPL_THROW : desc (0), alloced (false) { }
+    exception (const exception& exarg) MSIPL_THROW {
+    	desc = ((alloced = exarg.alloced) ?
+		new string (exarg.what ()) : 0);
+	}
+    exception (const char* str) MSIPL_THROW {
+	    desc = new string (str);
+	    alloced = true;
+	};
+			 
+    exception& operator= (const exception& exarg) MSIPL_THROW {
+	    if (this != &exarg) {
+	        if (alloced) delete (string*)desc;
+	        desc = ((alloced = exarg.alloced) ? new string (exarg.what ()) : 0);
+	    }
+	    return *this;
+	}
+
+    virtual ~exception () MSIPL_THROW {
+	    if (alloced) delete (string*)desc;
+	}
+
+    virtual const char* what () const MSIPL_THROW {
+	    if (alloced && desc->size ()) return desc->data ();
+	    else return "";  
+	}
+
+protected :
+    exception (const string& what_arg) MSIPL_THROW {
+	    desc = new string (what_arg);
+	    alloced = true;
+	}
+
+private :
+    const string* desc;
+    bool  alloced;
+};
+*/
 
 //#endif /* __EDG_EXCEPT_CLASSES */ //961216 bkoz
 
@@ -64,20 +107,20 @@ private :
 
 class bad_exception : public exception {
 public:
-	bad_exception() throw() {}
-	bad_exception(const bad_exception&) throw() {}
-	bad_exception& operator=(const bad_exception&) throw() { return *this; }
+	bad_exception() throw() : exception ("bad_exception") {} // 980214 Be-mani
+	bad_exception(const bad_exception&) throw();	// 980214 Be-mani
+	bad_exception& operator=(const bad_exception&);	// 980214 Be-mani
 	virtual ~bad_exception() throw() {};
-	virtual const char* what() const throw() { return "bad_exception"; };
+	virtual const char* what() const throw() { return "bad_exception"; } // 980214 Be-mani
 };
 
 typedef void (*terminate_handler)();
-terminate_handler set_terminate(terminate_handler);
-void terminate();
+_IMPEXP_ROOT terminate_handler set_terminate(terminate_handler);
+_IMPEXP_ROOT void terminate();
 
 typedef void (*unexpected_handler)();
-unexpected_handler set_unexpected(unexpected_handler);
-void unexpected();
+_IMPEXP_ROOT unexpected_handler set_unexpected(unexpected_handler);
+_IMPEXP_ROOT void unexpected();
 
 //18.6.4
 //bool uncaught_exception();
@@ -97,4 +140,8 @@ extern void __priv_throwbadcast(void);
 961217 KO	Changed char_traits from a struct to a class. Needed for the new x86
 			compiler.
 970211 bkoz	line 73 added bad_exception::what from stdexcept.cp
+970408 bkoz	line 22, include bstring, inlined exception class
+980214 Be-mani	Moved a couple of bad_exception inlines into mexcept.cpp
+		so this would compile into the shared library for BeOS.
+		Also changed what string to return "bad exception".
 */

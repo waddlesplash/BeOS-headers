@@ -11,6 +11,9 @@
 #ifndef _APP_FILE_INFO_H
 #define _APP_FILE_INFO_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <NodeInfo.h>
 
 class BBitmap;
@@ -28,6 +31,12 @@ struct	version_info {
 	uint32	internal;
 	char	short_info[64];
 	char	long_info[256];
+};
+
+enum info_location {
+	B_USE_ATTRIBUTES = 0x1,
+	B_USE_RESOURCES = 0x2,
+	B_USE_BOTH_LOCATIONS = 0x3
 };
 
 enum version_kind {
@@ -54,10 +63,14 @@ virtual	status_t	GetType(char *type) const;
 		status_t	GetIconForType(const char *type,
 									BBitmap *icon,
 									icon_size which) const;
+		
+		bool		IsSupportedType(const char *type) const;
 
 virtual	status_t	SetType(const char *type);
 		status_t	SetSignature(const char *sig);
 		status_t	SetAppFlags(uint32 flags);
+		status_t	SetSupportedTypes(const BMessage *types,
+										bool sync_all);
 		status_t	SetSupportedTypes(const BMessage *types);
 		status_t	SetIcon(const BBitmap *icon, icon_size which);
 		status_t	SetVersionInfo(const version_info *vinfo, version_kind k);
@@ -65,14 +78,24 @@ virtual	status_t	SetType(const char *type);
 									const BBitmap *icon,
 									icon_size which);
 
+		void		SetInfoLocation(info_location loc);
+		bool		IsUsingAttributes() const;
+		bool		IsUsingResources() const;
+
+		bool		Supports(BMimeType *mt) const;
+
 private:
 friend	status_t	_update_mime_info_(const char *, bool);
 friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
+friend status_t		_query_for_app_(BMimeType *, const char *,
+						entry_ref *, version_info *);
 friend	class		BRoster;
 
 virtual	void		_ReservedAppFileInfo1();
 virtual	void		_ReservedAppFileInfo2();
 virtual	void		_ReservedAppFileInfo3();
+
+static	status_t	SetSupTypesForAll(BMimeType *, const BMessage *);
 
 		BAppFileInfo	&operator=(const BAppFileInfo &);
 						BAppFileInfo(const BAppFileInfo &);
@@ -85,7 +108,7 @@ virtual	void		_ReservedAppFileInfo3();
 		status_t	GetMetaMime(BMimeType *meta) const;
 
 		BResources	*fResources;
-		int			fWhere;
+		info_location	fWhere;
 		uint32		_reserved[2];
 };
 

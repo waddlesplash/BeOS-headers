@@ -1,20 +1,23 @@
-//******************************************************************************
-//
-//	File:		Point.h
-//
-//	Description:	BPoint class header.
-//	
-//	Copyright 1993-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Point.h
+/
+/   Description:    BPoint represents a single x,y coordinate.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_POINT_H
 #define	_POINT_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
 class BRect;
+
+/*----------------------------------------------------------------*/
+/*----- BPoint class --------------------------------------------*/
 
 class BPoint {
 
@@ -22,32 +25,30 @@ public:
 		float x;
 		float y;
 
-		// constructors
 		BPoint();
 		BPoint(float X, float Y);
 		BPoint(const BPoint& pt);
 		
-		// assignment
 		BPoint		&operator=(const BPoint &from);
 		void		Set(float X, float Y);
 
 		void		ConstrainTo(BRect rect);
 
-		// utility to print in text form
 		void		PrintToStream() const;
 			
-		// arithmetic
 		BPoint		operator+(const BPoint&) const;
 		BPoint		operator-(const BPoint&) const;
 		BPoint&		operator+=(const BPoint&);
 		BPoint&		operator-=(const BPoint&);
 
-		// relational
 		bool		operator!=(const BPoint&) const;
 		bool		operator==(const BPoint&) const;
 };
 
-extern const BPoint B_ORIGIN;
+extern _IMPEXP_BE const BPoint B_ORIGIN;
+
+/*----------------------------------------------------------------*/
+/*----- inline definitions ---------------------------------------*/
 
 inline BPoint::BPoint()
 {
@@ -67,7 +68,6 @@ inline BPoint::BPoint(const BPoint& pt)
 
 inline BPoint &BPoint::operator=(const BPoint& from)
 {
-	// don't need to worry about "this==from"
 	x = from.x;
 	y = from.y;
 	return *this;
@@ -79,4 +79,7 @@ inline void BPoint::Set(float X, float Y)
 	y = Y;
 }
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _POINT_H */

@@ -10,6 +10,8 @@
 #ifndef _NETDB_H
 #define _NETDB_H
 
+#include <BeBuild.h>
+
 #if __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -26,7 +28,7 @@ extern "C" {
 #define NO_DATA 4
 
 #ifndef h_errno
-extern int *_h_errnop(void);
+extern _IMPEXP_NET int *_h_errnop(void);
 #define h_errno (*_h_errnop())
 #endif /* h_errno */
 
@@ -47,19 +49,19 @@ struct servent {
 	char *s_proto;
 };	
 
-struct hostent *gethostbyname(const char *hostname);
-struct hostent *gethostbyaddr(const char *hostname, int len, int type);
-struct servent *getservbyname(const char *name, const char *proto);
-void herror(const char *);
-unsigned long inet_addr(const char *a_addr);
-extern char *inet_ntoa(struct in_addr addr);
+extern _IMPEXP_NET struct hostent *gethostbyname(const char *hostname);
+extern _IMPEXP_NET struct hostent *gethostbyaddr(const char *hostname, int len, int type);
+extern _IMPEXP_NET struct servent *getservbyname(const char *name, const char *proto);
+extern _IMPEXP_NET void herror(const char *);
+extern _IMPEXP_NET unsigned long inet_addr(const char *a_addr);
+extern _IMPEXP_NET char *inet_ntoa(struct in_addr addr);
 
 
-int gethostname(char *hostname, unsigned hostlen);
+extern _IMPEXP_NET int gethostname(char *hostname, unsigned hostlen);
 
 /* BE specific, because of lack of UNIX passwd functions */
-int getusername(char *username, unsigned userlen);
-int getpassword(char *password, unsigned passlen);
+extern _IMPEXP_NET int getusername(char *username, unsigned userlen);
+extern _IMPEXP_NET int getpassword(char *password, unsigned passlen);
 
 #if __cplusplus
 }

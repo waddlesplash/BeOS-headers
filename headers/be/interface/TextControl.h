@@ -1,21 +1,24 @@
-//******************************************************************************
-//
-//	File:		TextControl.h
-//
-//	Description:	A simple text widget that also behaves like a control
-//
-//	Copyright 1996-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			TextControl.h
+/
+/   Description:    BTextControl displays text that can act like a control.
+/
+/	Copyright 1996-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_TEXT_CONTROL_H
 #define	_TEXT_CONTROL_H
 
+#include <BeBuild.h>
 #include <Control.h>
 #include <TextView.h>
 
 class _BTextInput_;
+
+/*----------------------------------------------------------------*/
+/*----- BTextControl class ---------------------------------------*/
 
 class BTextControl : public BControl {
 
@@ -30,7 +33,7 @@ public:
 virtual					~BTextControl();
 
 						BTextControl(BMessage *data);
-static	BTextControl	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			SetText(const char *text);
@@ -52,7 +55,7 @@ virtual	void			SetDivider(float dividing_line);
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
 virtual	void			AttachedToWindow();
-virtual	void			MakeFocus(bool focusState = TRUE);
+virtual	void			MakeFocus(bool focusState = true);
 virtual	void			SetEnabled(bool state);
 virtual	void			FrameMoved(BPoint new_position);
 virtual	void			FrameResized(float new_width, float new_height);
@@ -72,7 +75,8 @@ virtual	void			MouseUp(BPoint pt);
 virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void			DetachedFromWindow();
 
-virtual status_t		Perform(uint32 d, void *arg);
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 friend	class _BTextInput_;
@@ -94,9 +98,14 @@ virtual	void			_ReservedTextControl4();
 		BMessage		*fModificationMessage;
 		alignment		fLabelAlign;
 		float			fDivider;
-		uint32			_reserved[4];
+		uint16			fPrevWidth;
+		uint16			fPrevHeight;
+		uint32			_reserved[3];	/* was 4 */
 
 		bool			fClean;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _TEXT_CONTROL_H */

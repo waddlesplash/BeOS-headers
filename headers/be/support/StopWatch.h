@@ -1,20 +1,25 @@
-/*
-	
-	StopWatch.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/******************************************************************************
+/
+/	File:			StopWatch.h
+/
+/	Description:	BStopWatch class defines a handy code timing debug tool.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _STOP_WATCH_H
 #define _STOP_WATCH_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
+
+/*-------------------------------------------------------------*/
+/*----- BStopWatch class --------------------------------------*/
 
 class BStopWatch {
 public:
-					BStopWatch(const char *name, bool silent = FALSE);
+					BStopWatch(const char *name, bool silent = false);
 virtual				~BStopWatch();
 
 		void		Suspend();
@@ -24,6 +29,7 @@ virtual				~BStopWatch();
 		void		Reset();
 		const char	*Name() const;
 
+/*----- Private or reserved ---------------*/
 private:
 
 virtual	void		_ReservedStopWatch1();
@@ -41,4 +47,7 @@ virtual	void		_ReservedStopWatch2();
 		bool		fSilent;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _STOP_WATCH_H */

@@ -9,9 +9,11 @@
 #ifndef _SOCKET_H
 #define _SOCKET_H
 
+#include <BeBuild.h>
 #include <size_t.h>
 #include <sys/time.h>       /* for timeval/timezone structs & gettimeofday */
-#include <byteorder.h>
+#include <ansi_parms.h>
+#include <ByteOrder.h>
 
 #if __cplusplus
 extern "C" {
@@ -89,28 +91,31 @@ typedef struct fd_set {
 #define FD_ISSET(fd, setp) ((setp)->mask[_FDMSKNO(fd)] & (1 << (_FDBITNO(fd))))
 
 
-int socket(int family, int type, int proto);
-int bind(int fd, const struct sockaddr *addr, int size);
-int getsockname(int fd, struct sockaddr *addr, int *size);
-int getpeername(int fd, struct sockaddr *addr, int *size);
-ssize_t recvfrom(int fd, void *buf, size_t size, int flags,
+_IMPEXP_NET int socket(int family, int type, int proto);
+_IMPEXP_NET int bind(int fd, const struct sockaddr *addr, int size);
+_IMPEXP_NET int getsockname(int fd, struct sockaddr *addr, int *size);
+_IMPEXP_NET int getpeername(int fd, struct sockaddr *addr, int *size);
+_IMPEXP_NET ssize_t recvfrom(int fd, void *buf, size_t size, int flags,
 			 struct sockaddr *from, int *fromlen);
-ssize_t sendto(int fd, const void *buf, size_t size, int flags,
+_IMPEXP_NET ssize_t sendto(int fd, const void *buf, size_t size, int flags,
 		   const struct sockaddr *to, int tolen);
 
-ssize_t send(int fd, const void *buf, size_t size, int flags);
-ssize_t recv(int fd, void *buf, size_t size, int flags);
+_IMPEXP_NET ssize_t send(int fd, const void *buf, size_t size, int flags);
+_IMPEXP_NET ssize_t recv(int fd, void *buf, size_t size, int flags);
 
 
-int connect(int fd, const struct sockaddr *addr, int size);
-int accept(int fd, struct sockaddr *addr, int *size);
+_IMPEXP_NET int connect(int fd, const struct sockaddr *addr, int size);
+_IMPEXP_NET int accept(int fd, struct sockaddr *addr, int *size);
 
 
-int listen(int fd, int backlog);
-int closesocket(int fd);
-int setsockopt(int sd, int prot, int opt, const void *data, unsigned datasize);
+_IMPEXP_NET int listen(int fd, int backlog);
+_IMPEXP_NET int closesocket(int fd);
 
-int select(int nbits, 
+_IMPEXP_NET int shutdown(int fd, int how);  /* doesn't work yet */
+
+_IMPEXP_NET int setsockopt(int sd, int prot, int opt, const void *data, unsigned datasize);
+
+_IMPEXP_NET int select(int nbits, 
 		   struct fd_set *rbits, 
 		   struct fd_set *wbits, 
 		   struct fd_set *ebits, 

@@ -12,9 +12,12 @@
 #ifndef	_SERIAL_PORT_H
 #define	_SERIAL_PORT_H
 
+#include <BeBuild.h>
 #include <stddef.h>
 #include <OS.h>
 #include <SupportDefs.h>
+
+class BList;
 
 enum data_rate { B_0_BPS = 0, B_50_BPS, B_75_BPS, B_110_BPS, B_134_BPS,
 				 B_150_BPS, B_200_BPS, B_300_BPS, B_600_BPS, B_1200_BPS,
@@ -66,6 +69,7 @@ virtual				~BSerialPort();
 
 		status_t	SetDTR(bool asserted);
 		status_t	SetRTS(bool asserted);
+		status_t	NumCharsAvailable(int32 *wait_until_this_many);
 
 		bool		IsCTS(void);
 		bool		IsDSR(void);
@@ -74,7 +78,13 @@ virtual				~BSerialPort();
 		ssize_t		WaitForInput(void);
 // -----------------------------------------------------------------------
 
+		int32		CountDevices();
+		status_t	GetDeviceName(int32 n, char * name, 
+						size_t bufSize = B_OS_NAME_LENGTH);
+
 private:
+
+		void		ScanDevices();
 
 virtual	void		_ReservedSerialPort1();
 virtual	void		_ReservedSerialPort2();
@@ -91,7 +101,9 @@ virtual	void		_ReservedSerialPort4();
 		bool		fBlocking;
 
 		int			DriverControl();
-		uint32		_fReserved[4];
+
+		BList *		_fDevices;
+		uint32		_fReserved[3];
 };
 
 #endif

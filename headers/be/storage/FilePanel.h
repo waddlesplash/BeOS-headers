@@ -12,6 +12,9 @@
 #ifndef	_FILE_PANEL_H
 #define _FILE_PANEL_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include	<sys/stat.h>
 #include	<Entry.h>
 #include	<Directory.h>
@@ -22,8 +25,8 @@
 
 /*- Old fashioned, one-shot, heavily-defaulted panel functions. -*/ 
 
-extern void run_open_panel();
-extern void run_save_panel();
+extern _IMPEXP_TRACKER void run_open_panel();
+extern _IMPEXP_TRACKER void run_save_panel();
 
 
 /*---BRefFilter--------------------------------------------------*/
@@ -36,8 +39,8 @@ extern void run_save_panel();
  */
 class BRefFilter {
 public:
-virtual	bool	Filter(const entry_ref*, BNode*, struct stat*,
-					   const char* mimetype) = 0;
+virtual	bool	Filter(const entry_ref *, BNode *, struct stat *,
+					   const char *mimetype) = 0;
 };
 
 
@@ -72,12 +75,12 @@ class BFilePanel {
 
 public:
 						BFilePanel(file_panel_mode mode = B_OPEN_PANEL,
-							BMessenger* target = NULL,
-							entry_ref *start_directory = NULL,
+							BMessenger *target = 0,
+							entry_ref *start_directory = 0,
 							uint32 node_flavors = 0,
 							bool allow_multiple_selection = true,
-							BMessage *message = NULL, 
-							BRefFilter* = NULL,
+							BMessage *message = 0, 
+							BRefFilter * = 0,
 							bool modal = false,
 							bool hide_when_done = true);
 
@@ -118,7 +121,8 @@ virtual	void			SendMessage(const BMessenger*, BMessage*);
 		status_t		GetNextSelectedRef(entry_ref*);
 
 private:
-		BWindow*		fWindow;
+
+		BWindow		*fWindow;
 };
 
 #pragma export reset

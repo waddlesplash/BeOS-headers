@@ -67,6 +67,7 @@ const uchar	B_SYS_EX_START		= 0xf0;
 const uchar	B_MIDI_TIME_CODE	= 0xf1;
 const uchar	B_SONG_POSITION		= 0xf2;
 const uchar	B_SONG_SELECT		= 0xf3;
+const uchar	B_CABLE_MESSAGE		= 0xf5;
 const uchar	B_TUNE_REQUEST		= 0xf6;
 const uchar	B_SYS_EX_END		= 0xf7;
 const uchar	B_TIMING_CLOCK		= 0xf8;

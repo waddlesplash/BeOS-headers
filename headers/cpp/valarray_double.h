@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 //961214 bkoz
 /*NB
 valarray contains some member functions that cannot be instantiated for non-integer types.
@@ -49,6 +50,8 @@ In the meantime, this is the list of deleted members:
    friend valarray operator>> (const valarray&, const valarray&);
 
 */
+#ifndef VALARRAY_DOUBLE
+#define VALARRAY_DOUBLE
 
 //
 // class valarray<double>
@@ -234,7 +237,7 @@ public:
 #endif
     }
 	#else
-		valarray operator! () const;
+		inline valarray operator! () const;
 	#endif
 		
 //
@@ -789,3 +792,10 @@ valarray<double>::resize (size_t sz, const double& c)  //961113 bkoz
 #endif
     }
 }
+
+#ifdef __MSL_NO_INSTANTIATE__
+	template __dont_instantiate class valarray<double>;
+#endif
+
+
+#endif //VALARRAY_DOUBLE

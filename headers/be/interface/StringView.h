@@ -1,19 +1,22 @@
-//******************************************************************************
-//
-//	File:		StringView.h
-//
-//	Description:	A String text view.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			StringView.h
+/
+/   Description:    BStringView draw a non-editable text string
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _STRING_VIEW_H
 #define _STRING_VIEW_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <View.h>
+
+/*----------------------------------------------------------------*/
+/*----- BStringView class ----------------------------------------*/
 
 class BStringView : public BView
 {
@@ -27,7 +30,7 @@ public:
 								uint32 flags = B_WILL_DRAW);
 					BStringView(BMessage *data);
 virtual 			~BStringView();
-static	BStringView	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 		void		SetText(const char *text);
@@ -51,7 +54,9 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									BMessage *specifier,
 									int32 form,
 									const char *property);
-virtual status_t	Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -66,4 +71,7 @@ virtual	void		_ReservedStringView3();
 		uint32		_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _STRING_VIEW_H */

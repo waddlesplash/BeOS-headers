@@ -12,6 +12,9 @@
 #ifndef _SOUND_FILE_H
 #define _SOUND_FILE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <MediaDefs.h>
 #include <Entry.h>
 #include <File.h>

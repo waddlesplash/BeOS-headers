@@ -1,28 +1,33 @@
-//******************************************************************************
-//
-//	File:		Screen.h
-//
-//	Description:	BScreen class header.
-//	
-//	Copyright 1993-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Screen.h
+/
+/   Description:    BScreen provides information about a screen's current
+/                   display settings.  It also lets you set the Desktop color.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _SCREEN_H
 #define _SCREEN_H
 
+#include <BeBuild.h>
 #include <GraphicsDefs.h>
 #include <Rect.h>
 
-typedef struct { int32 id; } screen_id;
+/*----------------------------------------------------------------*/
+/*----- BScreen structures and declarations ----------------------*/
 
-extern const screen_id B_MAIN_SCREEN_ID;
+struct screen_id { int32 id; };
 
+extern _IMPEXP_BE const screen_id B_MAIN_SCREEN_ID;
 
 class BWindow;
 class BPrivateScreen;
 
+/*----------------------------------------------------------------*/
+/*----- BScreen class --------------------------------------------*/
 
 class BScreen {
 public:  
@@ -31,6 +36,7 @@ public:
         ~BScreen();
 
         bool   			IsValid();
+        status_t		SetToNext();
   
         color_space		ColorSpace();
         BRect			Frame();
@@ -41,7 +47,7 @@ public:
         status_t		WaitForRetrace();
   
         uint8			IndexForColor( rgb_color rgb );
-        uint8			IndexForColor( uint8 r, uint8 g, uint8 b, uint8 a=0 );
+        uint8			IndexForColor( uint8 r, uint8 g, uint8 b, uint8 a=255 );
         rgb_color		ColorForIndex( const uint8 index );
         uint8			InvertIndex( uint8 index );
   
@@ -52,14 +58,22 @@ const   color_map*		ColorMap();
 
         BPrivateScreen*	private_screen();
 
+/*----- Private or reserved -----------------------------------------*/
 private:
-        status_t		SetToNext();
+		BScreen			&operator=(const BScreen &screen);
+						BScreen(const BScreen &screen);
+
         BPrivateScreen 	*screen;
 };
 
 
+/*----------------------------------------------------------------*/
+/*----- inline definitions ---------------------------------------*/
+
 inline uint8 BScreen::IndexForColor( rgb_color rgb )
   { return IndexForColor(rgb.red,rgb.green,rgb.blue,rgb.alpha); }
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _SCREEN_H */

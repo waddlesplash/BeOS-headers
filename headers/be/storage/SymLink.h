@@ -13,6 +13,9 @@
 #ifndef _SYM_LINK_H
 #define _SYM_LINK_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/types.h>
 #include <Node.h>
 

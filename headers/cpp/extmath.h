@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -18,6 +19,7 @@
 	#pragma import on
 #endif
 
+/*
 #ifdef MSIPL_USE_EXTERNAL_MATHLIB
 extern "C" {
 #endif
@@ -31,6 +33,7 @@ extern "C" {
 #ifdef MSIPL_USING_NAMESPACE
 namespace std {
 #endif
+*/
 
 
 //

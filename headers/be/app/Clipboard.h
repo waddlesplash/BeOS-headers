@@ -1,15 +1,18 @@
-//******************************************************************************
-//
-//	File:		Clipboard.h
-//
-//	Copyright 1994-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			Clipboard.h
+/
+/	Description:	BClipboard class defines clipboard functionality.
+/					The global be_clipboard represents the default clipboard.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
-
-#ifndef	_CLIPBOARD_H
+#ifndef _CLIPBOARD_H
 #define	_CLIPBOARD_H
 
+#include <BeBuild.h>
 #include <OS.h>
 #include <Messenger.h>
 #include <Message.h>
@@ -19,9 +22,12 @@
 class BWindow;
 class BApplication;
 
+/*------------------------------------------------------------------*/
+/*----- BClipboard class --------------------------------------------*/
+
 class BClipboard {
 public:
-					BClipboard(const char *name, bool transient = FALSE);
+					BClipboard(const char *name, bool transient = false);
 virtual				~BClipboard();
 
 		const char	*Name() const;
@@ -35,8 +41,8 @@ virtual				~BClipboard();
 		BMessenger	DataSource() const;
 		BMessage	*Data() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
-
 					BClipboard(const BClipboard &);
 		BClipboard	&operator=(const BClipboard &);
 
@@ -59,6 +65,12 @@ virtual	void		_ReservedClipboard3();
 		uint32		_reserved[4];
 };
 
-extern BClipboard *be_clipboard;
+/*----------------------------------------------------------------*/
+/*----- Global Clipboard -----------------------------------------*/
 
-#endif
+extern _IMPEXP_BE BClipboard *be_clipboard;
+
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _CLIPBOARD_H */

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -16,8 +17,13 @@
 
 #include MOD_INCLUDE(iterator)
 #include MOD_INCLUDE(utility)
+#include <algorithm.h>	//970325 bkoz for max
 
-#include MOD_INCLUDE(new)
+#include <new.h>
+
+#ifdef DebugNew_H       //970401 bkoz
+	#undef new
+#endif
 
 #pragma options align=native
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
@@ -261,10 +267,29 @@ public:
     };
 #endif
 
+//970408 bkoz
+//	need allocator version for new that throws bad_alloc. . .
+   inline
+    pointer allocate (size_type n,typename allocator<void>::const_pointer hint = 0){ 
+        hint; 	//961205 bkoz this is just to get rid of strict compiler warnings
+        T* tmp;
+        try {
+			tmp = (T*)(::operator new ((size_t) (n * sizeof (T))));
+         }
+		catch (bad_alloc& err) {
+            throw;
+		}
+		if (tmp == 0) {
+             exit (3);
+        }
+        return tmp;
+    }
+
+/*
     inline
     pointer allocate (size_type n,typename allocator<void>::const_pointer hint = 0)
     { 
-        hint; 				//961205 bkoz this is just to get rid of strict compiler warnings
+        hint; //961205 bkoz this is just to get rid of strict compiler warnings
         // new_handler newhand = set_new_handler (0);
         T* tmp = (T*)(::operator new ((size_t) (n * sizeof (T))));
         if (tmp == 0)
@@ -279,7 +304,8 @@ public:
         // set_new_handler (newhand); 
         return tmp;
     }
-    
+*/
+ 
     inline
     void deallocate (pointer p)
     { 
@@ -414,96 +440,36 @@ public:
 
 // Section 20.4.5 -- Pointers
 // Subclause 20.4.5.1 -- Class auto_ptr
+
+//970331 bkoz 
 /*
-template <class X>
-class auto_ptr {
-public :
-
-   typedef X   element_type;
-
-   explicit
-   auto_ptr (X* p = 0) : ptr_ (p) { owns = (p) ? true : false; }
-
-#ifdef MSIPL_MEMBER_TEMPLATE
-   template <class Y>
-   auto_ptr (const auto_ptr<Y>& a)
-   {
-       owns = a.owns;
-       ptr_ = (X*)a.release ();
-   }
-
-   auto_ptr (const auto_ptr& a)
-   {
-       //printf (" copy c'tor\n");
-       owns = a.owns;
-       ptr_ = a.release ();
-   }
-
-   template <class Y>
-   auto_ptr& operator=(const auto_ptr<Y>& a)
-   {
-       if (ptr_ != a.ptr_) { delete get (); ptr_ = 0; }
-       owns = a.owns;
-       ptr_ = (X*)a.release ();
-       return *this;
-   }
-
-   auto_ptr& operator=(const auto_ptr& a)
-   {
-       if (ptr_ != a.ptr_) { delete get (); ptr_ = 0; }
-       owns = a.owns;
-       ptr_ = a.release ();
-       return *this;
-   }
-#else
-   auto_ptr (auto_ptr& a)
-   {
-       //printf ("22 - Copy C'tor\n");
-       // owns = false;
-       // if (a.owns) { owns = true; } 
-       owns = a.owns;  
-       ptr_ = a.release ();
-   }
-   auto_ptr& operator=(auto_ptr& a)
-   {
-       //printf ("22 - operator==\n");
-       if (ptr_ != a.ptr_) { delete get (); ptr_ = 0; }
-       owns = a.owns;  
-       ptr_ = a.release ();
-       return *this;
-   }
-#endif
-
-   ~auto_ptr () { if (owns){ delete get (); ptr_ = 0; } owns = false; }
-   X& operator* () const { return *get (); }
-   X* operator-> () const { return get (); }
-   X* get () const { return ptr_; }
-   X* release () const {
-      // ptr_ = 0;
-      ((auto_ptr*)this)->owns = false;
-      return ptr_;
-   }
-
-protected :
-   X* ptr_;
-   bool owns;
-};
+	NB that constness of auto_ptrs is a bit peculiar without support for mutable members
+	with mutable support the 4 commented lines should be used instead of the lines
+	immediately below them
 */
+
 
 template<class T>
 class auto_ptr
 {
+	private:
+		//mutable bool	owner;
+		bool	owner;
+		T*		p_;
+
 	public:
-		auto_ptr(T* p = 0) : owner(p != 0), p_(p) { }
+		auto_ptr(T* p = 0) : owner(p), p_(p) { }
 		
-		auto_ptr(const auto_ptr& r) : owner(r.owner), p_(r.release())	{ }
+		//auto_ptr(const auto_ptr& r) :  owner(r.owner), p_(r.release())	{ }
+		auto_ptr(auto_ptr& r) :  owner(r.owner), p_(r.release())	{ }
 		
-		~auto_ptr() { if (owner) delete p_; owner = 0; }
+		~auto_ptr() { if (owner) delete p_; owner = false; }
 		
-		auto_ptr&		operator = (const auto_ptr& r)		{
+		//auto_ptr&	operator= (const auto_ptr& r)		{
+		auto_ptr&	operator= (auto_ptr& r)		{
 			if ((void *)&r != (void *)this) {
 				if (owner)
-					delete p_;
+					delete p_;				//deallocate what is currently pointed to
 				owner = r.owner;
 				p_ = r.release();
 			}
@@ -516,14 +482,12 @@ class auto_ptr
 		
 		T*	get(void) const { return p_; }
 		
-		T*	release(void) const{ 
-			const_cast<auto_ptr *>(this)->owner = 0;
-			return p_; 
-		}
+		//T*	release(void) const { owner = false; return p_; }
+		T*	release(void)  { owner = false; return p_; }
+		
+		//970331 bkoz this is not here in draft, just useful for sanity checking correctness
+		bool owns(void) {return owner;}
 
-	private:
-		T*		p_;
-		bool	owner;
 };
 
 #ifdef MSIPL_USING_NAMESPACE
@@ -534,6 +498,10 @@ class auto_ptr
 	#pragma import reset
 #endif
 #pragma options align=reset
+
+#ifdef DebugNew_H
+	#define new NEW
+#endif
 
 #endif /* MSIPL_DEFMEMORY_H */
 
@@ -549,3 +517,8 @@ class auto_ptr
 //970214 bkoz line 306 added allocator::init_page_size_small() for smaller buffer setups, see
 //		 Efrem J. Sternbach in tree.h .ine 114
 //970216 bkoz line 292, commented out const_pointer address (const_reference x) const for list*
+//970331 bkoz changes to auto_ptr, implementing scott meyers updated version:
+//			  	1)owner declared before T*
+//				2) release() simplified
+//970424 bkoz line 273 put try/catch blocks around new incase people are using 
+//			   new throw badalloc()

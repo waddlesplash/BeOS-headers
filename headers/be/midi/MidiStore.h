@@ -11,6 +11,9 @@
 #ifndef _MIDI_STORE_H
 #define _MIDI_STORE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <Midi.h>
 
 struct entry_ref;
@@ -74,7 +77,7 @@ virtual	void	TempoChange(int32 bpm, uint32 time = B_NOW);
 		status_t	Import(const entry_ref *ref);
 		status_t	Export(const entry_ref *ref, int32 format);
 
-		void	SortEvents(bool force=FALSE);
+		void	SortEvents(bool force=false);
 		uint32	CountEvents() const;
 
 		uint32	CurrentEvent() const;

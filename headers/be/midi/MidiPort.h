@@ -72,6 +72,11 @@ virtual	void	SystemRealTime(uchar statusByte, uint32 time = B_NOW);
 virtual	status_t	Start();
 virtual	void	Stop();
 
+        int32       CountDevices();
+        status_t    GetDeviceName(int32 n, char * name,
+	                        size_t bufSize = B_OS_NAME_LENGTH);
+
+
 private:
 
 virtual	void		_ReservedMidiPort1();
@@ -83,12 +88,15 @@ virtual	void	Run();
 		ssize_t	Read(void *buffer, size_t numBytes) const;
 		ssize_t	Write(void *buffer, size_t numBytes, uint32 time) const;
 
+        void        ScanDevices();
+
 		int32	fWriteDriverRef;
 		int32	fReadDriverRef;
 
 		char*	fName;
 		status_t fCStatus;
-		uint32		_reserved[4];
+		BList *	_fDevices;
+		uint32		_reserved[3];
 };
 
 /*------------------------------------------------------------*/

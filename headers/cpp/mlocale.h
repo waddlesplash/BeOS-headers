@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -8,8 +9,12 @@
 #ifndef MSIPL_LOCALE_H
 #define MSIPL_LOCALE_H
 
-#include <mcompile.h>
+#include <mcompile.h>               // mm 970814a
+#include MOD_C_INCLUDE(locale)
+#include MOD_INCLUDE(vector)
+#include MOD_INCLUDE(mtools)
 #include <typeinfo>	//961113 bkoz for bad_cast decl
+#include <ios_base.h>	//970417 bkoz
 
 //
 // for messages facet
@@ -18,10 +23,6 @@
 #include MOD_INCLUDE(nl_types)
 #endif
 
-#include MOD_INCLUDE(vector)
-#include MOD_INCLUDE(mtools)
-
-#include MOD_C_INCLUDE(locale)
 
 #pragma options align=native
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
@@ -94,7 +95,7 @@ public :
 
    locale (const locale& one, const locale& other, category);
 
-   ~locale () MSIPL_THROW  // non-virtual
+    ~locale () MSIPL_THROW  // non-virtual
    { 
        if (imp_->rem_ref ()) 
        { 
@@ -102,6 +103,7 @@ public :
            delete imp_; 
        }
    }
+
 
    const locale&
    operator= (const locale& other) MSIPL_THROW ;
@@ -116,7 +118,7 @@ public :
    operator== (const locale& other) const
    {
        return ((imp_ == other.imp_) || (((name () != "*") == 0) &&
-               ((name () == other.name ()) == 0)));
+               ((name () == other.name ()))));                // mm 970814b
    }
 
    bool
@@ -200,8 +202,11 @@ public :
          return (id_ < ix.id_); 
      }
 
-     ~id () { REMOVE(_mutex); }
-
+      	#ifdef MSIPL_MULTITHREAD
+      	~id () { REMOVE(_mutex); }
+      	#else
+		~id() {}; //970406 bkoz
+		#endif
    private:
 
 #ifdef MSIPL_MULTITHREAD
@@ -232,8 +237,10 @@ public :
      void  operator= (const facet&);        // not defined
      // void  operator& () { }              // not usable
       
+     inline
      virtual void add_ref () { if (response) ++refcount_; }
       
+     inline
      bool rem_ref ()
      { return (response ? (--refcount_ == 0) :  false); }
       
@@ -244,12 +251,14 @@ public :
 #endif
       
    protected:
-       explicit
- 			facet (size_t refs = 0) 
+      inline
+      facet (size_t refs = 0) 
      { response = !refs; if (response) refcount_ = 1;}
      
+     inline 
      virtual ~facet () { }
 
+     inline
      virtual locale::id& get_id ()  { return id_priv; }
      
      bool operator== (const facet& f) const
@@ -295,6 +304,7 @@ public :
            vec_[i]->add_ref ();
      }
 
+     inline
      void add_ref ()
      {
         for (int i = 1; i <= size_; i++)
@@ -302,6 +312,7 @@ public :
         base_type::add_ref ();
      }
 
+     inline
      bool rem_ref ()
      {
         for (int i = 1; i <= size_; i++)
@@ -320,6 +331,7 @@ public :
    };  /* end class locale::imp */
 
 };  /* end class locale */
+
 
 #ifdef MSIPL_MEMBER_TEMPLATE
 
@@ -363,7 +375,6 @@ locale::locale (const locale& other, const locale& one, Facet* f)
 #endif //MSIPL_MEMBER_TEMPLATE
 
 template <class Facet>
-inline
 const Facet&
 use_facet (const locale& loc, Facet* f)
 {
@@ -393,7 +404,6 @@ use_facet (const locale& loc, Facet* f)
 //  is false, loc.use_facet<facet>() would throw an exception
 //
 template <class Facet>
-inline
 bool
 has_facet (const locale& loc, Facet* f) MSIPL_THROW
 {
@@ -1191,244 +1201,7 @@ protected:
 
 };
 
-#ifdef MSIPL_WCHART
-
-null_template
-class codecvt<char, wchar_t, mbstate_t> 
-     : public locale::facet, public codecvt_base {
- 
-   friend class locale::imp;
-
-public:
-
-   typedef char         from_type;
-   typedef wchar_t      to_type;
-   typedef mbstate_t    state_type;
-
-protected:
-
-   virtual
-   codecvt_base::result
-   do_convert (state_type& state, const from_type* from,
-               const from_type* from_end, const from_type*& from_next,
-               to_type* to, to_type* to_limit, to_type*& to_next) const;
-
-   virtual
-   bool
-   do_always_noconv () const MSIPL_THROW { return true; }
-
-   virtual
-   int
-   do_length (const state_type& state, const from_type* from,
-              const from_type* from_end, size_t max) const MSIPL_THROW;
-
-   virtual
-   int
-   do_max_length () const MSIPL_THROW { return MB_CUR_MAX; }
-
-   virtual
-   locale::id&
-   get_id () { id_.init (); return id_; }
-
-public:
-
-   codecvt_base::result
-   convert (state_type& state, const from_type* from,
-            const from_type* from_end, const from_type*& from_next,
-            to_type* to, to_type* to_limit, to_type*& to_next) const
-   {
-      return do_convert (state, from, from_end, from_next, to, 
-                         to_limit, to_next);
-   }
-
-   bool
-   always_noconv () const MSIPL_THROW
-   { return do_always_noconv (); }
-
-   int
-   length (const state_type& state, const from_type* from,
-           const from_type* from_end, size_t max) const MSIPL_THROW
-   { return do_length (state, from, from_end, max); }
-
-   int
-   max_length () const MSIPL_THROW
-   {  return do_max_length (); }
-
-
-//
-// Static Data Member
-//
-   static locale::id id_;
-
-   explicit
-   codecvt (size_t refs = 0)
-   : locale::facet (refs) { }
-
-protected:
-
-   ~codecvt () { }
-
-};
-
-null_template
-class codecvt<wchar_t, char, mbstate_t>
-       : public locale::facet, public codecvt_base {
- 
-   friend class locale::imp;
-
-
-public:
-
-   typedef wchar_t         from_type;
-   typedef char            to_type;
-   typedef mbstate_t       state_type;
-
-protected:
-
-   virtual
-   codecvt_base::result
-   do_convert (state_type& state, const from_type* from,
-               const from_type* from_end, const from_type*& from_next,
-               to_type* to, to_type* to_limit, to_type*& to_next) const;
-
-   virtual
-   bool
-   do_always_noconv () const MSIPL_THROW { return true; }
-
-   virtual
-   int
-   do_length (const state_type& state, const from_type* from,
-              const from_type* from_end, size_t max) const MSIPL_THROW;
-
-   virtual
-   int
-   do_max_length () const MSIPL_THROW { return MB_CUR_MAX; }
-
-
-   virtual
-   locale::id&
-   get_id () { id_.init (); return id_; }
-
-public:
-
-   codecvt_base::result
-   convert (state_type& state, const from_type* from,
-            const from_type* from_end, const from_type*& from_next,
-            to_type* to, to_type* to_limit, to_type*& to_next) const
-   {
-      return do_convert (state, from, from_end, from_next, to, 
-                         to_limit, to_next);
-   }
-
-   bool
-   always_noconv () const MSIPL_THROW
-   { return do_always_noconv (); }
-
-   int
-   length (const state_type& state, const from_type* from,
-           const from_type* from_end, size_t max) const MSIPL_THROW
-   { return do_length (state, from, from_end, max); }
-
-   int
-   max_length () const MSIPL_THROW
-   {  return do_max_length (); }
-
-
-//
-// Static Data Member
-//
-   static locale::id id_;
-
-   explicit
-   codecvt (size_t refs = 0)
-   : locale::facet (refs) { }
-
-protected:
-
-   ~codecvt () { }
-
-};
-
-null_template
-class codecvt<char, char, mbstate_t> 
-     : public locale::facet, public codecvt_base {
- 
-   friend class locale::imp;
-
-public:
-
-   typedef char               from_type;
-   typedef char               to_type;
-   typedef mbstate_t          state_type;
-
-protected:
-
-   virtual
-   codecvt_base::result
-   do_convert (state_type& state, const from_type* from,
-               const from_type* from_end, const from_type*& from_next,
-               to_type* to, to_type* to_limit, to_type*& to_next) const;
-
-   virtual
-   bool
-   do_always_noconv () const MSIPL_THROW { return true; }
-
-   virtual
-   int
-   do_length (const state_type& /*state*/, const from_type* /*from*/,
-              const from_type* /*from_end*/,
-              size_t /*max*/) const MSIPL_THROW;
-
-   virtual
-   int
-   do_max_length () const MSIPL_THROW { return 0; }
-
-
-   virtual
-   locale::id&
-   get_id () { id_.init (); return id_; }
-
-public:
-
-   codecvt_base::result
-   convert (state_type& state, const from_type* from,
-            const from_type* from_end, const from_type*& from_next,
-            to_type* to, to_type* to_limit, to_type*& to_next) const
-   {
-      return do_convert (state, from, from_end, from_next, to, 
-                         to_limit, to_next);
-   }
-
-   bool
-   always_noconv () const MSIPL_THROW
-   { return do_always_noconv (); }
-
-   int
-   length (const state_type& state, const from_type* from,
-           const from_type* from_end, size_t max) const MSIPL_THROW
-   { return do_length (state, from, from_end, max); }
-
-   int
-   max_length () const MSIPL_THROW
-   {  return do_max_length (); }
-
-
-//
-// Static Data Member
-//
-   static locale::id id_;
-
-   explicit
-   codecvt (size_t refs = 0)
-   : locale::facet (refs) { }
-
-protected:
-
-   ~codecvt () { }
-
-};
-
-#endif
+//970419 bkoz removed wchar_t support
 
 null_template
 class codecvt<char, char, int> 
@@ -1663,72 +1436,7 @@ protected:
 
 };
 
-#ifdef MSIPL_WCHART
-
-null_template
-class collate<wchar_t> : public locale::facet {
- 
-   friend class locale::imp;
-
-public:
-
-   typedef wchar_t                                              char_type;
-   typedef basic_string<wchar_t, char_traits<wchar_t>,
-                        allocator<wchar_t> >                    string_type;
-
-protected:
-
-   virtual
-   int
-   do_compare (const char_type* low1, const char_type* high1,
-               const char_type* low2, const char_type* high2) const;
-      
-   virtual
-   string_type
-   do_transform (const char_type* low, const char_type* high) const;
-
-   virtual
-   long
-   do_hash (const char_type* low, const char_type* high) const;
-
-   virtual
-   locale::id&
-   get_id () { id_.init (); return id_; }
-
-public :
-
-   int
-   compare (const char_type* low1, const char_type* high1,
-            const char_type* low2, const char_type* high2) const
-   {
-       return do_compare (low1, high1, low2, high2);
-   }
-
-   string_type
-   transform (const char_type* low, const char_type* high) const
-   {
-       return do_transform (low, high);
-   }
-
-   long
-   hash (const char_type* low, const char_type* high) const
-   {
-       return do_hash (low, high);
-   }
-
-   static locale::id id_;
-
-   explicit 
-   collate (size_t refs = 0)
-   : locale::facet (refs) { }
-
-protected:
-
-    ~collate () { }
-
-};
-
-#endif
+//970418 bkoz removed wchar_t support
 
 //
 // ************ NUMERIC FACETS *************************
@@ -2135,27 +1843,33 @@ public:
 
 protected:
 
+   inline
    virtual
    char_type
    do_decimal_point () const { return dec_pt; }
 
+   inline
    virtual
    char_type
    do_thousands_sep () const { return thou_sep; }
 
+   inline
    virtual
    string
    do_grouping () const { return grp; }
 
+   inline
    virtual
    string_type
    do_truename () const { return name_true; }
 
+   inline
    virtual
    string_type
    do_falsename () const { return name_false; }
 
    virtual
+   inline
    locale::id&
    get_id () { id_.init (); return id_; }
 
@@ -2167,18 +1881,23 @@ protected:
 
 public:
 
+   inline
    char_type
    decimal_point () const { return do_decimal_point (); }
 
+   inline
    char_type
    thousands_sep () const { return do_thousands_sep (); }
 
+   inline
    string
    grouping () const { return do_grouping (); }
 
+   inline
    string_type
    truename () const { return do_truename (); }
 
+   inline
    string_type
    falsename () const { return do_falsename (); }
 
@@ -2257,7 +1976,6 @@ protected:
 
 #ifdef MSIPL_BOOL_BUILTIN
 template <class charT, class OutputIterator>
-inline
 num_put<charT, OutputIterator>::iter_type
 num_put<charT, OutputIterator>::
 do_put (iter_type iter, ios_base& io, char_type cfill, bool v) const
@@ -2285,8 +2003,7 @@ do_put (iter_type iter, ios_base& io, char_type cfill, bool v) const
 }
 #endif
 
-template <class charT, class OutputIterator>
-inline 
+template <class charT, class OutputIterator> 
 num_put<charT, OutputIterator>::iter_type 
 num_put<charT, OutputIterator>::print_integral_type(iter_type begin,
                       ios_base& io, char_type cfill,
@@ -2299,7 +2016,9 @@ num_put<charT, OutputIterator>::print_integral_type(iter_type begin,
    const numpunct<charT>& punct = 
                 use_facet (io.getloc(), (numpunct<charT>*)0);
    const char_type        thou_sep  = punct.thousands_sep ();
-   const char* G = punct.grouping ().c_str();
+   //const char* G = punct.grouping ().c_str();          // mm 970918
+   string _mslstrg=punct.grouping();                     // mm 970918
+   const char* G =_mslstrg.c_str();                      // mm 970918
    size_type index = n;
    const int MAX_CHAR = numeric_limits<char>::max ();
 
@@ -2337,7 +2056,7 @@ num_put<charT, OutputIterator>::print_integral_type(iter_type begin,
 
 
 template <class charT, class OutputIterator>
-inline char* 
+char* 
 num_put<charT, OutputIterator>::int_fmt (char* fmt, char type,
                                          ios_base::fmtflags flag)
 {
@@ -2358,7 +2077,7 @@ num_put<charT, OutputIterator>::int_fmt (char* fmt, char type,
 
 #ifdef __MSL_LONGLONG_SUPPORT__             // mm 970110
 template <class charT, class OutputIterator>
-inline char* 
+char* 
 num_put<charT, OutputIterator>::int_fmt_ll (char* fmt, char type,
                                          ios_base::fmtflags flag)
 {
@@ -2378,8 +2097,7 @@ num_put<charT, OutputIterator>::int_fmt_ll (char* fmt, char type,
 }
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                      // mm 970110
 
-template <class charT, class OutputIterator>
-inline 
+template <class charT, class OutputIterator> 
 num_put<charT, OutputIterator>::iter_type 
 num_put<charT, OutputIterator>::print_float_type(iter_type begin,
                       ios_base& io, char_type cfill,
@@ -2433,7 +2151,7 @@ num_put<charT, OutputIterator>::print_float_type(iter_type begin,
 }
 
 template <class charT, class OutputIterator>
-inline char* 
+char* 
 num_put<charT, OutputIterator>::float_fmt (char* fmt, char type, ios_base& io)
 {
     char *fmt1 = fmt;
@@ -2455,8 +2173,7 @@ num_put<charT, OutputIterator>::float_fmt (char* fmt, char type, ios_base& io)
     return fmt;
 }
 
-template <class charT, class InputIterator>
-inline 
+template <class charT, class InputIterator> 
 int 
 num_get<charT, InputIterator>::
 scan_integral_type (iter_type &begin, iter_type &end,
@@ -2528,8 +2245,8 @@ scan_integral_type (iter_type &begin, iter_type &end,
    return radix;
 }
 
-template <class charT, class InputIterator>
-inline bool 
+template <class charT, class InputIterator> 
+bool 
 num_get<charT, InputIterator>::
 scan_float_type (iter_type& begin,
                  iter_type& end, ios_base& io, char* buf) 
@@ -2560,12 +2277,16 @@ scan_float_type (iter_type& begin,
    if(flag)
        return false;
    
-   if (begin != end && straits_type::eq (*begin, punct.decimal_point ()))
-       for (flag = true, *cur++ = localeconv()->decimal_point[0], ++begin;
-            begin != end && memchr("0123456789", *cur = *begin, 10); ++begin)
-           ++cur, flag = false;
-   if(flag)
-       return false;
+   flag = true;                                                                //MSIPL 970310
+   if (begin != end && straits_type::eq (*begin, punct.decimal_point ()))      //MSIPL 970310
+       for (*cur++ = localeconv()->decimal_point[0], ++begin;                  //MSIPL 970310
+            begin != end && memchr("0123456789", *cur = *begin, 10); ++begin)  //MSIPL 970310
+           ++cur, flag = false;                                                //MSIPL 970310
+
+   if(!digits_seen && flag)                                                    //MSIPL 970310
+      return false;                                                            //MSIPL 970310
+   flag = false;                                                               //MSIPL 970310
+
 
    if(begin != end && memchr("eE",*cur = *begin, 2)) 
    {
@@ -2598,7 +2319,6 @@ scan_float_type (iter_type& begin,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2619,7 +2339,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2640,7 +2359,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2663,7 +2381,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2684,7 +2401,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2707,7 +2423,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 
 #ifdef __MSL_LONGLONG_SUPPORT__                                     // mm 970110
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2728,7 +2443,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2751,7 +2465,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                            // mm 970110
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2778,7 +2491,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2808,7 +2520,6 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 
 #ifdef MSIPL_BOOL_BUILTIN
 template <class charT, class InputIterator>
-inline
 num_get<charT, InputIterator>::iter_type
 num_get<charT, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io,
@@ -2887,10 +2598,20 @@ do_get (iter_type begin, iter_type end, ios_base& io,
 //  ************** MONETARY FACETS ***********************
 //
 
+ extern const char pat_arr[16][5]; //970415 bkoz move this into locimp.cpp 
+ 
+/*
+ const char pat_arr[16][5] = { "- v?", "v? -", "v-? ", "v?- ",
+                                 "-v ?", "v ?-", "v -?", "v ?-",
+                                 "- ?v", "?v -", "-?v ", "?-v ",
+                                 "-? v", "? v-", "-? v", "?- v"  };
+*/
+
 class money_base {
 
 public:
-   enum part { symbol='?', sign='-', space=' ', value='v', none='0' };
+ 
+    enum part { symbol='?', sign='-', space=' ', value='v', none='0' };
 
    struct pattern { char field[4+1]; };
 
@@ -2902,15 +2623,9 @@ public:
    }
 
    static money_base::pattern
-   get_pat (int cs_precedes, int sep_by_space,
-            int sign_posn, bool& paren)
+   get_pat (int cs_precedes, int sep_by_space, int sign_posn, bool& paren)
    {
        paren = false;
-       const char pat_arr[16][5] = { "- v?", "v? -", "v-? ", "v?- ",
-                                     "-v ?", "v ?-", "v -?", "v ?-",
-                                     "- ?v", "?v -", "-?v ", "?-v ",
-                                     "-? v", "? v-", "-? v", "?- v"
-                                   };
    
        if (sign_posn) sign_posn--;
        else paren = true;
@@ -3303,7 +3018,6 @@ money_get<charT, Intl, InputIterator>::intl = Intl;
 #endif
 
 template <class charT, bool Intl, class InputIterator>
-inline
 money_get<charT, Intl, InputIterator>::iter_type
 money_get<charT, Intl, InputIterator>::
 extract_value (iter_type begin, iter_type end, ios_base& io,
@@ -3415,7 +3129,6 @@ extract_value (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, bool Intl, class InputIterator>
-inline
 money_get<charT, Intl, InputIterator>::iter_type
 money_get<charT, Intl, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io, io_state& state,
@@ -3445,7 +3158,6 @@ do_get (iter_type begin, iter_type end, ios_base& io, io_state& state,
 }
 
 template <class charT, bool Intl, class InputIterator>
-inline
 money_get<charT, Intl, InputIterator>::iter_type
 money_get<charT, Intl, InputIterator>::
 do_get (iter_type begin, iter_type end, ios_base& io, io_state& state,
@@ -3557,7 +3269,6 @@ do_get (iter_type begin, iter_type end, ios_base& io, io_state& state,
 }
 
 template <class charT, bool Intl, class OutputIterator>
-inline
 money_put<charT, Intl, OutputIterator>::iter_type
 money_put<charT, Intl, OutputIterator>::
 do_put (iter_type iter, ios_base& io, char_type cfill,
@@ -3622,7 +3333,6 @@ do_put (iter_type iter, ios_base& io, char_type cfill,
 }
 
 template <class charT, bool Intl, class OutputIterator>
-inline
 money_put<charT, Intl, OutputIterator>::iter_type
 money_put<charT, Intl, OutputIterator>::
 do_put (iter_type iter, ios_base& io, char_type cfill,
@@ -3670,7 +3380,6 @@ do_put (iter_type iter, ios_base& io, char_type cfill,
 }
 
 template <class charT, bool Intl, class OutputIterator>
-inline
 money_put<charT, Intl, OutputIterator>::string_type
 money_put<charT, Intl, OutputIterator>::
 money_fmt (ios_base& io, char_type cfill,
@@ -3856,7 +3565,6 @@ timepunct<charT>::t_conv_spec_width[time_base::END+1] = { 3, -1, 3,
 #define MAXBUFF 512
 
 template <class charT>
-inline
 timepunct<charT>::timepunct (const char_type* loc_name_)
 : loc_name (loc_name_)
 {
@@ -3923,7 +3631,6 @@ timepunct<charT>::timepunct (const char_type* loc_name_)
 }
 
 template <class charT>
-inline
 timepunct<charT>::string_type
 timepunct<charT>::
 __print_format (char fmt, const tm* tm_) const
@@ -3995,7 +3702,6 @@ __print_format (char fmt, const tm* tm_) const
 }
 
 template <class charT>
-inline
 timepunct<charT>::string_type
 timepunct<charT>::
 print_format (const locale& loc, char fmt, const tm* tm_) const
@@ -4178,7 +3884,6 @@ do_get_time (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 time_get<charT, InputIterator>::iter_type
 time_get<charT, InputIterator>::
 do_time_scanf (iter_type begin, iter_type end, ios_base& io, 
@@ -4341,7 +4046,6 @@ do_get_monthname (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 time_get<charT, InputIterator>::iter_type
 time_get<charT, InputIterator>::
 get_integral_data (iter_type begin, iter_type end, ios_base& io, 
@@ -4377,7 +4081,6 @@ get_integral_data (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 time_get<charT, InputIterator>::iter_type
 time_get<charT, InputIterator>::
 do_get_year (iter_type begin, iter_type end, ios_base& io, 
@@ -4412,7 +4115,6 @@ do_get_year (iter_type begin, iter_type end, ios_base& io,
 }
 
 template <class charT, class InputIterator>
-inline
 time_get<charT, InputIterator>::iter_type
 time_get<charT, InputIterator>::
 which_matches (iter_type begin, iter_type end, ios_base& io,
@@ -4531,7 +4233,6 @@ template <class charT, class OutputIterator>
 locale::id time_put<charT, OutputIterator>::id_;
 
 template <class charT, class OutputIterator>
-inline
 time_put<charT, OutputIterator>::iter_type
 time_put<charT, OutputIterator>::
 put (iter_type iter, ios_base& io, char_type cfill,
@@ -4596,7 +4297,6 @@ put (iter_type iter, ios_base& io, char_type cfill,
 }
 
 template <class charT, class OutputIterator>
-inline
 time_put<charT, OutputIterator>::iter_type
 time_put<charT, OutputIterator>::
 do_put (iter_type iter, ios_base& io, char_type cfill,
@@ -4793,7 +4493,6 @@ operator<< (basic_ostream<charT, Traits>& os, const locale& loc)
 }
 
 template <class charT, class Traits>
-inline
 basic_istream<charT, Traits>&
 operator>> (basic_istream<charT, Traits>& is, locale& loc)
 {
@@ -4820,6 +4519,32 @@ struct iterator_trait <locale::facet *const *> {
 };
 #endif
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class numpunct<char>;
+	template __dont_instantiate class timepunct<char>;
+	template __dont_instantiate class moneypunct<char, true>;
+	template __dont_instantiate class moneypunct<char, false>;
+	template __dont_instantiate class vector<locale::facet*, allocator<locale::facet*> >;
+	template __dont_instantiate class num_get<char, char*>;
+	template __dont_instantiate class num_put<char, char*>;
+	template __dont_instantiate class money_get<char, true,  char*>;
+	template __dont_instantiate class money_put<char, true,  char*>;
+	template __dont_instantiate class money_get<char, false,  char*>;
+	template __dont_instantiate class money_put<char, false,  char*>;
+	//these are in istream.h or ostream.h
+	/*
+	template __dont_instantiate class num_get<char, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class num_put<char, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class time_get<char, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class time_put<char, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class money_get<char, true, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class money_put<char, true, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class money_get<char, false, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class money_put<char, false, ostreambuf_iterator<char, char_traits<char> > >;
+	*/
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif
@@ -4843,3 +4568,8 @@ struct iterator_trait <locale::facet *const *> {
 //961218 bkoz changed fill to cfill for namespace pollution bug
 //970110 mm   long long support.
 //970121 mm   allow a single 0 to be read in.
+//MSIPL 970310 allow input fo floating point number of form 4.e3 to be read.
+//970417 bkoz added include for ios_base  for #pragma once
+//mm 970814a    Corrected position of including mcompile.h  MW00825
+//mm 970814b    Corrected logic of bool operator==, fix from Modena version 2.2.  MW00826
+//mm 970918     Corrected action in print_integra_value by incorporating changes from Modena May29. MW00645

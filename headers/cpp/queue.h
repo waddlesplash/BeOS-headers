@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -84,7 +85,10 @@ operator< (const queue<T, Container, Allocator>& x,
 
 // Subclause 23.2.4.2 -- clause priority_queue
 
-#ifdef MSIPL_DEF_TEMPARG
+//#ifdef MSIPL_DEF_TEMPARG  Ron's change for default
+// template arguments
+
+#if defined(MSIPL_DEF_TEMPARG) && !__MWERKS__ 
 template <class T, class Container = vector<T>,
           class Compare = less<typename Container::value_type>,
           class Allocator = allocator<T> >

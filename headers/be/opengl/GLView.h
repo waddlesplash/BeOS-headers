@@ -40,7 +40,7 @@ virtual void        DetachedFromWindow();
 virtual void        AllDetached();
  
 virtual void		FrameResized(float width, float height);
-virtual status_t    Perform(uint32 d, void *arg);
+virtual status_t    Perform(perform_code d, void *arg);
 
 /* The public methods below, for the moment,
    are just pass-throughs to BView */
@@ -106,7 +106,7 @@ virtual void        ErrorCallback(GLenum errorCode);
 
 virtual void		ScreenConnected(bool connected);
 virtual void		FrameResized(float width, float height);
-virtual status_t    Perform(uint32 d, void *arg);
+virtual status_t    Perform(perform_code d, void *arg);
 
 /* The public methods below, for the moment,
    are just pass-throughs to BWindowScreen */

@@ -1,17 +1,18 @@
 /*******************************************************************************
-//
-//	File:		View.h
-//
-//	Description:	client view class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//*****************************************************************************/
-
+/
+/	File:			View.h
+/
+/   Description:    BView is the base class for all views (clipped regions
+/                   within a window).
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_VIEW_H
 #define	_VIEW_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
 #include <Handler.h>
@@ -20,6 +21,8 @@
 #include <Clipboard.h>
 #include <Picture.h>
 
+/*----------------------------------------------------------------*/
+/*----- view definitions -----------------------------------------*/
 
 enum {
 	B_PRIMARY_MOUSE_BUTTON = 0x01,
@@ -38,8 +41,6 @@ enum {
 	B_TRACK_RECT_CORNER
 };
 
-//------------------------------------------------------------------------------
-
 enum {
 	B_FONT_FAMILY_AND_STYLE	= 0x00000001,
 	B_FONT_SIZE				= 0x00000002,
@@ -52,8 +53,6 @@ enum {
 	B_FONT_ALL				= 0x000000FF
 };
 
-/*----------------------------------------------------------------*/
-
 enum { B_FULL_UPDATE_ON_RESIZE =  (int) 0x80000000	/* 31 */,
        _B_RESERVED1_ =					0x40000000	/* 30 */,
        B_WILL_DRAW =					0x20000000	/* 29 */,
@@ -61,14 +60,14 @@ enum { B_FULL_UPDATE_ON_RESIZE =  (int) 0x80000000	/* 31 */,
        B_NAVIGABLE_JUMP =				0x08000000	/* 27 */,
        B_FRAME_EVENTS =					0x04000000	/* 26 */,
        B_NAVIGABLE =					0x02000000	/* 25 */,
-       _B_RESERVED4_ =					0x01000000	/* 24 */,
+       B_SUBPIXEL_PRECISE =				0x01000000	/* 24 */,
        _B_RESERVED5_ =					0x00800000	/* 23 */,
        _B_RESERVED6_ =					0x00400000	/* 23 */,
-       _B_RESERVED7_ =					0x00200000	/* 22 */ };
+       _B_RESERVED7_ =					0x00200000	/* 22 */};
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
 		 	B_PULSE_NEEDED|B_NAVIGABLE_JUMP|B_FRAME_EVENTS|B_NAVIGABLE|\
-			_B_RESERVED4_|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
+			B_SUBPIXEL_PRECISE|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
 
 enum {
 	_VIEW_TOP_ = 1L,
@@ -78,7 +77,6 @@ enum {
 	_VIEW_CENTER_ = 5L
 };
 
-// the FOLLOW flags take 16 bits in total
 inline uint32 _rule_(int32 r1, int32 r2, int32 r3, int32 r4)
 	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
 
@@ -97,8 +95,6 @@ inline uint32 _rule_(int32 r1, int32 r2, int32 r3, int32 r4)
 #define B_FOLLOW_TOP_BOTTOM		_rule_(_VIEW_TOP_, 0, _VIEW_BOTTOM_, 0)
 #define B_FOLLOW_V_CENTER		_rule_(_VIEW_CENTER_, 0, _VIEW_CENTER_, 0)
 
-//------------------------------------------------------------------------------
-
 class BWindow;
 class BBitmap;
 class BRegion;
@@ -106,9 +102,12 @@ class BPoint;
 class BPolygon;
 class BScrollBar;
 class BScrollView;
+class BShelf;
 struct _view_attr_;
 struct _array_data_;
 struct _array_hdr_;
+/*----------------------------------------------------------------*/
+/*----- BView class ----------------------------------------------*/
 
 class BView : public BHandler {
 
@@ -120,7 +119,7 @@ public:
 virtual					~BView();
 
 						BView(BMessage *data);
-static	BView			*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			AttachedToWindow();
@@ -160,7 +159,7 @@ virtual	void			TargetedByScrollView(BScrollView *scroll_view);
 	
 		void			GetMouse(	BPoint* location,
 									uint32 *buttons,
-									bool checkMessageQueue = TRUE);
+									bool checkMessageQueue = true);
 
 		void			DragMessage(BMessage *aMessage,
 									BRect dragRect,
@@ -212,6 +211,20 @@ virtual	void			SetLowColor(rgb_color a_color);
 		void			SetLowColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		LowColor() const;
 
+		void			SetLineMode(	cap_mode lineCap,
+								join_mode lineJoin,
+								float miterLimit=B_DEFAULT_MITER_LIMIT);
+		join_mode		LineJoinMode() const;
+		cap_mode		LineCapMode() const;
+		float			LineMiterLimit() const;
+
+		void			SetOrigin(BPoint pt);
+		void			SetOrigin(float x, float y);
+		BPoint			Origin() const;
+
+		void			PushState();
+		void			PopState();
+
 		void			MovePenTo(BPoint pt);
 		void			MovePenTo(float x, float y);
 		void			MovePenBy(float x, float y);
@@ -226,16 +239,16 @@ virtual	void			SetLowColor(rgb_color a_color);
 		void			EndLineArray();
 	
 		void			StrokePolygon(	const BPolygon *aPolygon,
-									    bool  closed = TRUE,
+									    bool  closed = true,
 										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										int32 numPts,
-									    bool  closed = TRUE,
+									    bool  closed = true,
 										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
 										int32 numPts,
 										BRect bounds,
-									    bool  closed = TRUE,
+									    bool  closed = true,
 										pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPolygon *aPolygon,
 									pattern p = B_SOLID_HIGH);
@@ -311,11 +324,16 @@ virtual	void			SetLowColor(rgb_color a_color);
 								float start_angle,
 								float arc_angle,
 								pattern p = B_SOLID_HIGH);
+
+		void			StrokeBezier(	BPoint *controlPoints,
+								pattern p = B_SOLID_HIGH);
+		void			FillBezier(	BPoint *controlPoints,
+								pattern p = B_SOLID_HIGH);
 			
 		void			CopyBits(BRect src, BRect dst);
-		void			DrawBitmapAsync(	const BBitmap *aBitmap,
-											BRect srcRect,
-											BRect dstRect);
+		void			DrawBitmapAsync(const BBitmap *aBitmap,
+										BRect srcRect,
+										BRect dstRect);
 		void			DrawBitmapAsync(const BBitmap *aBitmap);
 		void			DrawBitmapAsync(const BBitmap *aBitmap, BPoint where);
 		void			DrawBitmapAsync(const BBitmap *aBitmap, BRect dstRect);
@@ -339,7 +357,7 @@ virtual	void			SetLowColor(rgb_color a_color);
 								   BPoint location,
 								   escapement_delta *delta = 0L);
 virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
-		void            GetFont(BFont *font);
+		void            GetFont(BFont *font) /* const */;
 		float			StringWidth(const char *string) const;
 		float			StringWidth(const char *string, int32 length) const;
 		void			GetStringWidths(char *stringArray[], 
@@ -353,6 +371,7 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 		void			Invalidate();
 
 		void			BeginPicture(BPicture *a_picture);
+		void			AppendToPicture(BPicture *a_picture);
 		BPicture		*EndPicture();
 		void			DrawPicture(const BPicture *a_picture);
 		void			DrawPicture(const BPicture *a_picture, BPoint where);
@@ -369,7 +388,7 @@ virtual	void			SetResizingMode(uint32 mode);
 		void			ScrollBy(float dh, float dv);
 		void			ScrollTo(float x, float y);
 virtual	void			ScrollTo(BPoint where);
-virtual	void			MakeFocus(bool focusState = TRUE);
+virtual	void			MakeFocus(bool focusState = true);
 		bool			IsFocus() const;
 	
 virtual	void			Show();
@@ -394,9 +413,8 @@ virtual status_t		GetSupportedSuites(BMessage *data);
 		bool			IsPrinting() const;
 		void			SetScale(float scale) const;
 
-virtual status_t		Perform(uint32 d, void *arg);
-
-// ------------------------------------------------------------------
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -404,6 +422,7 @@ friend class BScrollBar;
 friend class BWindow;
 friend class BBitmap;
 friend class BPrintJob;
+friend class BShelf;
 
 virtual	void			_ReservedView1();
 virtual	void			_ReservedView2();
@@ -423,6 +442,9 @@ virtual	void			_ReservedView8();
 		void		BeginPicture_pr(BPicture *a_picture, BRect r);
 		void		StrokeLineToNoPat(BPoint pt);
 		void		StrokeRectNoPat(BRect r);
+		void		DoBezier(	int32 gr, int32 numPoints,
+						BPoint *controlPoints,
+						pattern p);
 		bool		remove_from_list(BView *a_view);
 		bool		remove_self();
 		bool		do_owner_check() const;
@@ -443,6 +465,8 @@ virtual	void			_ReservedView8();
 		void		update_cached_state();
 		void        set_font_state(const BFont *font, uint32 mask);
 		uchar		font_encoding() const;
+		BShelf		*shelf() const;
+		void		set_shelf(BShelf *);
 						
 		int32			server_token;
 		uint32			f_type;
@@ -454,7 +478,7 @@ virtual	void			_ReservedView8();
 		BView*			prev_sibling;
 		BView*			first_child;
 
-		short 			fShowLevel;
+		int16 			fShowLevel;
 		bool			top_level_view;
 		BPicture		*cpicture;
 		_array_data_	*comm;
@@ -466,20 +490,17 @@ virtual	void			_ReservedView8();
 		_view_attr_		*fPermanentState;
 		_view_attr_		*fState;
 		BRect			fCachedBounds;
-		uint32			_reserved[8];
+		BShelf			*fShelf;
+		void			*pr_state;
+		uint32			_reserved[6];	/* was 8 */	/* was 7 */
 };
 
 
-/*
- All the inlines below are OK. They don't refer to anything private
-*/
-
-/*---------------------------------------------------------------*/
+/*----------------------------------------------------------------*/
+/*----- inline definitions ---------------------------------------*/
 
 inline void	BView::ScrollTo(float x, float y)
 	{ ScrollTo(BPoint(x, y)); }
-
-/*---------------------------------------------------------------*/
 
 inline void	BView::SetViewColor(uchar r, uchar g, uchar b, uchar a)
 {
@@ -489,8 +510,6 @@ inline void	BView::SetViewColor(uchar r, uchar g, uchar b, uchar a)
 	SetViewColor(a_color);
 }
 
-/*---------------------------------------------------------------*/
-
 inline void	BView::SetHighColor(uchar r, uchar g, uchar b, uchar a)
 {
 	rgb_color	a_color;
@@ -498,8 +517,6 @@ inline void	BView::SetHighColor(uchar r, uchar g, uchar b, uchar a)
 	a_color.blue = b;		a_color.alpha = a;
 	SetHighColor(a_color);
 }
-
-/*---------------------------------------------------------------*/
 
 inline void	BView::SetLowColor(uchar r, uchar g, uchar b, uchar a)
 {
@@ -509,6 +526,7 @@ inline void	BView::SetLowColor(uchar r, uchar g, uchar b, uchar a)
 	SetLowColor(a_color);
 }
 
-/*---------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _VIEW_H */

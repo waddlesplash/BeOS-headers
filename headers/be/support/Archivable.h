@@ -1,22 +1,24 @@
-//******************************************************************************
-//
-//	File:		Archivable.h
-//
-//	Description:	Super class to any class thaht wants to be archivable
-//
-//	Copyright 1997, Be Incorporated
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			Archivable.h
+/
+/	Description:	BArchivable mix-in class defines the archiving
+/					protocol.  Also some global archiving functions.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
+#ifndef _ARCHIVABLE_H
+#define _ARCHIVABLE_H
 
-#ifndef	_ARCHIVABLE_H
-#define	_ARCHIVABLE_H
-
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
-//------------------------------------------------------------------------------
 class BMessage;
 
+/*--------------------------------------------------------------------*/
+/*----- BArchivable class --------------------------------------------*/
 class BArchivable {
 public:
 					BArchivable();
@@ -26,11 +28,8 @@ virtual				~BArchivable();
 virtual	status_t	Archive(BMessage *into, bool deep = true) const;
 static	BArchivable	*Instantiate(BMessage *from);
 
-					/*
-					 The Perform() function is reserved for use by Be.
-					 It is to be used only as directed.
-					*/
-virtual status_t	Perform(uint32 d, void *arg);
+/*----- Private or reserved ---------------*/
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -41,15 +40,20 @@ virtual	void		_ReservedArchivable3();
 		uint32		_reserved[2];
 };
 
-//------------------------------------------------------------------------------
+
+/*----------------------------------------------------------------*/
+/*----- Global Functions -----------------------------------------*/
 
 typedef BArchivable *(*instantiation_func) (BMessage *); 
 
-BArchivable			*instantiate_object(BMessage *from);
-
-bool				validate_instantiation(	BMessage *from,
+_IMPEXP_BE BArchivable		*instantiate_object(BMessage *from);
+_IMPEXP_BE bool		validate_instantiation(	BMessage *from, 
 											const char *class_name);
-instantiation_func	find_instantiation_func(const char *class_name);
-instantiation_func	find_instantiation_func(BMessage *archive_data);
+_IMPEXP_BE instantiation_func	find_instantiation_func(const char *class_name);
+_IMPEXP_BE instantiation_func	find_instantiation_func(BMessage *archive_data);
 
-#endif
+
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _ARCHIVABLE_H */

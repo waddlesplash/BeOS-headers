@@ -1,39 +1,45 @@
-/*
-	
-	PopUpMenu.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/*******************************************************************************
+/
+/	File:			PopUpMenu.h
+/
+/   Description:    BPopUpMenu represents a menu that pops up when you
+/                   activate it.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _POP_UP_MENU_H
 #define _POP_UP_MENU_H
 
+#include <BeBuild.h>
 #include <Menu.h>
+
+/*----------------------------------------------------------------*/
+/*----- BPopUpMenu class -----------------------------------------*/
 
 class BPopUpMenu : public BMenu
 {
 public:
 					BPopUpMenu(	const char *title,
-								bool radioMode = TRUE,
-								bool autoRename = TRUE,
+								bool radioMode = true,
+								bool autoRename = true,
 								menu_layout layout = B_ITEMS_IN_COLUMN
 								);
 					BPopUpMenu(BMessage *data);
 virtual				~BPopUpMenu();
 virtual status_t	Archive(BMessage *data, bool deep = true) const;
-static	BPopUpMenu	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 
 		BMenuItem	*Go(BPoint where,
-						bool delivers_message = FALSE,
-						bool open_anyway = FALSE,
-						bool async = FALSE);
+						bool delivers_message = false,
+						bool open_anyway = false,
+						bool async = false);
 		BMenuItem	*Go(BPoint where,
 						bool delivers_message,
 						bool open_anyway,
 						BRect click_to_open,
-						bool async = FALSE);
+						bool async = false);
 
 virtual void		MessageReceived(BMessage *msg);
 virtual	void		MouseDown(BPoint pt);
@@ -51,7 +57,7 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
 
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
 protected:
 virtual	BPoint		ScreenLocation();
@@ -62,6 +68,7 @@ virtual	void		_ReservedPopUpMenu3();
 
 		BPopUpMenu	&operator=(const BPopUpMenu &);
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 		BMenuItem	*_go(	BPoint where,
 							bool autoInvoke,
@@ -80,4 +87,7 @@ static	int32		entry(void *);
 		uint32		_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _POP_UP_MENU_H */

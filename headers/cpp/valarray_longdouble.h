@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 //961214 bkoz
 /*NB
 valarray contains some member functions that cannot be instantiated for non-integer types.
@@ -50,6 +51,9 @@ In the meantime, this is the list of deleted members:
 
 */
 
+#ifndef VALARRAY_LNGDBL
+#define VALARRAY_LNGDBL
+
 //
 // class valarray<long double>
 //
@@ -64,7 +68,7 @@ public:
     explicit
     valarray (size_t n) 
     : _len (n), _ptr (_len ? new long double[_len] : 0) {
-        fill_n (_ptr, _len, long double());
+        fill_n (_ptr, _len, 0.0);				//970910 vss  direct initialization of pseudo constructor
     }
 
     valarray (const long double& t, size_t n)
@@ -234,7 +238,7 @@ public:
 #endif
     }
 	#else
-		valarray operator! () const;
+		inline valarray operator! () const;
 	#endif
 		
 //
@@ -356,7 +360,7 @@ public:
 
     void  free () { WRITE_LOCK(va_mutex); delete_alloc (); }
 
-    void  resize (size_t sz, const long double& c = long double ());
+    void  resize (size_t sz, const long double& c = 0.0); //970910 vss direct initialization
 
 private :
 
@@ -638,7 +642,7 @@ inline
 long double
 valarray<long double>::min () const
 {
-    long double   min_val = long double ();
+    long double   min_val = 0.0;  //970910 vss direct initialization
     READ_LOCK(va_mutex);
     if (length ()) min_val = *_ptr;
     for (size_t count = 1; count < length (); ++count)
@@ -653,7 +657,7 @@ inline
 long double
 valarray<long double>::max () const
 {
-    long double   max_val = long double ();
+    long double   max_val = 0.0;  //970910  direct initialization
     READ_LOCK(va_mutex);
     if (length ()) max_val = *_ptr;
     for (size_t count = 1; count < length (); ++count)
@@ -673,7 +677,7 @@ valarray<long double>::shift (int i) const
 
     READ_LOCK(va_mutex);
     size_t len  = length ();
-    valarray<long double> ret (long double (), len);
+    valarray<long double> ret (0.0, len);  //970910 vss direct initialization
 
 #ifdef MSIPL_USING_NAMESPACE
     if ( i < 0 )
@@ -700,7 +704,7 @@ valarray<long double>::cshift (int i) const
     if (j >= length ()) j = j % length ();
 
     size_t len  = length ();
-    valarray<long double> ret (long double (), len);
+    valarray<long double> ret (0.0, len);  //970910 vss direction initialization
 
     if ( i < 0 )
     {
@@ -790,3 +794,12 @@ valarray<long double>::resize (size_t sz, const long double& c)  //961113 bkoz
 #endif
     }
 }
+
+#ifdef __MSL_NO_INSTANTIATE__
+	template __dont_instantiate class valarray<long double>;
+#endif
+
+
+#endif // VALARRAY_LNGDBL
+
+//970910 vss  Compiler now requires direct initialization of pseudo constructors

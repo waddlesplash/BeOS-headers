@@ -1,15 +1,20 @@
-//******************************************************************************
-//
-//	File:		Message.h
-//
-//	Copyright 1994-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			Message.h
+/
+/	Description:	BMessage class creates objects that store data and that
+/					can be processed in a message loop.  BMessage objects
+/					are also used as data containers by the archiving and 
+/					the scripting mechanisms.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
-#ifndef	_MESSAGE_H
-#define	_MESSAGE_H
+#ifndef _MESSAGE_H
+#define _MESSAGE_H
 
-
+#include <BeBuild.h>
 #include <stddef.h>
 #include <AppDefs.h>
 #include <Rect.h>
@@ -21,15 +26,20 @@
 #include <Entry.h>
 #include <Flattenable.h>
 
-/* ----------------------------------------------------------- */
-
 class	BBlockCache;
 class	BMessenger;
 class	BHandler;
 
+/*-----------------------------------------*/
+/*----- Private or reserved ---------------*/
 extern "C" void		_msg_cache_cleanup_();
 extern "C" int		_init_message_();
 extern "C" int		_delete_message_();
+/*-----------------------------------------*/
+
+
+/*-------------------------------------------------------------*/
+/* ------- Name lengths and Scripting specifiers ------------- */
 
 #define B_FIELD_NAME_LENGTH			255
 #define B_PROPERTY_NAME_LENGTH		255
@@ -42,12 +52,15 @@ enum {
 	B_RANGE_SPECIFIER,
 	B_REVERSE_RANGE_SPECIFIER,
 	B_NAME_SPECIFIER,
+	B_ID_SPECIFIER,
 
 	B_SPECIFIERS_END = 128
-	// application specific forms should start here
+	/* app-defined specifiers start at B_SPECIFIERS_END+1 */
 };
 
-/* ----------------------------------------------------------- */
+
+/*-------------------------------------------------------------*/
+/* --------- BMessage class----------------------------------- */
 
 class BMessage {
 
@@ -62,21 +75,60 @@ virtual				~BMessage();
 
 		BMessage	&operator=(const BMessage &msg);
 
+/* Statistics and misc info */
+		status_t	GetInfo(type_code typeRequested, int32 which, char **name,
+							type_code *typeReturned, int32 *count = NULL) const;
+
+		status_t	GetInfo(const char *name, type_code *type, int32 *c = 0) const;
+		status_t	GetInfo(const char *name, type_code *type, bool *fixed_size) const;
+
+		int32		CountNames(type_code type) const;
+		bool		IsEmpty() const;
+		bool		IsSystem() const;
+		bool		IsReply() const;
+		void		PrintToStream() const;
+
+/* Delivery info */
+		bool		WasDelivered() const;
+		bool		IsSourceWaiting() const;
+		bool		IsSourceRemote() const;
+		BMessenger	ReturnAddress() const;
+		const BMessage	*Previous() const;
+		bool		WasDropped() const;
+		BPoint		DropPoint(BPoint *offset = NULL) const;
+
+/* Replying */
+		status_t	SendReply(uint32 command, BHandler *reply_to = NULL);
+		status_t	SendReply(BMessage *the_reply, BHandler *reply_to = NULL,
+							bigtime_t timeout = B_INFINITE_TIMEOUT);
+	
+		status_t	SendReply(uint32 command, BMessage *reply_to_reply);
+		status_t	SendReply(BMessage *the_reply, BMessage *reply_to_reply,
+							bigtime_t send_timeout = B_INFINITE_TIMEOUT,
+							bigtime_t reply_timeout = B_INFINITE_TIMEOUT);
+
+/* Flattening data */
+		ssize_t		FlattenedSize() const;
+		status_t	Flatten(char *buffer, ssize_t size) const;
+		status_t	Flatten(BDataIO *stream, ssize_t *size = NULL) const;
+		status_t	Unflatten(const char *flat_buffer);
+		status_t	Unflatten(BDataIO *stream);
+
+
+/* Specifiers (archiving) */
 		status_t	AddSpecifier(const char *property);
 		status_t	AddSpecifier(const char *property, int32 index);
-		status_t	AddSpecifier(const char *property,
-								int32 index,
-								int32 range);
+		status_t	AddSpecifier(const char *property, int32 index, int32 range);
 		status_t	AddSpecifier(const char *property, const char *name);
 		status_t	AddSpecifier(const BMessage *specifier);
 
-		status_t	GetCurrentSpecifier(int32 *index,
-										BMessage *specifier = NULL,
-										int32 *form = NULL,
-										const char **property = NULL) const;
+		status_t	SetCurrentSpecifier(int32 index);
+		status_t	GetCurrentSpecifier(int32 *index, BMessage *specifier = NULL,
+							int32 *form = NULL, const char **property = NULL) const;
 		bool		HasSpecifiers() const;
 		status_t	PopSpecifier();
 
+/* Adding data */
 		status_t	AddRect(const char *name, BRect a_rect);
 		status_t	AddPoint(const char *name, BPoint a_point);
 		status_t	AddString(const char *name, const char *a_string);
@@ -91,16 +143,16 @@ virtual				~BMessage();
 		status_t	AddMessenger(const char *name, BMessenger messenger);
 		status_t	AddRef(const char *name, const entry_ref *ref);
 		status_t	AddMessage(const char *name, const BMessage *msg);
-		status_t	AddFlat(const char *name,
-							BFlattenable *obj,
-							int32 num_adds = 1);
-		status_t	AddData(const char *name,
-							type_code type,
-							const void *data,
-							ssize_t numBytes,
-							bool is_fixed_size = TRUE,
-							int32 num_adds = 1);
+		status_t	AddFlat(const char *name, BFlattenable *obj, int32 count = 1);
+		status_t	AddData(const char *name, type_code type, const void *data,
+						ssize_t numBytes, bool is_fixed_size = true, int32 count = 1);
 
+/* Removing data */
+		status_t	RemoveData(const char *name, int32 index = 0);
+		status_t	RemoveName(const char *name);
+		status_t	MakeEmpty();
+
+/* Finding data */
 		status_t	FindRect(const char *name, BRect *rect) const;
 		status_t	FindRect(const char *name, int32 index, BRect *rect) const;
 		status_t	FindPoint(const char *name, BPoint *pt) const;
@@ -128,42 +180,21 @@ virtual				~BMessage();
 		status_t	FindRef(const char *name, entry_ref *ref) const;
 		status_t	FindRef(const char *name, int32 index, entry_ref *ref) const;
 		status_t	FindMessage(const char *name, BMessage *msg) const;
-		status_t	FindMessage(const char *name,
-								int32 index,
-								BMessage *msg) const;
+		status_t	FindMessage(const char *name, int32 index, BMessage *msg) const;
 		status_t	FindFlat(const char *name, BFlattenable *obj) const;
-		status_t	FindFlat(const char *name,
-							int32 index,
-							BFlattenable *obj) const;
-		status_t	FindData(const char *name,
-							type_code type,
-							const void **data,
-							ssize_t *numBytes) const;
-		status_t	FindData(const char *name,
-							type_code type,
-							int32 index,
-							const void **data,
-							ssize_t *numBytes) const;
+		status_t	FindFlat(const char *name, int32 index, BFlattenable *obj) const;
+		status_t	FindData(const char *name, type_code type,
+							const void **data, ssize_t *numBytes) const;
+		status_t	FindData(const char *name, type_code type, int32 index,
+							const void **data, ssize_t *numBytes) const;
 
-		// ---------------- old style FindXXX -----------------
-		BRect		FindRect(const char *name, int32 index = 0) const;
-		BPoint		FindPoint(const char *name, int32 index = 0) const;
-		const char	*FindString(const char *string_name, int32 index = 0) const;
-		int16		FindInt16(const char *name, int32 index = 0) const;
-		int32		FindInt32(const char *name, int32 index = 0) const;
-		bool		FindBool(const char *name, int32 index = 0) const;
-		float		FindFloat(const char *name, int32 index = 0) const;
-		double		FindDouble(const char *name, int32 index = 0) const;
-		// -----------------------------
-
+/* Replacing data */
 		status_t	ReplaceRect(const char *name, BRect a_rect);
 		status_t	ReplaceRect(const char *name, int32 index, BRect a_rect);
 		status_t	ReplacePoint(const char *name, BPoint a_point);
 		status_t	ReplacePoint(const char *name, int32 index, BPoint a_point);
-		status_t	ReplaceString(const char *name, const char *a_string);
-		status_t	ReplaceString(	const char *name,
-									int32 index, 
-									const char *a_string);
+		status_t	ReplaceString(const char *name, const char *string);
+		status_t	ReplaceString(const char *name, int32 index, const char *string);
 		status_t	ReplaceInt8(const char *name, int8 val);
 		status_t	ReplaceInt8(const char *name, int32 index, int8 val);
 		status_t	ReplaceInt16(const char *name, int16 val);
@@ -177,119 +208,57 @@ virtual				~BMessage();
 		status_t	ReplaceFloat(const char *name, float a_float);
 		status_t	ReplaceFloat(const char *name, int32 index, float a_float);
 		status_t	ReplaceDouble(const char *name, double a_double);
-		status_t	ReplaceDouble(	const char *name,
-									int32 index,
-									double a_double);
+		status_t	ReplaceDouble(const char *name, int32 index, double a_double);
 		status_t	ReplacePointer(const char *name, const void *ptr);
-		status_t	ReplacePointer(const char *name,
-									int32 index,
-									const void *ptr);
+		status_t	ReplacePointer(const char *name,int32 index,const void *ptr);
 		status_t	ReplaceMessenger(const char *name, BMessenger messenger);
-		status_t	ReplaceMessenger(	const char *name,
-										int32 index,
-										BMessenger messenger);
-		status_t	ReplaceRef(	const char *name,
-								const entry_ref *ref);
-		status_t	ReplaceRef(	const char *name,
-								int32 index,
-								const entry_ref *ref);
+		status_t	ReplaceMessenger(const char *name, int32 index, BMessenger msngr);
+		status_t	ReplaceRef(	const char *name,const entry_ref *ref);
+		status_t	ReplaceRef(	const char *name, int32 index, const entry_ref *ref);
 		status_t	ReplaceMessage(const char *name, const BMessage *msg);
-		status_t	ReplaceMessage(const char *name,
-									int32 index,
-									const BMessage *msg);
+		status_t	ReplaceMessage(const char *name, int32 index, const BMessage *msg);
 		status_t	ReplaceFlat(const char *name, BFlattenable *obj);
-		status_t	ReplaceFlat(const char *name,
-								int32 index,
-								BFlattenable *obj);
-		status_t	ReplaceData(const char *name,
-								type_code type,
-								const void *data,
-								ssize_t data_size);
-		status_t	ReplaceData(const char *name,
-								type_code type,
-								int32 index,
-								const void *data,
-								ssize_t data_size);
-
-		status_t	GetInfo(type_code typeRequested,
-							int32 which,
-							char **name,
-							type_code *typeReturned,
-							int32 *count = NULL) const;
-
-		status_t	GetInfo(const char *name,
-							type_code *type,
-							int32 *c = 0) const;
-		status_t	RemoveData(const char *name, int32 index = 0);
-		status_t	RemoveName(const char *name);
-
-		int32		CountNames(type_code type) const;
-		status_t	MakeEmpty();
-		bool		IsEmpty() const;
-
-		bool		WasDelivered() const;
-		bool		IsSourceWaiting() const;
-		bool		IsSourceRemote() const;
-		BMessenger	ReturnAddress() const;
-		bool		IsReply() const;
-		const BMessage	*Previous() const;
-
-		bool		WasDropped() const;
-		BPoint		DropPoint(BPoint *offset = NULL) const;
-
-		status_t	SendReply(uint32 command, BHandler *reply_to = NULL);
-		status_t	SendReply(	BMessage *the_reply,
-								BHandler *reply_to = NULL,
-								bigtime_t timeout = B_INFINITE_TIMEOUT);
-	
-		status_t	SendReply(uint32 command, BMessage *reply_to_reply);
-		status_t	SendReply(	BMessage *the_reply,
-								BMessage *reply_to_reply,
-								bigtime_t send_timeout = B_INFINITE_TIMEOUT,
-								bigtime_t reply_timeout = B_INFINITE_TIMEOUT);
-	
-		bool		HasRect(const char *name, int32 index = 0) const;
-		bool		HasPoint(const char *name, int32 index = 0) const;
-		bool		HasString(const char *name, int32 index = 0) const;
-		bool		HasInt8(const char *name, int32 index = 0) const;
-		bool		HasInt16(const char *name, int32 index = 0) const;
-		bool		HasInt32(const char *name, int32 index = 0) const;
-		bool		HasInt64(const char *name, int32 index = 0) const;
-		bool		HasBool(const char *name, int32 index = 0) const;
-		bool		HasFloat(const char *name, int32 index = 0) const;
-		bool		HasDouble(const char *name, int32 index = 0) const;
-		bool		HasPointer(const char *name, int32 index = 0) const;
-		bool		HasMessenger(const char *name, int32 index = 0) const;
-		bool		HasRef(const char *name, int32 index = 0) const;
-		bool		HasMessage(const char *name, int32 index = 0) const;
-		bool		HasFlat(const char *name, const BFlattenable *obj) const;
-		bool		HasFlat(const char *name,
-							int32 index,
-							const BFlattenable *obj) const;
-		bool		HasData(const char *name, type_code type, int32 index = 0) const;
-
-		ssize_t		FlattenedSize() const;
-		status_t	Flatten(char *buffer, ssize_t size) const;
-		status_t	Flatten(BDataIO *stream, ssize_t *size = NULL) const;
-		status_t	Unflatten(const char *flat_buffer);
-		status_t	Unflatten(BDataIO *stream);
-
-		bool		IsSystem() const;
-		void		PrintToStream() const;
+		status_t	ReplaceFlat(const char *name, int32 index, BFlattenable *obj);
+		status_t	ReplaceData(const char *name, type_code type,
+								const void *data, ssize_t data_size);
+		status_t	ReplaceData(const char *name, type_code type, int32 index,
+								const void *data, ssize_t data_size);
 
 		void		*operator new(size_t size);
 		void		operator delete(void *ptr, size_t size);
 
-//------------------------------------------------------------------------------
+/*----- Private, reserved, or obsolete ------------------------------*/
+		bool		HasRect(const char *, int32 n = 0) const;
+		bool		HasPoint(const char *, int32 n = 0) const;
+		bool		HasString(const char *, int32 n = 0) const;
+		bool		HasInt8(const char *, int32 n = 0) const;
+		bool		HasInt16(const char *, int32 n = 0) const;
+		bool		HasInt32(const char *, int32 n = 0) const;
+		bool		HasInt64(const char *, int32 n = 0) const;
+		bool		HasBool(const char *, int32 n = 0) const;
+		bool		HasFloat(const char *, int32 n = 0) const;
+		bool		HasDouble(const char *, int32 n = 0) const;
+		bool		HasPointer(const char *, int32 n = 0) const;
+		bool		HasMessenger(const char *, int32 n = 0) const;
+		bool		HasRef(const char *, int32 n = 0) const;
+		bool		HasMessage(const char *, int32 n = 0) const;
+		bool		HasFlat(const char *, const BFlattenable *) const;
+		bool		HasFlat(const char *,int32 ,const BFlattenable *) const;
+		bool		HasData(const char *, type_code , int32 n = 0) const;
+		BRect		FindRect(const char *, int32 n = 0) const;
+		BPoint		FindPoint(const char *, int32 n = 0) const;
+		const char	*FindString(const char *, int32 n = 0) const;
+		int16		FindInt16(const char *, int32 n = 0) const;
+		int32		FindInt32(const char *, int32 n = 0) const;
+		bool		FindBool(const char *, int32 n = 0) const;
+		float		FindFloat(const char *, int32 n = 0) const;
+		double		FindDouble(const char *, int32 n = 0) const;
+
 private:
 
 friend class	BMessageQueue;
 friend class	BMessenger;
 friend class	BApplication;
-
-// defined these few functions so that BApplication, BWindow, etc
-// wouldn't have to be granted friendship. Those classes simply use
-// these internal functions.
 
 friend			void		_msg_cache_cleanup_();
 friend			BMessage 	*_reconstruct_msg_(BMessage *);
@@ -356,24 +325,20 @@ static	BBlockCache	*sMsgCache;
 		struct dyn_array {
 			int32		fLogicalBytes;
 			int32		fPhysicalBytes;
-			int32		fChunkSize;		// In bytes. 0 for variable size entries
+			int32		fChunkSize;		
 			int32		fCount;
-			int32		fEntryHdrSize;	// size of entry_dr, incl padding
-		//+	actual data follows here
+			int32		fEntryHdrSize;	
 		};
 
 		struct entry_hdr  : public dyn_array {
 			entry_hdr	*fNext;
 			uint32		fType;
-			uchar		fNameLength;	// strlen(fName)
+			uchar		fNameLength;	
 			char		fName[1];
-			// actual data follows the fName data. For entries with variable
-			// size chunks, what follows will be an array of var_chunk
-			// structures.
 		};
 
 		struct var_chunk {
-			int32	fDataSize;				// sizeof(fData)
+			int32	fDataSize;				
 			char	fData[1];
 		};
 
@@ -412,12 +377,14 @@ static	BBlockCache	*sMsgCache;
 		bool		da_is_mini_data(dyn_array *da) const
 						{ return ((da->fLogicalBytes <= UCHAR_MAX) &&
 											(da->fCount <= UCHAR_MAX)); }
+		void		da_swap_var_sized(dyn_array *da);
+		void		da_swap_fixed_sized(dyn_array *da);
 
 		BMessage			*link;
-		int32				fTarget;			// token of the target
+		int32				fTarget;	
 		BMessage			*fOriginal;
 		uint32				fChangeCount;
-		int32				fCurSpecifier;		// index (0-based)
+		int32				fCurSpecifier;
 		uint32				_reserved[4];
 
 		BMessage::entry_hdr	*fEntries;
@@ -438,6 +405,8 @@ static	BBlockCache	*sMsgCache;
 		bool				fHasSpecifiers;	
 };
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _MESSAGE_H */
 

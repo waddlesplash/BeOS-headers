@@ -1,20 +1,23 @@
 /*******************************************************************************
-//
-//	File:		Font.h
-//
-//	Description:	Client font class.
-//
-//	Copyright 1997, Be Incorporated
-//
-//*****************************************************************************/
-
+/
+/	File:			Font.h
+/
+/   Description:    BFont objects represent individual font styles.
+/                   Global font cache and font info functions defined below.
+/
+/	Copyright 1997-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _FONT_H
 #define _FONT_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <InterfaceDefs.h>
 
+/*----------------------------------------------------------------*/
+/*----- BFont defines and structures -----------------------------*/
 
 #define B_FONT_FAMILY_LENGTH 63
 typedef char font_family[B_FONT_FAMILY_LENGTH + 1];
@@ -59,7 +62,6 @@ enum {
 	B_MACINTOSH_ROMAN = 11
 };
 
-/* values for font_cache_setting id field */
 enum {
 	B_SCREEN_FONT_CACHE      = 0x0001,
 	B_PRINTING_FONT_CACHE    = 0x0002,
@@ -104,6 +106,9 @@ struct tuned_font_info {
 	uint32   flags;
 	uint16   face;
 };
+
+/*----------------------------------------------------------------*/
+/*----- BFont class ----------------------------------------------*/
 
 class BFont {
 public:
@@ -167,6 +172,7 @@ public:
 
 		void			PrintToStream() const;
 	
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 friend class BApplication;
@@ -193,17 +199,24 @@ friend void _font_control_(BFont*, int32, void*);
 											  char *resultArray[]) const;
 };
 
-extern const BFont* be_plain_font;
-extern const BFont* be_bold_font;
-extern const BFont* be_fixed_font;
+/*----------------------------------------------------------------*/
+/*----- BFont related declarations -------------------------------*/
 
-int32       count_font_families();
-status_t    get_font_family(int32 index, font_family *name, uint32 *flags = NULL);
-int32       count_font_styles(font_family name);
-status_t    get_font_style(font_family family, int32 index,
-						   font_style *name, uint32 *flags = NULL);
-bool        update_font_families(bool check_only);
-status_t    get_font_cache_info(uint32 id, void  *set);
-status_t    set_font_cache_info(uint32 id, void  *set);
+extern _IMPEXP_BE const BFont* be_plain_font;
+extern _IMPEXP_BE const BFont* be_bold_font;
+extern _IMPEXP_BE const BFont* be_fixed_font;
 
-#endif
+_IMPEXP_BE int32       count_font_families();
+_IMPEXP_BE status_t    get_font_family(int32 index, font_family *name,
+							uint32 *flags = NULL);
+_IMPEXP_BE int32       count_font_styles(font_family name);
+_IMPEXP_BE status_t    get_font_style(font_family family, int32 index,
+							font_style *name, uint32 *flags = NULL);
+_IMPEXP_BE bool        update_font_families(bool check_only);
+_IMPEXP_BE status_t    get_font_cache_info(uint32 id, void  *set);
+_IMPEXP_BE status_t    set_font_cache_info(uint32 id, void  *set);
+
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _FONT_H */

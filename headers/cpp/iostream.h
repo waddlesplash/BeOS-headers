@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -40,15 +41,28 @@ public:
    { 
    }
 
-   virtual ~basic_iostream () { }
+   virtual ~basic_iostream ();
 };
+
+//#pragma dont_inline on
+template <class charT, class traits>
+basic_iostream<charT,traits>::~basic_iostream () {};
+// mf 101597 #pragma dont_inline reset
 
 extern istream cin;
 extern ostream cout;
 extern ostream clog;
 extern ostream cerr;
 
-static ios_base::Init  __msipl_ios_init; 
+#if !__option(precompile)
+static ios_base::Init  __msipl_ios_init;
+#endif
+
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class basic_iostream<char, char_traits<char> >;
+#endif
+
 
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
@@ -61,4 +75,6 @@ static ios_base::Init  __msipl_ios_init;
 
 #endif /* MSIPL_IOSTREAM_H */
 
-//961210 bkoz added alignment wrapper
+//961210 	bkoz 	added alignment wrapper
+//970404 	bkoz	added support for don't instantiate
+//970415	bkoz 	added support for .pch

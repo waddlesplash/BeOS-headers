@@ -1,23 +1,27 @@
-//******************************************************************************
-//
-//	File:		ScrollBar.h
-//
-//	Description:	ScrollBar control class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			ScrollBar.h
+/
+/   Description:    BScrollBar displays and controls a scrollbar. 
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_SCROLL_BAR_H
 #define	_SCROLL_BAR_H
 
+#include <BeBuild.h>
 #include <View.h>
+
+/*----------------------------------------------------------------*/
+/*----- scroll bar defines ---------------------------------------*/
 
 #define B_V_SCROLL_BAR_WIDTH	14.0
 #define B_H_SCROLL_BAR_HEIGHT	14.0
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BScrollBar class -----------------------------------------*/
 
 class BScrollBar : public BView {
 
@@ -30,7 +34,7 @@ public:
 								orientation direction);
 					BScrollBar(BMessage *data);
 virtual				~BScrollBar();
-static	BScrollBar	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 			
 virtual	void		AttachedToWindow();
@@ -63,7 +67,9 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									BMessage *specifier,
 									int32 form,
 									const char *property);
-virtual status_t	Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -90,4 +96,7 @@ virtual	void		_ReservedScrollBar4();
 		uint32		_reserved[4];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _SCROLL_BAR_H */

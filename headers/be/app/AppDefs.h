@@ -1,28 +1,36 @@
 /******************************************************************************
-
-	File:			AppDefs.h
-
-	Description:	Some common type definitions.
-
-	Copyright 1993-97, Be Incorporated
-
-******************************************************************************/
+/
+/	File:			AppDefs.h
+/
+/	Description:	Message codes and the global cursors.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _APP_DEFS_H
 #define _APP_DEFS_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <TypeConstants.h>
 
+/*---------------------------------------------------------*/
+/*----- Global Cursors ------------------------------------*/
 
-/* System Message codes */
+extern _IMPEXP_BE const unsigned char B_HAND_CURSOR[];
+extern _IMPEXP_BE const unsigned char B_I_BEAM_CURSOR[];
+
+/*---------------------------------------------------------------*/
+/*----- System Message Codes ------------------------------------*/
+
 enum {
 	B_ABOUT_REQUESTED		= '_ABR',
 	B_WINDOW_ACTIVATED		= '_ACT',
-	B_APP_ACTIVATED			= '_ACT',	/* ## SAME AS B_WINDOW_ACTIVATED ## */
+	B_APP_ACTIVATED			= '_ACT',	/* Same as B_WINDOW_ACTIVATED */
 	B_ARGV_RECEIVED 		= '_ARG',
 	B_QUIT_REQUESTED 		= '_QRQ',
-	B_CLOSE_REQUESTED 		= '_QRQ',	/* ## SAME AS B_QUIT_REQUESTED ## */
+	B_CLOSE_REQUESTED 		= '_QRQ',	/* Obsolete; use B_QUIT_REQUESTED */
 	B_CANCEL				= '_CNC',
 	B_KEY_DOWN 				= '_KYD',
 	B_KEY_UP 				= '_KYU',
@@ -46,8 +54,7 @@ enum {
 	_APP_MENU_				= '_AMN',
 	_BROWSER_MENUS_			= '_BRM',
 	_MENU_EVENT_ 			= '_MEV',
-	_SAVE_PACKAGE_			= '_SVP',
-	_PULSE_ENABLED_			= '_PBL',
+	_PING_					= '_PBL',
 	_QUIT_ 					= '_QIT',
 	_VOLUME_MOUNTED_ 		= '_NVL',
 	_VOLUME_UNMOUNTED_		= '_VRM',
@@ -57,13 +64,19 @@ enum {
 	_SHOW_DRAG_HANDLES_		= '_SDH'
 };
 
-/* other commands */
+
+/*---------------------------------------------------------*/
+/*----- Other Commands ------------------------------------*/
+
 enum {
 	B_SET_PROPERTY				= 'PSET',
 	B_GET_PROPERTY				= 'PGET',
 	B_CREATE_PROPERTY			= 'PCRT',
 	B_DELETE_PROPERTY			= 'PDEL',
+	B_COUNT_PROPERTIES			= 'PCNT',
+	B_EXECUTE_PROPERTY			= 'PEXE',
 	B_GET_SUPPORTED_SUITES		= 'SUIT',
+	B_UNDO						= 'UNDO',
 	B_CUT 						= 'CCUT',
 	B_COPY 						= 'COPY',
 	B_PASTE 					= 'PSTE',
@@ -78,10 +91,11 @@ enum {
 	B_UPDATE_STATUS_BAR			= 'SBUP',
 	B_RESET_STATUS_BAR			= 'SBRS',
 	B_NODE_MONITOR				= 'NDMN',
-	B_QUERY_UPDATE				= 'QUPD'
+	B_QUERY_UPDATE				= 'QUPD',
+	B_ENDORSABLE				= 'ENDO'
 };
 
-extern const unsigned char B_HAND_CURSOR[];
-extern const unsigned char B_I_BEAM_CURSOR[];
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _APP_DEFS_H */

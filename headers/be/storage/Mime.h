@@ -11,6 +11,9 @@
 #ifndef _MIME_H
 #define _MIME_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/types.h>
 #include <SupportDefs.h>
 #include <StorageDefs.h>
@@ -19,17 +22,17 @@
 extern "C" {
 #endif
 
-	int	update_mime_info(const char *path,
+_IMPEXP_BE 	int	update_mime_info(const char *path,
 						int recursive,
 						int synchronous,
 						int force);
-	status_t create_app_meta_mime(const char *path,
+_IMPEXP_BE 	status_t create_app_meta_mime(const char *path,
 									int recursive,
 									int synchronous,
 									int force);
-	status_t get_device_icon(const char *dev, void *icon, int32 size);
+_IMPEXP_BE 	status_t get_device_icon(const char *dev, void *icon, int32 size);
 
-	const uint32 B_MIME_STRING_TYPE	= 'MIMS';
+	static const uint32 B_MIME_STRING_TYPE	= 'MIMS';
 
 #ifdef __cplusplus
 }
@@ -54,7 +57,10 @@ enum app_verb {
 	B_OPEN
 };
 
-extern const char *B_APP_MIME_TYPE;			// "application/x-be-executable"
+extern _IMPEXP_BE const char *B_APP_MIME_TYPE;		// platform dependent
+extern _IMPEXP_BE const char *B_PEF_APP_MIME_TYPE;	// "application/x-be-executable"
+extern _IMPEXP_BE const char *B_PE_APP_MIME_TYPE;	// "application/x-vnd.be-peexecutable"
+extern _IMPEXP_BE const char *B_RESOURCE_MIME_TYPE;	// "application/x-be-resource"
 
 /* ------------------------------------------------------------- */
 
@@ -75,6 +81,8 @@ virtual				~BMimeType();
 		bool		IsSupertypeOnly() const;
 		bool		IsInstalled() const;
 		status_t	GetSupertype(BMimeType *super_type) const;
+		bool		operator==(const BMimeType &type) const;
+		bool		Contains(const BMimeType *type) const;
 
 		// These functions are for managing data in the meta mime file
 		status_t	Install();
@@ -100,6 +108,7 @@ static	status_t	GetInstalledSupertypes(BMessage *super_types);
 static	status_t	GetInstalledTypes(BMessage *types);
 static	status_t	GetInstalledTypes(const char *super_type,
 									BMessage *subtypes);
+static	status_t	GetWildcardApps(BMessage *wild_ones);
 static	bool		IsValid(const char *string);
 
 		// for application signatures only.
@@ -130,7 +139,7 @@ virtual	void		_ReservedMimeType3();
 					BMimeType(const BMimeType &);
 
 		void		InitData(const char *type);
-		status_t	OpenFile(bool create_file = FALSE,
+		status_t	OpenFile(bool create_file = false,
 							dev_t dev = -1) const;
 		status_t	CloseFile() const;
 		status_t	GetSupportedTypes(BMessage *types);

@@ -1,19 +1,24 @@
-/*
-	
-	Menu.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/*******************************************************************************
+/
+/	File:			Menu.h
+/
+/   Description:    BMenu display a menu of selectable items.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _MENU_H
 #define _MENU_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <View.h>
 #include <Looper.h>
 #include <List.h>
+
+/*----------------------------------------------------------------*/
+/*----- Menu decalrations and structures -------------------------*/
 
 class BMenuItem;
 class BMenuBar;
@@ -36,22 +41,22 @@ struct menu_info {
 	bool		triggers_always_shown;
 };
 
-status_t	set_menu_info(menu_info *info);
-status_t	get_menu_info(menu_info *info);
+_IMPEXP_BE status_t	set_menu_info(menu_info *info);
+_IMPEXP_BE status_t	get_menu_info(menu_info *info);
+
+/*----------------------------------------------------------------*/
+/*----- BMenu class ----------------------------------------------*/
 
 class BMenu : public BView
 {
 public:
-
-/* Public Interface for clients of this class */
-
 						BMenu(	const char *title,
 								menu_layout layout = B_ITEMS_IN_COLUMN);
 						BMenu(const char *title, float width, float height);
 virtual					~BMenu();
 
 						BMenu(BMessage *data);
-static	BMenu			*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual void			AttachedToWindow();
@@ -83,6 +88,8 @@ virtual	void			SetRadioMode(bool state);
 virtual	void			SetTriggersEnabled(bool state);
 virtual void			SetMaxContentWidth(float max);
 
+		void			SetLabelFromMarked(bool on);
+		bool			IsLabelFromMarked();
 		bool			IsEnabled() const;	
 		bool			IsRadioMode() const;
 		bool			AreTriggersEnabled() const;
@@ -92,8 +99,6 @@ virtual void			SetMaxContentWidth(float max);
 
 		BMenu			*Supermenu() const;
 		BMenuItem		*Superitem() const;
-
-/* Public Interface for derived classes of the menu system */
 
 virtual void			MessageReceived(BMessage *msg);
 virtual	void			KeyDown(const char *bytes, int32 numBytes);
@@ -111,14 +116,10 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
-virtual status_t		Perform(uint32 d, void *arg);
+virtual status_t		Perform(perform_code d, void *arg);
 
-// -------------------------------------------------------------//
-// -------------------------------------------------------------//
 protected:
 				
-					// special constructor for BMenuBar and
-					// other subclasses of BMenu.
 					BMenu(	BRect frame,
 							const char *viewName,
 							uint32 resizeMask,
@@ -127,9 +128,6 @@ protected:
 							bool resizeToFit);
 
 virtual	BPoint		ScreenLocation();
-
-		void		SetLabelFromMarked(bool on);
-		bool		IsLabelFromMarked();
 
 		void		SetItemMargins(	float left, 
 									float top, 
@@ -145,11 +143,10 @@ virtual	BPoint		ScreenLocation();
 virtual	void		Show();
 		void		Show(bool selectFirstItem);
 		void		Hide();
-		BMenuItem	*Track(	bool start_opened = FALSE,
+		BMenuItem	*Track(	bool start_opened = false,
 							BRect *special_rect = NULL);
 
-// -------------------------------------------------------------//
-// -------------------------------------------------------------//
+/*----- Private or reserved -----------------------------------------*/
 private:
 friend BWindow;
 friend BMenuBar;
@@ -168,7 +165,7 @@ virtual	void			_ReservedMenu6();
 		BMenu			&operator=(const BMenu &);
 
 		void		InitData(BMessage *data = NULL);
-		void		_show(bool selectFirstItem = FALSE);
+		void		_show(bool selectFirstItem = false);
 		void		_hide();
 		BMenuItem	*_track(int *action, long start = -1);
 		void		RemoveItem(int32 index, BMenuItem *item);
@@ -181,7 +178,7 @@ virtual	void			_ReservedMenu6();
 
 		void		DrawItems(BRect updateRect);
 		int			State(BMenuItem **item = NULL) const;
-		void		InvokeItem(BMenuItem *item, bool now = FALSE);
+		void		InvokeItem(BMenuItem *item, bool now = false);
 
 		bool		OverSuper(BPoint loc);
 		bool		OverSubmenu(BMenuItem *item, BPoint loc);
@@ -196,7 +193,7 @@ virtual	void			_ReservedMenu6();
 		void		Uninstall();
 		void		SelectItem(	BMenuItem *m,
 								uint32 showSubmenu = 0,
-								bool selectFirstItem = FALSE);
+								bool selectFirstItem = false);
 		BMenuItem	*CurrentSelection() const;
 		bool		SelectNextItem(BMenuItem *item, bool forward);
 		BMenuItem	*NextItem(BMenuItem *item, bool forward) const;
@@ -206,9 +203,30 @@ virtual	void			_ReservedMenu6();
 		bool		IsStickyMode() const;
 		void		CalcTriggers();
 		const char	*ChooseTrigger(const char *title, BList *chars);
-		void		UpdateWindowViewSize(bool upWind = TRUE);
+		void		UpdateWindowViewSize(bool upWind = true);
 		bool		IsStickyPrefOn();
 		void		RedrawAfterSticky(BRect bounds);
+
+		status_t	ParseMsg(BMessage *msg, int32 *sindex, BMessage *spec,
+						int32 *form, const char **prop,
+						BMenu **tmenu, BMenuItem **titem, int32 *user_data,
+						BMessage *reply) const;
+
+		status_t	DoMenuMsg(BMenu **next, BMenu *tar, BMessage *m,
+						BMessage *r, BMessage *spec, int32 f) const;
+		status_t	DoMenuItemMsg(BMenuItem **next, BMenu *tar, BMessage *m,
+						BMessage *r, BMessage *spec, int32 f) const;
+
+		status_t	DoEnabledMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
+						BMessage *r) const;
+		status_t	DoLabelMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
+						BMessage *r) const;
+		status_t	DoMarkMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
+						BMessage *r) const;
+		status_t	DoDeleteMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
+						BMessage *r) const;
+		status_t	DoCreateMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
+						BMessage *r) const;
 
 static	menu_info	sMenuInfo;
 
@@ -216,10 +234,10 @@ static	menu_info	sMenuInfo;
 		BList		fItems;
 		BRect		fPad;
 		BMenuItem	*fSelected;
-		BMenuWindow	*fCachedMenuWindow;	// tmp window where submenus live
-		BMenu		*fSuper;		// the BMenu that brought up this menu
-		BMenuItem	*fSuperitem;	// item in menu that bought up this menu
-		BRect		fSuperbounds;	// should be in global coords
+		BMenuWindow	*fCachedMenuWindow;
+		BMenu		*fSuper;
+		BMenuItem	*fSuperitem;
+		BRect		fSuperbounds;
 		float		fAscent;
 		float		fDescent;
 		float		fFontHeight;
@@ -242,4 +260,7 @@ static	menu_info	sMenuInfo;
 		bool		fRedrawAfterSticky;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MENU_H */

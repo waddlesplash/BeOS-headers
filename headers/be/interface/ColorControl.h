@@ -1,21 +1,23 @@
-//******************************************************************************
-//
-//	File:		ColorControl.h
-//
-//	Description:	 a control for picking a color
-//
-//	Copyright 1996-97, Be Incorporated
-//
-//******************************************************************************
+/*******************************************************************************
+/
+/	File:			ColorControl.h
+/
+/   Description:    BColorControl displays a palette of selectable colors.
+/
+/	Copyright 1996-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 
 #ifndef _COLOR_CONTROL_H
 #define _COLOR_CONTROL_H
 
+#include <BeBuild.h>
 #include <Control.h>
 #include <Bitmap.h>
 
 /*------------------------------------------------------------*/
+/*----- layout options for the color control -----------------*/
 
 enum color_control_layout {
 	B_CELLS_4x64 = 4,
@@ -25,23 +27,23 @@ enum color_control_layout {
 	B_CELLS_64x4 = 64
 };
 
-/*------------------------------------------------------------*/
 class BTextControl;
 
-class BColorControl : public BControl {
-	DECLARE_CLASS_INFO(BControl);
+/*----------------------------------------------------------------*/
+/*----- BColorControl class --------------------------------------*/
 
+class BColorControl : public BControl {
 public:
 						BColorControl(	BPoint start,
 										color_control_layout layout,
 										float cell_size,
 										const char *name,
 										BMessage *message = NULL,
-										bool use_offscreen = FALSE);
+										bool use_offscreen = false);
 virtual					~BColorControl();
 
 						BColorControl(BMessage *data);
-static	BColorControl	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			SetValue(int32 color_value);
@@ -77,7 +79,9 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
-virtual status_t		Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -96,7 +100,7 @@ virtual	void			_ReservedColorControl4();
 									BRect where,
 									BView *target,
 									rgb_color c,
-									short flag,
+									int16 flag,
 									bool focused);
 		void			KbAdjustColor(uint32 key);
 		bool			key_down32(uint32 key);
@@ -130,11 +134,16 @@ static	BRect			CalcFrame(	BPoint start,
 };
 
 /*------------------------------------------------------------*/
+/*----- inline functions -------------------------------------*/
 
-inline void BColorControl::SetValue(rgb_color color)	// OK, no private parts
+inline void BColorControl::SetValue(rgb_color color)
 {
+	/* OK, no private parts */
 	int32 c = (color.red << 24) + (color.green << 16) + (color.blue << 8);
 	SetValue(c);
 }
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _COLOR_CONTROL_H */

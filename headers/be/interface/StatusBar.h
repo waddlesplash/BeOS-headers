@@ -1,18 +1,21 @@
-//******************************************************************************
-//
-//	File:		StatusBar.h
-//
-//	Description:	status bar class.
-//
-//	Copyright 1996-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			StatusBar.h
+/
+/   Description:    BStatusBar displays a "percentage-of-completion" gauge.
+/
+/	Copyright 1996-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_STATUS_BAR_H
 #define	_STATUS_BAR_H
 
+#include <BeBuild.h>
 #include <View.h>
+
+/*----------------------------------------------------------------*/
+/*----- BStatusBar class -----------------------------------------*/
 
 class BStatusBar : public BView {
 
@@ -23,7 +26,7 @@ public:
 								const char *trailing_label = NULL);
 					BStatusBar(BMessage *data);
 virtual				~BStatusBar();
-static	BStatusBar	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		AttachedToWindow();
@@ -64,7 +67,9 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									BMessage *specifier,
 									int32 form,
 									const char *property);
-virtual status_t	Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -95,4 +100,7 @@ virtual	void		_ReservedStatusBar4();
 		uint32		_reserved[4];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _STATUS_BAR_H */

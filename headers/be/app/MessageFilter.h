@@ -1,23 +1,36 @@
-//******************************************************************************
-//
-//	File:			MessageFilter.h
-//
-//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			MessageFilter.h
+/
+/	Description:	BMessageFilter class creates objects that filter
+/					in-coming BMessages.  
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
 #ifndef _MESSAGE_FILTER_H
 #define _MESSAGE_FILTER_H
 
+#include <BeBuild.h>
 #include <Handler.h>
 
+class BMessage;
+
 /*-------------------------------------------------------------*/
+/*------ filter_hook Return Codes and Protocol ----------------*/
 
 enum filter_result {
 	B_SKIP_MESSAGE,
 	B_DISPATCH_MESSAGE
 };
+
+typedef filter_result (*filter_hook)
+	(BMessage *message, BHandler **target, BMessageFilter *filter);
+
+
+/*-------------------------------------------------------------*/
+/*------ BMessageFilter invocation criteria -------------------*/
 
 enum message_delivery {
 	B_ANY_DELIVERY,
@@ -31,13 +44,8 @@ enum message_source {
 	B_LOCAL_SOURCE
 };
 
-class BHandler;
-class BMessage;
-
 /*-------------------------------------------------------------*/
-
-typedef filter_result (*filter_hook)
-	(BMessage *message, BHandler **target, BMessageFilter *filter);
+/*--------- BMessageFilter Class ------------------------------*/
 
 class BMessageFilter {
 
@@ -57,6 +65,7 @@ virtual						~BMessageFilter();
 
 		BMessageFilter		&operator=(const BMessageFilter &from);
 
+/* Hook function; ignored if filter_hook is non-NULL */
 virtual	filter_result		Filter(BMessage *message, BHandler **target);
 
 		message_delivery	MessageDelivery() const;
@@ -65,8 +74,10 @@ virtual	filter_result		Filter(BMessage *message, BHandler **target);
 		bool				FiltersAnyCommand() const;
 		BLooper				*Looper() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 friend	class BLooper;
+friend	class BHandler;
 
 virtual	void			_ReservedMessageFilter1();
 virtual	void			_ReservedMessageFilter2();
@@ -82,4 +93,7 @@ virtual	void			_ReservedMessageFilter2();
 		uint32				_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MESSAGE_FILTER_H */

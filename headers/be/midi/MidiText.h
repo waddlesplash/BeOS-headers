@@ -11,6 +11,9 @@
 #ifndef _MIDI_TEXT_H
 #define _MIDI_TEXT_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <Midi.h>
 #include <stdio.h>
 
@@ -65,7 +68,7 @@ virtual	void	SystemCommon(uchar statusByte,
 
 virtual	void	SystemRealTime(uchar statusByte, uint32 time = B_NOW);
 
-	void	ResetTimer(bool start=FALSE);
+	void	ResetTimer(bool start=false);
 
 private:
 

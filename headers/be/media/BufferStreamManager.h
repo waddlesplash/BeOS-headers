@@ -8,6 +8,9 @@
 #ifndef _BUFFER_STREAM_MANAGER_H
 #define _BUFFER_STREAM_MANAGER_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <BufferStream.h>
 #include <OS.h>
 #include <SupportDefs.h>

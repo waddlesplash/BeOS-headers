@@ -8,6 +8,9 @@
 #ifndef _AUDIO_STREAM_H
 #define _AUDIO_STREAM_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <BufferStream.h>
 #include <ClassInfo.h>
 

@@ -1,32 +1,37 @@
-//******************************************************************************
-//
-//	File:		Bitmap.h
-//
-//	Description:	Client offscreen window class.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			Bitmap.h
+/
+/	Description:	BBitmap objects represent off-screen windows that
+/					contain bitmap data.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
 
 #ifndef	_BITMAP_H
 #define	_BITMAP_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Window.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BBitmap class --------------------------------------------*/
 
 class BBitmap : public BArchivable {
 
 public:
 					BBitmap(BRect bounds,
 							color_space depth,
-							bool accepts_views = FALSE,
-							bool need_contiguous = FALSE);
-					BBitmap(BMessage *data);
+							bool accepts_views = false,
+							bool need_contiguous = false);
 virtual				~BBitmap();
-static	BBitmap		*Instantiate(BMessage *data);
+
+/* Archiving */
+					BBitmap(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 		bool		IsValid() const;
 
@@ -40,7 +45,7 @@ virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 		color_space	ColorSpace() const;
 		BRect		Bounds() const;
 
-		// to mimic a BWindow:
+/* to mimic a BWindow */
 virtual	void		AddChild(BView *view);
 virtual	bool		RemoveChild(BView *view);
 		int32		CountChildren() const;
@@ -49,14 +54,14 @@ virtual	bool		RemoveChild(BView *view);
 		BView		*FindView(BPoint point) const;
 		bool		Lock();
 		void		Unlock();
-	
-virtual status_t	Perform(uint32 d, void *arg);
 
-//-----------------------------------------------------------------------
+/*----- Private or reserved -----------------------------------------*/
+	
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 friend class BView;
-friend void  _get_screen_bitmap_(BBitmap *,BRect,bool);
+friend void  _IMPEXP_BE _get_screen_bitmap_(BBitmap *,BRect,bool);
 
 virtual	void		_ReservedBitmap1();
 virtual	void		_ReservedBitmap2();
@@ -70,12 +75,15 @@ virtual	void		_ReservedBitmap3();
 		void		set_bits_24(long offset, char *data, long length);
 		void		set_bits_24_local_gray(long offset, char *data, long len);
 		void		set_bits_24_local_256(long offset, uchar *data, long len);
-		void		set_bits_24_24(long offset, char *data, long length, bool big_endian_dst);
-		void		set_bits_8_24(long offset, char *data, long length, bool big_endian_dst);
-		void		set_bits_gray_24(long offset, char *data, long length, bool big_endian_dst);
+		void		set_bits_24_24(long offset, char *data, long length,
+									bool big_endian_dst);
+		void		set_bits_8_24(long offset, char *data, long length,
+									bool big_endian_dst);
+		void		set_bits_gray_24(long offset, char *data, long length,
+									bool big_endian_dst);
 		int32		get_server_token() const;
 		void		InitObject(BRect bounds, color_space depth, bool accept,
-															    bool contiguous);
+								    bool contiguous);
 		
 		void		*fBasePtr;
 		int32		fSize;
@@ -90,4 +98,7 @@ virtual	void		_ReservedBitmap3();
 		uint32		_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _BITMAP_H */

@@ -545,31 +545,6 @@ typedef struct sg_elem
 
 #define XPT_CCB_INVALID	-1	/* for signaling a bad CCB to free */
 
-/* General Union for Kernel Space allocation.	Contains all the possible CCB
-structures.	This union should never be used for manipulating CCB's its only
-use is for the allocation and deallocation of raw CCB space. */
-
-typedef union ccb_size_union
-{
-	CCB_SCSIIO			csio;	/* Please keep this first, for debug/print */
-	CCB_GETDEV			cgd;
-	CCB_PATHINQ			cpi;
-	CCB_RELSIM			crs;
-	CCB_SETASYNC		csa;
-	CCB_SETDEV			csd;
-	CCB_ABORT			cab;
-	CCB_RESETBUS		crb;
-	CCB_RESETDEV		crd;
-	CCB_TERMIO			ctio;
-	CCB_EN_LUN			cel;
-	CCB_ENABLE_LUN		cel2;
-	CCB_IMMED_NOTIFY	cin;
-	CCB_NOTIFY_ACK		cna;
-	CCB_ACCEPT_TARG		cat;
-	CCB_ENG_INQ			cei;
-	CCB_ENG_EXEC		cee;
-} CCB_SIZE_UNION;
-
 /* The typedef for the Async callback information.	This structure is used to
 store the supplied info from the Set Async Callback CCB, in the EDT table
 in a linked list structure. */
@@ -597,6 +572,32 @@ typedef struct cam_edt_entry
 } CAM_EDT_ENTRY;
 
 
+/* ============================================================================== */
+/* ----------------------------- VENDOR UNIQUE DATA ----------------------------- */
+/* ============================================================================== */
+
+/* ---
+	Vendor unique XPT function codes
+--- */
+
+#define XPT_EXTENDED_PATH_INQ	(XPT_VUNIQUE + 1)		/* Extended Path Inquiry */
+
+/* Extended path inquiry CCB */
+
+#define FAM_ID		16						/* ASCII string len for FAMILY ID */
+#define TYPE_ID		16						/* ASCII string len for TYPE ID */
+#define VERS		 8						/* ASCII string len for SIM & HBA vers */
+
+typedef struct ccb_extended_pathinq
+{
+	CCB_PATHINQ	cam_path;					/* Default path inquiry */
+	char		cam_sim_version [ VERS ];	/* SIM version number */
+	char		cam_hba_version [ VERS ];	/* HBA version number */
+	char		cam_controller_family [ FAM_ID ]; /* Controller family */
+	char		cam_controller_type [ TYPE_ID ]; /* Controller type */
+} CCB_EXTENDED_PATHINQ;
+
+
 /* ---
 	Vendor unique flags supported by Be OS (cam_vu_flags)
 --- */
@@ -613,12 +614,11 @@ enum {
 	XPT interface exported from the Be OS kernel.
 --- */
 
-long		xpt_init (void);
-CCB_HEADER	*xpt_ccb_alloc (void);
-void		xpt_ccb_free (void *ccb);
-long		xpt_action (CCB_HEADER *ccbh);
-long		xpt_bus_register (CAM_SIM_ENTRY *entrypoints);
-long		xpt_bus_deregister (long pathid);	
+extern _IMPEXP_KERNEL CCB_HEADER	*xpt_ccb_alloc (void);
+extern _IMPEXP_KERNEL void			xpt_ccb_free (void *ccb);
+extern _IMPEXP_KERNEL long			xpt_action (CCB_HEADER *ccbh);
+extern _IMPEXP_KERNEL long			xpt_bus_register (CAM_SIM_ENTRY *entrypoints);
+extern _IMPEXP_KERNEL long			xpt_bus_deregister (long pathid);	
 
 
 /* ---
@@ -627,7 +627,34 @@ long		xpt_bus_deregister (long pathid);
 	successfully install themselves (using xpt_bus_register).
 --- */
 
-extern long	sim_install(void);
+extern _IMPEXP_DRIVER long	sim_install(void);
+
+/* General Union for Kernel Space allocation.	Contains all the possible CCB
+structures.	This union should never be used for manipulating CCB's its only
+use is for the allocation and deallocation of raw CCB space. */
+
+typedef union ccb_size_union
+{
+	CCB_SCSIIO			csio;	/* Please keep this first, for debug/print */
+	CCB_GETDEV			cgd;
+	CCB_PATHINQ			cpi;
+	CCB_RELSIM			crs;
+	CCB_SETASYNC		csa;
+	CCB_SETDEV			csd;
+	CCB_ABORT			cab;
+	CCB_RESETBUS		crb;
+	CCB_RESETDEV		crd;
+	CCB_TERMIO			ctio;
+	CCB_EN_LUN			cel;
+	CCB_ENABLE_LUN		cel2;
+	CCB_IMMED_NOTIFY	cin;
+	CCB_NOTIFY_ACK		cna;
+	CCB_ACCEPT_TARG		cat;
+	CCB_ENG_INQ			cei;
+	CCB_ENG_EXEC		cee;
+	CCB_EXTENDED_PATHINQ	cdpi;
+} CCB_SIZE_UNION;
+
 
 #ifdef __cplusplus
 }

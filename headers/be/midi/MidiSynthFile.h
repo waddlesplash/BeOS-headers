@@ -12,6 +12,9 @@
 #ifndef _MIDI_SYNTH_FILE_H
 #define _MIDI_SYNTH_FILE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <MidiSynth.h>
 #include <Entry.h>
 
@@ -60,7 +63,7 @@ public:
 	// returns tempo in beats per minute
 	int32		Tempo(void) const;
 
-	// pass TRUE to loop song, FALSE to not loop
+	// pass true to loop song, false to not loop
 	void		EnableLooping(bool loop);
 
 	// Mute and unmute tracks (0 to 64)

@@ -12,6 +12,7 @@
 #ifndef	_DIGITAL_PORT_H
 #define	_DIGITAL_PORT_H
 
+#include <BeBuild.h>
 #include <stddef.h>
 #include <SupportDefs.h>
 

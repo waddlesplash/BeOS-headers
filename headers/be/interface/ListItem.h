@@ -1,16 +1,17 @@
 /*******************************************************************************
-**
-**	File:		ListItem.h
-**
-**	Description:	list item class (for use with the BListView class).
-**
-**	Copyright 1996-97, Be Incorporated
-**
-*******************************************************************************/
+/
+/	File:			ListItem.h
+/
+/   Description:    BListView represents a one-dimensional list view. 
+/
+/	Copyright 1996-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _LIST_ITEM_H
 #define _LIST_ITEM_H
 
+#include <BeBuild.h>
 #include <Rect.h>
 #include <Archivable.h>
 #include <View.h>
@@ -19,6 +20,9 @@
 class BFont;
 class BView;
 class BOutlineListView;
+
+/*----------------------------------------------------------------*/
+/*----- BListItem class ------------------------------------------*/
 
 class BListItem : public BArchivable {
 public:
@@ -43,17 +47,17 @@ virtual	void		DrawItem(BView *owner,
 							bool complete = false) = 0;
 virtual	void		Update(BView *owner, const BFont *font);
 
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
-		// calls used by BOutlineListView
 		bool 		IsExpanded() const;
 		void 		SetExpanded(bool expanded);
 		uint32 		OutlineLevel() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 friend class BOutlineListView;
-		bool 		HasSubitems() const;
 
+		bool 		HasSubitems() const;
 
 virtual	void		_ReservedListItem1();
 virtual	void		_ReservedListItem2();
@@ -77,9 +81,8 @@ virtual	void		_ReservedListItem2();
 };
 
 
-/* ---------------------------------------------------------------- */
-/* ---------------------------------------------------------------- */
-/* ---------------------------------------------------------------- */
+/*----------------------------------------------------------------*/
+/*----- BStringItem class ----------------------------------------*/
 
 class BStringItem : public BListItem {
 public:
@@ -87,7 +90,7 @@ public:
 						uint32 outlineLevel = 0, bool expanded = true);
 virtual				~BStringItem();
 					BStringItem(BMessage *data);
-static	BStringItem	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		DrawItem(BView *owner, BRect frame, bool complete = false);
@@ -95,7 +98,7 @@ virtual	void		SetText(const char *text);
 		const char	*Text() const;
 virtual	void		Update(BView *owner, const BFont *font);
 
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 
@@ -110,4 +113,7 @@ virtual	void		_ReservedStringItem2();
 		uint32		_reserved[2];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _LIST_ITEM_H */

@@ -1,40 +1,43 @@
-//******************************************************************************
-//
-//	File:		MessageQueue.h
-//
-//	Description:	MessageQueue object.
-//
-//	Copyright 1993-97, Be Incorporated
-//
-//******************************************************************************
+/******************************************************************************
+/
+/	File:			MessageQueue.h
+/
+/	Description:	BMessageQueue class creates objects that are used by
+/					BLoopers to store in-coming messages.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
+#ifndef _MESSAGE_QUEUE_H
+#define _MESSAGE_QUEUE_H
 
-#ifndef	_MESSAGE_QUEUE_H
-#define	_MESSAGE_QUEUE_H
-
+#include <BeBuild.h>
 #include <Message.h>
 #include <Locker.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------------*/
+/*----- BMessageQueue class --------------------------------------------*/
 
 class	BMessageQueue {
-
 public:
 					BMessageQueue();	
 virtual				~BMessageQueue();
 
+/* Queue manipulation and query */
 		void		AddMessage(BMessage *an_event);
-		BMessage	*NextMessage();
 		bool		RemoveMessage(BMessage *an_event);
+		BMessage	*NextMessage();
 		BMessage	*FindMessage(int32 index) const;
 		BMessage	*FindMessage(uint32 what, int32 index = 0) const;
 		int32		CountMessages() const;
 		bool		IsEmpty() const;
 
+/* Queue locking */
 		bool		Lock();
 		void		Unlock();
 
-// ------------------------------------------------------------------
+/*----- Private or reserved -----------------------------------------*/
 
 private:
 
@@ -55,4 +58,9 @@ virtual	void		_ReservedMessageQueue3();
 		uint32		_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MESSAGE_QUEUE_H */
+
+

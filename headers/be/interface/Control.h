@@ -1,30 +1,34 @@
-//******************************************************************************
-//
-//	File:		Control.h
-//
-//	Description:	base control view class interface
-//
-//	Copyright 1993-96, Be Incorporated
-//
-//******************************************************************************
- 
+/*******************************************************************************
+/
+/	File:			Control.h
+/
+/   Description:    BControl is the base class for user-event handling objects
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_CONTROL_H
 #define	_CONTROL_H
 
+#include <BeBuild.h>
 #include <View.h>
 #include <Message.h>
 #include <Invoker.h>
 #include <Looper.h>
+
+/*----------------------------------------------------------------*/
+/*----- BControl defines -----------------------------------------*/
 
 enum {
 	B_CONTROL_OFF = 0,
 	B_CONTROL_ON = 1
 };
 
-/* ------------------------------------------------------------------- */
-
 class BWindow;
+
+/*----------------------------------------------------------------*/
+/*----- BControl class -------------------------------------------*/
 
 class BControl : public BView, public BInvoker {
 
@@ -38,13 +42,13 @@ public:
 virtual				~BControl();
 
 					BControl(BMessage *data);
-static	BControl	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		WindowActivated(bool state);
 virtual	void		AttachedToWindow();
 virtual	void		MessageReceived(BMessage *msg);
-virtual void		MakeFocus(bool state = TRUE);
+virtual void		MakeFocus(bool state = true);
 virtual	void		KeyDown(const char *bytes, int32 numBytes);
 virtual	void		MouseDown(BPoint pt);
 virtual	void		MouseUp(BPoint pt);
@@ -71,12 +75,13 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
 
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
 protected:
 
 		bool		IsFocusChanging() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 virtual	void		_ReservedControl1();
@@ -95,6 +100,7 @@ virtual	void		_ReservedControl4();
 		uint32		_reserved[4];
 };
 
-/* ------------------------------------------------------------------- */
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _CONTROL_H */

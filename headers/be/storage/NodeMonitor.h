@@ -12,6 +12,9 @@
 #ifndef _NODE_MONITOR_H
 #define _NODE_MONITOR_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <StorageDefs.h>
 #include <Node.h>
 #include <Messenger.h>
@@ -19,19 +22,19 @@
 class	BLooper;
 class	BHandler;
 
-status_t	watch_node(const node_ref *node, 
+_IMPEXP_BE status_t watch_node(const node_ref *node, 
 					   uint32 flags, 
 					   BMessenger target);
 
-status_t 	watch_node(const node_ref *node, 
+_IMPEXP_BE status_t watch_node(const node_ref *node, 
 					   uint32 flags, 
 					   const BHandler *handler,
 					   const BLooper *looper = NULL);
 
-status_t	stop_watching(BMessenger target);
+_IMPEXP_BE status_t stop_watching(BMessenger target);
 
-status_t	stop_watching(const BHandler *handler, 
-						  const BLooper *looper=NULL);
+_IMPEXP_BE status_t stop_watching(const BHandler *handler, 
+					  const BLooper *looper=NULL);
 
 /* Flags for the watch_node() call.
  * Note that B_WATCH_MOUNT is NOT included in 

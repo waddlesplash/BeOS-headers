@@ -1,21 +1,24 @@
-//******************************************************************************
-//
-//	File:		RadioButton.h
-//
-//	Description:	radio button class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			RadioButton.h
+/
+/   Description:    BRadioButton represents a single on/off button.  All
+/                   sibling BRadioButton objects comprise a single
+/                   "multiple choice" control.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_RADIO_BUTTON_H
 #define	_RADIO_BUTTON_H
 
+#include <BeBuild.h>
 #include <Control.h>
 #include <Window.h>
 
-//---------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BRadioButton class ---------------------------------------*/
 
 class BRadioButton : public BControl {
 
@@ -24,13 +27,13 @@ public:
 								const char *name,
 								const char *label,
 								BMessage *message,
-								uint32 resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
+								uint32 resizMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
 								uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
 
 						BRadioButton(BMessage *data);
 virtual					~BRadioButton();
 
-static	BRadioButton	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Draw(BRect updateRect);
@@ -55,7 +58,9 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										BMessage *specifier,
 										int32 form,
 										const char *property);
-virtual status_t		Perform(uint32 d, void *arg);
+
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -68,4 +73,7 @@ virtual	void			_ReservedRadioButton2();
 		uint32			_reserved[2];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _RADIO_BUTTON_H */

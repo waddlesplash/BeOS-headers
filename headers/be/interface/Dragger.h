@@ -1,25 +1,27 @@
-//******************************************************************************
-//
-//	File:		Dragger.h
-//
-//	Description:
-//
-//	Copyright 1997, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Dragger.h
+/
+/   Description:    BDragger represents a replicant "handle." 
+/
+/	Copyright 1997-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _DRAGGER_H
 #define _DRAGGER_H
 
+#include <BeBuild.h>
 #include <Locker.h>
 #include <List.h>
 #include <View.h>
 #include <Message.h>
 
-class _TShelfFilter_;
 class BShelf;
 class BBitmap;
+
+/*----------------------------------------------------------------*/
+/*----- BDragger class -------------------------------------------*/
 
 class BDragger : public BView {
 public:
@@ -30,7 +32,7 @@ public:
 					BDragger(BMessage *data);
 
 virtual				~BDragger();
-static	BDragger	*Instantiate(BMessage *data);
+static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual void		AttachedToWindow();
@@ -53,14 +55,20 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 form,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
+
+		status_t	SetPopUp(BPopUpMenu *context_menu);
+		BPopUpMenu	*PopUp() const;
+
 
 protected:
 		bool		IsVisibilityChanging() const;
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 
-friend class _TShelfFilter_;
+friend class _TContainerViewFilter_;
+friend class _rep_data_;
 friend class BShelf;
 friend void _toggle_handles_(bool);
 
@@ -75,6 +83,8 @@ virtual	void		_ReservedDragger4();
 		status_t	determine_relationship();
 		status_t	SetViewToDrag(BView *target);
 		void		SetShelf(BShelf *);
+		void		SetZombied(bool state);
+		void		BuildDefaultPopUp();
 		void		ShowPopUp(BView *target, BPoint where);
 static	bool		sVisible;
 static	bool		sInited;
@@ -92,8 +102,15 @@ static	BList		sList;
 		relation	fRelation;
 		BShelf		*fShelf;
 		bool		fTransition;
+		bool		fIsZombie;
+		char		fErrCount;
+		bool		_unused2;
 		BBitmap		*fBitmap;
-		uint32		_reserved[4];
+		BPopUpMenu	*fPopUp;
+		uint32		_reserved[3];	/* was 4 */
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _DRAGGER_H */

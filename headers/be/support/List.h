@@ -1,20 +1,23 @@
-//******************************************************************************
-//
-//	File:		List.h
-//
-//	Description:	List class header.
-//	
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			List.h
+/
+/	Description:	BList class provides storage for pointers.
+/					Not thread safe.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef	_LIST_H
 #define	_LIST_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
-// -----------------------------------------------------------------------
+/*--------------------------------------------------------*/
+/*----- BList class --------------------------------------*/
+
 class BList {
 
 public:
@@ -23,6 +26,8 @@ public:
 virtual			~BList();
 
 		BList	&operator=(const BList &from);
+
+/* Adding and removing items. */
 		bool	AddItem(void *item);
 		bool	AddItem(void *item, int32 atIndex);
 		bool	AddList(BList *newItems);
@@ -30,22 +35,32 @@ virtual			~BList();
 		bool	RemoveItem(void *item);
 		void	*RemoveItem(int32 index);
 		bool	RemoveItems(int32 index, int32 count);
+		bool	ReplaceItem(int32 index, void *newItem);
+		void	MakeEmpty();
+
+/* Reordering items. */
+		void	SortItems(int (*cmp)(const void *, const void *));
+		bool	SwapItems(int32 indexA, int32 indexB);
+		bool	MoveItem(int32 fromIndex, int32 toIndex);
+
+/* Retrieving items. */
 		void	*ItemAt(int32) const;
 		void	*ItemAtFast(int32) const;
-		int32	IndexOf(void *item) const;
 		void	*FirstItem() const;
 		void	*LastItem() const;
+		void	*Items() const;
+
+/* Querying the list. */
 		bool	HasItem(void *item) const;
+		int32	IndexOf(void *item) const;
 		int32	CountItems() const;
-		void	MakeEmpty();
 		bool	IsEmpty() const;
+
+/* Iterating over the list. */
 		void	DoForEach(bool (*func)(void *));
 		void	DoForEach(bool (*func)(void *, void *), void *);
-		void	*Items() const;
-		void	SortItems(int (*cmp)(const void *, const void *));
 
-// -----------------------------------------------------------------------
-
+/*----- Private or reserved ---------------*/
 private:
 
 virtual	void			_ReservedList1();
@@ -60,4 +75,7 @@ virtual	void			_ReservedList2();
 		uint32	_reserved[2];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _LIST_H */

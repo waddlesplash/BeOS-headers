@@ -12,6 +12,9 @@
 #ifndef _ENTRY_H
 #define _ENTRY_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <OS.h>
@@ -23,7 +26,7 @@ class	BDirectory;
 class	BPath;
 struct	entry_ref;
 
-status_t	get_ref_for_path(const char *path, entry_ref *ref);
+_IMPEXP_BE status_t	get_ref_for_path(const char *path, entry_ref *ref);
 
 struct entry_ref {
 						entry_ref();

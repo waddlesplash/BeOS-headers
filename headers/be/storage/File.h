@@ -12,6 +12,9 @@
 #ifndef _FILE_H
 #define _FILE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <SupportDefs.h>

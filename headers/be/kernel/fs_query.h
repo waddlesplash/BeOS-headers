@@ -11,6 +11,7 @@
 #ifndef _FS_QUERY_H
 #define _FS_QUERY_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <dirent.h>
 
@@ -25,11 +26,11 @@ extern "C" {
 #endif
 
 
-DIR           *fs_open_query(dev_t device, const char *query, uint32 flags);
-DIR           *fs_open_live_query(dev_t device, const char *query,
+_IMPEXP_ROOT DIR   	       *fs_open_query(dev_t device, const char *query, uint32 flags);
+_IMPEXP_ROOT DIR           *fs_open_live_query(dev_t device, const char *query,
 								  uint32 flags, port_id port, int32 token);
-int            fs_close_query(DIR *d);
-struct dirent *fs_read_query(DIR *d);
+_IMPEXP_ROOT int            fs_close_query(DIR *d);
+_IMPEXP_ROOT struct dirent *fs_read_query(DIR *d);
 
 
 #ifdef  __cplusplus

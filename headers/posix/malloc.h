@@ -27,6 +27,8 @@ Cambridge, MA 02139, USA.
 #ifndef _MALLOC_H
 #define _MALLOC_H	1
 
+#include <ansi_parms.h>
+
 #ifdef _MALLOC_INTERNAL
 
 #include <string.h>
@@ -44,44 +46,42 @@ extern "C"
 
 #include <stddef.h>
 
-
-
 /*
    Allocate num_bytes of memory.
 */
-extern void *malloc(size_t num_bytes);
+extern _IMPEXP_ROOT void *malloc(size_t num_bytes);
 
 /* Re-allocate the previously allocated block
    in old_ptr, making the new block new_size bytes long.
 */
-extern void * realloc(void * old_ptr, size_t new_size);
+extern _IMPEXP_ROOT void * realloc(void * old_ptr, size_t new_size);
 
 /*
    Allocate num_elements elements of size bytes each, all initialized to 0.
 */
-extern void *calloc(size_t num_elements, size_t size);
+extern _IMPEXP_ROOT void *calloc(size_t num_elements, size_t size);
 
 /*
    Free a block allocated by `malloc', `realloc' or `calloc'.
 */
-extern void free(void *ptr);
+extern _IMPEXP_ROOT void free(void *ptr);
 
 /*
    Allocate num_bytes of memory at an address that is a multiple of alignment.
 */
-extern void *memalign(size_t alignment, size_t num_bytes);
+extern _IMPEXP_ROOT void *memalign(size_t alignment, size_t num_bytes);
 
 /*
    Allocate num_bytes on a page boundary.
 */
-extern void *valloc(size_t num_bytes);
+extern _IMPEXP_ROOT void *valloc(size_t num_bytes);
 
 
 /*
    Given an address in the middle of a malloc'd object,
    return the address of the beginning of the object.
 */
-extern void *malloc_find_object_address(void *ptr);
+extern _IMPEXP_ROOT void *malloc_find_object_address(void *ptr);
 
 /*
    If not NULL, this function is called after each time
@@ -129,18 +129,18 @@ enum mcheck_status
 	  mcheck() with a function pointer to the routine you want to handle
 	  the error.
 */
-extern int mcheck(void (*__abortfunc)(enum mcheck_status));
+extern _IMPEXP_ROOT int mcheck(void (*__abortfunc)(enum mcheck_status));
 
 /*
    Check for aberrations in a particular malloc'd block.  You must have
    called `mcheck' already.  These are the same checks that `mcheck' does
    when you free or reallocate a block.
 */
-extern enum mcheck_status mprobe(void *ptr);
+extern _IMPEXP_ROOT enum mcheck_status mprobe(void *ptr);
 
 /* Activate a standard collection of tracing hooks.  */
-extern void mtrace(void);
-extern void muntrace(void);
+extern _IMPEXP_ROOT void mtrace(void);
+extern _IMPEXP_ROOT void muntrace(void);
 
 /* Statistics available to the user.  */
 struct mstats
@@ -153,19 +153,19 @@ struct mstats
   };
 
 /* Pick up the current statistics. */
-extern struct mstats mstats(void);
+extern _IMPEXP_ROOT struct mstats mstats(void);
 
 
 /* Relocating allocator.  */
 
 /* Allocate SIZE bytes, and store the address in *HANDLEPTR.  */
-extern void *r_alloc(void **handleptr, size_t size);
+extern _IMPEXP_ROOT void *r_alloc(void **handleptr, size_t size);
 
 /* Free the storage allocated in HANDLEPTR.  */
-extern void r_alloc_free(void **handleptr);
+extern _IMPEXP_ROOT void r_alloc_free(void **handleptr);
 
 /* Adjust the block at HANDLEPTR to be SIZE bytes long.  */
-extern void *r_re_alloc(void **handleptr, size_t size);
+extern _IMPEXP_ROOT void *r_re_alloc(void **handleptr, size_t size);
 
 
 #ifdef _MALLOC_INTERNAL

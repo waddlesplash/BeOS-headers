@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -83,7 +84,8 @@ public:
         friend class const_iterator;
         friend iterator operator+ (difference_type n, iterator iter) 
         {
-            deque<T, Allocator>::iterator tmp = iter;
+            // deque<T, Allocator>::iterator tmp = iter;	//  971015 vss
+            iterator tmp = iter;							//  971015 vss
             return tmp += n;
         }
 
@@ -239,7 +241,8 @@ public:
     friend const_iterator operator+ (difference_type n,
                                      const_iterator iter) 
     {
-        deque<T, Allocator>::const_iterator tmp = iter;
+        //  deque<T, Allocator>::const_iterator tmp = iter;		//  971015 vss
+        const_iterator tmp = iter;								//  971015 vss
         return tmp += n;
     }
 
@@ -1111,6 +1114,11 @@ deque<T, Allocator>::erase (iterator first, iterator last)
 
 #undef deque
 
+#ifdef __MSL_NO_INSTANTIATE__
+	template __dont_instantiate class deque<int, allocator<int> >;
+	template __dont_instantiate class deque<char, allocator<char> >;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif
@@ -1125,3 +1133,4 @@ deque<T, Allocator>::erase (iterator first, iterator last)
 //961120 bkoz line 74, 227 iterator to global_iterator change
 //961210 bkoz added alignment wrapper
 //961216 ah changed memory to mmemory
+//971015 vss don't need to scope inside nested template

@@ -1,25 +1,23 @@
-/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 
 /*
  *	time.h
  *
- *		Copyright © 1995-1996 Metrowerks, Inc.
+ *		Copyright © 1995-1997 Metrowerks, Inc.
  *		All rights reserved.
  */
 
 #ifndef __ctime__
 #define __ctime__
 
-#include <ansi_parms.h>
+#ifndef __ansi_parms__								/*MW-jcm 971114 */
+#include <ansi_parms.h>								/*MW-jcm 971114 */
+#endif												/*MW-jcm 971114 */
 
 __namespace(__stdc_space(time))
 
 #include <null.h>
 #include <size_t.h>
-
-#if macintosh && !defined(__dest_os)               /*MW-mm 960927a*/
-  #define __dest_os __mac_os                       /*MW-mm 960927a*/
-#endif                                             /*MW-mm 960927a*/
 
 /*
  *		In order for __dest_os to be defined, the appropriate file
@@ -29,6 +27,10 @@ __namespace(__stdc_space(time))
  *		CLOCKS_PER_SEC below.
  */
 
+/* #pragma options align=native */
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import on
+#endif
 
 #if __dest_os == __mac_os
 
@@ -38,21 +40,21 @@ typedef unsigned long	clock_t;
 
 #elif __dest_os == __be_os
 
-#define CLOCKS_PER_SEC	1000
+#define CLOCKS_PER_SEC	1000               /* mm 970708 */
 #define CLK_TCK         CLOCKS_PER_SEC
 
-#ifndef _CLOCK_T_DEFINED_
+#ifndef _CLOCK_T_DEFINED_                  /* mm 970708 */
 
-typedef long	clock_t;
+typedef long	clock_t;                   /* mm 970708 */
 
-#define _CLOCK_T_DEFINED_
-#endif /* _CLOCK_T_DEFINED_ */
+#define _CLOCK_T_DEFINED_                  /* mm 970708 */
+#endif /* _CLOCK_T_DEFINED_ */             /* mm 970708 */
 
 __extern_c
 
-void tzset(void);
+extern _IMPEXP_ROOT void tzset(void);
 
-extern char *tzname[2];
+extern _IMPEXP_ROOT char *tzname[2];
 
 __end_extern_c
 
@@ -68,10 +70,10 @@ __end_extern_c
 /* 960912 KO: Put the Win32 stuff inside an ifdef block. Changed it to long
 to match  Microsoft's definition of time_t.*/
 #ifndef _TIME_T_DEFINED
-	#if __dest_os == __win32_os
+	#if (__dest_os == __win32_os) || (__dest_os == __be_os)	/* Be-mani 980107 */
 		typedef long time_t;
 	#else
-		typedef long	time_t;
+		typedef unsigned long	time_t;
 	#endif
 	#define _TIME_T_DEFINED 	/* avoid multiple def's of time_t */
 #endif
@@ -86,35 +88,39 @@ struct tm {
 	int	tm_wday;
 	int	tm_yday;
 	int	tm_isdst;
+#if __dest_os == __be_os		/* Be-mani 980107 */
 	int tm_gmtoff;
 	char *tm_zone;
+#endif	
 };
 
 __extern_c
 
-clock_t			clock(void);
-double			difftime(time_t time1, time_t time2);
-time_t			mktime(struct tm * timeptr);
-time_t			time(time_t * timer);
-char *			asctime(const struct tm * timeptr);
-char *			ctime(const time_t * timer);
-struct tm *		gmtime(const time_t * timer);
-struct tm *		localtime(const time_t * timer);
-size_t			strftime(char * s, size_t maxsize,
-						 const char *format, const struct tm * timeptr);
+_IMPEXP_ROOT clock_t			clock(void);
+_IMPEXP_ROOT double			difftime(time_t time1, time_t time2);
+_IMPEXP_ROOT time_t			mktime(struct tm * timeptr);
+_IMPEXP_ROOT time_t			time(time_t * timer);
+_IMPEXP_ROOT char *			asctime(const struct tm * timeptr);
+_IMPEXP_ROOT char *			ctime(const time_t * timer);
+_IMPEXP_ROOT struct tm *		gmtime(const time_t * timer);
+_IMPEXP_ROOT struct tm *		localtime(const time_t * timer);
+_IMPEXP_ROOT size_t			strftime(char * s, size_t maxsize, const char * format, const struct tm * timeptr);
 
 clock_t	__get_clock(void);
 time_t	__get_time(void);
+#if __dest_os != __be_os		/* Be-mani 980107 */
+int		__to_gm_time(time_t * time);
+#endif
 
-#if __dest_os == __be_os
+#if (__dest_os == __be_os)		/* Be-mani 980107 */
+/*
+ * For BeOS timezone support
+ */
+extern _IMPEXP_ROOT int 	daylight;
+extern _IMPEXP_ROOT long 	timezone;
+extern _IMPEXP_ROOT int		stime(time_t *t);
 
-extern char *	tzname[2];
-extern int 				daylight;
-extern long 			timezone;
-int				stime(time_t *t);
-void			tzset(void);
-
-#endif /* __be_os */
+#endif /* __dest_os */
 
 #if (__dest_os	== __win32_os)
 
@@ -132,13 +138,20 @@ __end_namespace(stdc_space(time))
 
 __import_stdc_into_std_space(time)
 
-#pragma options align=reset
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import reset
+#endif
+/* #pragma options align=reset */
 
 #endif
 
 /*     Change record 
-MW-mm 960927a Inserted setting of __dest_os to __mac_os when not otherwise set.
-MW-mm 960927b Removed duplicate definition of time_t 
-960912 KO     Made typedef for Win32 time_t in accord with Microsoft's definition
-961011 KO     Made typedef for Win32 clock_t in accord with Microsoft's definition
-*/
+ * MW-mm 960927a Inserted setting of __dest_os to __mac_os when not otherwise set.
+ * MW-mm 960927b Removed duplicate definition of time_t 
+ * 960912 KO     Made typedef for Win32 time_t in accord with Microsoft's definition
+ * 961011 KO     Made typedef for Win32 clock_t in accord with Microsoft's definition
+ * mm 970708  Inserted Be changes
+  * jcm 971114	wrapped the #include <ansi_parms.h>
+ * jcm 971114	killed the macintosh defined && !defined (_dest_os) since it is in ansi_parms.h
+ * Be-mani 980107 BeOS timezone support and shared lib changes.
+ */

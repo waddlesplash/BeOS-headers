@@ -1,18 +1,22 @@
-//******************************************************************************
-//
-//	File:		Box.h
-//
-//	Description:	client framed view class.
-//
-//	Copyright 1993-97, Be Incorporated
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			Box.h
+/
+/   Description:    BBox objects group views together and draw a border
+/                   around them.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _BOX_H
 #define _BOX_H
 
+#include <BeBuild.h>
 #include <View.h>
+
+/*----------------------------------------------------------------*/
+/*----- BBox class -----------------------------------------------*/
 
 class BBox : public BView
 {
@@ -24,10 +28,14 @@ public:
 											B_NAVIGABLE_JUMP,
 							border_style border = B_FANCY_BORDER);
 
-						BBox(BMessage *data);
 virtual 				~BBox(void);
-static	BBox			*Instantiate(BMessage *data);
+
+/* Archiving */
+						BBox(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
+/* BBox guts */
 virtual	void			SetBorder(border_style style);
 		border_style	Border() const;
 
@@ -52,7 +60,9 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 
-virtual status_t		Perform(uint32 d, void *arg);
+/*----- Private or reserved -----------------------------------------*/
+
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -71,4 +81,7 @@ virtual	void			_ReservedBox2();
 		uint32			_reserved[2];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _BOX_H */

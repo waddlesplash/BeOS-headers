@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -75,7 +76,7 @@ struct __msipl_shift_right : binary_function<T, T, T> {
 template <class T>
 struct __msipl_absolute: unary_function<T, T> {
     // Is this overloaded ??
-    T operator () (const T& x) const { return fabs (x); }
+    T operator () (const T& x) const { return fabs ( (long double) x); }  //970415 bkoz cast
 };
 
 template <class T>

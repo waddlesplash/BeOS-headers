@@ -1,17 +1,20 @@
-/*****************************************************************************
-//
-//	File:			Roster.h
-//
-//	Description:	Client BRoster class. Used to keep track of all running
-//					applications in the system.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-******************************************************************************/
+/******************************************************************************
+/
+/	File:			Roster.h
+/
+/	Description:	BRoster class lets you launch apps and keeps
+/					track of apps that are running. 
+/					Global be_roster represents the default BRoster.
+/					app_info structure provides info for a running app.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
 #ifndef _ROSTER_H
 #define _ROSTER_H
 
+#include <BeBuild.h>
 #include <OS.h>
 #include <Message.h>
 #include <StorageDefs.h>
@@ -27,15 +30,8 @@ class BNodeInfo;
 
 extern "C" int	_init_roster_();
 
-#define B_LAUNCH_MASK				(0x3)
-
-#define B_SINGLE_LAUNCH				(0x0)
-#define B_MULTIPLE_LAUNCH			(0x1)
-#define B_EXCLUSIVE_LAUNCH			(0x2)
-
-#define B_BACKGROUND_APP			(0x4)
-#define B_ARGV_ONLY					(0x8)
-#define _B_APP_INFO_RESERVED1_		(0x10000000)
+/*-------------------------------------------------------------*/
+/* --------- app_info Struct and Values ------------------------ */
 
 struct app_info {
 				app_info();
@@ -49,13 +45,26 @@ struct app_info {
 	char		signature[B_MIME_TYPE_LENGTH];
 };
 
-//------------------------------------------------------------------------------
+#define B_LAUNCH_MASK				(0x3)
+
+#define B_SINGLE_LAUNCH				(0x0)
+#define B_MULTIPLE_LAUNCH			(0x1)
+#define B_EXCLUSIVE_LAUNCH			(0x2)
+
+#define B_BACKGROUND_APP			(0x4)
+#define B_ARGV_ONLY					(0x8)
+#define _B_APP_INFO_RESERVED1_		(0x10000000)
+
+
+/*-------------------------------------------------------------*/
+/* --------- BRoster class----------------------------------- */
 
 class BRoster {
 public:
 					BRoster();
 					~BRoster();
 		
+/* Querying for apps */
 		bool		IsRunning(const char *mime_sig) const;
 		bool		IsRunning(entry_ref *ref) const;
 		team_id		TeamFor(const char *mime_sig) const;
@@ -66,9 +75,12 @@ public:
 		status_t	GetAppInfo(entry_ref *ref, app_info *info) const;
 		status_t	GetRunningAppInfo(team_id team, app_info *info) const;
 		status_t	GetActiveAppInfo(app_info *info) const;
-		status_t	ActivateApp(team_id team) const;
-		status_t	Broadcast(BMessage *msg) const;
+		status_t	FindApp(const char *mime_type, entry_ref *app) const;
+		status_t	FindApp(entry_ref *ref, entry_ref *app) const;
 
+/* Launching, activating, and broadcasting to apps */
+		status_t	Broadcast(BMessage *msg) const;
+		status_t	ActivateApp(team_id team) const;
 		status_t	Launch(	const char *mime_type,
 							BMessage *initial_msgs = NULL,
 							team_id *app_team = NULL) const;
@@ -91,10 +103,7 @@ public:
 							char **args,
 							team_id *app_team = NULL) const;
 
-		status_t	FindApp(const char *mime_type, entry_ref *app) const;
-		status_t	FindApp(entry_ref *ref, entry_ref *app) const;
-
-//------------------------------------------------------------------------------
+/*----- Private or reserved ------------------------------*/
 private:
 
 friend class BApplication;
@@ -154,8 +163,10 @@ friend bool _is_valid_roster_mess_(bool);
 		status_t	sniff_file(const entry_ref *file,
 								BNodeInfo *finfo,
 								char *mime_type) const;
-		status_t	query_for_app(BMimeType *meta, entry_ref *app_ref) const;
+		bool		is_wildcard(const char *sig) const;
 		status_t	get_unique_supporting_app(const BMessage *apps,
+											char *out_sig) const;
+		status_t	get_random_supporting_app(const BMessage *apps,
 											char *out_sig) const;
 		char		**build_arg_vector(char **args, int *pargs,
 										const entry_ref *app_ref,
@@ -172,6 +183,12 @@ friend bool _is_valid_roster_mess_(bool);
 		uint32		_fReserved[3];
 };
 
-extern const BRoster *be_roster;
+/*-----------------------------------------------------*/
+/*----- Global be_roster ------------------------------*/
 
-#endif
+extern _IMPEXP_BE const BRoster *be_roster;
+
+/*-----------------------------------------------------*/
+/*-----------------------------------------------------*/
+
+#endif /* _ROSTER_H */

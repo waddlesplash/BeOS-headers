@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -23,18 +24,32 @@
 #if __MWERKS__  // MW-mm 960206a
 #if macintosh && !defined(__dest_os)               	//MW-mm 960927a
   #define __dest_os __mac_os                       	//MW-mm 960927a
-#endif                                             	//MW-mm 960927a
-#  define MSIPL_EXCEPT
+#endif 												//MW-mm 960927a
+#  define MSIPL_DEF_EXPLICIT						//vss 971010
+#  define MSIPL_EXCEPT		
 #  define MSIPL_HEADER_EXTN_H
-#  define MSIPL_TEMPL_INST_ALL          			//MW-mm 960328a
+#ifndef __INTEL__
+//#define MSIPL_DEF_TEMPARG	// MW-RDL allow templates with default arguments  
+#endif
+#  define MSIPL_TEMPL_INST_ALL           			//MW-mm 960328a
 #  define MSIPL_NON_TYPE_TEMPARG        			// MW-mm 960221a
-#  define MSIPL_THROW_SPECS
-#   if __BEOS__
-#		define MSIPL_MULTITHREAD
-#	endif
+//#  define MSIPL_THROW_SPECS						//970403 bkoz should be off to improve performance
+//#  define __MSL_NO_INSTANTIATE__					//970404 bkoz should be on to prohibit implicit inst
+#	define MSIPL_EXPINST_ALLOWED					//970408 have inst in library
+/*970415 bkoz via Dennis C. De Mars*/
+#	define __MSL_FIX_ITERATORS__(myType)  null_template \
+                  struct iterator_trait <myType * > { \
+                      typedef ptrdiff_t               distance_type; \
+                      typedef myType            value_type; \
+                      typedef random_access_iterator_tag iterator_category; \
+                  } 
 #if __option(bool)
 #  define MSIPL_BOOL_BUILTIN						//960812 bkoz
-#endif
+#endif		
+#define MSIPL_USE_EXTERNAL_MATHLIB					//970402 bkoz
+#if __dest_os == __be_os                            //971107 mm
+#	define MSIPL_MULTITHREAD
+#endif                                              // 971107 mm
 #endif //__MWERKS__  				 				// MW-mm 960509a
 
 /*Motorola*/
@@ -151,23 +166,24 @@
 
 #else                    /* !MSIPL_MULTITHREAD */
 
-#  define DEC_OBJ_LOCK(obj)           null_mutex       obj;
-#  define DEC_MUTEX(obj)              null_mutex       obj;
-#  define DEC_STATIC_MUTEX(obj)       null_mutex       obj;
-#  define READ_LOCK(mut)              mut.acquire ()
-#  define WRITE_LOCK(mut)             mut.acquire ()
-#  define REMOVE(mut)                 mut.remove ()
+#  define DEC_OBJ_LOCK(obj)           //null_mutex       obj;
+#  define DEC_MUTEX(obj)              //null_mutex       obj;
+#  define DEC_STATIC_MUTEX(obj)       //null_mutex       obj;
+#  define READ_LOCK(mut)              //mut.acquire ()
+#  define WRITE_LOCK(mut)             //mut.acquire ()
+#  define REMOVE(mut)                 //mut.remove ()
 #  define LOCK(bl_mut, mut)           
 #  define UNLOCK(mut_block)           
 
 #endif                   /* MSIPL_MULTITHREAD */
 
 #ifndef MSIPL_BOOL_BUILTIN
-#  if defined(__BEOS__)
-#    include <SupportDefs.h>
-#  else
-#    define bool unsigned char
-#  endif
+#  if __dest_os == __be_os		/* Be-mani 980107 */
+#    include <SupportDefs.h>	/* Be-mani 980107 */
+#  else							/* Be-mani 980107 */
+//#  define bool int                  //MW-mm 961111
+#    define bool unsigned char          //MW-mm 961111
+#  endif						/* Be-mani 980107 */
 #ifndef true
 	#define true			1
 #endif
@@ -202,7 +218,7 @@
 #endif
 
 #if defined (MSIPL_EXCEPT) && defined (MSIPL_THROW_SPECS)
-#  define MSIPL_THROW throw()
+#  define MSIPL_THROW throw()  
 #  define MSIPL_THROW_STR(strList) throw(strList)
 #else
 #  define MSIPL_THROW 
@@ -227,4 +243,8 @@
 MW-mm 960730  	Inserted Metrowerks compile parameters
 MW-mm 961111 	line 140 changed bool to be unsigned char
 961221 bkoz line 38, added moto switches (via matthew moss)
+970403 bkoz undefine MSIPL_THROW_SPECS to work around codegen bug
+971010 vss  explicit keyword now implemented in compiler
+971107 mm   Change from Be
+980107 Be-mani Get bool from SupportDefs.h for BeOS
 */

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -69,6 +70,7 @@ protected:
     virtual int_type
     overflow (int_type c = traits::eof ());
 
+    inline
     virtual void
     imbue (const locale& loc);
 
@@ -108,6 +110,7 @@ protected:
 //
 private:
 
+    inline
     void
     init_string (const char_type* str, streamsize len, streamsize res);
 
@@ -120,6 +123,8 @@ private:
 
     char_type*               bend;   // To keep track of the buffer end
     ios_base::openmode       mode;
+
+    char_type*               tmp;   // 970424 bkoz for ::overflow temporary buffer hack
 
     enum  buf_size { inc_size = 512 };
 
@@ -163,6 +168,7 @@ public:
 
     virtual  ~basic_istringstream ();
 
+    inline
     sb_type*
     rdbuf () const;
 
@@ -214,6 +220,7 @@ public:
 
     virtual  ~basic_ostringstream ();
 
+    inline
     sb_type*
     rdbuf () const;
 
@@ -267,6 +274,7 @@ public:
 
     virtual  ~basic_stringstream ();
 
+    inline
     sb_type*
     rdbuf () const;
 
@@ -284,18 +292,17 @@ private:
 
 };
 
+//#pragma dont_inline on	//970408 bkoz
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::basic_stringbuf (ios_base::openmode which)
-: basic_streambuf<charT, traits> (), mode (which) , bend (0)
+: basic_streambuf<charT, traits> (), mode (which) , bend (0), tmp(0)
 {
 }
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::basic_stringbuf (const string_type& str, 
-                                ios_base::openmode which)
-: basic_streambuf<charT, traits> (), mode (which) 
+	ios_base::openmode which)
+: basic_streambuf<charT, traits> (), mode (which) , tmp(0)
 {
     if (str.size () != 0)
     {
@@ -309,7 +316,17 @@ basic_stringbuf<charT, traits>::basic_stringbuf (const string_type& str,
 }
 
 template <class charT, class traits>
-inline
+basic_stringbuf<charT, traits>::~basic_stringbuf ()
+{
+    clean_string ();
+    REMOVE(_mutex);
+    if (tmp) {  //970424 bkoz to delete temporary buffer
+    	delete [] tmp;
+    }
+}
+
+
+template <class charT, class traits>
 void
 basic_stringbuf<charT, traits>::init_string (const char_type* str, 
                                 streamsize len, streamsize res)
@@ -319,7 +336,6 @@ basic_stringbuf<charT, traits>::init_string (const char_type* str,
 }
 
 template <class charT, class traits>
-inline
 void
 basic_stringbuf<charT, traits>::init_copy (char_type* to, 
                                 const char_type* from, streamsize len, 
@@ -338,32 +354,19 @@ basic_stringbuf<charT, traits>::init_copy (char_type* to,
 }
 
 template <class charT, class traits>
-inline
 void
 basic_stringbuf<charT, traits>::clean_string ()
 {
-    if (gptr () != 0)
-    {
-        delete[] eback ();
-    }
-    else if (pptr () != 0)
-    {
-        delete[] pbase ();
-    }
-    init ();
-    bend = 0;
+          /* mm 970710 begin insert */
+    if (gnext) 
+    	delete[] gbeg;
+    else if (pnext) 
+    	delete[] pbeg;
+    gbeg = gnext = gend = pbeg= pnext = pend = bend = 0;
+          /* mm 970710 end insert */
 }
 
 template <class charT, class traits>
-inline
-basic_stringbuf<charT, traits>::~basic_stringbuf ()
-{
-    clean_string ();
-    REMOVE(_mutex);
-}
-
-template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::string_type
 basic_stringbuf<charT, traits>::str () const
 {
@@ -386,7 +389,6 @@ basic_stringbuf<charT, traits>::str () const
 }
 
 template <class charT, class traits>
-inline
 void
 basic_stringbuf<charT, traits>::str (const string_type& str)
 {
@@ -426,60 +428,44 @@ basic_stringbuf<charT, traits>::str (const string_type& str)
 }
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::int_type
 basic_stringbuf<charT, traits>::overflow (int_type c)
 {
-    if (traits::eq_int_type (c, traits::eof ()))
+          /* mm 970710 begin insert */
+    if(traits::eq_int_type(c,traits::eof())) 
+    	return traits::not_eof(c);
+    if(mode&ios_base::out) 
     {
-        return traits::not_eof (c);
-    }
-    if ((mode & ios_base::out) != 0)
-    {
-       if (!avail_writepos ())
+       if(pend<bend) 
+       	  pend++;
+       else 
        {
-           if (epptr () < bend)
-           {
-              setp  (pbase (), epptr ()+1);
-              pbump (epptr ()-pbase ()-1);
-           }
-           else
-           {
-               streamsize   gsize = gptr ()-eback ();
-               streamsize   psize = pptr ()-pbase ();
-               size_t       nsize = (psize/inc_size + 1)*inc_size;
-
-               char_type* tmp = new char_type [nsize];
-               traits::copy (tmp, pbase (), psize);
-               clean_string ();
-            
-               // setting the put area pointers
-               setp (tmp, tmp+psize+1);
-               bend = tmp + nsize;
-               pbump (psize);
-               if ((mode & ios_base::in) != 0)
-               {
-                  // Also adjust the get area pointers
-                  setg  (tmp, tmp+gsize, pptr ());
-               }
-           }
+          streamsize gsize = gnext - gbeg;
+          streamsize psize = pnext - pbeg;
+          size_t     nsize = (psize / inc_size+1) * inc_size;
+          char_type* tmp   = new char_type[nsize];
+          traits::copy(tmp, pbeg, psize);
+          clean_string();
+          pbeg  = tmp;
+          pnext = pbeg + psize;
+          pend  = pnext + 1;
+          bend  = tmp + nsize;
+          if (mode&ios_base::in)
+          {
+          	gbeg  = tmp;
+          	gnext = gbeg + gsize;
+          }
        }
+       *pnext++=traits::to_char_type(c); 
+       if(mode&ios_base::in)
+          gend=pnext; 
+       return c;
     }
-    if (avail_writepos ())
-    {
-        pptr ()[0] = c;
-        pbump (1);
-        if ((mode & ios_base::in) != 0)
-        {
-           setg (eback (), gptr (), pptr ());
-        }
-        return traits::to_int_type (c);
-    }
-    return traits::eof ();
+    return traits::eof();
+          /* mm 970710 end insert */
 }
 
 template <class charT, class traits>
-inline
 void
 basic_stringbuf<charT, traits>::imbue (const locale& loc_arg)
 {
@@ -487,7 +473,6 @@ basic_stringbuf<charT, traits>::imbue (const locale& loc_arg)
 }
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::int_type
 basic_stringbuf<charT, traits>::pbackfail (int_type c)
 {
@@ -524,7 +509,6 @@ basic_stringbuf<charT, traits>::pbackfail (int_type c)
 }
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::int_type
 basic_stringbuf<charT, traits>::underflow ()
 {
@@ -545,7 +529,6 @@ basic_stringbuf<charT, traits>::underflow ()
 }
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::pos_type
 basic_stringbuf<charT, traits>::seekoff (off_type off, ios_base::seekdir way,
                                          ios_base::openmode which)
@@ -615,7 +598,6 @@ basic_stringbuf<charT, traits>::seekoff (off_type off, ios_base::seekdir way,
 } 
 
 template <class charT, class traits>
-inline
 basic_stringbuf<charT, traits>::pos_type
 basic_stringbuf<charT, traits>::seekpos (pos_type sp, ios_base::openmode which)
 {
@@ -660,17 +642,15 @@ basic_stringbuf<charT, traits>::seekpos (pos_type sp, ios_base::openmode which)
    return pos_type (newoff);
 }
 
+//#pragma dont_inline on	//970408 bkoz
 template <class charT, class traits>
-inline
-basic_istringstream<charT, traits>::basic_istringstream 
-(ios_base::openmode which)
+basic_istringstream<charT, traits>::basic_istringstream (ios_base::openmode which)
 : basic_istream<charT, traits> (0), sbuf (which) 
 { 
     init (&sbuf);
 }
 
 template <class charT, class traits>
-inline
 basic_istringstream<charT, traits>::basic_istringstream
 (const string_type& str, ios_base::openmode which)
 : basic_istream<charT, traits> (0), sbuf (str, which) 
@@ -679,13 +659,12 @@ basic_istringstream<charT, traits>::basic_istringstream
 }
 
 template <class charT, class traits>
-inline
 basic_istringstream<charT, traits>::~basic_istringstream ()
 {
 }
+// mf 101597 #pragma dont_inline reset	//970408 bkoz
 
 template <class charT, class traits>
-inline
 basic_istringstream<charT, traits>::sb_type*
 basic_istringstream<charT, traits>::rdbuf () const
 {
@@ -696,7 +675,6 @@ basic_istringstream<charT, traits>::rdbuf () const
 }
 
 template <class charT, class traits>
-inline
 basic_istringstream<charT, traits>::string_type
 basic_istringstream<charT, traits>::str () const
 {
@@ -705,7 +683,6 @@ basic_istringstream<charT, traits>::str () const
 }
 
 template <class charT, class traits>
-inline
 void
 basic_istringstream<charT, traits>::str (const string_type& str_arg)
 {
@@ -713,17 +690,15 @@ basic_istringstream<charT, traits>::str (const string_type& str_arg)
     // sbuf.str (str_arg);
 }
 
+//#pragma dont_inline on //970408 bkoz
 template <class charT, class traits>
-inline
-basic_ostringstream<charT, traits>::basic_ostringstream 
-(ios_base::openmode which)
+basic_ostringstream<charT, traits>::basic_ostringstream (ios_base::openmode which)
 : basic_ostream<charT, traits> (0), sbuf (which) 
 { 
     init (&sbuf);
 }
 
 template <class charT, class traits>
-inline
 basic_ostringstream<charT, traits>::basic_ostringstream
 (const string_type& str, ios_base::openmode which)
 : basic_ostream<charT, traits> (0), sbuf (str, which) 
@@ -732,13 +707,12 @@ basic_ostringstream<charT, traits>::basic_ostringstream
 }
 
 template <class charT, class traits>
-inline
 basic_ostringstream<charT, traits>::~basic_ostringstream ()
 {
 }
+// mf 101597 #pragma dont_inline reset //970408 bkoz
 
 template <class charT, class traits>
-inline
 basic_ostringstream<charT, traits>::sb_type*
 basic_ostringstream<charT, traits>::rdbuf () const
 {
@@ -749,7 +723,6 @@ basic_ostringstream<charT, traits>::rdbuf () const
 }
 
 template <class charT, class traits>
-inline
 basic_ostringstream<charT, traits>::string_type
 basic_ostringstream<charT, traits>::str () const
 {
@@ -758,7 +731,6 @@ basic_ostringstream<charT, traits>::str () const
 }
 
 template <class charT, class traits>
-inline
 void
 basic_ostringstream<charT, traits>::str (const string_type& str_arg)
 {
@@ -771,17 +743,15 @@ basic_ostringstream<charT, traits>::str (const string_type& str_arg)
 // basic_stringstream members
 //
 
+//#pragma dont_inline on //970408 bkoz
 template <class charT, class traits>
-inline
-basic_stringstream<charT, traits>::
-basic_stringstream (ios_base::openmode which)
+basic_stringstream<charT, traits>::basic_stringstream (ios_base::openmode which)
 : basic_iostream<charT, traits> (0), sbuf (which) 
 { 
     init (&sbuf);
 }
 
 template <class charT, class traits>
-inline
 basic_stringstream<charT, traits>::
 basic_stringstream (const string_type& str, ios_base::openmode which)
 : basic_iostream<charT, traits> (0), sbuf (str, which) 
@@ -790,13 +760,12 @@ basic_stringstream (const string_type& str, ios_base::openmode which)
 }
 
 template <class charT, class traits>
-inline
 basic_stringstream<charT, traits>::~basic_stringstream ()
 {
 }
+// mf 101597 #pragma dont_inline reset //970408 bkoz
 
 template <class charT, class traits>
-inline
 basic_stringstream<charT, traits>::sb_type*
 basic_stringstream<charT, traits>::rdbuf () const
 {
@@ -807,7 +776,6 @@ basic_stringstream<charT, traits>::rdbuf () const
 }
 
 template <class charT, class traits>
-inline
 basic_stringstream<charT, traits>::string_type
 basic_stringstream<charT, traits>::str () const
 {
@@ -816,14 +784,13 @@ basic_stringstream<charT, traits>::str () const
 }
 
 template <class charT, class traits>
-inline
 void
 basic_stringstream<charT, traits>::str (const string_type& str_arg)
 {
     rdbuf ()->str (str_arg);
     // sbuf.str (str_arg);
 }
-
+// mf 101597 #pragma dont_inline reset	//970408 bkoz
 typedef basic_stringbuf<char, char_traits<char> >        stringbuf;
 typedef basic_istringstream <char, char_traits<char> >  istringstream;
 typedef basic_ostringstream <char, char_traits<char> >  ostringstream;
@@ -834,6 +801,14 @@ typedef basic_stringbuf<wchar_t, char_traits<wchar_t> >        wstringbuf;
 typedef basic_istringstream <wchar_t, char_traits<wchar_t> >  wistringstream;
 typedef basic_ostringstream <wchar_t, char_traits<wchar_t> >  wostringstream;
 typedef basic_stringstream <wchar_t, char_traits<wchar_t> >    wstringstream;
+#endif
+
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class basic_stringbuf<char, char_traits<char> >;
+	template __dont_instantiate class basic_istringstream<char, char_traits<char> >;
+	template __dont_instantiate class basic_ostringstream<char, char_traits<char> >;
+	template __dont_instantiate class basic_stringstream<char, char_traits<char> >;
 #endif
 
 #ifdef MSIPL_USING_NAMESPACE
@@ -847,4 +822,14 @@ typedef basic_stringstream <wchar_t, char_traits<wchar_t> >    wstringstream;
 
 #endif /* MSIPL_STRINGBUF_H */
 
-//961210 bkoz added alignment wrapper
+/*   Change record
+ * 961210 bkoz 	added alignment wrapper
+ * 970424 bkoz 	line 452 overflow needs to have tmp deallocated, so
+ * 				move into basic_stringbuf as a data member charT* tmp
+ * 				init to zero in ctors, destroy in dtor
+ * 				check for non-zero in overflow, if so delete--NOTE THIS IS NOT SAFE
+ * 				looking for better approach. Should copy this into another tmp buffer 
+ * 				before deallocating and set pointers in stringbuf to this tmp buffer.
+ * 				(what a mess)
+ * mm 970710  Incorporated changes from Modena Version 2.2, 27th February 1997 
+ */

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -11,7 +12,7 @@
 #include <mcompile.h>
 
 #include MOD_C_INCLUDE(stdlib)
-
+#include MOD_INCLUDE(hashfun)             /* mm 970905 */
 #include MOD_INCLUDE(iosfwd)
 #include MOD_INCLUDE(iterator)
 #include MOD_INCLUDE(functional)
@@ -42,6 +43,7 @@ public:
     typedef Key key_type;
     typedef Value value_type;
     typedef HashFunction hash_function;
+    typedef KeyOfValue key_value;
 
 //protected:
 
@@ -94,8 +96,8 @@ public:
         // Pointer to the current element in the bucket
   
     private:
-        size_type currBucket () { return  (*ht_).S (KeyOfValue () (*ptr_)); }
-  
+        size_type currBucket () { return  (*ht_).S (key_value() (*ptr_)); }
+   
         iterator (hash_table<Key, Value, KeyOfValue, HashFunction,
                              KeyEqual>*  ht, bucket::iterator ptr)
         :  ht_ (ht), ptr_ (ptr) { }
@@ -181,7 +183,7 @@ public:
 
     private:
 
-        size_type currBucket () { return  (*ht_).S (KeyOfValue () (*ptr_)); }
+        size_type currBucket () { return  (*ht_).S (key_value () (*ptr_)); }
   
     public:
 
@@ -1036,6 +1038,9 @@ insertNeb (bucket& b, size_type bNumber)
 
 #endif /* MSIPL_HASH_TABLE_H */
 
-//961210 bkoz added alignment wrapper
-//961120 bkoz line 77, 158 changed iterator to global_iterator
-//961217 bkoz line 416-460 added iterator_traits specialization
+/* Change record
+ * 961210 bkoz added alignment wrapper
+ * 961120 bkoz line 77, 158 changed iterator to global_iterator
+ * 961217 bkoz line 416-460 added iterator_traits specialization
+ * mm 970905  Added include of hashfun to declare hash_fun0
+ */

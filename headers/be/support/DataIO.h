@@ -1,20 +1,25 @@
-//****************************************************************************
-//
-//	File:		DataIO.h
-//
-//	Description:	IO classes
-//						BDataIO 
-//						BPositionIO
-//						BMallocIO
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
+/******************************************************************************
+/
+/	File:			DataIO.h
+/
+/	Description:	Pure virtual BDataIO and BPositioIO classes provide
+/					the protocol for Read()/Write()/Seek().
+/
+/					BMallocIO and BMemoryIO classes implement the protocol,
+/					as does BFile in the Storage Kit.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef	_DATA_IO_H
 #define	_DATA_IO_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
+
+/*-----------------------------------------------------------------*/
+/*------- BDataIO Class -------------------------------------------*/
 
 class BDataIO {
 public:
@@ -24,6 +29,7 @@ virtual				~BDataIO();
 virtual	ssize_t		Read(void *buffer, size_t size) = 0;
 virtual	ssize_t		Write(const void *buffer, size_t size) =0;
 
+/*----- Private or reserved ---------------*/
 private:
 
 virtual	void		_ReservedDataIO1();
@@ -37,6 +43,8 @@ virtual	void		_ReservedDataIO4();
 		int32		_reserved[2];
 };
 
+/*---------------------------------------------------------------------*/
+/*------- BPositionIO Class -------------------------------------------*/
 
 class BPositionIO : public BDataIO {
 public:
@@ -54,6 +62,7 @@ virtual	off_t		Position() const = 0;
 
 virtual status_t	SetSize(off_t size);
 
+/*----- Private or reserved ---------------*/
 private:
 virtual	void		_ReservedPositionIO1();
 virtual	void		_ReservedPositionIO2();
@@ -62,7 +71,8 @@ virtual void		_ReservedPositionIO4();
 		int32		_reserved[2];
 };
 
-// ---------------------------------------------------------------- //
+/*-------------------------------------------------------------------*/
+/*------- BMallocIO Class -------------------------------------------*/
 
 class BMallocIO : public BPositionIO {
 public:
@@ -81,6 +91,7 @@ virtual status_t	SetSize(off_t size);
 const	void		*Buffer() const;
 		size_t		BufferLength() const;
 
+/*----- Private or reserved ---------------*/
 private:
 
 virtual	void		_ReservedMallocIO1();
@@ -97,7 +108,8 @@ virtual	void		_ReservedMallocIO2();
 		int32		_reserved[2];
 };
 
-// ---------------------------------------------------------------- //
+/*-------------------------------------------------------------------*/
+/*------- BMemoryIO Class -------------------------------------------*/
 
 class BMemoryIO : public BPositionIO {
 public:
@@ -111,8 +123,10 @@ virtual	ssize_t		WriteAt(off_t pos, const void *buffer, size_t size);
 virtual	off_t		Seek(off_t pos, uint32 seek_mode);
 virtual off_t		Position() const;
 
-private:
+virtual	status_t	SetSize(off_t size);
 
+/*----- Private or reserved ---------------*/
+private:
 virtual	void		_ReservedMemoryIO1();
 virtual	void		_ReservedMemoryIO2();
 
@@ -122,9 +136,13 @@ virtual	void		_ReservedMemoryIO2();
 		bool		fReadOnly;
 		char		*fBuf;
 		size_t		fLen;
+		size_t		fPhys;
 		size_t		fPos;
 
-		int32		_reserved[2];
+		int32		_reserved[1];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _DATA_IO_H */

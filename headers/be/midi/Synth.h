@@ -11,6 +11,9 @@
 #ifndef _SYNTH_H
 #define _SYNTH_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <Entry.h>
 #include <MidiDefs.h>
 #include <OS.h>
@@ -128,7 +131,7 @@ virtual	void		_ReservedSynth4();
 	uint32					_reserved[4];
 };
 
-extern BSynth *be_synth;
+extern _IMPEXP_MIDI BSynth *be_synth;
 
 
 #endif

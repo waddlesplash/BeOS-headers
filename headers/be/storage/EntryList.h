@@ -8,6 +8,9 @@
 #ifndef _ENTRY_LIST_H
 #define _ENTRY_LIST_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <dirent.h>
 #include <limits.h>
 

@@ -1,15 +1,17 @@
-/*****************************************************************************
-
-     File:			PictureButton.h
-
-     Copyright (c) 1994-97 by Be Incorporated.  All Rights Reserved.
-
-*****************************************************************************/
-
+/*******************************************************************************
+/
+/	File:			PictureButton.h
+/
+/   Description:    BPictureButton creates a button that displays a bitmap.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_PICTURE_BUTTON_H
 #define	_PICTURE_BUTTON_H
 
+#include <BeBuild.h>
 #include <Picture.h>
 #include <Control.h>
 
@@ -18,7 +20,8 @@ enum {
 	B_TWO_STATE_BUTTON
 };
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BPictureButton class -------------------------------------*/
 
 class BPictureButton : public BControl {
 
@@ -31,11 +34,11 @@ public:
 									   uint32 behavior = B_ONE_STATE_BUTTON,
 									   uint32 resizeMask =
 											B_FOLLOW_LEFT | B_FOLLOW_TOP, 
-									   uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
+									   uint32 flgs = B_WILL_DRAW | B_NAVIGABLE); 
 virtual					~BPictureButton();
 	
 						BPictureButton(BMessage *data);
-static	BPictureButton	*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Draw(BRect updateRect);
@@ -73,7 +76,8 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
-virtual status_t		Perform(uint32 d, void *arg);
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
@@ -95,6 +99,7 @@ virtual	void			_ReservedPictureButton3();
 		uint32			_reserved[4];
 };
 
-//------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _PICTURE_BUTTON_H */

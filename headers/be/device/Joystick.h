@@ -12,7 +12,11 @@
 #ifndef	_JOYSTICK_H
 #define	_JOYSTICK_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
+#include <OS.h>
+
+class BList;
 
 // -----------------------------------------------------------------------
 class BJoystick {
@@ -31,16 +35,23 @@ virtual				~BJoystick();
 		bool		button1;
 		bool		button2;
 
+		int32		CountDevices();
+		status_t	GetDeviceName(int32 n, char * name, 
+						size_t bufSize = B_OS_NAME_LENGTH);
+
 // -----------------------------------------------------------------------
 
 private:
+
+		void		ScanDevices();
 
 virtual	void		_ReservedJoystick1();
 virtual	void		_ReservedJoystick2();
 virtual	void		_ReservedJoystick3();
 
 		int			ffd;
-		uint32		_fReserved[3];
+		BList *		_fDevices;
+		uint32		_fReserved[2];
 };
 
 #endif

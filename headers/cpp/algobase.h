@@ -1,3 +1,5 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
+
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -24,13 +26,13 @@ namespace std {
 // Section 25.3.7.1 -- min
 
 template <class T>
-inline const T& min (const T& a, const T& b)
+inline const T& (min) (const T& a, const T& b)
 {
     return b < a ? b : a;
 }
 
 template <class T, class Compare>
-inline const T& min (const T& a, const T& b, Compare comp)
+inline const T& (min) (const T& a, const T& b, Compare comp)
 {
     return comp(b, a) ? b : a;
 }
@@ -38,13 +40,13 @@ inline const T& min (const T& a, const T& b, Compare comp)
 // Section 25.3.7.2 -- max
 
 template <class T>
-inline const T& max (const T& a, const T& b)
+inline const T& (max) (const T& a, const T& b)
 {
     return  a < b ? b : a;
 }
 
 template <class T, class Compare>
-inline const T& max(const T& a, const T& b, Compare comp)
+inline const T& (max) (const T& a, const T& b, Compare comp)
 {
     return comp (a, b) ? b : a;
 }

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -94,6 +95,13 @@ struct iterator_trait <      bool*> {
 };
 
 null_template
+struct iterator_trait <      bool**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef       bool*                   value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <      bool* const*> {
     typedef ptrdiff_t                    distance_type;
     typedef       bool* const        	 value_type;
@@ -113,6 +121,13 @@ null_template
 struct iterator_trait <char*> {
     typedef ptrdiff_t                    distance_type;
     typedef char                         value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <char**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef char *                        value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -138,9 +153,72 @@ struct iterator_trait <unsigned char*> {
 };
 
 null_template
+struct iterator_trait <unsigned char**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned char *                        value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <unsigned char* const*> {
     typedef ptrdiff_t                    distance_type;
     typedef unsigned char* const       	 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <const short*> {
+    typedef ptrdiff_t                    distance_type;
+    typedef const short                    value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <short*> {
+    typedef ptrdiff_t                    distance_type;
+    typedef short                          value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <short**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef short *                         value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <short* const*> {
+    typedef ptrdiff_t                    distance_type;
+    typedef short* const                   value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <const unsigned short*> {
+    typedef ptrdiff_t                    distance_type;
+    typedef const unsigned short           value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <unsigned short*> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned short                 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <unsigned short**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned short*                 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <unsigned short* const *> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned short* const          value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -155,6 +233,13 @@ null_template
 struct iterator_trait <int*> {
     typedef ptrdiff_t                    distance_type;
     typedef int                          value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <int**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef int *                         value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -180,6 +265,13 @@ struct iterator_trait <unsigned int*> {
 };
 
 null_template
+struct iterator_trait <unsigned int**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned int*                 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <unsigned int* const *> {
     typedef ptrdiff_t                    distance_type;
     typedef unsigned int* const          value_type;
@@ -201,6 +293,13 @@ struct iterator_trait <      long*> {
 };
 
 null_template
+struct iterator_trait <      long**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef       long *                  value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <      long* const *> {
     typedef ptrdiff_t                    distance_type;
     typedef long* const                    value_type;
@@ -218,6 +317,13 @@ null_template
 struct iterator_trait <      unsigned long*> {
     typedef ptrdiff_t                    distance_type;
     typedef unsigned long                   value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <      unsigned long**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef unsigned long *                  value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -245,6 +351,13 @@ struct iterator_trait <      long long*> {
 };
 
 null_template
+struct iterator_trait <      long long**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef       long long *                  value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <      long long* const*> {
     typedef ptrdiff_t                    distance_type;
     typedef  long long* const                   value_type;
@@ -266,6 +379,13 @@ struct iterator_trait <      unsigned long long*> {
 };
 
 null_template
+struct iterator_trait <      unsigned long long**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef  unsigned long long *                  value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <      unsigned long long* const*> {
     typedef ptrdiff_t                    distance_type;
     typedef  unsigned long long* const   value_type;
@@ -274,22 +394,6 @@ struct iterator_trait <      unsigned long long* const*> {
 
 #endif //__MSL_LONGLONG_SUPPORT__
 
-//970120 bkoz size_t and unsigned long ==redeclared
-/*
-null_template
-struct iterator_trait <const size_t*> {
-    typedef ptrdiff_t                    distance_type;
-    typedef const size_t                       value_type;
-    typedef random_access_iterator_tag   iterator_category;
-};
-
-null_template
-struct iterator_trait <size_t*> {
-    typedef ptrdiff_t                    distance_type;
-    typedef size_t                       value_type;
-    typedef random_access_iterator_tag   iterator_category;
-};
-*/
 null_template
 struct iterator_trait <const float*> {
     typedef ptrdiff_t                    distance_type;
@@ -301,6 +405,13 @@ null_template
 struct iterator_trait <      float*> {
     typedef ptrdiff_t                    distance_type;
     typedef       float                 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <      float**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef       float*                 value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -326,6 +437,13 @@ struct iterator_trait <      double*> {
 };
 
 null_template
+struct iterator_trait <      double**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef       double*                 value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
 struct iterator_trait <      double* const*> {
     typedef ptrdiff_t                    distance_type;
     typedef double* const                value_type;
@@ -343,6 +461,13 @@ null_template
 struct iterator_trait <      long double*> {
     typedef ptrdiff_t                    distance_type;
     typedef long double                  value_type;
+    typedef random_access_iterator_tag   iterator_category;
+};
+
+null_template
+struct iterator_trait <      long double**> {
+    typedef ptrdiff_t                    distance_type;
+    typedef long double*                  value_type;
     typedef random_access_iterator_tag   iterator_category;
 };
 
@@ -1218,6 +1343,7 @@ private:
     bool             failed_;
 
 };
+
 
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */

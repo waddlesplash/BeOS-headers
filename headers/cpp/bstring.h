@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -20,11 +21,15 @@
 #endif
 
 #include MOD_INCLUDE(iosfwd)
-#include MOD_INCLUDE(mmemory) //961216 ah
+#include MOD_INCLUDE(mmemory) 	//961216 ah
 
 #include MOD_INCLUDE(mutex)
 
 #include <algorithm.h>			//961111 bkoz for swap
+
+#ifdef DebugNew_H       		//970401 bkoz
+	#undef new
+#endif
 
 #pragma options align=native
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
@@ -263,6 +268,7 @@ public:
     //
     // speed-up functions
     //
+    inline
     static int
     compare (const char_type* s1, const char_type* s2, size_t n) 
     {
@@ -273,8 +279,9 @@ public:
         return ::memcmp (s1, s2, n);
 #endif
     }
-    static size_t
-    length (const char_type* s) 
+    
+	static size_t
+	length (const char_type* s) 
     {
 #ifdef MSIPL_USING_NAMESPACE 
         // return std::strlen (s);
@@ -283,8 +290,9 @@ public:
         return ::strlen (s);
 #endif
     }
-    static char_type*
-    copy (char_type* s1, const char_type* s2, size_t n) 
+    
+	static char_type*
+	copy (char_type* s1, const char_type* s2, size_t n) 
     {
         // type cast required as memcpy returns void*
 #ifdef MSIPL_USING_NAMESPACE
@@ -294,18 +302,20 @@ public:
         return (char_type*)::memcpy (s1, s2, n);
 #endif
     }
-    static const char_type*
-    find (const char_type* s, int n, const char_type& a)
+    
+	static const char_type*
+	find (const char_type* s, int n, const char_type& a)
     {
 #ifdef MSIPL_USING_NAMESPACE
         // return (const char_type*)std::memchr (s, a, n);
         return (const char_type*)::memchr (s, a, n);
 #else
-        return (const char_type*)::memchr (s, a, n);
+         return (const char_type*)::memchr (s, a, n);
 #endif
     }
-    static char_type*
-    move (char_type* s1, const char_type* s2, size_t n)
+    
+	static char_type*
+	move (char_type* s1, const char_type* s2, size_t n)
     {
 #ifndef MSIPL_EDG232
 #ifdef MSIPL_USING_NAMESPACE
@@ -323,16 +333,18 @@ public:
         return s;
 #endif
     }
-    static char_type*
-    assign (char_type* s, size_t n, char_type a)
-    {
-#ifdef MSIPL_USING_NAMESPACE
-        // return (char_type*)std::memset (s, a, n);
-        return (char_type*)::memset (s, a, n);
-#else
-        return (char_type*)::memset (s, a, n);
-#endif
-    }
+    
+	static char_type*
+	assign (char_type* s, size_t n, char_type a)
+ 	{
+	#ifdef MSIPL_USING_NAMESPACE
+	        // return (char_type*)std::memset (s, a, n);
+	        return (char_type*)::memset (s, a, n);
+	#else
+	        return (char_type*)::memset (s, a, n);
+	#endif
+	}   
+ 
     static int_type 
     not_eof (const int_type& c)
     {
@@ -340,6 +352,7 @@ public:
             return c;
         return ~c;
     }
+    
     static char_type
     to_char_type (const int_type& c)
     {
@@ -347,6 +360,7 @@ public:
             return c;
         return char_type(0);
     }
+    
     static int_type
     to_int_type (const char_type& c)
     {
@@ -356,37 +370,44 @@ public:
         return (unsigned char)c;
 #endif
     }
+    
     static bool
     eq_int_type (const int_type& c1, const int_type& c2)
     {
         return (c1 == c2);
     }
+        
     static state_type
-    get_state (pos_type pos) 
-    {
-        return pos.state ();
-    }
-    static pos_type
-    get_pos (pos_type pos, state_type state) 
-    {
-        return pos_type (pos.offset (), state);
-    }
+	get_state (streampos pos)
+	{
+	    return pos.state();
+	}
+
+	static pos_type
+	get_pos (pos_type pos, state_type state)
+	{
+	    return pos_type(pos.offset (), state);
+	}
+
     static int_type
     eof ()
     {
         return EOF;
     }
+    
     static char_type
     eos ()
     {
         return 0;
     }
+    
     static char_type
     newline ()
     {
         return '\n';
     }
 };
+
 
 #ifdef MSIPL_WCHART
  
@@ -589,56 +610,60 @@ private:
    //
    // private constructors and destructors
    //
-   inline basic_string_ref (const Allocator& = Allocator ()) ;
+    basic_string_ref (const Allocator& = Allocator ()) ;
   
-   inline basic_string_ref (const basic_string<charT, traits, Allocator>& str,
+    basic_string_ref (const basic_string<charT, traits, Allocator>& str,
                             size_type pos , size_type rlen,
                             const Allocator& = Allocator ());
   
-   inline basic_string_ref (const charT* s, size_type n,
+    basic_string_ref (const charT* s, size_type n,
                             const Allocator& = Allocator ()) ;
  
-   inline basic_string_ref (const charT* s, const Allocator& = Allocator ());
+    basic_string_ref (const charT* s, const Allocator& = Allocator ());
 
 #ifdef MSIPL_MEMBER_TEMPLATE
    template <class InputIterator>
-   inline
+   
    basic_string_ref (InputIterator begin, InputIterator end,
                      const Allocator& = Allocator ());
 #else
-   inline basic_string_ref (iterator begin, iterator end, 
+    basic_string_ref (iterator begin, iterator end, 
                             const Allocator& = Allocator ()) ;
 
-   inline basic_string_ref (const_iterator begin, const_iterator end,
+    basic_string_ref (const_iterator begin, const_iterator end,
                             const Allocator& = Allocator ()) ;
 #endif
 
-   inline basic_string_ref (size_type rep, charT c,
+    basic_string_ref (size_type rep, charT c,
                             const Allocator& = Allocator ()) ;
 
 
-   inline ~basic_string_ref () ;
+    ~basic_string_ref () ;
 
+   inline 
    size_type
    size () const { return size_type (finish - start); }
 
+   inline 
    size_type
    capacity () const { return size_type (end_of_storage - start); }
 
    const allocator_type& 
    get_allocator () const  { return string_allocator; }
 
+   inline
    void
    add_count () { ++count; }
 
+   inline
    bool
    rem_count () { return (--count); } 
 
-   inline
    void
    cleanup () ;
 
-   static charT eos () { return traits_type::eos (); }
+   inline
+   charT eos () { return traits_type::eos (); }
 
    static pointer
    uninitialized_copy (const charT* first, const charT* last, 
@@ -681,10 +706,10 @@ private:
        while (n-- > 0) traits_type::assign (*first++, c);
    }
 
-   inline static void
+   static void
    throwlength () ;
 
-   inline static void
+   static void
    throwrange () ;
 
    friend 
@@ -694,11 +719,11 @@ private:
    //
    // For efficient implementation of operator+
    //
-   inline
-   basic_string_ref (const charT* s, size_type rlen, size_type rres,
-                     const Allocator& = Allocator ()) ;
+   basic_string_ref (const charT* s, size_type rlen, size_type rres, const Allocator& = Allocator ()) ;
  
 };
+
+
 
 #ifdef MSIPL_DEF_TEMPARG
 template <class charT, class traits = char_traits<charT>,
@@ -754,30 +779,23 @@ public:
     explicit
     basic_string (const Allocator& = Allocator()) ;
 
-    basic_string (const basic_string& str, size_type pos = 0, 
-                  size_type n = npos) ;
+    basic_string (const basic_string& str, size_type pos = 0, size_type n = npos) ;
 
-    basic_string (const charT* s, size_type n,
-                  const Allocator& = Allocator()) ;
+    basic_string (const charT* s, size_type n, const Allocator& = Allocator()) ;
 
-    basic_string (const charT* s,
-                  const Allocator& = Allocator()) ;
+    basic_string (const charT* s, const Allocator& = Allocator()) ;
 
-    basic_string (size_type n, charT c,
-                  const Allocator& = Allocator()) ;
+    basic_string (size_type n, charT c, const Allocator& = Allocator()) ;
 
 #ifdef MSIPL_MEMBER_TEMPLATE
 
     template <class InputIterator>
-    basic_string (InputIterator begin, InputIterator end,
-                  const Allocator& = Allocator()) ;
+    basic_string (InputIterator begin, InputIterator end, const Allocator& = Allocator()) ;
 #else
 
-    basic_string (iterator begin, iterator end,
-                  const Allocator& = Allocator()) ;
+    basic_string (iterator begin, iterator end, const Allocator& = Allocator()) ;
 
-    basic_string (const_iterator begin, const_iterator end,
-                  const Allocator& = Allocator()) ;
+    basic_string (const_iterator begin, const_iterator end, const Allocator& = Allocator()) ;
 #endif
 
     ~basic_string () ;
@@ -794,12 +812,15 @@ public:
     //
     // iterators
     //
-    iterator begin () 
+    inline
+    iterator 
+    begin () 
     { 
         READ_LOCK(_mutex);
         return string_pointer->start;
     }
 
+    inline
     const_iterator
     begin () const 
     { 
@@ -807,6 +828,7 @@ public:
         return string_pointer->start;
     }
 
+    inline
     iterator
     end () 
     { 
@@ -814,6 +836,7 @@ public:
         return string_pointer->finish;
     }
 
+    inline
     const_iterator
     end () const 
     { 
@@ -821,24 +844,28 @@ public:
         return string_pointer->finish;
     }
 
+    inline
     reverse_iterator
     rbegin () 
     {
         return reverse_iterator (end ()); 
     }
 
+    inline
     const_reverse_iterator
     rbegin () const 
     { 
         return const_reverse_iterator (end ()); 
     }
 
+    inline
     reverse_iterator
     rend () 
     { 
         return reverse_iterator (begin ());
     }
 
+    inline
     const_reverse_iterator
     rend () const 
     { 
@@ -848,44 +875,27 @@ public:
     //
     // capacity
     //
-    size_type
-    size () const 
-    { 
-        READ_LOCK(_mutex);
-        return string_pointer->size (); 
-    }
+    size_type size () const;
 
+    inline
     size_type
     length () const 
     { 
         return size (); 
     }
 
-    size_type
-    max_size () const 
-    { 
-       // return string_reference::string_allocator.max_size (); 
-       return reference_allocator.max_size (); 
-    }
+    size_type max_size () const ;  //970408 bkoz
 
-    void
-    resize (size_type n)
+    void resize (size_type n)
     { 
         resize (n, charT ()); 
     }
 
-    void
-    resize (size_type n, charT c) ;
+    void resize (size_type n, charT c) ;
 
-    size_type
-    capacity () const 
-    { 
-        READ_LOCK(_mutex);
-        return string_pointer->capacity (); 
-    }
-
-    void
-    reserve (size_type res_arg = 0) ;
+    size_type capacity () const;
+  
+    void reserve (size_type res_arg = 0) ;
 
     bool
     empty () const
@@ -898,33 +908,13 @@ public:
     //
   
     // const_reference -- Waiting for clarifications on this.
-    charT
-    operator[] (size_type pos) const
-    {
-        READ_LOCK(_mutex);
-        return ((pos < size ()) ? (*(begin ()+pos)) : eos ());
-    }
+    charT operator[] (size_type pos) const;
+ 
+    reference operator[] (size_type pos) ;
 
-    reference
-    operator[] (size_type pos) 
-    {
-        READ_LOCK(_mutex);
-        return  at (pos);
-    }
+    const_reference at (size_type pos) const ;
 
-    const_reference
-    at (size_type pos) const 
-    {
-       READ_LOCK(_mutex);
-       if (pos >= size ())
-       {
-           string_reference::throwrange ();
-       }
-       return (*(begin ()+pos));
-    }
-
-    reference
-    at (size_type pos) ;
+    reference at (size_type pos) ;
 
     //
     // modifiers
@@ -1113,8 +1103,7 @@ public:
     //
     // string operations
     //
-    const charT*
-    c_str () const ;
+    const charT* c_str () const ;
 
 #ifdef MSIPL_MULTITHREAD
     const charT*
@@ -1130,6 +1119,9 @@ public:
     }
 #endif
 
+    //970415 bkoz change to make pch
+    //971001 mf -- previous change was bogus
+    
     const charT*
     data () const 
     {
@@ -1138,12 +1130,19 @@ public:
        traits_type::assign (s[0], traits_type::eos());
        return (empty () ? s : c_str ()); 
     }
-  
-    const allocator_type& 
-    get_allocator () const
+
+  	
+
+/*    const charT*
+    data () const
     {
-        return string_pointer->get_allocator();
+       READ_LOCK(_mutex);
+       return (empty () ? 0  : c_str() );  //in effect, specializing for char
     }
+
+  */
+  	
+    const allocator_type& get_allocator () const; //970408 bkoz out of line
 
     size_type
     find (const basic_string& str, size_type pos = 0) const ;
@@ -1245,20 +1244,11 @@ private:
     reference_count () const { return string_pointer->count; }
 
     void
-    adjust_end (size_type n) 
-    { 
+    adjust_end (size_type n)  { 
        string_pointer->finish = string_pointer->start+n; 
     }
 
-    void
-    cleanup () 
-    { 
-       if (!(string_pointer->rem_count ()))
-       {
-           destroy (string_pointer);
-           reference_allocator.deallocate (string_pointer);
-       }
-    }
+    void cleanup(); 	//970408	bkoz move out of line
 
 public:
 
@@ -1302,7 +1292,6 @@ typedef  basic_string<wchar_t, char_traits<wchar_t>,
 #endif
 #pragma options align=reset
 
-
 #ifdef MSIPL_ANSI_HEADER
 #include MOD_INCLUDE(stdexcept)
 #else
@@ -1318,13 +1307,15 @@ typedef  basic_string<wchar_t, char_traits<wchar_t>,
 namespace std {
 #endif
 
+//basic_string_ref defs that depend on exception definitions being seen
+//970420 bkoz for .pch
+#if !__option(precompile)
 template <class charT, class traits, class Allocator>
 const typename basic_string<charT, traits, Allocator>::size_type
-basic_string<charT, traits, Allocator>::npos =
-(typename basic_string<charT, traits, Allocator>::size_type)-1;
+basic_string<charT, traits, Allocator>::npos = (typename basic_string<charT, traits, Allocator>::size_type )-1;
+#endif
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string_ref<charT, traits, Allocator>::throwlength ()
 {
@@ -1337,7 +1328,6 @@ basic_string_ref<charT, traits, Allocator>::throwlength ()
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string_ref<charT, traits, Allocator>::throwrange ()
 {
@@ -1350,7 +1340,6 @@ basic_string_ref<charT, traits, Allocator>::throwrange ()
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string_ref<charT, traits, Allocator>::cleanup () 
 {
@@ -1362,10 +1351,9 @@ basic_string_ref<charT, traits, Allocator>::cleanup ()
     start = finish = end_of_storage = 0;
 }
 
+//#pragma dont_inline on //970407 bkoz
 template <class charT, class traits, class Allocator>
-inline
-basic_string_ref<charT, traits, Allocator>::
-basic_string_ref (const Allocator& alloc) 
+basic_string_ref<charT, traits, Allocator>::basic_string_ref (const Allocator& alloc) 
 :string_allocator(alloc)
 {
     start = finish = end_of_storage = 0;
@@ -1373,7 +1361,6 @@ basic_string_ref (const Allocator& alloc)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (const basic_string<charT, traits, Allocator>& str, 
                   size_type pos, size_type rlen,
@@ -1399,7 +1386,6 @@ basic_string_ref (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (const charT* s, size_type rlen, size_type rres, 
                   const Allocator& alloc)
@@ -1424,7 +1410,6 @@ basic_string_ref (const charT* s, size_type rlen, size_type rres,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (const charT* s, size_type n,
                   const Allocator& alloc)
@@ -1455,7 +1440,6 @@ basic_string_ref (const charT* s, size_type n,
 #ifdef MSIPL_MEMBER_TEMPLATE
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (InputIterator begin, InputIterator end,
                   const Allocator& alloc)
@@ -1470,7 +1454,6 @@ basic_string_ref (InputIterator begin, InputIterator end,
 }
 #else
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (iterator begin, iterator end,
                    const Allocator& alloc)
@@ -1486,7 +1469,6 @@ basic_string_ref (iterator begin, iterator end,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (const_iterator begin, const_iterator end,
                    const Allocator& alloc)
@@ -1502,7 +1484,6 @@ basic_string_ref (const_iterator begin, const_iterator end,
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
 basic_string_ref (const charT* s, const Allocator& alloc) 
 :string_allocator(alloc)
@@ -1526,10 +1507,8 @@ basic_string_ref (const charT* s, const Allocator& alloc)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>::
-basic_string_ref (size_type rep, charT c,
-                   const Allocator& alloc)
+basic_string_ref (size_type rep, charT c,const Allocator& alloc)
 :string_allocator(alloc)
 {
     typedef basic_string<charT, traits, Allocator> string_type;
@@ -1551,17 +1530,15 @@ basic_string_ref (size_type rep, charT c,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string_ref<charT, traits, Allocator>:: ~basic_string_ref () 
 {
     cleanup ();
 }
+// mf 101597 #pragma dont_inline reset //970407 bkoz
 
-
+//#pragma dont_inline on //970407 bkoz
 template <class charT, class traits, class Allocator>
-inline
-basic_string<charT, traits, Allocator>::
-basic_string (const Allocator& alloc) 
+basic_string<charT, traits, Allocator>::basic_string (const Allocator& alloc) 
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(alloc)
 #endif
@@ -1573,10 +1550,8 @@ basic_string (const Allocator& alloc)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (const basic_string<charT, traits, Allocator>& str,
-              size_type pos, size_type n) 
+basic_string (const basic_string<charT, traits, Allocator>& str, size_type pos, size_type n) 
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(str.reference_allocator)
 #endif
@@ -1603,10 +1578,8 @@ basic_string (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (const charT* s, size_type n,
-              const Allocator& alloc)
+basic_string (const charT* s, size_type n, const Allocator& alloc)
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(alloc)
 #endif
@@ -1625,7 +1598,6 @@ basic_string (const charT* s, size_type n,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
 basic_string (const charT* s, const Allocator& alloc)
 #ifdef MSIPL_MEMBER_TEMPLATE
@@ -1639,10 +1611,8 @@ basic_string (const charT* s, const Allocator& alloc)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (size_type rep, charT c,
-              const Allocator& alloc)
+basic_string (size_type rep, charT c, const Allocator& alloc)
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(alloc)
 #endif
@@ -1657,10 +1627,8 @@ basic_string (size_type rep, charT c,
 
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (InputIterator begin, InputIterator end,
-              const Allocator& alloc)
+basic_string (InputIterator begin, InputIterator end,const Allocator& alloc)
 : reference_allocator(alloc)
 {
     WRITE_LOCK(_mutex);
@@ -1672,10 +1640,8 @@ basic_string (InputIterator begin, InputIterator end,
 #else
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (iterator begin, iterator end,
-              const Allocator& alloc)
+basic_string (iterator begin, iterator end,const Allocator& alloc)
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(alloc)
 #endif
@@ -1687,10 +1653,8 @@ basic_string (iterator begin, iterator end,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
-basic_string (const_iterator begin, const_iterator end,
-              const Allocator& alloc)
+basic_string (const_iterator begin, const_iterator end,const Allocator& alloc)
 #ifdef MSIPL_MEMBER_TEMPLATE
 : reference_allocator(alloc)
 #endif
@@ -1704,7 +1668,6 @@ basic_string (const_iterator begin, const_iterator end,
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::
 ~basic_string () 
 {
@@ -1715,9 +1678,9 @@ basic_string<charT, traits, Allocator>::
     }
     REMOVE(_mutex);
 }
+// mf 101597 #pragma dont_inline reset //970407 bkoz
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 operator= (const basic_string<charT, traits, Allocator>& str) 
@@ -1742,7 +1705,6 @@ operator= (const basic_string<charT, traits, Allocator>& str)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 operator= (const charT* s) 
@@ -1751,7 +1713,6 @@ operator= (const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 operator= (charT c) 
@@ -1760,7 +1721,6 @@ operator= (charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string<charT, traits, Allocator>::
 resize (size_type n, charT c) 
@@ -1790,7 +1750,6 @@ resize (size_type n, charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string<charT, traits, Allocator>::
 reserve (size_type res_arg) 
@@ -1810,7 +1769,6 @@ reserve (size_type res_arg)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::reference
 basic_string<charT, traits, Allocator>::
 at (size_type pos) 
@@ -1860,7 +1818,6 @@ operator+= (charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (const basic_string<charT, traits, Allocator>& str)
@@ -1869,7 +1826,6 @@ append (const basic_string<charT, traits, Allocator>& str)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (const basic_string<charT, traits, Allocator>& str,
@@ -1914,7 +1870,6 @@ append (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (const charT* s, size_type n) 
@@ -1923,7 +1878,6 @@ append (const charT* s, size_type n)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (const charT* s) 
@@ -1932,7 +1886,6 @@ append (const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (size_type rep, charT c) 
@@ -1945,7 +1898,6 @@ append (size_type rep, charT c)
 
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (InputIterator first, InputIterator last)
@@ -1956,7 +1908,6 @@ append (InputIterator first, InputIterator last)
 #else
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (iterator first, iterator last)
@@ -1965,7 +1916,6 @@ append (iterator first, iterator last)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 append (const_iterator first, const_iterator last)
@@ -1976,7 +1926,6 @@ append (const_iterator first, const_iterator last)
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (const basic_string<charT, traits, Allocator>& str)
@@ -1985,7 +1934,6 @@ assign (const basic_string<charT, traits, Allocator>& str)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (const basic_string<charT, traits, Allocator>& str,
@@ -2041,7 +1989,6 @@ assign (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (const charT* s, size_type n) 
@@ -2050,7 +1997,6 @@ assign (const charT* s, size_type n)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (const charT* s) 
@@ -2059,7 +2005,6 @@ assign (const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (size_type rep, charT c) 
@@ -2071,7 +2016,6 @@ assign (size_type rep, charT c)
 
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (InputIterator first, InputIterator last)
@@ -2082,7 +2026,6 @@ assign (InputIterator first, InputIterator last)
 #else
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (iterator first, iterator last)
@@ -2091,7 +2034,6 @@ assign (iterator first, iterator last)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 assign (const_iterator first, const_iterator last)
@@ -2102,7 +2044,6 @@ assign (const_iterator first, const_iterator last)
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 insert (size_type pos1, const basic_string<charT, traits, Allocator>& str)
@@ -2111,7 +2052,6 @@ insert (size_type pos1, const basic_string<charT, traits, Allocator>& str)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 insert (size_type pos1, const basic_string<charT, traits, Allocator>& str,
@@ -2146,7 +2086,6 @@ insert (size_type pos1, const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 insert (size_type pos, const charT* s, size_type n)
@@ -2155,7 +2094,6 @@ insert (size_type pos, const charT* s, size_type n)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 insert (size_type pos, const charT* s)
@@ -2165,7 +2103,6 @@ insert (size_type pos, const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 insert (size_type pos, size_type rep, charT c) 
@@ -2174,7 +2111,6 @@ insert (size_type pos, size_type rep, charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::iterator
 basic_string<charT, traits, Allocator>::
 insert (iterator position, charT c)
@@ -2187,7 +2123,6 @@ insert (iterator position, charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string<charT, traits, Allocator>::
 insert (iterator position, size_type rep, charT c)
@@ -2201,7 +2136,6 @@ insert (iterator position, size_type rep, charT c)
 
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 void
 basic_string<charT, traits, Allocator>::
 insert (iterator p, InputIterator first, InputIterator last)
@@ -2213,7 +2147,6 @@ insert (iterator p, InputIterator first, InputIterator last)
 #else
 
 template <class charT, class traits, class Allocator>
-inline
 void
 basic_string<charT, traits, Allocator>::
 insert (iterator p, iterator first, iterator last)
@@ -2223,7 +2156,6 @@ insert (iterator p, iterator first, iterator last)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 void 
 basic_string<charT, traits, Allocator>::
 insert (iterator p, const_iterator first, const_iterator last)
@@ -2235,7 +2167,6 @@ insert (iterator p, const_iterator first, const_iterator last)
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 erase (size_type pos, size_type n) 
@@ -2271,7 +2202,6 @@ erase (size_type pos, size_type n)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::iterator
 basic_string<charT, traits, Allocator>::
 erase (iterator position)
@@ -2284,7 +2214,6 @@ erase (iterator position)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>::iterator
 basic_string<charT, traits, Allocator>::
 erase (iterator first, iterator last)
@@ -2300,7 +2229,6 @@ erase (iterator first, iterator last)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (size_type pos1, size_type n1,
@@ -2310,7 +2238,6 @@ replace (size_type pos1, size_type n1,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (size_type pos1, size_type n1,
@@ -2345,7 +2272,6 @@ replace (size_type pos1, size_type n1,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (size_type pos, size_type n1, const charT* s, size_type n2)
@@ -2354,7 +2280,6 @@ replace (size_type pos, size_type n1, const charT* s, size_type n2)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (size_type pos, size_type n1, const charT* s)
@@ -2364,7 +2289,6 @@ replace (size_type pos, size_type n1, const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (size_type pos, size_type n1, size_type n2, charT c) 
@@ -2373,7 +2297,6 @@ replace (size_type pos, size_type n1, size_type n2, charT c)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2,
@@ -2383,7 +2306,6 @@ replace (iterator i1, iterator i2,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, const charT* s, size_type n)
@@ -2392,7 +2314,6 @@ replace (iterator i1, iterator i2, const charT* s, size_type n)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, const charT* s)
@@ -2401,7 +2322,6 @@ replace (iterator i1, iterator i2, const charT* s)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, size_type n, charT c)
@@ -2413,7 +2333,6 @@ replace (iterator i1, iterator i2, size_type n, charT c)
 
 template <class charT, class traits, class Allocator>
 template <class InputIterator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, InputIterator first, InputIterator last)
@@ -2425,7 +2344,6 @@ replace (iterator i1, iterator i2, InputIterator first, InputIterator last)
 #else
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, iterator first, iterator last)
@@ -2435,7 +2353,6 @@ replace (iterator i1, iterator i2, iterator first, iterator last)
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>&
 basic_string<charT, traits, Allocator>::
 replace (iterator i1, iterator i2, const_iterator first, const_iterator last)
@@ -2447,7 +2364,6 @@ replace (iterator i1, iterator i2, const_iterator first, const_iterator last)
 #endif
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 copy (charT* s, size_type n, size_type pos) const 
@@ -2468,7 +2384,6 @@ copy (charT* s, size_type n, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 const charT*
 basic_string<charT, traits, Allocator>::
 c_str () const 
@@ -2498,7 +2413,6 @@ c_str () const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find (const basic_string<charT, traits, Allocator>& str, size_type pos) const
@@ -2527,7 +2441,6 @@ find (const basic_string<charT, traits, Allocator>& str, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find (const charT* s, size_type pos, size_type n) const 
@@ -2537,7 +2450,6 @@ find (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find (const charT* s, size_type pos) const 
@@ -2547,7 +2459,6 @@ find (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find (charT c, size_type pos) const 
@@ -2557,7 +2468,6 @@ find (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 rfind (const basic_string<charT, traits, Allocator>& str, size_type pos) const
@@ -2581,7 +2491,6 @@ rfind (const basic_string<charT, traits, Allocator>& str, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 rfind (const charT* s, size_type pos, size_type n) const 
@@ -2590,7 +2499,6 @@ rfind (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 rfind (const charT* s, size_type pos) const 
@@ -2599,7 +2507,6 @@ rfind (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 rfind (charT c, size_type pos) const 
@@ -2617,7 +2524,6 @@ rfind (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_of (const basic_string<charT, traits, Allocator>& str,
@@ -2638,7 +2544,6 @@ find_first_of (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_of (const charT* s, size_type pos, size_type n) const 
@@ -2647,7 +2552,6 @@ find_first_of (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_of (const charT* s, size_type pos) const
@@ -2656,7 +2560,6 @@ find_first_of (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_of (charT c, size_type pos) const 
@@ -2665,7 +2568,6 @@ find_first_of (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_of (const basic_string<charT, traits, Allocator>& str,
@@ -2687,7 +2589,6 @@ find_last_of (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_of (const charT* s, size_type pos, size_type n) const 
@@ -2697,7 +2598,6 @@ find_last_of (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_of (const charT* s, size_type pos) const 
@@ -2706,7 +2606,6 @@ find_last_of (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_of (charT c, size_type pos) const 
@@ -2715,7 +2614,6 @@ find_last_of (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_not_of (const basic_string<charT, traits, Allocator>& str,
@@ -2736,7 +2634,6 @@ find_first_not_of (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_not_of (const charT* s, size_type pos, size_type n) const 
@@ -2746,7 +2643,6 @@ find_first_not_of (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_not_of (const charT* s, size_type pos) const
@@ -2755,7 +2651,6 @@ find_first_not_of (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_first_not_of (charT c, size_type pos) const 
@@ -2765,7 +2660,6 @@ find_first_not_of (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_not_of (const basic_string<charT, traits, Allocator>& str,
@@ -2788,7 +2682,6 @@ find_last_not_of (const basic_string<charT, traits, Allocator>& str,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_not_of (const charT* s, size_type pos, size_type n) const 
@@ -2798,7 +2691,6 @@ find_last_not_of (const charT* s, size_type pos, size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_not_of (const charT* s, size_type pos) const
@@ -2807,7 +2699,6 @@ find_last_not_of (const charT* s, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 typename basic_string<charT, traits, Allocator>::size_type
 basic_string<charT, traits, Allocator>::
 find_last_not_of (charT c, size_type pos) const 
@@ -2827,7 +2718,6 @@ find_last_not_of (charT c, size_type pos) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 basic_string<charT, traits, Allocator>
 basic_string<charT, traits, Allocator>::
 substr (size_type pos,  size_type n) const 
@@ -2847,7 +2737,6 @@ substr (size_type pos,  size_type n) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 int
 basic_string<charT, traits, Allocator>::
 compare (const basic_string<charT, traits, Allocator>& str) const
@@ -2859,7 +2748,6 @@ compare (const basic_string<charT, traits, Allocator>& str) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 int
 basic_string<charT, traits, Allocator>::
 compare (size_type pos1, size_type n1,
@@ -2872,7 +2760,6 @@ compare (size_type pos1, size_type n1,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 int
 basic_string<charT, traits, Allocator>::
 compare (size_type pos1, size_type n1,
@@ -2886,7 +2773,6 @@ compare (size_type pos1, size_type n1,
 }
 
 template <class charT, class traits, class Allocator>
-inline
 int
 basic_string<charT, traits, Allocator>::
 compare (const charT* s) const
@@ -2896,7 +2782,6 @@ compare (const charT* s) const
 }
 
 template <class charT, class traits, class Allocator>
-inline
 int
 basic_string<charT, traits, Allocator>::
 compare (size_type pos, size_type n1,
@@ -2906,6 +2791,76 @@ compare (size_type pos, size_type n1,
 
     READ_LOCK(_mutex);
     return string_type (*this, pos, n1).compare (string_type (s, n2));
+}
+
+template <class charT, class traits, class Allocator>
+basic_string<charT, traits, Allocator>::size_type
+basic_string<charT, traits, Allocator>::size () const 
+    { 
+        READ_LOCK(_mutex);
+        return string_pointer->size (); 
+    }
+
+template <class charT, class traits, class Allocator>
+basic_string<charT, traits, Allocator>::size_type 
+basic_string<charT, traits, Allocator>::max_size () const 
+{ 
+   // return string_reference::string_allocator.max_size (); 
+   return reference_allocator.max_size (); 
+}
+
+
+template <class charT, class traits, class Allocator>
+basic_string<charT, traits, Allocator>::size_type 
+basic_string<charT, traits, Allocator>::capacity () const 
+{ 
+    READ_LOCK(_mutex);
+    return string_pointer->capacity (); 
+}
+
+
+template <class charT, class traits, class Allocator>
+charT
+basic_string<charT, traits, Allocator>::operator[] (size_type pos) const
+{
+    READ_LOCK(_mutex);
+    return ((pos < size ()) ? (*(begin ()+pos)) : eos ());
+}
+
+template <class charT, class traits, class Allocator>
+basic_string<charT, traits, Allocator>::reference
+basic_string<charT, traits, Allocator>::operator[] (size_type pos) 
+{
+    READ_LOCK(_mutex);
+    return  at (pos);
+}
+
+template <class charT, class traits, class Allocator>
+basic_string<charT, traits, Allocator>::const_reference
+basic_string<charT, traits, Allocator>::at (size_type pos) const 
+{
+   READ_LOCK(_mutex);
+   if (pos >= size ())
+   {
+       string_reference::throwrange ();
+   }
+   return (*(begin ()+pos));
+}
+
+template <class charT, class traits, class Allocator>
+const basic_string<charT, traits, Allocator>::allocator_type&
+basic_string<charT, traits, Allocator>::get_allocator () const{
+	return string_pointer->get_allocator();
+}
+
+template <class charT, class traits, class Allocator>
+void
+basic_string<charT, traits, Allocator>::cleanup ()  { 
+   if (!(string_pointer->rem_count ()))
+   {
+       destroy (string_pointer);
+       reference_allocator.deallocate (string_pointer);
+   }
 }
 
 template <class charT, class traits, class Allocator>
@@ -3129,7 +3084,6 @@ operator<= (const basic_string<charT, traits, Allocator>& lhs,
 // }
 
 template <class charT, class IS_traits, class STR_traits, class STR_Alloc>
-inline
 basic_istream<charT, IS_traits>&
 operator>> (basic_istream<charT, IS_traits>& is,
             basic_string<charT, STR_traits, STR_Alloc>& str) 
@@ -3187,8 +3141,11 @@ operator>> (basic_istream<charT, IS_traits>& is,
     return is;
 }
 
+/*	970415 bkoz 
+	equivalent, last one faster
+*/
+/*
 template <class charT, class OS_traits, class STR_traits, class STR_Alloc>
-inline
 basic_ostream<charT, OS_traits>&
 operator<< (basic_ostream<charT, OS_traits>& os, 
             const basic_string<charT, STR_traits, STR_Alloc>& str) 
@@ -3196,67 +3153,82 @@ operator<< (basic_ostream<charT, OS_traits>& os,
     os.write (str.data (), str.size ());
     return os;
 }
-
-//961113 bkoz this will not work with wchar!!!!
-template <class charT, class IS_traits, class STR_traits, class STR_Alloc>
-inline
-basic_istream<charT, IS_traits>&
-getline (basic_istream<charT, IS_traits>& is,
-         basic_string<charT, STR_traits, STR_Alloc>& str,
-//         charT delim = IS_traits::newline() )
-//         char delim = char_traits<char>::newline() )		//961113 bkoz
- 		char delim = '\n' )									//961114 bkoz
+*/
+template <class charT, class OS_traits, class STR_traits, class STR_Alloc>
+basic_ostream<charT, OS_traits>&
+operator<< (basic_ostream<charT, OS_traits>& os, 
+            const basic_string<charT, STR_traits, STR_Alloc>& str) 
 {
-    typedef basic_istream<charT, IS_traits> istream_type;
-    typedef basic_string<charT, STR_traits, STR_Alloc> string_type;
-
-    typename STR_traits::int_type c;
-    string_type::size_type count = 0;
-    const int BSIZE = 512;
-    charT buf[BSIZE];
-    int bcnt = 0;
-
-    str.erase ();
-    //typename istream_type::sentry s_ (is, true);  // mm 970121
-    typename istream_type::sentry s_ (is);          // mm 970121
-    if (s_)
-    {
-        c = is.rdbuf()->sbumpc();
-
-        while (!IS_traits::eq_int_type (c, IS_traits::eof ()) &&
-               ++count != str.max_size () &&
-               !IS_traits::eq (delim, c))
-        {
-            //if (bcnt <= BSIZE)
-            if (bcnt < BSIZE)           // MSIPL 961216
-            {
-                buf[bcnt++] = STR_traits::to_char_type (c);
-            }
-            else
-            {
-                str.append (buf, bcnt);
-                buf[0] = STR_traits::to_char_type (c);
-                bcnt = 1;
-            }
-            c = is.rdbuf()->sbumpc();
-        }
-        if (bcnt != 0)
-            str.append(buf,bcnt);
-
-        if (count == str.max_size ())
-             str.append ((string_type::size_type)1, c);
-
-        if (IS_traits::eq_int_type (c, IS_traits::eof ()))
-        {
-             is.setstate (ios_base::eofbit);
-        }
-        else if (!count || (count == str.max_size ()))
-             is.setstate (ios_base::failbit);
-    }
-    is.setcount (count);
-    return is;
+   os.write (str.begin(), str.size ());
+    return os;
 }
 
+//The following is retrofitted from Modena revision 970402              mm-970402
+template<class charT, class traits, class Allocator>
+basic_istream<charT, traits>&
+getline(basic_istream<charT, traits>& is, basic_string<charT, traits, Allocator>& str, charT delim)
+{
+    typename traits::int_type c;
+    typename basic_string<charT,traits,Allocator>::size_type count = 
+                                                             str.max_size();
+    ios_base::iostate flg = ios_base::goodbit;  // state of istream obj.
+    typename basic_istream<charT,traits>::sentry s_(is, true); 
+                                                // don't skip white spaces 
+    if(s_)                                    
+    {
+        const int BSIZE = 512;
+        charT buf[BSIZE];
+        int bcnt = 0;
+        str.erase (); 
+        //str.clear();                         // clear() is used instead of erase()
+                                             // for better performance.
+        while (count)
+        {
+            c = is.rdbuf()->sbumpc();        // try to extract a character
+            if (traits::eq_int_type (c, traits::eof ()))
+            {
+                flg |= ios_base::eofbit;
+                break;                       // stop reading - eof was reached
+            }
+
+            --count;                         // a character was extracted
+
+            if (traits::eq_int_type (traits::to_int_type (delim), c))
+                break;                       // stop reading - delim reached
+
+            if (bcnt == BSIZE)
+            {
+                str.append (buf, bcnt);      // buffer full, append to str.
+                bcnt = 0;                    // reset buffer pointer
+            }
+            buf[bcnt++] = traits::to_char_type (c);
+        }
+        if (bcnt != 0)
+            str.append(buf,bcnt);            // empty the buffer
+    }
+    if (count == 0 || (count == str.max_size ())) // count == 0 => max_size of 
+        flg |= ios_base::failbit;                 // string reached .
+                                                  // count == str.max_size =>
+                                                  // no characters are extracted.
+    if (flg != ios_base::goodbit)       // setstate is called now to avoid  
+        is.setstate (flg);              // throwing 'eof' exception even when no 
+                                        // char is extracted, in which case 
+                                        // failure should be thrown.
+    return is;               // is.setcount() is removed in nov. DWP.
+}
+
+template<class charT, class traits, class Allocator>
+inline
+basic_istream<charT, traits>&
+getline(basic_istream<charT, traits>& is, basic_string<charT, traits, Allocator>& str)
+{
+    //return getline(is, str, is.widen('\n'));  // traits::newline() no more exists.
+    return getline(is, str, traits::newline());  //Can't find is.wident()   mm
+}
+
+
+
+// End of Modena code from 970402
 #ifndef MSIPL_PARTIAL_TEMPL
 null_template
 struct iterator_trait <const string*> {
@@ -3276,10 +3248,21 @@ struct iterator_trait <string*> {
 } /* namespace std */
 #endif
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class char_traits<char>;
+	template __dont_instantiate class basic_string_ref<char, char_traits<char>, allocator<char> >;
+	template __dont_instantiate class basic_string <char, char_traits<char>, allocator<char> >;
+#endif
+
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
 	#pragma import reset
 #endif
 #pragma options align=reset
+
+#ifdef DebugNew_H       //970401 bkoz
+	#define new NEW
+#endif
 
 #endif /* MSIPL_BSTRING_H */
 
@@ -3296,4 +3279,7 @@ mw-ah 961216  changed memory -> mmemory
 MSIPL 961216  lines 3155, 3214 Correction so that 512 chars stored and not 513.
 KO    961217	Changed char_traits from a struct to a class. Needed for the new x86 compiler.
 mm 970121     Cause initial whitespace to be skipped in >> and getline.
+mm-970402     Corrected version of getline from Modena with changes following Aaron Zicks analysis
+mw-bk 970415	line 3131 ostream::operator<<(ostream, string) uses begin()
+mw-bk 970415	line 1127 	remove static char from data() so .pch will work
 */

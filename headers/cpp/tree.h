@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -706,8 +707,7 @@ template <class Key, class Value, class KeyOfValue,
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::link_type 
         rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::NIL = 0;
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 inline
 void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 deallocate_buffers ()
@@ -741,9 +741,7 @@ operator< (const rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& x,
 				    y.begin (), y.end ());
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue, class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 operator= (const rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& x)
@@ -768,9 +766,7 @@ operator= (const rb_tree<Key, Value, KeyOfValue, Compare, Allocator>& x)
     return *this;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 __insert (link_type x, link_type y, const Value& v)
@@ -847,13 +843,9 @@ __insert (link_type x, link_type y, const Value& v)
     return iterator (z);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
-rb_tree<Key, Value, KeyOfValue,
-        Compare, Allocator>::pair_iterator_bool
-rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
-insert (const Value& v)
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::pair_iterator_bool
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::insert (const Value& v)
 {
     WRITE_LOCK(_mutex);
     link_type y = header;
@@ -878,13 +870,9 @@ insert (const Value& v)
     return pair_iterator_bool (j, false);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
-rb_tree<Key, Value, KeyOfValue,
-        Compare, Allocator>::iterator 
-rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
-insert (iterator position, const Value& v)
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator 
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>:: insert (iterator position, const Value& v)
 {
     WRITE_LOCK(_mutex);
     if (position == iterator (begin ()))
@@ -918,10 +906,8 @@ insert (iterator position, const Value& v)
 
 #ifdef MSIPL_MEMBER_TEMPLATE
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 template <class InputIterator>
-inline
 void
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 insert (InputIterator first, InputIterator last)
@@ -931,9 +917,7 @@ insert (InputIterator first, InputIterator last)
 
 #else
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 insert (const_iterator first, const_iterator last)
@@ -941,9 +925,7 @@ insert (const_iterator first, const_iterator last)
     while (first != last) insert (*first++);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 insert (iterator first, iterator last)
@@ -951,9 +933,7 @@ insert (iterator first, iterator last)
     while (first != last) insert (*first++);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 insert (const Value* first, const Value* last)
@@ -963,9 +943,7 @@ insert (const Value* first, const Value* last)
 
 #endif /* MSIPL_MEMBER_TEMPLATE */
         
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 erase (iterator position)
@@ -1016,7 +994,8 @@ erase (iterator position)
                        // y points to node to be actually deleted,
                        // ::swap (y, z);  
                        // z points to old z's former successor
-    } else             // y == z
+    } 
+    else             // y == z
     {
         parent (x) = parent (y);   // possibly x == NIL
         if (root () == z)
@@ -1108,9 +1087,7 @@ erase (iterator position)
     --node_count;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue,
         Compare, Allocator>::size_type 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
@@ -1122,9 +1099,7 @@ erase (const Key& x)
     return n;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::link_type 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 __copy (link_type x, link_type p)
@@ -1147,9 +1122,7 @@ __copy (link_type x, link_type p)
    return r;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 __erase (link_type x)
 {
@@ -1164,9 +1137,7 @@ __erase (link_type x)
     }
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 erase (iterator first, iterator last)
@@ -1183,18 +1154,14 @@ erase (iterator first, iterator last)
         while (first != last) erase (first++);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 void rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 erase (const Key* first, const Key* last)
 {
     while (first != last) erase (*first++);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 find (const Key& k)
@@ -1213,9 +1180,7 @@ find (const Key& k)
    return (j == end () || key_compare (k, key (j.node))) ? end () : j;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 find (const Key& k) const
@@ -1235,9 +1200,7 @@ find (const Key& k) const
    return (j == end () || key_compare (k, key (j.node))) ? end () : j;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::size_type 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 count (const Key& k) const
@@ -1247,9 +1210,7 @@ count (const Key& k) const
     return n;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 lower_bound (const Key& k)
@@ -1267,9 +1228,7 @@ lower_bound (const Key& k)
    return iterator (y);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 lower_bound (const Key& k) const
@@ -1287,9 +1246,7 @@ lower_bound (const Key& k) const
    return const_iterator (y);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 upper_bound (const Key& k)
@@ -1307,9 +1264,7 @@ upper_bound (const Key& k)
    return iterator (y);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::const_iterator 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 upper_bound (const Key& k) const
@@ -1327,31 +1282,22 @@ upper_bound (const Key& k) const
    return const_iterator (y);
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
-rb_tree<Key, Value, KeyOfValue,
-        Compare, Allocator>::pair_iterator_iterator 
-rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
-equal_range (const Key& k)
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
+rb_tree<Key, Value, KeyOfValue,Compare, Allocator>::pair_iterator_iterator 
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range (const Key& k)
 {
     return pair_iterator_iterator (lower_bound (k), upper_bound (k));
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline
-rb_tree<Key, Value, KeyOfValue,
-        Compare, Allocator>::pair_citerator_citerator 
-rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
-equal_range (const Key& k) const
+template <class Key, class Value, class KeyOfValue,class Compare, class Allocator>
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::pair_citerator_citerator 
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::equal_range (const Key& k) const
 {
     return pair_citerator_citerator (lower_bound (k), upper_bound (k));
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline void 
+template <class Key, class Value, class KeyOfValue, class Compare, class Allocator>
+void 
 rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
 rotate_left (link_type x)
 {
@@ -1371,11 +1317,9 @@ rotate_left (link_type x)
     parent (x) = y;
 }
 
-template <class Key, class Value, class KeyOfValue,
-          class Compare, class Allocator>
-inline void 
-rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::
-rotate_right (link_type x)
+template <class Key, class Value, class KeyOfValue, class Compare, class Allocator>
+void 
+rb_tree<Key, Value, KeyOfValue, Compare, Allocator>::rotate_right (link_type x)
 {
     WRITE_LOCK(_mutex);
     link_type y = left (x);

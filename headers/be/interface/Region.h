@@ -1,21 +1,23 @@
-//******************************************************************************
-//
-//	File:		Region.h
-//
-//	Description:	client region class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Region.h
+/
+/   Description:    BRegion represents an area that's composed of individual
+/                   rectangles.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_REGION_H
 #define	_REGION_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BRegion class --------------------------------------------*/
 
 class BRegion {
 
@@ -41,11 +43,12 @@ virtual			~BRegion();
 		void	Exclude(const BRegion*);
 		void	IntersectWith(const BRegion*);
 
-//------------------------------------------------------------------------------
+/*----- Private or reserved -----------------------------------------*/
 
 private:
 
 friend class BView;
+friend class BDirectWindow;
 friend void copy_region_n(BRegion*, BRegion*, long);
 friend void and_region_complex(BRegion*, BRegion*, BRegion*);
 friend void and_region_1_to_n(BRegion*, BRegion*, BRegion*);
@@ -72,6 +75,7 @@ private:
 		BRect	*f_data;
 };
 
-//------------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _REGION_H */

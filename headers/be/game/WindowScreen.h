@@ -12,6 +12,7 @@
 #ifndef	_WINDOW_SCREEN_H
 #define	_WINDOW_SCREEN_H
 
+#include <BeBuild.h>
 #include <Window.h>
 #include <SupportDefs.h>
 #include <OS.h>
@@ -30,6 +31,7 @@ typedef int32 (*_add_on_control_)(uint32,void *);
 
 /* Global function, allowing to move the position of the mouse when the GameKit is in
    control of the screen. */
+_IMPEXP_GAME
 void set_mouse_position(int32 x, int32 y);
 
 /**********************  WARNING - WARNING - WARNING ***********************************
@@ -45,12 +47,22 @@ void set_mouse_position(int32 x, int32 y);
    using a different name). Part of the API for which compatibility will not be insure
    after the Preview Release are specifically pointed out in the following declarations.
 ****************************************************************************************/
+
+enum {
+	B_ENABLE_VIEW_DRAWING = 0x0001,
+	B_ENABLE_DEBUGGER = 0x0002
+};
+
 class BWindowScreen : public BWindow {
 public:
         BWindowScreen(const char *title,
 					  uint32     space,
 					  status_t   *error,
 					  bool       debug_enable = false);
+        BWindowScreen(const char *title,
+					  uint32     space,
+					  uint32	 attributes,
+					  status_t   *error);
 virtual ~BWindowScreen();
 virtual void        Quit(void);
 virtual void        ScreenConnected(bool active);
@@ -127,7 +139,7 @@ virtual	void        SuspensionHook(bool active);
 		void        Suspend(char *label);
 
 		
-virtual status_t	Perform(uint32 d, void *arg);
+virtual status_t	Perform(perform_code d, void *arg);
 
  private:
 virtual void        _ReservedWindowScreen1();
@@ -169,9 +181,13 @@ virtual void        _ReservedWindowScreen4();
 		int32                 debug_workspace;
 	    thread_id             *debug_list;
 
-		uint32                _reserved_[32];
+		uint32				  _attributes;
+
+		uint32                _reserved_[31];
 		
 static	BRect		CalcFrame(int32 index, int32 space, uint32 *old_space);
+		int32		SetFullscreen(int32 enable);
+		status_t	InitData(uint32 space, uint32 attributes);
         void        SetActiveState(int32 state);
         status_t    SetLockState(int32 state);
 	    status_t    SyncAddons();

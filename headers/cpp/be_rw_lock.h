@@ -24,9 +24,9 @@ extern long acquire_write_etc(rw_lock_id lock, ulong flags, bigtime_t timeout);
 
 #endif
 
-extern void acquire_spinlock (volatile long *addr);
-extern void release_spinlock (volatile long *addr);
-extern long test_and_set (long *addr, long val);
+_IMPEXP_ROOT extern void acquire_spinlock (volatile long *addr);
+_IMPEXP_ROOT extern void release_spinlock (volatile long *addr);
+_IMPEXP_ROOT extern long test_and_set (long *addr, long val);
 
 
 #ifdef __cplusplus

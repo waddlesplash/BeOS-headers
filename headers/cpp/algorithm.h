@@ -1,3 +1,5 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
+
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -148,7 +150,7 @@ find_end (ForwardIterator1 first1, ForwardIterator1 last1,
 template <class ForwardIterator1, class ForwardIterator2>
 inline
 ForwardIterator1
-find_first_of (ForwardIterator1 first1, ForwardIterator2 last1,
+find_first_of (ForwardIterator1 first1, ForwardIterator1 last1,         /*mm 970916*/
                ForwardIterator2 first2, ForwardIterator2 last2)
 {
     ForwardIterator1   current1 = first1;
@@ -169,7 +171,7 @@ template <class ForwardIterator1, class ForwardIterator2,
           class BinaryPredicate>
 inline
 ForwardIterator1
-find_first_of (ForwardIterator1 first1, ForwardIterator2 last1,
+find_first_of (ForwardIterator1 first1, ForwardIterator1 last1,  /* mm 970916 */
                ForwardIterator2 first2, ForwardIterator2 last2,
                BinaryPredicate binary_pred)
 {
@@ -3390,6 +3392,9 @@ prev_permutation (BidirectionalIterator first, BidirectionalIterator last,
 
 #endif /* MSIPL_ALGORITHM_H */
 
-//961112 mm	line 223,235 change paramaterized return type to ptr_difft
-//961210 bkoz added pragma options align=native pragma
-//961216 ah changed memory -> mmemory
+/*Change record
+ * 961112 mm	line 223,235 change paramaterized return type to ptr_difft
+ * 961210 bkoz added pragma options align=native pragma
+ * 961216 ah changed memory -> mmemory
+ */
+//970916 mm Corrected typos in both versions find_first_of  MW00491

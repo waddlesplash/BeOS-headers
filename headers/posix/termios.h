@@ -5,6 +5,13 @@
 #define _TERMIOS_H_
 
 #include <sys/types.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,8 +48,8 @@ struct	termios {
 	tcflag_t	c_cflag;	/* control modes */
 	tcflag_t	c_lflag;	/* local modes */
 	char		c_line;		/* line discipline */
-	speed_t		c_ispeed;	/* line discipline */
-	speed_t		c_ospeed;	/* line discipline */
+	speed_t		c_ixxxxx;	/* (unused) */
+	speed_t		c_oxxxxx;	/* (unused) */
 	cc_t		c_cc[NCC];	/* control chars */
 };
 
@@ -149,11 +156,10 @@ struct winsize {                    /* for the TIOCGWINSZ ioctl */
 #define	XLOBLK		0x1000			/* block layer output ?*/
 #define	CTSFLOW		0x2000			/* enable CTS flow */
 #define	RTSFLOW		0x4000			/* enable RTS flow */
-#define	CRTSFL		0x6000			/* enable both GTW: Changed from 0x8000 to 0x6000, which'll get both.  Is this OK? */
-#define	ORTSFL		0x100000		/* unidirectional RTS flow control */
+#define	CRTSCTS		(RTSFLOW | CTSFLOW)
 
 /*
- * c_lflag
+ * c_lflag - local modes
  */
 
 #define ISIG		(0x01)			/* enable signals */
@@ -204,38 +210,36 @@ struct winsize {                    /* for the TIOCGWINSZ ioctl */
 #define TCGB_DCD		0x08
 
 
-#define cfgetispeed(tp)  ((tp)->c_ispeed)
-#define cfgetospeed(tp)  ((tp)->c_ospeed)
-
-#define cfsetispeed(tp, sp)  ((tp)->c_ispeed = sp)
-#define cfsetospeed(tp, sp)  ((tp)->c_ospeed = sp)
-
-
 #define  tcgetattr(f, t) ioctl(f, TCGETA, (char *)t)
-extern int tcsetattr(int fd, int opt, const struct termios *tp);
+
+extern _IMPEXP_ROOT speed_t	cfgetispeed( struct termios *);
+extern _IMPEXP_ROOT speed_t	cfgetospeed( struct termios *);
+extern _IMPEXP_ROOT		cfsetispeed( struct termios *, speed_t);
+extern _IMPEXP_ROOT		cfsetospeed( struct termios *, speed_t);
+extern _IMPEXP_ROOT		tcsetattr( int fd, int opt, const struct termios *tp);
 
 #define TCSANOW    0x01    /* options for the opt argument to tcsetattr */
 #define TCSADRAIN  0x02
 #define TCSAFLUSH  0x04
 
 
-int   tcsendbreak(int fd, int duration);
-int   tcdrain(int fd);
-int   tcflow(int fd, int action);
+_IMPEXP_ROOT int   tcsendbreak(int fd, int duration);
+_IMPEXP_ROOT int   tcdrain(int fd);
+_IMPEXP_ROOT int   tcflow(int fd, int action);
 
 #define TCOOFF 0x01
 #define TCOON  0x02
 #define TCIOFF 0x04
 #define TCION  0x08
 
-int   tcflush(int fd, int queue_selector);
+_IMPEXP_ROOT int   tcflush(int fd, int queue_selector);
 
 #define TCIFLUSH  0x01
 #define TCOFLUSH  0x02
 #define TCIOFLUSH (TCIFLUSH | TCOFLUSH)
 
-int   tcsetpgrp(int fd, pid_t pgrpid);
-pid_t tcgetpgrp(int fd);
+_IMPEXP_ROOT int   tcsetpgrp(int fd, pid_t pgrpid);
+_IMPEXP_ROOT pid_t tcgetpgrp(int fd);
 
 #ifdef __cplusplus
 }

@@ -1,17 +1,18 @@
-//******************************************************************************
-//
-//	File:		Window.h
-//
-//	Description:	Client window class.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Window.h
+/
+/   Description:    BWindow is the base class for all windows (graphic areas
+/                   displayed on-screen).
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_WINDOW_H
 #define	_WINDOW_H
 
+#include <BeBuild.h>
 #include <StorageDefs.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
@@ -24,37 +25,63 @@
 #include <List.h>
 
 /*----------------------------------------------------------------*/
+/*-----  window deinfitions --------------------------------------*/
+
 
 enum window_type {
-	B_TITLED_WINDOW = 1,
-	B_MODAL_WINDOW = 3,
-	B_DOCUMENT_WINDOW = 11,
-	B_BORDERED_WINDOW = 20
+	B_UNTYPED_WINDOW	= 0,
+	B_TITLED_WINDOW 	= 1,
+	B_MODAL_WINDOW 		= 3,
+	B_DOCUMENT_WINDOW	= 11,
+	B_BORDERED_WINDOW	= 20,
+	B_FLOATING_WINDOW	= 21
 };
 
 /*----------------------------------------------------------------*/
-/* window manager flags for windows properties			  */
+
+enum window_look {
+	B_BORDERED_WINDOW_LOOK	= 20,
+	B_TITLED_WINDOW_LOOK	= 1,	
+	B_DOCUMENT_WINDOW_LOOK	= 11,
+	B_MODAL_WINDOW_LOOK		= 3,
+	B_FLOATING_WINDOW_LOOK	= 7
+};
+
+/*----------------------------------------------------------------*/
+
+enum window_feel {
+	B_NORMAL_WINDOW_FEEL			= 0,	
+	B_MODAL_SUBSET_WINDOW_FEEL		= 2,
+	B_MODAL_APP_WINDOW_FEEL			= 1,
+	B_MODAL_ALL_WINDOW_FEEL			= 3,
+	B_FLOATING_SUBSET_WINDOW_FEEL	= 5,
+	B_FLOATING_APP_WINDOW_FEEL		= 4,
+	B_FLOATING_ALL_WINDOW_FEEL		= 6
+};
+
+/*----------------------------------------------------------------*/
+
+enum window_alignment {
+	B_BYTE_ALIGNMENT	= 0,
+	B_PIXEL_ALIGNMENT	= 1
+};
+
 /*----------------------------------------------------------------*/
 
 enum {
 	B_NOT_MOVABLE				= 0x00000001,
-	B_NOT_RESIZABLE				= 0x00000002,
-	B_NOT_H_RESIZABLE			= 0x00000004,
-	B_NOT_V_RESIZABLE			= 0x00000008,
-	B_WILL_ACCEPT_FIRST_CLICK	= 0x00000010,
 	B_NOT_CLOSABLE				= 0x00000020,
 	B_NOT_ZOOMABLE				= 0x00000040,
 	B_NOT_MINIMIZABLE			= 0x00004000,
-	B_WILL_FLOAT				= 0x00000080,
-	_PRIVATE_W_FLAG1_			= 0x00000100,
-	_PRIVATE_W_FLAG2_			= 0x00000200,
-	_PRIVATE_W_FLAG3_			= 0x00000400,
-	_PRIVATE_W_FLAG4_			= 0x00000800,
-	_PRIVATE_W_FLAG5_			= 0x00001000,
-	_PRIVATE_W_FLAG6_			= 0x00002000,
-	_PRIVATE_W_FLAG7_			= 0x10000000,
-	_PRIVATE_W_FLAG8_			= 0x20000000,
-	_PRIVATE_W_FLAG9_			= 0x00008000
+	B_NOT_RESIZABLE				= 0x00000002,
+	B_NOT_H_RESIZABLE			= 0x00000004,
+	B_NOT_V_RESIZABLE			= 0x00000008,
+	B_AVOID_FRONT				= 0x00000080,
+	B_AVOID_FOCUS				= 0x00002000,
+	B_WILL_ACCEPT_FIRST_CLICK	= 0x00000010,
+	B_OUTLINE_RESIZE			= 0x00001000,
+	B_NO_WORKSPACE_ACTIVATION	= 0x00000100,
+	B_NOT_ANCHORED_ON_ACTIVATE	= 0x00020000
 };
 
 #define B_CURRENT_WORKSPACE	0
@@ -71,6 +98,7 @@ struct _cmd_key_;
 struct _view_attr_;
 
 /*----------------------------------------------------------------*/
+/*----- BWindow class --------------------------------------------*/
 
 class BWindow : public BLooper {
 
@@ -80,15 +108,20 @@ public:
 								window_type type,
 								uint32 flags,
 								uint32 workspace = B_CURRENT_WORKSPACE);
+						BWindow(BRect frame,
+								const char *title, 
+								window_look look,
+								window_feel feel,
+								uint32 flags,
+								uint32 workspace = B_CURRENT_WORKSPACE);
 virtual					~BWindow();
 
 						BWindow(BMessage *data);
-static	BWindow			*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Quit();
 		void			Close();
-		window_type		WindowType() const;
 
 		void			AddChild(BView *child, BView *before = NULL);
 		bool			RemoveChild(BView *child);
@@ -127,8 +160,7 @@ virtual	void			MenusEnded();
 		BView			*FindView(const char *view_name) const;
 		BView			*FindView(BPoint) const;
 		BView			*CurrentFocus() const;
-		void			Flush() const;
-		void			Activate(bool = TRUE);
+		void			Activate(bool = true);
 virtual	void			WindowActivated(bool state);
 		void			ConvertToScreen(BPoint *pt) const;
 		BPoint			ConvertToScreen(BPoint pt) const;
@@ -146,6 +178,12 @@ virtual	void			WindowActivated(bool state);
 virtual	void			Show();
 virtual	void			Hide();
 		bool			IsHidden() const;
+
+		void			Flush() const;
+		void			Sync() const;
+
+		status_t		SendBehind(const BWindow *window);
+
 		void			DisableUpdates();
 		void			EnableUpdates();
 		BRect			Bounds() const;
@@ -166,6 +204,7 @@ virtual	void			Hide();
 										float *max_v);
 		uint32			Workspaces() const;
 		void			SetWorkspaces(uint32);
+		BView			*LastMouseMovedView() const;
 
 virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 index,
@@ -174,13 +213,46 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
-		void			AddFloater(BWindow *a_floating_window);
-		void			RemoveFloater(BWindow *a_floating_window);
+		status_t		AddToSubset(BWindow *window);
+		status_t		RemoveFromSubset(BWindow *window);
 
-virtual status_t		Perform(uint32 d, void *arg);
+virtual status_t		Perform(perform_code d, void *arg);
 
-// ------------------------------------------------------------------
+		status_t		SetType(window_type type);
+		window_type		Type() const;
 
+		status_t		SetLook(window_look look);
+		window_look		Look() const;
+
+		status_t		SetFeel(window_feel feel);
+		window_feel		Feel() const;
+
+		status_t		SetFlags(uint32);
+		uint32			Flags() const;
+
+		bool			IsModal() const;
+		bool			IsFloating() const;
+
+		status_t		SetWindowAlignment(window_alignment mode,
+											int32 h,
+											int32 hOffset = 0,
+											int32 width = 0,
+											int32 widthOffset = 0,
+											int32 v = 0,
+											int32 vOffset = 0,
+											int32 height = 0,
+											int32 heightOffset = 0);
+		status_t		GetWindowAlignment(window_alignment *mode = NULL,
+											int32 *h = NULL,
+											int32 *hOffset = NULL,
+											int32 *width = NULL,
+											int32 *widthOffset = NULL,
+											int32 *v = NULL,
+											int32 *vOffset = NULL,
+											int32 *height = NULL,
+											int32 *heightOffset = NULL) const;
+
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 friend class BApplication;
@@ -189,7 +261,10 @@ friend class BScrollBar;
 friend class BView;
 friend class BMenuItem;
 friend class BWindowScreen;
+friend class BDirectWindow;
+friend class BFilePanel;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
+friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 
 virtual	void			_ReservedWindow1();
 virtual	void			_ReservedWindow2();
@@ -207,7 +282,8 @@ virtual	void			_ReservedWindow8();
 					BWindow(BRect frame, color_space depth);
 		void		InitData(BRect frame,
 							const char *title, 
-							window_type type,
+							window_look look,
+							window_feel feel,
 							uint32 flags,
 							uint32 workspace);
 		status_t	ArchiveChildren(BMessage *data, bool deep) const;
@@ -251,13 +327,26 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		void		enable_pulsing(bool enable);
 		BHandler	*determine_target(BMessage *msg, BHandler *target);
 		void		kb_navigate();
-		void		navigate_to_next(int32 direction, bool group = FALSE);
+		void		navigate_to_next(int32 direction, bool group = false);
 		void		set_focus(BView *focus);
 		bool		InUpdate();
 		void		DequeueAll();
 		void		find_token_and_handler(BMessage *msg,
 											int32 *token,
 											BHandler **handler);
+		window_type	compose_type(window_look look, 
+								 window_feel feel) const;
+		void		decompose_type(window_type type, 
+								   window_look *look,
+								   window_feel *feel) const;
+
+		void		SetIsFilePanel(bool panel);
+		bool		IsFilePanel() const;
+
+		/* 3 deprecated calls */
+		void			AddFloater(BWindow *a_floating_window);
+		void			RemoveFloater(BWindow *a_floating_window);
+		window_type		WindowType() const;
 
 		char			*fTitle;
 		int32			server_token;
@@ -271,15 +360,15 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 
 		BView			*top_view;
 		BView			*fFocus;
-		BView			*last_mm_target;
+		BView			*fLastMouseMovedView;
 		_BSession_		*a_session;
-//+		void			*fMsgBuffer;
-//+		int32			fMsgBufferSize;
 		BMenuBar		*fKeyMenuBar;
 		BButton			*fDefaultButton;
 		BList			accelList;
 		int32			top_view_token;
 		bool			pulse_enabled;
+		bool			fIsFilePanel;
+		int16			fUnused1;
 		int32			pulse_phase;
 		int32			pulse_queued;
 		bigtime_t		pulse_rate;
@@ -293,16 +382,20 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		float			fMaxWindH;
 		float			fMaxWindV;
 		BRect			fFrame;
-		window_type		fType;
+		window_look		fLook;
 		_view_attr_		*fCurDrawViewState;
+		window_feel		fFeel;
 
-		uint32			_reserved[8];
+		uint32			_reserved[7];	/* was 8 */
 };
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*-----  inline definitions ---------------------------------------*/
 
-inline void  BWindow::Close()			{ Quit(); }		// OK, no private parts
+inline void  BWindow::Close()
+	{ Quit(); }
 
-//------------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _WINDOW_H */

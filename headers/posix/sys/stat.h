@@ -2,6 +2,13 @@
 #define _SYS_STAT_H_
 
 #include <sys/types.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 /*
  * stat structure
@@ -75,13 +82,13 @@ struct stat {
 extern "C" {
 #endif
 
-extern int fstat(int fd, struct stat *buf);
-extern int stat(const char *path, struct stat *buf);
-extern int lstat(const char *path, struct stat *st);
-extern int chmod(const char *path, mode_t mode);
-extern int mkdir(const char *path, mode_t mode);
-extern mode_t umask(mode_t cmask);
-extern int mkfifo(const char *path, mode_t mode);
+extern _IMPEXP_ROOT int fstat(int fd, struct stat *buf);
+extern _IMPEXP_ROOT int stat(const char *path, struct stat *buf);
+extern _IMPEXP_ROOT int lstat(const char *path, struct stat *st);
+extern _IMPEXP_ROOT int chmod(const char *path, mode_t mode);
+extern _IMPEXP_ROOT int mkdir(const char *path, mode_t mode);
+extern _IMPEXP_ROOT mode_t umask(mode_t cmask);
+extern _IMPEXP_ROOT int mkfifo(const char *path, mode_t mode);
 
 #ifdef  __cplusplus
 }

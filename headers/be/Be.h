@@ -18,3 +18,4 @@
 #include <NetKit.h>
 #include <StorageKit.h>
 #include <SupportKit.h>
+#include <TranslationKit.h>

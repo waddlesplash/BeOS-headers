@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -16,9 +17,10 @@
 #include MOD_INCLUDE(mlimits)
 #endif
 
+#include MOD_INCLUDE(ostream)                      //mm-970321
 #include MOD_INCLUDE(iosfwd)
 #include MOD_INCLUDE(extmath)
-#include MOD_INCLUDE(streambuf)
+#include MOD_INCLUDE(streambuf) 					
 #include <errno.h>
 
 #pragma options align=native
@@ -139,6 +141,7 @@ public:
 				}
 
 
+        inline
         ~sentry () {};
         
         operator bool () { return ok_; }
@@ -220,8 +223,7 @@ public:
     get (streambuf_type& sb, char_type delim = traits::newline ());
 
     istream_type&
-    getline (char_type* s, streamsize n,
-             char_type delim = traits::newline ());
+    getline (char_type* s, streamsize n, char_type delim = traits::newline ());
 
     istream_type&
     ignore (streamsize n = 1, int_type delim = traits::eof ());
@@ -258,6 +260,7 @@ public:
     istream_type&
     seekg (pos_type);
 
+    inline
     istream_type&
     seekg (off_type, ios_base::seekdir);
 
@@ -294,12 +297,13 @@ basic_istream (ios_base::fmt_flags fmt_arg)
 { 
 }
 
+//#pragma dont_inline on
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>::~basic_istream () 
 { 
     REMOVE(_mutex);
 }
+//#pragma dont_inline reset
 
 /*
 template <class charT, class traits>
@@ -361,7 +365,6 @@ sentry::sentry (basic_istream<charT, traits>& is, bool noskipws)
 }
 */
 template <class charT, class traits>
-inline
 int
 basic_istream<charT, traits>::sync ()
 {
@@ -385,7 +388,6 @@ basic_istream<charT, traits>::sync ()
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::
 operator>> (istream_type& (*pf) (istream_type&))
@@ -395,7 +397,6 @@ operator>> (istream_type& (*pf) (istream_type&))
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::
 operator>> (ios_base& (*pf) (ios_base&))
@@ -406,7 +407,6 @@ operator>> (ios_base& (*pf) (ios_base&))
 }
     
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (void*& p)
 {
@@ -463,7 +463,6 @@ basic_istream<charT, traits>::operator>> (void*& p)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (char_type* s)
 {
@@ -512,7 +511,6 @@ basic_istream<charT, traits>::operator>> (char_type* s)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (char_type& c)
 {
@@ -548,7 +546,6 @@ basic_istream<charT, traits>::operator>> (char_type& c)
 #ifdef MSIPL_BOOL_BUILTIN
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (bool& n)
 {
@@ -579,7 +576,6 @@ basic_istream<charT, traits>::operator>> (bool& n)
 #endif /* MSIPL_BOOL_BUILTIN */
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (short& n)
 {
@@ -621,7 +617,6 @@ basic_istream<charT, traits>::operator>> (short& n)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (int& n)
 {
@@ -663,7 +658,6 @@ basic_istream<charT, traits>::operator>> (int& n)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (long& n)
 {
@@ -697,7 +691,6 @@ basic_istream<charT, traits>::operator>> (long& n)
 
 #ifdef __MSL_LONGLONG_SUPPORT__                          /* mm 970110 */
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (long long& n)
 {
@@ -730,7 +723,6 @@ basic_istream<charT, traits>::operator>> (long long& n)
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                     /* mm 970110 */
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (unsigned short& n)
 {
@@ -763,7 +755,6 @@ basic_istream<charT, traits>::operator>> (unsigned short& n)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (unsigned int& n)
 {
@@ -795,7 +786,6 @@ basic_istream<charT, traits>::operator>> (unsigned int& n)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (unsigned long& n)
 {
@@ -828,7 +818,6 @@ basic_istream<charT, traits>::operator>> (unsigned long& n)
 
 #ifdef __MSL_LONGLONG_SUPPORT__                                /* mm 970110 */
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (unsigned long long& n)
 {
@@ -861,7 +850,6 @@ basic_istream<charT, traits>::operator>> (unsigned long long& n)
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                /* mm 970110 */
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (float& f)
 {
@@ -893,7 +881,6 @@ basic_istream<charT, traits>::operator>> (float& f)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (double& f)
 {
@@ -925,7 +912,6 @@ basic_istream<charT, traits>::operator>> (double& f)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (long double& f)
 {
@@ -958,7 +944,6 @@ basic_istream<charT, traits>::operator>> (long double& f)
 
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::operator>> (streambuf_type*  sb)
 {
@@ -1022,7 +1007,6 @@ basic_istream<charT, traits>::operator>> (streambuf_type*  sb)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>::int_type
 basic_istream<charT, traits>::get ()
 {
@@ -1062,7 +1046,6 @@ basic_istream<charT, traits>::get ()
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::
 get (char_type* s, streamsize n, char_type delim)
@@ -1130,7 +1113,6 @@ basic_istream<charT, traits>::get (char_type& c)
 
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::get (streambuf_type& sb, char_type delim)
 {
@@ -1189,7 +1171,6 @@ basic_istream<charT, traits>::get (streambuf_type& sb, char_type delim)
 
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::getline (char_type* s, streamsize n, 
                                        char_type delim)
@@ -1219,10 +1200,10 @@ basic_istream<charT, traits>::getline (char_type* s, streamsize n,
             else if (traits::to_char_type (ch) == delim)
                 chcount++;
             else if (n == 0)
-            {
-                rdbuf ()->sputbackc (traits::to_char_type (ch));
-                setstate (failbit);
-            }
+            { 	
+             	rdbuf()->sputbackc (traits::to_char_type (ch));
+            	setstate (failbit);
+       	 	}
         }
         *s = traits::eos ();
         // To check this code
@@ -1250,7 +1231,6 @@ basic_istream<charT, traits>::getline (char_type* s, streamsize n,
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::ignore (streamsize n, int_type delim)
 {
@@ -1289,7 +1269,6 @@ basic_istream<charT, traits>::ignore (streamsize n, int_type delim)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::read (char_type* s, streamsize n)
 {
@@ -1321,7 +1300,6 @@ basic_istream<charT, traits>::read (char_type* s, streamsize n)
 }
 
 template <class charT, class traits>
-inline
 streamsize
 basic_istream<charT, traits>::readsome (char_type* s, streamsize n)
 {
@@ -1356,7 +1334,6 @@ basic_istream<charT, traits>::readsome (char_type* s, streamsize n)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>::int_type
 basic_istream<charT, traits>::peek ()
 {
@@ -1381,7 +1358,6 @@ basic_istream<charT, traits>::peek ()
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::putback (char_type c)
 {
@@ -1410,7 +1386,6 @@ basic_istream<charT, traits>::putback (char_type c)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::unget ()
 {
@@ -1457,7 +1432,6 @@ basic_istream<charT, traits>::setcount (int cnt)
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>::pos_type
 basic_istream<charT, traits>::tellg ()
 {
@@ -1467,7 +1441,6 @@ basic_istream<charT, traits>::tellg ()
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 basic_istream<charT, traits>::seekg (pos_type pos)
 {
@@ -1490,7 +1463,6 @@ basic_istream<charT, traits>::seekg (off_type off,
 }
 
 template <class charT, class traits>
-inline
 basic_istream<charT, traits>&
 ws (basic_istream<charT, traits>&  is)
 {
@@ -1509,6 +1481,15 @@ typedef basic_istream<char, char_traits<char> >       istream;
 typedef basic_istream<wchar_t, char_traits<wchar_t> >   wistream;
 #endif
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class basic_istream<char, char_traits<char> >;
+	template __dont_instantiate class num_get<char, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class time_get<char, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class money_get<char, true, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+	template __dont_instantiate class money_get<char, false, istreambuf_iterator<char, char_traits<char>, ptrdiff_t > >;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif
@@ -1517,10 +1498,12 @@ typedef basic_istream<wchar_t, char_traits<wchar_t> >   wistream;
 	#pragma import reset
 #endif
 #pragma options align=reset
-
+       
 #endif /* MSIPL_ISTREAM_H */
 
 //961206 received from atul
 //961206 bkoz lines 237-295 moved inline to line 80 so cw will compile nested class ctor
 //961210 bkoz added wrapper for alignment
 //mm 970110  long long support
+//mm-970321  Added required include.
+//970404 bkoz added dont instaniate support

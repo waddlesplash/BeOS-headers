@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.0, July 1996
@@ -58,6 +59,7 @@ public:
 
     virtual ~basic_filebuf ();
 
+    inline
     bool 
     is_open () const;
 
@@ -82,6 +84,7 @@ protected :
     virtual int_type                               //MW-mm 961227
     __pbfile(int_type);                            //MW-mm 961227
 
+    inline
     virtual int_type 
     underflow ();
 
@@ -94,21 +97,26 @@ protected :
     seekpos (pos_type sp, ios_base::openmode which =
              ios_base::in | ios_base::out);
 
+    inline
     virtual basic_streambuf<charT, traits>*
     setbuf (char_type* s, streamsize n);
 
+    inline
     virtual int 
     sync ();
 
+    inline
     virtual int_type
     uflow ();
 
+    inline
     virtual void
     imbue (const locale& loc);
 
     virtual streamsize 
     showmanyc ();
 
+    inline
     virtual streamsize 
     xsgetn (char_type* s, streamsize n);
 
@@ -155,6 +163,7 @@ public :
 
     virtual ~basic_ifstream ();
 
+    inline
     filebuf_type* 
     rdbuf () const;
 
@@ -162,11 +171,9 @@ public :
     bool 
     is_open ();
 
-    inline
     void 
     open (const char* s, ios_base::openmode mode = ios_base::in);
 
-    inline
     void 
     close ();
 
@@ -205,6 +212,7 @@ public :
 
     virtual ~basic_ofstream ();
 
+    inline
     filebuf_type*
     rdbuf () const;
 
@@ -228,8 +236,8 @@ private :
 
 };
 
+//#pragma dont_inline on
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::basic_filebuf ()
 : basic_streambuf<charT, traits> (), pfile (0)
 {
@@ -237,7 +245,6 @@ basic_filebuf<charT, traits>::basic_filebuf ()
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::basic_filebuf (FILE* pfile_arg)
 : basic_streambuf<charT, traits> (), pfile (pfile_arg)
 {
@@ -245,15 +252,14 @@ basic_filebuf<charT, traits>::basic_filebuf (FILE* pfile_arg)
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::~basic_filebuf ()
 {
    close ();
    REMOVE(_mutex);
 }
+// #pragma dont_inline off
 
 template <class charT, class traits>
-inline
 bool
 basic_filebuf<charT, traits>::is_open () const
 {
@@ -262,13 +268,14 @@ basic_filebuf<charT, traits>::is_open () const
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::filebuf_type*
 basic_filebuf<charT, traits>::open (const char* s, 
                               ios_base::openmode mode)
 {
    mode_ = mode;
 
+//9703011 bkoz
+/*
 #ifdef MSIPL_EDG232
    const ios_base::openmode  valid_modes[] = {
 #else
@@ -287,14 +294,36 @@ basic_filebuf<charT, traits>::open (const char* s,
    ios_base::in  | ios_base::out   | ios_base::trunc   | ios_base::binary,
    ios_base::in  | ios_base::out   | ios_base::app     | ios_base::binary,
    0 };
+*/
 
-#ifdef MSIPL_EDG232
+/*#ifdef MSIPL_EDG232
    const char* char_modes[] = {
 #else
    static const char* char_modes[] = {
 #endif
    "r", "r+", "rb", "w", "a", "wb", "ab", "w+", "a+", 
    "r+b", "w+b", "a+b", 0 };
+*/
+
+   static const ios_base::openmode  valid_modes[] = {
+   ios_base::out,
+   ios_base::out | ios_base::app,
+   ios_base::out | ios_base::trunc,
+   ios_base::in,
+   ios_base::in  | ios_base::out,
+   ios_base::in  | ios_base::out    | ios_base::trunc,
+   ios_base::out | ios_base::binary,
+   ios_base::out | ios_base::app    | ios_base::binary,
+   ios_base::out | ios_base::trunc  | ios_base::binary,
+   ios_base::in  | ios_base::binary,
+   ios_base::in  | ios_base::out    | ios_base::binary,
+   ios_base::in  | ios_base::out    | ios_base::trunc | ios_base::binary,
+   0 };
+   
+   static const char* char_modes[] ={ 
+   		"w","a","w","r","r+","w+","wb","ab",
+		"wb","rb","r+b","w+b",0 
+	};
 
    ios_base::openmode    mode_save = mode;
    WRITE_LOCK(_mutex);
@@ -325,7 +354,6 @@ basic_filebuf<charT, traits>::open (const char* s,
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::filebuf_type*
 basic_filebuf<charT, traits>::close ()
 {
@@ -341,7 +369,6 @@ basic_filebuf<charT, traits>::close ()
 }
 
 template <class charT, class traits>
-inline
 int
 basic_filebuf<charT, traits>::sync ()
 {
@@ -349,7 +376,6 @@ basic_filebuf<charT, traits>::sync ()
 }
 
 template <class charT, class traits>
-inline
 basic_streambuf<charT, traits>*
 basic_filebuf<charT, traits>::setbuf (char_type* s, streamsize n)
 {
@@ -364,7 +390,7 @@ basic_filebuf<charT, traits>::setbuf (char_type* s, streamsize n)
 }
 
 template <class charT, class traits>
-inline void 
+void 
 basic_filebuf<charT, traits>::set_facet()
 {
     ftype = &(use_facet (getloc (), (ofacet_type*)0));
@@ -372,7 +398,6 @@ basic_filebuf<charT, traits>::set_facet()
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::int_type
 basic_filebuf<charT, traits>::overflow (int_type c)
 {
@@ -418,7 +443,6 @@ basic_filebuf<charT, traits>::overflow (int_type c)
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::int_type
 basic_filebuf<charT, traits>::underflow ()
 {
@@ -434,7 +458,6 @@ basic_filebuf<charT, traits>::underflow ()
 
 
 template <class charT, class traits>
-inline
 streamsize
 basic_filebuf<charT, traits>::xsputn (const char_type* s, streamsize n)
 {
@@ -473,7 +496,6 @@ basic_filebuf<charT, traits>::xsputn (const char_type* s, streamsize n)
 
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::int_type
 basic_filebuf<charT, traits>::pbackfail (int_type c)
 {
@@ -519,10 +541,10 @@ basic_filebuf<charT, traits>::__pbfile (int_type c)                             
     if (is_open ())                                                             //MW-mm 961227
     {                                                                           //MW-mm 961227
         long p_sav = ftell (pfile);                                             //MW-mm 970107
-        if (p_sav == -1L)                                                       //MW-mm 970128
+        if (p_sav == -1L || (pfile->mode.file_kind == __console_file) )  //970324 bkoz                                                      //MW-mm 970128
 	    {                                                                       //MW-mm 970128
 	       value = ungetc(c, pfile);                                            //MW-mm 970128
-	       if (value)                                                           //MW-mm 970128
+	       if (value == EOF)                                                    //MW-mm 970303
 	          value = traits_type::eof ();                                      //MW-mm 970128
 	    }                                                                       //MW-mm 970128
 	    else                                                                    //MW-mm 970128
@@ -558,7 +580,6 @@ basic_filebuf<charT, traits>::__pbfile (int_type c)                             
 
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::int_type
 basic_filebuf<charT, traits>::uflow ()
 {
@@ -571,7 +592,6 @@ basic_filebuf<charT, traits>::uflow ()
 }
 
 template <class charT, class traits>
-inline
 streamsize 
 basic_filebuf<charT, traits>::xsgetn (char_type* s, streamsize n)
 {
@@ -585,7 +605,6 @@ basic_filebuf<charT, traits>::xsgetn (char_type* s, streamsize n)
 }
 
 template <class charT, class traits>
-inline
 void
 basic_filebuf<charT, traits>::imbue (const locale& loc_arg)
 {
@@ -593,10 +612,14 @@ basic_filebuf<charT, traits>::imbue (const locale& loc_arg)
 }
 
 template <class charT, class traits>
-inline
 streamsize
 basic_filebuf<charT, traits>::showmanyc ()
 {
+    if (pfile->mode.file_kind == __console_file)                                  //mm-970321
+    {                                                                             //mm-970321
+        long int avail = (pfile->position - (pfile->_buffer_ptr - pfile->buffer)); //mm-970321 /* Be-mani 980107 */
+    	return ((*(pfile->_buffer_ptr) == '\0')?avail:avail+1);                    //mm-970321 /* Be-mani 980107 */
+    }                                                                             //mm-970321
     long int curpos = ftell (pfile);
     if (curpos == -1)
         return 0;
@@ -613,14 +636,13 @@ basic_filebuf<charT, traits>::showmanyc ()
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::pos_type
 basic_filebuf<charT, traits>::seekoff (off_type  off,
                                        ios_base::seekdir way,
                                        ios_base::openmode /* which */)
 {
-    if (!is_open () || (off == -1) || 
-       ((way & ios_base::beg) && (off < 0)) ||
+    //if (!is_open () || (off == -1) ||                      // mm 970324
+    if (!pfile || ((way & ios_base::beg) && (off < 0)) ||    // mm 970324
        ((way & ios_base::end) && (off > 0)))
          return pos_type (-1);
     int  poseek  = SEEK_CUR;
@@ -639,7 +661,6 @@ basic_filebuf<charT, traits>::seekoff (off_type  off,
 }
 
 template <class charT, class traits>
-inline
 basic_filebuf<charT, traits>::pos_type
 basic_filebuf<charT, traits>::seekpos (pos_type sp,
                                        ios_base::openmode /* which */)
@@ -651,8 +672,8 @@ basic_filebuf<charT, traits>::seekpos (pos_type sp,
     return pos_type (ftell (pfile));
 }
 
+//#pragma dont_inline on
 template <class charT, class traits>
-inline
 basic_ifstream<charT, traits>::basic_ifstream ()
 : basic_istream<charT, traits> (0) 
 { 
@@ -660,32 +681,30 @@ basic_ifstream<charT, traits>::basic_ifstream ()
 }
 
 template <class charT, class traits>
-inline
 basic_ifstream<charT, traits>::basic_ifstream (const char* s, 
                                ios_base::openmode mode) 
 : basic_istream<charT, traits> (0) 
 {
     init (&fbuf);
-    rdbuf ()->open (s, mode);
+	if(!fbuf.open(s, mode|in))                                // mm 970717
+		setstate(failbit);                                    // mm 970717
 }
 
 template <class charT, class traits>
-inline
 basic_ifstream<charT, traits>::~basic_ifstream () { }
+// mf 101597 #pragma dont_inline reset
 
 template <class charT, class traits>
-inline
 basic_ifstream<charT, traits>::filebuf_type*
 basic_ifstream<charT, traits>::rdbuf () const
 {
     // use dynamic cast
     // return dynamic_cast<filebuf_type*> (basic_ios<charT, traits>::rdbuf ());
-    // return const_cast<filebuf_type*> (&fbuf);
-    return (filebuf_type*) (&fbuf);
+    return const_cast<filebuf_type*> (&fbuf);
+    //return (filebuf_type*) (&fbuf);
 }
 
 template <class charT, class traits>
-inline
 bool
 basic_ifstream<charT, traits>::is_open ()
 {
@@ -693,7 +712,6 @@ basic_ifstream<charT, traits>::is_open ()
 }
 
 template <class charT, class traits>
-inline
 void
 basic_ifstream<charT, traits>::open (const char* s,
                                      ios_base::openmode mode)
@@ -706,7 +724,6 @@ basic_ifstream<charT, traits>::open (const char* s,
 }
 
 template <class charT, class traits>
-inline
 void
 basic_ifstream<charT, traits>::close ()
 {
@@ -716,8 +733,8 @@ basic_ifstream<charT, traits>::close ()
     }
 }
 
+//#pragma dont_inline on
 template <class charT, class traits>
-inline
 basic_ofstream<charT, traits>::basic_ofstream ()
 : basic_ostream<charT, traits> (0)
 {
@@ -725,21 +742,20 @@ basic_ofstream<charT, traits>::basic_ofstream ()
 }
 
 template <class charT, class traits>
-inline
 basic_ofstream<charT, traits>::basic_ofstream (const char* s, 
                                ios_base::openmode mode)
 : basic_ostream<charT, traits> (0)
 {
     init (&fbuf);
-    rdbuf ()->open (s, mode);
+	if(!fbuf.open(s, mode|out))                         // mm 970717
+		setstate(failbit);                              // mm 970717
 }
 
 template <class charT, class traits>
-inline
 basic_ofstream<charT, traits>::~basic_ofstream () { }
+// mf 101597 #pragma dont_inline reset
 
 template <class charT, class traits>
-inline
 basic_ofstream<charT, traits>::filebuf_type*
 basic_ofstream<charT, traits>::rdbuf () const
 {
@@ -750,7 +766,6 @@ basic_ofstream<charT, traits>::rdbuf () const
 }
 
 template <class charT, class traits>
-inline
 bool
 basic_ofstream<charT, traits>::is_open ()
 {
@@ -758,7 +773,6 @@ basic_ofstream<charT, traits>::is_open ()
 }
 
 template <class charT, class traits>
-inline
 void
 basic_ofstream<charT, traits>::open (const char* s,
                                      ios_base::openmode mode)
@@ -771,7 +785,6 @@ basic_ofstream<charT, traits>::open (const char* s,
 }
 
 template <class charT, class traits>
-inline
 void
 basic_ofstream<charT, traits>::close ()
 {
@@ -812,6 +825,7 @@ public :
 
     virtual ~basic_fstream ();
 
+    inline
     filebuf_type* 
     rdbuf () const;
 
@@ -819,12 +833,10 @@ public :
     bool 
     is_open ();
 
-    inline
     void 
     open (const char* s,
           ios_base::openmode mode = ios_base::in | ios_base::out);
 
-    inline
     void 
     close ();
 
@@ -834,8 +846,8 @@ private :
 
 };
 
+//#pragma dont_inline on
 template <class charT, class traits>
-inline
 basic_fstream<charT, traits>::basic_fstream ()
 : basic_iostream<charT, traits> (0) 
 { 
@@ -843,7 +855,6 @@ basic_fstream<charT, traits>::basic_fstream ()
 }
 
 template <class charT, class traits>
-inline
 basic_fstream<charT, traits>::basic_fstream (const char* s, 
                                ios_base::openmode mode) 
 : basic_iostream<charT, traits> (0) 
@@ -853,22 +864,21 @@ basic_fstream<charT, traits>::basic_fstream (const char* s,
 }
 
 template <class charT, class traits>
-inline
 basic_fstream<charT, traits>::~basic_fstream () { }
+// mf 101597 #pragma dont_inline reset
+
 
 template <class charT, class traits>
-inline
 basic_fstream<charT, traits>::filebuf_type*
 basic_fstream<charT, traits>::rdbuf () const
 {
     // use dynamic cast
     // return dynamic_cast<filebuf_type*> (basic_ios<charT, traits>::rdbuf ());
-    // return const_cast<filebuf_type*> (&fbuf);
+     //return const_cast<filebuf_type*> (&fbuf);
     return (filebuf_type*) (&fbuf);
 }
 
 template <class charT, class traits>
-inline
 bool
 basic_fstream<charT, traits>::is_open ()
 {
@@ -876,7 +886,6 @@ basic_fstream<charT, traits>::is_open ()
 }
 
 template <class charT, class traits>
-inline
 void
 basic_fstream<charT, traits>::open (const char* s,
                                     ios_base::openmode mode)
@@ -889,7 +898,6 @@ basic_fstream<charT, traits>::open (const char* s,
 }
 
 template <class charT, class traits>
-inline
 void
 basic_fstream<charT, traits>::close ()
 {
@@ -911,6 +919,14 @@ typedef basic_ofstream<wchar_t, char_traits<wchar_t> >   wofstream;
 typedef basic_fstream <wchar_t, char_traits<wchar_t> >   wfstream;
 #endif
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class basic_filebuf<char, char_traits<char> >;
+	template __dont_instantiate class basic_ifstream<char, char_traits<char> >;
+	template __dont_instantiate class basic_ofstream<char, char_traits<char> >;
+	template __dont_instantiate class basic_fstream<char, char_traits<char> >;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif
@@ -923,8 +939,16 @@ typedef basic_fstream <wchar_t, char_traits<wchar_t> >   wfstream;
 #endif /* MSIPL_FSTREAM_H */
 
 /*   Change record
-//961210 bkoz added alignment wrapper
-//MW-mm 961227 Changes to allow for dealing with bufferless files part of fix in streambuf.h
-//MW-mm 970107 Corrections from MSIPL to __pbfile
-//MW-mm 970128 More corrections to __pbfile
+ * 961210 bkoz added alignment wrapper
+ * MW-mm 961227 Changes to allow for dealing with bufferless files part of fix in streambuf.h
+ * MW-mm 970107 Corrections from MSIPL to __pbfile
+ * MW-mm 970128 More corrections to __pbfile
+ * MW-mm 970303 More corrections to __pbfile
+ * mw-bkoz	970311 line 274 added to open modes
+ * MW-mm 970321 Change to make in_avail work for console files.
+ * MW-mm 970324 Change from Modena to make seekoff work for offset of -1
+ * mw-bkoz	970324 line 547 changed __pbfile to work with console files.
+ * mm 970717   Corrected setting of fail bit if open fails
+ * Be-mani 980107 Prepend underscores to some FILE struct members.
+ *                (see stdio.h for full comment)
 */

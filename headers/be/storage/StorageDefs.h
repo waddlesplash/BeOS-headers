@@ -12,6 +12,9 @@
 #ifndef _STORAGE_DEFS_H
 #define	_STORAGE_DEFS_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <fcntl.h>
 #include <sys/param.h>
 #include <limits.h>

@@ -22,6 +22,14 @@ Cambridge, MA 02139, USA.  */
 #ifndef _GETOPT_H
 #define _GETOPT_H 1
 
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -32,7 +40,7 @@ extern "C" {
    Also, when `ordering' is RETURN_IN_ORDER,
    each non-option ARGV-element is returned here.  */
 
-extern char *optarg;
+extern _IMPEXP_ROOT char *optarg;
 
 /* Index in ARGV of the next element to be scanned.
    This is used for communication to and from the caller
@@ -46,16 +54,16 @@ extern char *optarg;
    Otherwise, `optind' communicates from one call to the next
    how much of ARGV has been scanned so far.  */
 
-extern int optind;
+extern _IMPEXP_ROOT int optind;
 
 /* Callers store zero here to inhibit the error message `getopt' prints
    for unrecognized options.  */
 
-extern int opterr;
+extern _IMPEXP_ROOT int opterr;
 
 /* Set to an option character which was unrecognized.  */
 
-extern int optopt;
+extern _IMPEXP_ROOT int optopt;
 
 /* Describe the long-named options requested by the application.
    The LONG_OPTIONS argument to getopt_long or getopt_long_only is a vector
@@ -100,7 +108,7 @@ struct option
 
 #include <ansi_parms.h>
 
-#if defined (__STDC__) && __STDC__
+#if defined(__cplusplus) || (defined (__STDC__) && __STDC__)
 #if defined(__GNU_LIBRARY__) || __dest_os == __be_os
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in stdlib.h.  To avoid compilation
@@ -108,13 +116,13 @@ struct option
 /*
  * But at Be we only use GNU so this is OK
  */
-extern int getopt (int argc, char *const *argv, const char *shortopts);
+extern _IMPEXP_ROOT int getopt (int argc, char *const *argv, const char *shortopts);
 #else /* not __GNU_LIBRARY__  or __BEOS__ */
 extern int getopt ();
 #endif /* __GNU_LIBRARY__ || __BEOS__ */
-extern int getopt_long (int argc, char *const *argv, const char *shortopts,
+extern _IMPEXP_ROOT int getopt_long (int argc, char *const *argv, const char *shortopts,
 		        const struct option *longopts, int *longind);
-extern int getopt_long_only (int argc, char *const *argv,
+extern _IMPEXP_ROOT int getopt_long_only (int argc, char *const *argv,
 			     const char *shortopts,
 		             const struct option *longopts, int *longind);
 
@@ -123,10 +131,10 @@ extern int _getopt_internal (int argc, char *const *argv,
 			     const char *shortopts,
 		             const struct option *longopts, int *longind,
 			     int long_only);
-#else /* not __STDC__ */
-extern int getopt ();
-extern int getopt_long ();
-extern int getopt_long_only ();
+#else /* not __STDC__ or cplusplus */
+extern _IMPEXP_ROOT int getopt ();
+extern _IMPEXP_ROOT int getopt_long ();
+extern _IMPEXP_ROOT int getopt_long_only ();
 
 extern int _getopt_internal ();
 #endif /* __STDC__ */

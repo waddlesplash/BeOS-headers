@@ -1,23 +1,24 @@
-//******************************************************************************
-//
-//	File:		PrintJob.h
-//
-//	Description:	client region class.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			PrintJob.h
+/
+/   Description:    BPrintJob runs a printing session.
+/
+/	Copyright 1996-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_PRINTSESSION_H
 #define	_PRINTSESSION_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
 #include <View.h>
 #include <ClassInfo.h>
 
-//------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BPrintJob related structures -----------------------------*/
 
 struct	print_file_header {
 	int32	version;
@@ -29,7 +30,8 @@ struct	print_file_header {
 	int32	_reserved_5_;
 };
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BPrintJob class ------------------------------------------*/
 
 class BPrintJob {
 public:
@@ -51,6 +53,8 @@ virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
 		BMessage	*Settings();	
 		void		SetSettings(BMessage *a_msg);	
 		void		CancelJob();
+
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 virtual void		_ReservedPrintJob1();
@@ -61,7 +65,9 @@ virtual void		_ReservedPrintJob4();
 					BPrintJob(const BPrintJob &);
 		BPrintJob	&operator=(const BPrintJob &);
 
-		int			AddToSpoolQueue(BPicture *a_picture, BRect *a_rect, BPoint where);
+		void		RecurseView(BView *v, BPoint origin, BPicture *p, BRect r);
+		int			AddToSpoolQueue(BPicture *a_picture, BRect *a_rect,
+						BPoint where);
 		void		mangle_name(char *filename);
 		void		add_setup_spec();
 		void		HandlePageSetup(BMessage *setup);
@@ -70,9 +76,9 @@ virtual void		_ReservedPrintJob4();
 		int32		current_position();
 		int			end_of_page();
 
-		char		*print_job_name;
-		int32		page_number;
-		int32		spool_file_ref;
+		char *				print_job_name;
+		int32				page_number;
+		BFile *				spoolFile;
 		print_file_header	current_header;
 		BRect				paper_size;
 		BRect				usable_size;
@@ -87,5 +93,8 @@ virtual void		_ReservedPrintJob4();
 		int32				last_page;
 		uint32				_reserved[4];
 };
+ 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _PRINTSESSION_H */

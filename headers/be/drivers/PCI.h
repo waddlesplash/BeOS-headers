@@ -12,6 +12,7 @@
 #ifndef _PCI_H
 #define _PCI_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
 #ifdef __cplusplus
@@ -23,7 +24,8 @@ extern "C" {
 	PCI configuration space access
 --- */
 
-extern long		read_pci_config (
+extern _IMPEXP_ROOT long
+read_pci_config (
 	uchar	bus,				/* bus number */
 	uchar	device,				/* device # on bus */
 	uchar	function,			/* function # in device */
@@ -31,7 +33,8 @@ extern long		read_pci_config (
 	long	size				/* # bytes to read (1, 2 or 4) */
 );
 
-extern void		write_pci_config (
+extern _IMPEXP_ROOT void
+write_pci_config (
 	uchar	bus,				/* bus number */
 	uchar	device,				/* device # on bus */
 	uchar	function,			/* function # in device */
@@ -77,10 +80,37 @@ typedef struct pci_info {
 			uchar	min_grant;				/* burst period @ 33 Mhz */
 			uchar	max_latency;			/* how often PCI access needed */
 		} h0;
+		struct {
+			ulong	base_registers[2];		/* base registers, viewed from host */
+			ulong	base_registers_pci[2];	/* base registers, viewed from pci */
+			ulong	base_register_sizes[2];	/* size of what base regs point to */
+			uchar	base_register_flags[2];	/* flags from base address fields */
+			uchar	primary_bus;
+			uchar	secondary_bus;
+			uchar	subordinate_bus;
+			uchar	secondary_latency;
+			uchar	io_base;
+			uchar	io_limit;
+			ushort	secondary_status;
+			ushort	memory_base;
+			ushort	memory_limit;
+			ushort  prefetchable_memory_base;
+			ushort  prefetchable_memory_limit;
+			ulong	prefetchable_memory_base_upper32;
+			ulong	prefetchable_memory_limit_upper32;
+			ushort	io_base_upper16;
+			ushort	io_limit_upper16;
+			ulong	rom_base;				/* rom base address, viewed from host */
+			ulong	rom_base_pci;			/* rom base addr, viewed from pci */
+			uchar	interrupt_line;			/* interrupt line */
+			uchar	interrupt_pin;			/* interrupt pin */
+			ushort	bridge_control;		
+		} h1; 
 	} u;
 } pci_info;
 
-extern long		get_nth_pci_info (
+extern _IMPEXP_ROOT long
+get_nth_pci_info (
 	long		index,					/* index into pci device table */
 	pci_info 	*info					/* caller-supplied buffer for info */
 );
@@ -106,19 +136,51 @@ extern long		get_nth_pci_info (
 #define PCI_bist				0x0f		/* (1 byte) built-in self-test */
 
 
+
+/* ---
+	offsets in PCI configuration space to the elements of the predefined
+	header common to header types 0x00 and 0x01
+--- */
+#define PCI_base_registers		0x10		/* base registers (size varies) */
+#define PCI_interrupt_line		0x3c		/* (1 byte) interrupt line */
+#define PCI_interrupt_pin		0x3d		/* (1 byte) interrupt pin */
+
+
+
 /* ---
 	offsets in PCI configuration space to the elements of header type 0x00
 --- */
 
-#define PCI_base_registers		0x10		/* base registers (size varies) */
 #define PCI_cardbus_cis			0x28		/* (4 bytes) CardBus CIS (Card Information Structure) pointer (see PCMCIA v2.10 Spec) */
 #define PCI_subsystem_id		0x2c		/* (2 bytes) subsystem (add-in card) id */
 #define PCI_subsystem_vendor_id	0x2e		/* (2 bytes) subsystem (add-in card) vendor id */
 #define PCI_rom_base			0x30		/* (4 bytes) expansion rom base address */
-#define PCI_interrupt_line		0x3c		/* (1 byte) interrupt line */
-#define PCI_interrupt_pin		0x3d		/* (1 byte) interrupt pin */
 #define PCI_min_grant			0x3e		/* (1 byte) burst period @ 33 Mhz */
 #define PCI_max_latency			0x3f		/* (1 byte) how often PCI access needed */
+
+
+/* ---
+	offsets in PCI configuration space to the elements of header type 0x01 (PCI-to-PCI bridge)
+--- */
+
+#define PCI_primary_bus								0x18
+#define PCI_secondary_bus							0x19
+#define PCI_subordinate_bus							0x1A
+#define PCI_secondary_latency						0x1B	
+#define PCI_io_base									0x1C
+#define PCI_io_limit								0x1D
+#define PCI_secondary_status						0x1E
+#define PCI_memory_base								0x20
+#define PCI_memory_limit							0x22
+#define PCI_prefetchable_memory_base				0x24
+#define PCI_prefetchable_memory_limit				0x26
+#define PCI_prefetchable_memory_base_upper32		0x28
+#define PCI_prefetchable_memory_limit_upper32		0x2C
+#define PCI_io_base_upper16							0x30
+#define PCI_io_limit_upper16						0x32
+#define PCI_bridge_rom_base							0x38
+#define PCI_bridge_control							0x3E																		
+
 
 
 /* ---
@@ -361,7 +423,7 @@ extern long		get_nth_pci_info (
 #define PCI_status_66_MHz_capable			0x0020	/* 66 Mhz capable */
 #define PCI_status_udf_supported			0x0040	/* user-definable-features (udf) supported */
 #define PCI_status_fastback					0x0080	/* fast back-to-back capable */
-#define PCI_status_parity_signalled			0x0100	/* parity error signalled */
+#define PCI_status_parity_signalled		0x0100	/* parity error signalled */
 #define PCI_status_devsel					0x0600	/* devsel timing (see below) */
 #define PCI_status_target_abort_signalled	0x0800	/* signaled a target abort */
 #define PCI_status_target_abort_received	0x1000	/* received a target abort */
@@ -385,6 +447,15 @@ extern long		get_nth_pci_info (
 
 #define PCI_header_type_mask	0x7F		/* header type field */
 #define PCI_multifunction		0x80		/* multifunction device flag */
+
+
+/* ---
+	defines for header type register
+--- */
+
+#define PCI_header_type_generic				0x00		
+#define PCI_header_type_PCI_to_PCI_bridge		0x01		
+
 
 
 /* ---

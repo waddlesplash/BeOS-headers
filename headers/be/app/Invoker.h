@@ -1,23 +1,25 @@
-//******************************************************************************
-//
-//	File:		BInvoker.h
-//
-//	Description:	a class for objects that post messages
-//
-//	Copyright 1993-97, Be Incorporated
-//
-//******************************************************************************
- 
+/******************************************************************************
+/
+/	File:			Invoker.h
+/
+/	Description:	BInvoker class defines a protocol for objects that
+/					post messages to a "target".
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
 
-#ifndef	_INVOKER_H
+#ifndef _INVOKER_H
 #define	_INVOKER_H
 
-#include <Message.h>
+#include <BeBuild.h>
 #include <Messenger.h>
+#include <Message.h>
 #include <Handler.h>
 #include <Looper.h>
 
-//------------------------------------------------------------------------------
+/*-----------------------------------------------------------------*/
+/*----- BInvoker class --------------------------------------------*/
 
 class BInvoker {
 public:
@@ -43,6 +45,7 @@ virtual status_t	SetHandlerForReply(BHandler *handler);
 
 virtual	status_t	Invoke(BMessage *msg = NULL);
 
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 virtual	void		_ReservedInvoker1();
@@ -58,6 +61,7 @@ virtual	void		_ReservedInvoker3();
 		uint32		_reserved[4];
 };
 
-//------------------------------------------------------------------------------
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-#endif
+#endif /* _INVOKER_H */

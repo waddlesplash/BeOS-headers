@@ -1,16 +1,20 @@
 #ifndef _SYS_TIME_H
 #define _SYS_TIME_H
 
+#include <time.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
+
 struct timeval {
 	long tv_sec;
 	long tv_usec;
 };
 
-/*
- * If you depend on timezones, you are in trouble because we don't
- * support them!  Everything is currently in local time and there is
- * no concept of GMT.
- */
 struct timezone {
 	int tz_minuteswest;
 	int tz_dsttime;
@@ -20,7 +24,7 @@ struct timezone {
 extern "C" {
 #endif
 
-int gettimeofday(struct timeval *tv, struct timezone *tz);
+_IMPEXP_ROOT int gettimeofday(struct timeval *tv, struct timezone *tz);
 
 #define timerclear(tvp)	((tvp)->tv_sec = (tvp)->tv_usec = 0)
 #define timerisset(tvp) ((tvp)->tv_sec || (tvp)->tv_usec)

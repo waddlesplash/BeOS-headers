@@ -1,25 +1,29 @@
-/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
-
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /*
  *	ctype.h
  *	
- *		Copyright © 1995-1996 Metrowerks, Inc.
+ *		Copyright © 1995-1997 Metrowerks, Inc.
  *		All rights reserved.
  */
  
 #ifndef __cctype__
 #define __cctype__
 
-
 #include <ansi_parms.h>
+#include <stdio.h>        /* mm 970918*/
+
+/* #pragma options align=native */
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import on
+#endif
 
 __namespace(__stdc_space(ctype))
 
 __extern_c
 
-extern unsigned char	__ctype_map[];
-extern unsigned char	__lower_map[];
-extern unsigned char	__upper_map[];
+extern _IMPEXP_ROOT unsigned char	__ctype_map[]; /* Be-mani 980107 */
+extern _IMPEXP_ROOT unsigned char	__lower_map[]; /* Be-mani 980107 */
+extern _IMPEXP_ROOT unsigned char	__upper_map[]; /* Be-mani 980107 */
 
 __end_extern_c
 
@@ -54,24 +58,27 @@ inline int ispunct(int c)		{ return __ctype_map[__zero_fill(c)] & __punctuation 
 inline int isspace(int c)		{ return __ctype_map[__zero_fill(c)] & __whitespace  ; }
 inline int isupper(int c)		{ return __ctype_map[__zero_fill(c)] & __upper_case  ; }
 inline int isxdigit(int c)	{ return __ctype_map[__zero_fill(c)] & __hex_digit   ; }
-inline int tolower(int c)		{ return __lower_map[__zero_fill(c)]; }
-inline int toupper(int c)		{ return __upper_map[__zero_fill(c)]; }
-
+/* begin mm 970918*/
+inline int tolower(int c)		{ return ((c == EOF) ? EOF:((int)  __lower_map[__zero_fill(c)])); }
+inline int toupper(int c)		{ return ((c == EOF) ? EOF:((int)  __upper_map[__zero_fill(c)])); }
+/* end mm 970918*/
 #else
 
-int isalnum (int);
-int isalpha (int);
-int iscntrl (int);
-int isdigit (int);
-int isgraph (int);
-int islower (int);
-int isprint (int);
-int ispunct (int);
-int isspace (int);
-int isupper (int);
-int isxdigit(int);
-int tolower (int);
-int toupper (int);
+/* begin Be-mani 980107 */
+_IMPEXP_ROOT int isalnum (int);
+_IMPEXP_ROOT int isalpha (int);
+_IMPEXP_ROOT int iscntrl (int);
+_IMPEXP_ROOT int isdigit (int);
+_IMPEXP_ROOT int isgraph (int);
+_IMPEXP_ROOT int islower (int);
+_IMPEXP_ROOT int isprint (int);
+_IMPEXP_ROOT int ispunct (int);
+_IMPEXP_ROOT int isspace (int);
+_IMPEXP_ROOT int isupper (int);
+_IMPEXP_ROOT int isxdigit(int);
+_IMPEXP_ROOT int tolower (int);
+_IMPEXP_ROOT int toupper (int);
+/* end Be-mani 980107 */
 
 #define isalnum(c)	((int) (__ctype_map[__zero_fill(c)] & __alphanumeric))
 #define isalpha(c)	((int) (__ctype_map[__zero_fill(c)] & __letter      ))
@@ -84,8 +91,6 @@ int toupper (int);
 #define isspace(c)	((int) (__ctype_map[__zero_fill(c)] & __whitespace  ))
 #define isupper(c)	((int) (__ctype_map[__zero_fill(c)] & __upper_case  ))
 #define isxdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __hex_digit   ))
-#define tolower(c)	((int)  __lower_map[__zero_fill(c)])
-#define toupper(c)	((int)  __upper_map[__zero_fill(c)])
 
 #endif
 
@@ -93,8 +98,15 @@ __end_namespace(__stdc_space(ctype))
 
 __import_stdc_into_std_space(ctype)
 
-#pragma options align=reset
+#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
+	#pragma import reset
+#endif
+/* #pragma options align=reset */
 
 #endif /* __cctype__ */
 /*     Change record
-*/
+ * 961221 bkoz line 21-23 added extern keyword (mmoss)
+ * mm 970918  Change to ensure that toupper(EOF) and tolower(EOF) == EOF
+ * mm 970925  Deleted defines for toupper and tolower and inserted them into ctype.c
+ * Be-mani 980107	Be merge. Shared library stuff, etc.
+ */

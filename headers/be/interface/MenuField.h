@@ -1,15 +1,23 @@
-/*
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
+/*******************************************************************************
+/
+/	File:			MenuField.h
+/
+/   Description:    BMenuField displays a labeled pop-up menu.
+/
+/	Copyright 1994-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 
 #ifndef _MENU_FIELD_H
 #define _MENU_FIELD_H
 
+#include <BeBuild.h>
 #include <Menu.h>
 #include <MenuBar.h>
+
+/*----------------------------------------------------------------*/
+/*----- BmenuField class -----------------------------------------*/
 
 class BMenuField : public BView
 {
@@ -18,11 +26,11 @@ public:
 									const char *name,
 									const char *label,
 									BMenu *menu,
-									uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP,
+									uint32 resize = B_FOLLOW_LEFT|B_FOLLOW_TOP,
 									uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
 						BMenuField(BMessage *data);
 virtual					~BMenuField();
-static	BMenuField		*Instantiate(BMessage *data);
+static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Draw(BRect update);
@@ -61,7 +69,8 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
-virtual status_t		Perform(uint32 d, void *arg);
+/*----- Private or reserved -----------------------------------------*/
+virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 friend class _BMCMenuBar_;
@@ -92,4 +101,7 @@ static	long			MenuTask(void *arg);
 		uint32			_reserved[3];
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _MENU_FIELD_H */

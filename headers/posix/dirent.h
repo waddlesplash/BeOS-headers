@@ -2,6 +2,13 @@
 #define _DIRENT_H_
 
 #include <sys/types.h>
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 typedef struct dirent {
 	dev_t			d_dev;
@@ -34,10 +41,10 @@ typedef struct {
 extern "C" {
 #endif
 
-extern DIR			 *opendir(const char *dirname);
-extern struct dirent *readdir(DIR *dirp);
-extern int			  closedir(DIR *dirp);
-extern void			  rewinddir(DIR *dirp);
+extern _IMPEXP_ROOT DIR			 	*opendir(const char *dirname);
+extern _IMPEXP_ROOT struct dirent	*readdir(DIR *dirp);
+extern _IMPEXP_ROOT int				closedir(DIR *dirp);
+extern _IMPEXP_ROOT void			rewinddir(DIR *dirp);
 
 
 #ifdef	__cplusplus

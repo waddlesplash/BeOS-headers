@@ -10,6 +10,7 @@
 #ifndef _FIND_DIRECTORY_H
 #define _FIND_DIRECTORY_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
 #ifdef __cplusplus
@@ -93,7 +94,7 @@ typedef enum {
 	the C interface
 --- */
 
-extern status_t find_directory (
+extern _IMPEXP_ROOT status_t find_directory (
 	directory_which	which,				/* what directory to return path for */
 	dev_t			device,				/* device w/volume, for vol-specific directories */
 	bool			create_it,			/* create directory if need be */
@@ -114,7 +115,7 @@ class BPath;
 	C++ interface
 --- */
 
-extern status_t find_directory (
+extern _IMPEXP_BE	status_t find_directory (
 	directory_which	which,
 	BPath			*path,
 	bool			and_create_it = false,

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -293,14 +294,14 @@ public:
         while ( i != head)
         {
            link_type j = (link_type)i->next;
-           destroy(i);                    // €€€ added JDJ
+           destroy(i);                    // ¥¥¥Êadded JDJ  
            list_node_allocator.deallocate (i); i=j;
         }
         list_node_allocator.deallocate (head); 
         while(cache)
         {
            i = (link_type)cache->next;
-           destroy(cache);                    // €€€ added JDJ
+           //destroy(cache);                    // ¥¥¥Êadded JDJ // mm 970916
            list_node_allocator.deallocate (cache); cache=i;
         }
         REMOVE(lst_mutex);
@@ -505,6 +506,7 @@ public:
         iterator ret = link_type((*position.node).next);
         (*position.node).next = cache;
         cache = (link_type)position.node;
+        destroy(cache); // Added JCV for cache destroy() leak  // mm 970916
         --length;
         return ret;
     }
@@ -618,7 +620,6 @@ operator< (const list<T, Allocator>& x, const list<T, Allocator>& y)
 }
  
 template <class T, class Allocator>
-inline
 void list<T, Allocator>::remove (const T& value)
 {
     WRITE_LOCK(lst_mutex);
@@ -630,7 +631,6 @@ void list<T, Allocator>::remove (const T& value)
 }
  
 template <class T, class Allocator>
-inline
 void list<T, Allocator>::unique ()
 {
     iterator first = begin();
@@ -651,7 +651,6 @@ void list<T, Allocator>::unique ()
 }
  
 template <class T, class Allocator>
-inline
 void list<T, Allocator>::merge (list<T, Allocator>& x)
 {
     if (&x == this || x.empty()) return;
@@ -683,7 +682,6 @@ void list<T, Allocator>::merge (list<T, Allocator>& x)
 }
  
 template <class T, class Allocator>
-inline
 void list<T, Allocator>::reverse ()
 {
     if (size () < 2) return;
@@ -701,7 +699,6 @@ void list<T, Allocator>::reverse ()
 }   
  
 template <class T, class Allocator> 
-inline
 void list<T, Allocator>::sort ()
 {
     if (size () < 2) return;
@@ -727,7 +724,6 @@ void list<T, Allocator>::sort ()
 #ifdef MSIPL_MEMBER_TEMPLATE
 template <class T, class Allocator>
 template <class Predicate>
-inline
 void list<T, Allocator>::remove_if (Predicate pred)
 {
     WRITE_LOCK(lst_mutex);
@@ -740,7 +736,6 @@ void list<T, Allocator>::remove_if (Predicate pred)
  
 template <class T, class Allocator>
 template <class BinaryPredicate>
-inline
 void list<T, Allocator>::unique (BinaryPredicate binary_pred)
 {
     WRITE_LOCK(lst_mutex);
@@ -757,7 +752,6 @@ void list<T, Allocator>::unique (BinaryPredicate binary_pred)
  
 template <class T, class Allocator>
 template <class Compare>
-inline
 void list<T, Allocator>::merge (list<T, Allocator>& x, Compare comp)
 {
     if (&x != this) {
@@ -781,7 +775,6 @@ void list<T, Allocator>::merge (list<T, Allocator>& x, Compare comp)
  
 template <class T, class Allocator>
 template <class Compare>
-inline
 void list<T, Allocator>::sort (Compare comp)
 {
     if (size () < 2) return;
@@ -806,6 +799,11 @@ void list<T, Allocator>::sort (Compare comp)
  
 #endif /* MSIPL_MEMBER_TEMPLATE */
 
+#ifdef __MSL_NO_INSTANTIATE__
+	template __dont_instantiate class list<int, allocator<int> >;
+	template __dont_instantiate class list<char, allocator<char> >;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #else  
@@ -819,9 +817,12 @@ void list<T, Allocator>::sort (Compare comp)
 
 #endif
 
-//961206 received from atul
-//961206 bkoz line 99, 192 change iterator to global_iterator
-//961210 bkoz added alignment wrapper
-//961216 ah changed memory to mmemory
-//961218 bkoz lines 782-792, 706-719  changed fill to sfill
-//970216 bkoz lines 293,300 added cleanup code to ~list() via Jesse Jones
+/* Change record
+ * 961206 received from atul
+ * 961206 bkoz line 99, 192 change iterator to global_iterator
+ * 961210 bkoz added alignment wrapper
+ * 961216 ah changed memory to mmemory
+ * 961218 bkoz lines 782-792, 706-719  changed fill to sfill
+ * 970216 bkoz lines 293,300 added cleanup code to ~list() via Jesse Jones  MW00478
+ * 970916 mm further corrections to ~list and erase via Justin Vallon
+ */

@@ -9,9 +9,13 @@
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H
 
+#include <BeBuild.h>
 #include <OS.h>
 #include <image.h>
 #include <SupportDefs.h>
+#if __INTEL__
+#include <signal.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,10 +25,10 @@ extern "C" {
 	kernel calls
 ----- */
 
-extern status_t	install_default_debugger (port_id to_debugger_port);
-extern port_id	install_team_debugger (team_id team, port_id to_debugger_port);
-extern status_t	remove_team_debugger (team_id team);
-extern status_t	debug_thread (thread_id thread);
+extern _IMPEXP_ROOT status_t	install_default_debugger (port_id to_debugger_port);
+extern _IMPEXP_ROOT port_id		install_team_debugger (team_id team, port_id to_debugger_port);
+extern _IMPEXP_ROOT status_t	remove_team_debugger (team_id team);
+extern _IMPEXP_ROOT status_t	debug_thread (thread_id thread);
 
 
 /* -----
@@ -38,6 +42,7 @@ extern status_t	debug_thread (thread_id thread);
 	ids for why a thread is invoking the debugger
 ----- */
 
+#if __POWERPC__
 typedef enum {
 	B_THREAD_NOT_RUNNING,
 	B_DEBUGGER_CALL,
@@ -49,7 +54,42 @@ typedef enum {
 	B_ALIGNMENT_EXCEPTION,
 	B_PROGRAM_EXCEPTION
 } db_why_stopped;
+#endif
 
+#if __INTEL__
+typedef enum {
+		B_THREAD_NOT_RUNNING,
+		B_DEBUGGER_CALL,
+		B_BREAKPOINT_HIT,
+		B_SNGLSTP,
+		B_NMI,
+		B_MACHINE_CHECK_EXCEPTION,
+		B_SEGMENT_VIOLATION,
+		B_ALIGNMENT_EXCEPTION,
+		B_DIVIDE_ERROR,
+		B_OVERFLOW_EXCEPTION,
+		B_BOUNDS_CHECK_EXCEPTION,
+		B_INVALID_OPCODE_EXCEPTION,
+		B_SEGMENT_NOT_PRESENT,
+		B_STACK_FAULT,
+		B_GENERAL_PROTECTION_FAULT,
+		B_FLOATING_POINT_EXCEPTION,
+} db_why_stopped;
+#endif
+
+#if __SH__
+typedef enum {
+		B_THREAD_NOT_RUNNING,
+		B_DEBUGGER_CALL,
+		B_BREAKPOINT_HIT,
+		B_NMI,
+		B_MACHINE_CHECK_EXCEPTION,
+		B_DATA_ACCESS_EXCEPTION,
+		B_INSTRUCTION_ACCESS_EXCEPTION,
+		B_ALIGNMENT_EXCEPTION,
+		B_PROGRAM_EXCEPTION
+} db_why_stopped;
+#endif
 
 /* -----
 	cpu state.  It is arranged to be useable by the kernel, hence all the
@@ -57,6 +97,7 @@ typedef enum {
 	are only saved when neccessary.
 ----- */
 
+#if __POWERPC__
 typedef struct {
 	int32	filler1;
 	int32	fpscr;
@@ -135,7 +176,55 @@ typedef struct {
 	double	f30;
 	double	f31;
 } cpu_state;
+#endif
+
 	
+#if __INTEL__
+
+/*
+ * all the 486 registers including the segment registers and the 
+ * general registers.
+ */
+
+typedef struct {
+	fp_state fpu;
+	ulong	gs;
+	ulong	fs;
+	ulong	es;
+	ulong	ds;
+	ulong	edi;
+	ulong	esi;
+	ulong	ebp;
+	ulong	esp_res;
+	ulong	ebx;
+	ulong	edx;
+	ulong	ecx;
+	ulong	eax;
+	ulong	trap_no;		/* trap or int number */
+	ulong	error_code;		/* trap error code */
+	ulong	eip;			/* user eip */
+	ulong	cs;				/* user cs */
+	ulong	eflags;			/* user elfags */
+	ulong	uesp;			/* user esp */
+	ulong	ss;				/* user ss */
+} cpu_state;
+#endif
+
+#if __SH__
+
+/*
+ * all the SH registers including the segment registers and the 
+ * general registers.
+ */
+
+typedef struct {
+	ulong	cs;				/* user cs */
+	ulong	eflags;			/* user elfags */
+	ulong	uesp;			/* user esp */
+	ulong	ss;				/* user ss */
+} cpu_state;
+#endif
+
 /* -----
 	messages from debug server to the nub running in a target
 	thread's address space.
@@ -270,16 +359,28 @@ typedef union {
 
 /* -----
 	messages passed to the external debugger
+
+	*** DANGER WILL ROBINSON!! *** Don't change the ordering/numbering
+	of these messages. Doing so will break 3rd party debuggers (i.e.,
+	MWDebug) between releases.
 ----- */
 
 enum debugger_message {
-	B_THREAD_STOPPED = 0,	/* thread stopped, here is its state */
-	B_TEAM_CREATED,			/* team was created */
-	B_TEAM_DELETED,			/* team was deleted */
-	B_PEF_IMAGE_CREATED,	/* pef image was created */
-	B_PEF_IMAGE_DELETED,	/* pef image was deleted */
-	B_THREAD_CREATED,		/* thread was created */
-	B_THREAD_DELETED		/* thread was deleted */
+	B_THREAD_STOPPED 	= 0,	/* thread stopped, here is its state */
+	B_TEAM_CREATED		= 1,	/* team was created */
+	B_TEAM_DELETED		= 2,	/* team was deleted */
+#if __POWERPC__
+	B_PEF_IMAGE_CREATED	= 3,	/* pef image was created */
+	B_PEF_IMAGE_DELETED	= 4,	/* pef image was deleted */
+#elif __INTEL__
+	B_PE_IMAGE_CREATED	= 3,	/* pe image was created */
+	B_PE_IMAGE_DELETED	= 4,	/* pe image was deleted */
+#elif __SH__
+	B_ELF_IMAGE_CREATED	= 3,	/* elf image was created */
+	B_ELF_IMAGE_DELETED	= 4,	/* elf image was deleted */
+#endif
+	B_THREAD_CREATED	= 5,	/* thread was created */
+	B_THREAD_DELETED	= 6		/* thread was deleted */
 };
 
 /* ----------

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -45,13 +46,10 @@ protected:
     Container c;
 
 public:
-	#ifdef MSIPL_TFN_DEFARG
-    explicit stack (const Allocator& alloc = Allocator()):c(alloc) {};
-	#else //mwerks, vc++
-	stack(const Allocator& alloc):c(alloc) {};
-	#endif
+
+	explicit stack (const Allocator& alloc = Allocator()):c(alloc) {};
 	
-    allocator_type      get_allocator() const { return c.get_allocator (); };
+    allocator_type      get_allocator() const { return c.get_allocator(); }; //970402 bkoz
 
     bool                empty ()   const { return c.empty (); }
     size_type           size ()    const { return c.size ();  }
@@ -94,3 +92,5 @@ operator< (const stack<T, Container, Allocator>& x,
 
 //961121 bkoz took out default argument
 //961210 bkoz added alignment wrapper
+//970402 line 52 added default argument to stack::stack(allocator)
+//970402 line 52 stack::get_allocator() added parens

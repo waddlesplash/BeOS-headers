@@ -1,14 +1,23 @@
-/*
- * IpDevice.h
- * Copyright (c) 1997 Be, Inc.	All Rights Reserved 
- *
- */
+/******************************************************************************
+/
+/	File:			IpDevice.h
+/
+/	Description:	Pure virtual BIpDevice and BIpHandler classes define the
+/					IP packet translation protocol for network add-ons.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+/******************************************************************************/
+
 #ifndef _IP_DEVICE_H
 #define _IP_DEVICE_H
 
+#include <BeBuild.h>
 #include <NetProtocol.h>
 
 class BIpHandler;
+
+/*----------- BIpDevice Class -------------------------------------*/
 
 class BIpDevice {
 public:
@@ -22,6 +31,8 @@ public:
 	virtual ~BIpDevice(void);
 };
 
+/*----------- BIpHandler Class -------------------------------------*/
+
 class BIpHandler {
 public:
 	virtual void PacketReceived(BNetPacket *buf, BIpDevice *dev) = 0;
@@ -30,6 +41,7 @@ public:
 	virtual uint32 NetMask(void) = 0;
 };
 
+/*-------------------------------------------------------------*/
 
 #endif /* _IP_DEVICE_H */
 

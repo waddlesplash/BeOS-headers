@@ -1,21 +1,22 @@
-//******************************************************************************
-//
-//	File:		Polygon.h
-//
-//	Description:	Client polygon class.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
-
+/*******************************************************************************
+/
+/	File:			Polygon.h
+/
+/   Description:    BPolygon represents a n-sided area.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_POLYGON_H
 #define	_POLYGON_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Rect.h>
 
-//------------------------------------------------------------------------------
+/*----------------------------------------------------------------*/
+/*----- BPolygon class -------------------------------------------*/
 
 class BPolygon {
 
@@ -33,8 +34,7 @@ virtual				~BPolygon();
 		void		MapTo(BRect srcRect, BRect dstRect);
 		void		PrintToStream() const;
 
-//------------------------------------------------------------------------------
-
+/*----- Private or reserved -----------------------------------------*/
 private:
 
 friend class BView;
@@ -48,4 +48,7 @@ friend class BView;
 		BPoint	*fPts;
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _POLYGON_H */

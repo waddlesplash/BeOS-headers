@@ -12,6 +12,7 @@
 #ifndef _OS_H
 #define _OS_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <StorageDefs.h>
 
@@ -45,6 +46,7 @@ typedef int32	team_id;
 #define B_LAZY_LOCK			1	
 #define B_FULL_LOCK			2	
 #define B_CONTIGUOUS		3	
+#define	B_LOMEM				4
 
 #define B_ANY_ADDRESS				0	
 #define B_EXACT_ADDRESS				1	
@@ -69,23 +71,25 @@ typedef struct area_info {
 	void		*address;
 } area_info;
 
-extern area_id	create_area(const char *name, void **start_addr,
-							uint32 addr_spec, size_t size, 
-							uint32 lock, uint32 protection);
+extern _IMPEXP_ROOT area_id		create_area(const char *name, void **start_addr,
+										uint32 addr_spec, size_t size, 
+										uint32 lock, uint32 protection);
 
-extern area_id	clone_area(const char *name, void **dest_addr, 
-						   uint32 addr_spec, uint32 protection, 
-						   area_id source);
+extern _IMPEXP_ROOT area_id		clone_area(const char *name, void **dest_addr, 
+						   				uint32 addr_spec, uint32 protection, 
+						   				area_id source);
 
-extern area_id	find_area(const char *name);
-extern area_id	area_for(void *addr);
-extern status_t	delete_area(area_id id);
-extern status_t	resize_area(area_id id, size_t new_size);
-extern status_t	set_area_protection(area_id id, uint32 new_protection);
+extern _IMPEXP_ROOT area_id		find_area(const char *name);
+extern _IMPEXP_ROOT area_id		area_for(void *addr);
+extern _IMPEXP_ROOT status_t	delete_area(area_id id);
+extern _IMPEXP_ROOT status_t	resize_area(area_id id, size_t new_size);
+extern _IMPEXP_ROOT status_t	set_area_protection(area_id id,
+										uint32 new_protection);
 
-extern status_t	_get_area_info(area_id id, area_info *ainfo, size_t size);
-extern status_t	_get_next_area_info(team_id team, int32 *cookie, 
-									area_info *ainfo, size_t size);
+extern _IMPEXP_ROOT status_t	_get_area_info(area_id id, area_info *ainfo,
+										size_t size);
+extern _IMPEXP_ROOT status_t	_get_next_area_info(team_id team, int32 *cookie, 
+										area_info *ainfo, size_t size);
 
 #define get_area_info(id, ainfo)  \
             _get_area_info((id), (ainfo),sizeof(*(ainfo)))
@@ -106,35 +110,36 @@ typedef struct port_info {
 	int32		total_count; /* total # msgs read so far */
 } port_info;
 
-extern port_id	create_port(int32 capacity, const char *name);
-extern port_id	find_port(const char *name);
+extern _IMPEXP_ROOT port_id	create_port(int32 capacity, const char *name);
+extern _IMPEXP_ROOT port_id	find_port(const char *name);
 
-extern status_t	write_port(port_id port, int32 code, 
-						   const void *buf, 
-						   size_t buf_size);
+extern _IMPEXP_ROOT status_t	write_port(port_id port, int32 code, 
+						   					const void *buf, 
+						   					size_t buf_size);
 
-extern status_t	read_port(port_id port, int32 *code, 
-						  void *buf, size_t buf_size);
+extern _IMPEXP_ROOT status_t	read_port(port_id port, int32 *code, 
+						  					void *buf, size_t buf_size);
 
-extern status_t	write_port_etc(port_id port, int32 code, 
-							   const void *buf, size_t buf_size,
-							   uint32 flags, bigtime_t timeout);
+extern _IMPEXP_ROOT status_t	write_port_etc(port_id port, int32 code, 
+							   				const void *buf, size_t buf_size,
+							   				uint32 flags, bigtime_t timeout);
 
-extern status_t	read_port_etc(port_id port, int32 *code, 
-							  void *buf, size_t buf_size,
-                              uint32 flags, bigtime_t timeout);
+extern _IMPEXP_ROOT status_t	read_port_etc(port_id port, int32 *code, 
+							  				void *buf, size_t buf_size,
+        				                    uint32 flags, bigtime_t timeout);
 
-extern ssize_t	port_buffer_size(port_id port);
-extern ssize_t	port_buffer_size_etc(port_id port, 
-									 uint32 flags, bigtime_t timeout);
+extern _IMPEXP_ROOT ssize_t	port_buffer_size(port_id port);
+extern _IMPEXP_ROOT ssize_t	port_buffer_size_etc(port_id port, 
+									 		uint32 flags, bigtime_t timeout);
 
-extern ssize_t	port_count(port_id port);
-extern status_t	set_port_owner(port_id port, team_id team);
+extern _IMPEXP_ROOT ssize_t	port_count(port_id port);
+extern _IMPEXP_ROOT status_t	set_port_owner(port_id port, team_id team);
 
-extern status_t	delete_port(port_id port);
+extern _IMPEXP_ROOT status_t	delete_port(port_id port);
 
-extern status_t	_get_port_info(port_id port, port_info *info, size_t size);
-extern status_t	_get_next_port_info(team_id team, int32 *cookie, port_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_port_info(port_id port, port_info *info,
+											size_t size);
+extern _IMPEXP_ROOT status_t	_get_next_port_info(team_id team, int32 *cookie, port_info *info, size_t size);
 
 #define get_port_info(port, info)    \
              _get_port_info((port), (info), sizeof(*(info)))
@@ -154,19 +159,22 @@ typedef struct sem_info {
 	thread_id 	latest_holder;
 } sem_info;
 
-extern sem_id	create_sem(int32 count, const char *name);
-extern status_t	delete_sem(sem_id sem);
-extern status_t	acquire_sem(sem_id sem);
-extern status_t	acquire_sem_etc(sem_id sem, int32 count, 
-								uint32 flags, bigtime_t microsecond_timeout);
-extern status_t	release_sem(sem_id sem);
-extern status_t	release_sem_etc(sem_id sem, int32 count, uint32 flags);
-extern status_t	get_sem_count(sem_id sem, int32 *count);  /* be careful! */
+extern _IMPEXP_ROOT sem_id		create_sem(int32 count, const char *name);
+extern _IMPEXP_ROOT status_t	delete_sem(sem_id sem);
+extern _IMPEXP_ROOT status_t	acquire_sem(sem_id sem);
+extern _IMPEXP_ROOT status_t	acquire_sem_etc(sem_id sem, int32 count, 
+									uint32 flags, bigtime_t microsecond_timeout);
+extern _IMPEXP_ROOT status_t	release_sem(sem_id sem);
+extern _IMPEXP_ROOT status_t	release_sem_etc(sem_id sem, int32 count,
+									uint32 flags);
+extern _IMPEXP_ROOT status_t	get_sem_count(sem_id sem, int32 *count);  /* be careful! */
 
-extern status_t	set_sem_owner(sem_id sem, team_id team);
+extern _IMPEXP_ROOT status_t	set_sem_owner(sem_id sem, team_id team);
 
-extern status_t	_get_sem_info(sem_id sem, sem_info *info, size_t size);
-extern status_t	_get_next_sem_info(team_id team, int32 *cookie, sem_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_sem_info(sem_id sem, sem_info *info,
+									size_t size);
+extern _IMPEXP_ROOT status_t	_get_next_sem_info(team_id team, int32 *cookie,
+									sem_info *info, size_t size);
 
 #define get_sem_info(sem, info)                \
             _get_sem_info((sem), (info), sizeof(*(info)))
@@ -227,25 +235,25 @@ typedef int32 (*thread_func) (void *);
  */
 #define thread_entry thread_func
 
-extern thread_id spawn_thread (
+extern _IMPEXP_ROOT thread_id spawn_thread (
 	thread_func		function_name, 
 	const char 		*thread_name, 
 	int32			priority, 
 	void			*arg
 );
 				 
-extern thread_id	find_thread(const char *name); 
-extern status_t		kill_thread(thread_id thread);
-extern status_t		resume_thread(thread_id thread);
-extern status_t		suspend_thread(thread_id thread);
-extern status_t		rename_thread(thread_id thread, const char *new_name);
-extern status_t		set_thread_priority (thread_id thread, int32 new_priority);
-extern void         exit_thread(status_t status);
-extern status_t		wait_for_thread (thread_id thread, 
-									 status_t *thread_return_value);
+extern _IMPEXP_ROOT thread_id	find_thread(const char *name); 
+extern _IMPEXP_ROOT status_t	kill_thread(thread_id thread);
+extern _IMPEXP_ROOT status_t	resume_thread(thread_id thread);
+extern _IMPEXP_ROOT status_t	suspend_thread(thread_id thread);
+extern _IMPEXP_ROOT status_t	rename_thread(thread_id thread, const char *new_name);
+extern _IMPEXP_ROOT status_t	set_thread_priority (thread_id thread, int32 new_priority);
+extern _IMPEXP_ROOT void		exit_thread(status_t status);
+extern _IMPEXP_ROOT status_t	wait_for_thread (thread_id thread, 
+										status_t *thread_return_value);
 
-extern status_t		_get_thread_info(thread_id thread, thread_info *info, size_t size);
-extern status_t		_get_next_thread_info(team_id tmid, int32 *cookie, thread_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_thread_info(thread_id thread, thread_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_next_thread_info(team_id tmid, int32 *cookie, thread_info *info, size_t size);
 
 #define get_thread_info(thread, info)              \
             _get_thread_info((thread), (info), sizeof(*(info)))
@@ -254,18 +262,31 @@ extern status_t		_get_next_thread_info(team_id tmid, int32 *cookie, thread_info 
 	        _get_next_thread_info((tmid), (cookie), (info), sizeof(*(info)))
 
 
-extern status_t		snooze(bigtime_t microseconds);
+extern _IMPEXP_ROOT status_t	send_data(thread_id thread, 
+									  int32 code, 
+									  const void *buf, 
+									  size_t buffer_size);
 
-extern status_t send_data(thread_id thread, 
-						  int32 code, 
-						  const void *buf, 
-						  size_t buffer_size);
+extern _IMPEXP_ROOT status_t	receive_data(thread_id *sender, 
+									 void *buf, 
+									 size_t buffer_size);
 
-extern status_t receive_data(thread_id *sender, 
-							 void *buf, 
-							 size_t buffer_size);
+extern _IMPEXP_ROOT bool		has_data(thread_id thread);
 
-extern bool has_data(thread_id thread);
+
+extern _IMPEXP_ROOT status_t	snooze(bigtime_t microseconds);
+
+/*
+  Right now you can only snooze_until() on a single time base, the
+  system time base given by system_time().  The "time" argument is
+  the time (in the future) relative to the current system_time() that
+  you want to snooze until.  Eventually there will be multiple time
+  bases (and a way to find out which ones exist) but for now just pass
+  the value B_SYSTEM_TIMEBASE.
+*/  
+extern _IMPEXP_ROOT status_t	snooze_until(bigtime_t time, int timebase);
+#define B_SYSTEM_TIMEBASE  (0)
+
 
 /*--------------------------------------------------------------------------*/
 
@@ -287,10 +308,10 @@ typedef struct {
 	gid_t        	gid;
 } team_info;
 	
-extern status_t		kill_team(team_id team);  /* see also: send_signal() */
+extern _IMPEXP_ROOT status_t	kill_team(team_id team);  /* see also: send_signal() */
 
-extern status_t		_get_team_info(team_id team, team_info *info, size_t size);
-extern status_t		_get_next_team_info(int32 *cookie, team_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_team_info(team_id team, team_info *info, size_t size);
+extern _IMPEXP_ROOT status_t	_get_next_team_info(int32 *cookie, team_info *info, size_t size);
 
 #define get_team_info(team, info)          \
              _get_team_info((team), (info), sizeof(*(info)))
@@ -302,7 +323,17 @@ extern status_t		_get_next_team_info(int32 *cookie, team_info *info, size_t size
 
 /* System information */
 
+#if __INTEL__
 #define		B_MAX_CPU_COUNT		8
+#endif
+
+#if __POWERPC__
+#define		B_MAX_CPU_COUNT		8
+#endif
+
+#if __SH__
+#define		B_MAX_CPU_COUNT		1
+#endif
 
 typedef enum {
 	B_CPU_PPC_601	= 1,
@@ -310,6 +341,7 @@ typedef enum {
 	B_CPU_PPC_603e	= 3,
 	B_CPU_PPC_604	= 4,
 	B_CPU_PPC_604e	= 5,
+	B_CPU_PPC_750   = 6,
 	B_CPU_PPC_686	= 13,
 	B_CPU_AMD_29K,
 	B_CPU_X86,
@@ -321,7 +353,34 @@ typedef enum {
 	B_CPU_M68K,
 	B_CPU_ARM,
 	B_CPU_SH,
-	B_CPU_SPARC
+	B_CPU_SPARC,
+
+	B_CPU_INTEL_X86 = 0x1000,
+	B_CPU_INTEL_PENTIUM = 0x1051,
+	B_CPU_INTEL_PENTIUM75,
+	B_CPU_INTEL_PENTIUM_486_OVERDRIVE,
+	B_CPU_INTEL_PENTIUM_MMX,
+	B_CPU_INTEL_PENTIUM75_486_OVERDRIVE,
+	B_CPU_INTEL_PENTIUM_PRO = 0x1061,
+	B_CPU_INTEL_PENTIUM_II = 0x1063,
+	B_CPU_INTEL_PENTIUM_II_MODEL_3 = 0x1063,
+	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,
+
+	B_CPU_AMD_X86 = 0x1100,
+	B_CPU_AMD_K5_MODEL0 = 0x1150,
+	B_CPU_AMD_K5_MODEL1,
+	B_CPU_AMD_K5_MODEL2,
+	B_CPU_AMD_K5_MODEL3,
+
+	B_CPU_AMD_K6_MODEL6 = 0x1156,
+	B_CPU_AMD_K6_MODEL7,
+	B_CPU_AMD_K6_MODEL8,
+	B_CPU_AMD_K6_MODEL9,
+
+	B_CPU_CYRIX_X86 = 0x1200,
+	B_CPU_CYRIX_GXm = 0x1254,
+	B_CPU_CYRIX_6x86MX = 0x1260
+
 } cpu_type;
 
 typedef enum {
@@ -335,7 +394,9 @@ typedef enum {
 	B_TI_994A_PLATFORM,
 	B_TIMEX_SINCLAIR_PLATFORM,
 	B_ORAC_1_PLATFORM,
-	B_HAL_PLATFORM
+	B_HAL_PLATFORM,
+	B_BESM_6_PLATFORM,
+	B_MK_61_PLATFORM
 } platform_type;
 
 
@@ -378,11 +439,11 @@ typedef struct {
 	int32         pad[4];   	               	/* just in case... */
 } system_info;
 
-extern status_t _get_system_info (system_info *returned_info, size_t size);
+extern _IMPEXP_ROOT status_t _get_system_info (system_info *returned_info, size_t size);
 #define get_system_info(info)  _get_system_info((info), sizeof(*(info)))
 
-extern int32 is_computer_on(void);
-extern double is_computer_on_fire(void);
+extern _IMPEXP_ROOT int32	is_computer_on(void);
+extern _IMPEXP_ROOT double	is_computer_on_fire(void);
 
 /* ----------
    Time functions
@@ -393,24 +454,27 @@ extern double is_computer_on_fire(void);
 	convert these to the local time.
 ----- */
 
-uint32		real_time_clock (void);
-void		set_real_time_clock (int32 secs_since_jan1_1970);
-bigtime_t	real_time_clock_usecs (void);
-status_t	set_timezone(char *str);
+extern _IMPEXP_ROOT uint32		real_time_clock (void);
+extern _IMPEXP_ROOT void		set_real_time_clock (int32 secs_since_jan1_1970);
+extern _IMPEXP_ROOT bigtime_t	real_time_clock_usecs (void);
+extern _IMPEXP_ROOT status_t	set_timezone(char *str);
 
-typedef struct {
-	uint32		time;
-	bool		is_gmt;
-	int32		tz_minuteswest;
-	int32		tz_dsttime;
-} rtc_info;
-
-bigtime_t	system_time (void);         /* time since booting in microseconds */
+extern _IMPEXP_ROOT bigtime_t	system_time (void);     /* time since booting in microseconds */
 
 
 /* debugging calls. */
 
-extern void	debugger (const char *message);
+extern _IMPEXP_ROOT void	 	debugger (const char *message);
+
+/*
+   calling this function with a non-zero value will cause your thread
+   to receive signals for any exceptional conditions that occur (i.e.
+   you'll get SIGSEGV for data access exceptions, SIGFPE for floating
+   point errors, SIGILL for illegal instructions, etc).
+
+   to re-enable the default debugger pass a zero.
+*/   
+extern _IMPEXP_ROOT const int   disable_debugger(int state);
 
 #ifdef __cplusplus
 }

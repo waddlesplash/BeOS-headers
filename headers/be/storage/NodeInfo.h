@@ -11,6 +11,9 @@
 #ifndef _NODE_INFO_H
 #define _NODE_INFO_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <SupportDefs.h>
 #include <Mime.h>
 #include <Message.h>

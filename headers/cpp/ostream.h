@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -137,20 +138,16 @@ public:
     ostream_type& 
     operator<< (unsigned int n);
 
-    inline                                              
     ostream_type& 
     operator<< (long n);
 
-    inline                                               
     ostream_type& 
     operator<< (unsigned long n);
 
 #ifdef __MSL_LONGLONG_SUPPORT__                          /*mm 970110*/
-    inline                                               /*mm 970110*/
     ostream_type&                                        /*mm 970110*/
     operator<< (long long n);                            /*mm 970110*/
 
-    inline                                               /*mm 970110*/
     ostream_type&                                        /*mm 970110*/
     operator<< (unsigned long long n);                   /*mm 970110*/
 
@@ -187,6 +184,7 @@ public:
     ostream_type&
     seekp (pos_type);
 
+    inline
     ostream_type&
     seekp (off_type, ios_base::seekdir);
 
@@ -217,13 +215,16 @@ template <class charT, class traits>
 inline
 basic_ostream<charT, traits>::basic_ostream (ios_base::fmt_flags fmt_arg)
 : basic_ios<charT, traits> (fmt_arg) { }
- 
+
+//#pragma dont_inline on 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>::~basic_ostream ()
 {
     REMOVE(_mutex);
-}//961113 bkoz move inline to get around compiler error. . 
+}
+//#pragma dont_inline reset 
+
+//961113 bkoz move inline to get around compiler error. . 
 /*
 template <class charT, class traits>
 inline
@@ -256,7 +257,6 @@ sentry::~sentry ()
 }
 */
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::flush ()
 {
@@ -304,7 +304,6 @@ basic_ostream<charT, traits>::operator<< (ios_base& (*pf) (ios_base&))
 
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (long n)
 {
@@ -339,7 +338,6 @@ basic_ostream<charT, traits>::operator<< (long n)
 
 #ifdef __MSL_LONGLONG_SUPPORT__                   /*mm 970110*/
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (long long n)
 {
@@ -372,7 +370,6 @@ basic_ostream<charT, traits>::operator<< (long long n)
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                      /*mm 970110*/
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (unsigned long n)
 {
@@ -405,7 +402,6 @@ basic_ostream<charT, traits>::operator<< (unsigned long n)
 
 #ifdef __MSL_LONGLONG_SUPPORT__                   /*mm 970110*/
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (unsigned long long n)
 {
@@ -438,7 +434,6 @@ basic_ostream<charT, traits>::operator<< (unsigned long long n)
 #endif   /* __MSL_LONGLONG_SUPPORT__*/                      /*mm 970110*/
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (double f)
 {
@@ -470,7 +465,6 @@ basic_ostream<charT, traits>::operator<< (double f)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (long double f)
 {
@@ -547,7 +541,6 @@ basic_ostream<charT, traits>::operator<< (float f)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::put (char_type c)
 {
@@ -578,7 +571,6 @@ basic_ostream<charT, traits>::put (char_type c)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::write (const char_type* s, streamsize n)
 {
@@ -608,7 +600,6 @@ basic_ostream<charT, traits>::write (const char_type* s, streamsize n)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (streambuf_type*  sb)
 {
@@ -668,7 +659,6 @@ basic_ostream<charT, traits>::operator<< (streambuf_type*  sb)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (const char_type* s)
 {
@@ -721,7 +711,6 @@ basic_ostream<charT, traits>::operator<< (const char_type* s)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (char_type c)
 {
@@ -757,7 +746,6 @@ basic_ostream<charT, traits>::operator<< (char_type c)
 
 #ifdef MSIPL_BOOL_BUILTIN
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (bool n)
 {
@@ -791,7 +779,6 @@ basic_ostream<charT, traits>::operator<< (bool n)
 #endif
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::operator<< (void* b)
 {
@@ -825,7 +812,6 @@ basic_ostream<charT, traits>::operator<< (void* b)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 endl (basic_ostream<charT, traits>&  os)
 {
@@ -835,7 +821,6 @@ endl (basic_ostream<charT, traits>&  os)
 }
  
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 ends (basic_ostream<charT, traits>&  os)
 {
@@ -846,7 +831,6 @@ ends (basic_ostream<charT, traits>&  os)
 }
  
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 flush (basic_ostream<charT, traits>&  os)
 {
@@ -855,7 +839,6 @@ flush (basic_ostream<charT, traits>&  os)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>::pos_type
 basic_ostream<charT, traits>::tellp ()
 {
@@ -867,7 +850,6 @@ basic_ostream<charT, traits>::tellp ()
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::seekp (pos_type pos)
 {
@@ -879,7 +861,6 @@ basic_ostream<charT, traits>::seekp (pos_type pos)
 }
 
 template <class charT, class traits>
-inline
 basic_ostream<charT, traits>&
 basic_ostream<charT, traits>::seekp (off_type off, ios_base::seekdir dir)
 {
@@ -897,6 +878,15 @@ typedef basic_ostream<char, char_traits <char> >         ostream;
 typedef basic_ostream<wchar_t, char_traits <wchar_t> >   wostream;
 #endif
 
+#ifdef __MSL_NO_INSTANTIATE__
+	//these are instantiated in inst1.cpp, in the library, for char types
+	template __dont_instantiate class basic_ostream<char, char_traits<char> >;
+	template __dont_instantiate class num_put<char, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class time_put<char, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class money_put<char, true, ostreambuf_iterator<char, char_traits<char> > >;
+	template __dont_instantiate class money_put<char, false, ostreambuf_iterator<char, char_traits<char> > >;
+#endif
+
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
 #endif /*MSIPL_USING_NAMESPACE*/
@@ -912,6 +902,5 @@ typedef basic_ostream<wchar_t, char_traits <wchar_t> >   wostream;
 //961113 bkoz moved sentry::~sentry line 217 to line 80....
 //961210 bkoz added alignment wrapper
 //mm 970110   long long support
+//970404 bkoz added dontinstantiate support
 */
-/* Be-mani 960829	Add a call to flush to basic_ostream destructor. */
-/* Be-mani 970829	Remove call to flush because we deadlock otherwise. */

@@ -1,6 +1,6 @@
 /* ++++++++++
 	FILE:	be_string.h
-	REVS:	$Revision: 1.1 $
+	REVS:	$Revision: 1.2 $
 	NAME:	pierre
 	DATE:	Mon Dec 16 10:41:32 PST 1996
 	Copyright (c) 1996 by Be Incorporated.  All Rights Reserved.
@@ -15,11 +15,15 @@
 extern "C" {
 #endif
 
+#if __POWERPC__
+
 void * memcpy_c2nc(void * dst, const void * src, size_t len);
 void * memcpy_nc2c(void * dst, const void * src, size_t len);
 void * memcpy_nc2nc(void * dst, const void * src, size_t len);
 void * memmove_nc(void * dst, const void * src, size_t len);
 void * memset_nc(void * dst, int val, size_t len);
+
+#endif
 	
 #ifdef __cplusplus
 }

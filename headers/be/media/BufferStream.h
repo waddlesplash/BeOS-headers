@@ -8,6 +8,9 @@
 #ifndef _BUFFER_STREAM_H
 #define _BUFFER_STREAM_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <stdlib.h>
 #include <OS.h>
 #include <SupportDefs.h>
@@ -47,7 +50,7 @@ typedef struct _sbuf_info {
   char				*fAddress;
   int32				fSize;     /* usable portion can be smaller than ... */
   int32				fAreaSize; /* ... the size of the area. */
-  bool				fIsFinal;	/* TRUE => stream is stopping */
+  bool				fIsFinal;	/* true => stream is stopping */
 } *buffer_id;
 
 
@@ -238,10 +241,10 @@ virtual	void		_ReservedBufferStream4();
 /* initialize the free list of subscribers */
 		void			InitSubscribers();
 
-/* return TRUE if subID appears valid */
+/* return true if subID appears valid */
 		bool			IsSubscribedSafe(subscriber_id subID) const;
 
-/* return TRUE if subID is entered into the stream */
+/* return true if subID is entered into the stream */
 		bool			IsEnteredSafe(subscriber_id subID) const;
 
 /* initialize the free list of buffer IDs */

@@ -1,21 +1,23 @@
 /*******************************************************************************
-//
-//	File:		TextView.h
-//
-//	Description:	Client text editor class.
-//
-//	Copyright 1997, Be Incorporated
-//
-//*****************************************************************************/
-
+/
+/	File:			TextView.h
+/
+/   Description:    BTextView displays and manages styled text.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef _TEXTVIEW_H
 #define _TEXTVIEW_H
 
+#include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <SupportDefs.h>
 #include <View.h>
 
+/*----------------------------------------------------------------*/
+/*----- BTextView structures and definitions ---------------------*/
 
 struct text_run {
 	int32			offset;		// byte offset of first character of run
@@ -28,6 +30,24 @@ struct text_run_array {
 	text_run		runs[1];	// array of count number of runs
 };
 
+enum undo_state {
+	B_UNDO_UNAVAILABLE,
+	B_UNDO_TYPING,
+	B_UNDO_CUT,
+	B_UNDO_PASTE,
+	B_UNDO_CLEAR,
+	B_UNDO_DROP
+};
+
+
+#if _PR2_COMPATIBLE_
+extern "C" void _ReservedTextView2__9BTextViewFv(BTextView	*object, 
+												 BMessage	*drag, 
+												 BBitmap	**bitmap, 
+												 BPoint		*point, 
+												 BHandler	**handler);
+#endif
+
 
 class BBitmap;
 class BClipboard;
@@ -37,9 +57,13 @@ class _BTextGapBuffer_;
 class _BLineBuffer_;
 class _BStyleBuffer_;
 class _BWidthBuffer_;
+class _BUndoBuffer_;
+
+
+/*----------------------------------------------------------------*/
+/*----- BTextView class ------------------------------------------*/
 
 class BTextView : public BView {
-
 public:
 						BTextView(BRect			frame,
 								  const char	*name,
@@ -56,7 +80,7 @@ public:
 						BTextView(BMessage *data);
 virtual					~BTextView();
 	
-static	BTextView*		Instantiate(BMessage *data);
+static	BArchivable*	Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			AttachedToWindow();
@@ -71,44 +95,44 @@ virtual	void			WindowActivated(bool state);
 virtual	void			KeyDown(const char *bytes, int32 numBytes);
 virtual	void			Pulse();
 virtual	void			FrameResized(float width, float height);
-virtual	void			MakeFocus(bool focusState = TRUE);
+virtual	void			MakeFocus(bool focusState = true);
 virtual	void			MessageReceived(BMessage *message);
-virtual BHandler*		ResolveSpecifier(BMessage	*message,
-										 int32		index,
-										 BMessage	*specifier,
-										 int32		form,
-										 const char	*property);
+virtual BHandler*		ResolveSpecifier(BMessage *message,
+										 int32 index,
+										 BMessage *specifier,
+										 int32 form,
+										 const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
-virtual status_t		Perform(uint32 d, void *arg);
+virtual status_t		Perform(perform_code d, void *arg);
 	
-		void			SetText(const char				*inText, 
-								const text_run_array	*inRuns = NULL);
-		void			SetText(const char				*inText, 
-								int32					inLength,
-								const text_run_array	*inRuns = NULL);
-		void			SetText(BFile					*inFile,
-								int32					startOffset,
-								int32					inLength,
-								const text_run_array	*inRuns = NULL);
+		void			SetText(const char *inText, 
+								const text_run_array *inRuns = NULL);
+		void			SetText(const char *inText, 
+								int32 inLength,
+								const text_run_array *inRuns = NULL);
+		void			SetText(BFile *inFile,
+								int32 startOffset,
+								int32 inLength,
+								const text_run_array *inRuns = NULL);
 
-		void			Insert(const char				*inText, 
-							   const text_run_array		*inRuns = NULL);
-		void			Insert(const char				*inText, 
-							   int32					inLength,
-							   const text_run_array		*inRuns = NULL);
-		void			Insert(int32					startOffset,
-							   const char				*inText,
-							   int32					inLength,
-							   const text_run_array		*inRuns = NULL);
+		void			Insert(const char *inText, 
+							   const text_run_array *inRuns = NULL);
+		void			Insert(const char *inText, 
+							   int32 inLength,
+							   const text_run_array *inRuns = NULL);
+		void			Insert(int32 startOffset,
+							   const char *inText,
+							   int32 inLength,
+							   const text_run_array *inRuns = NULL);
 
 		void			Delete();
 		void			Delete(int32 startOffset, int32 endOffset);
 	
 		const char*		Text() const;
 		int32			TextLength() const;
-		void			GetText(int32	offset, 
-								int32	length,
-								char	*buffer) const;
+		void			GetText(int32 offset, 
+								int32 length,
+								char *buffer) const;
 		uchar			ByteAt(int32 offset) const;
 	
 		int32			CountLines() const;
@@ -118,6 +142,7 @@ virtual status_t		Perform(uint32 d, void *arg);
 virtual	void			Cut(BClipboard *clipboard);
 virtual	void			Copy(BClipboard *clipboard);
 virtual	void			Paste(BClipboard *clipboard);
+		void			Clear();
 
 virtual	bool			AcceptsPaste(BClipboard *clipboard);
 virtual	bool			AcceptsDrop(const BMessage *inMessage);
@@ -181,9 +206,9 @@ virtual	void			ScrollToOffset(int32 inOffset);
 		bool			IsStylable() const;
 		void			SetTabWidth(float width);
 		float			TabWidth() const;
-		void			MakeSelectable(bool selectable = TRUE);
+		void			MakeSelectable(bool selectable = true);
 		bool			IsSelectable() const;
-		void			MakeEditable(bool editable = TRUE);
+		void			MakeEditable(bool editable = true);
 		bool			IsEditable() const;
 		void			SetWordWrap(bool wrap);
 		bool			DoesWordWrap() const;
@@ -199,6 +224,8 @@ virtual	void			ScrollToOffset(int32 inOffset);
 		color_space		ColorSpace() const;
 		void			MakeResizable(bool resize, BView *resizeView = NULL);
 		bool			IsResizable() const;
+		void			SetDoesUndo(bool undo);
+		bool			DoesUndo() const;		
 
 static	void*			FlattenRunArray(const text_run_array *inArray, 
 										int32				 *outSize = NULL);
@@ -206,18 +233,34 @@ static	text_run_array*	UnflattenRunArray(const void	*data,
 										  int32			*outSize = NULL);
 	
 protected:
-
 virtual	void			InsertText(const char				*inText, 
 								   int32					inLength, 
 								   int32					inOffset,
 								   const text_run_array		*inRuns);
 virtual	void			DeleteText(int32 fromOffset, int32 toOffset);
 
-private:
-friend status_t _init_interface_kit_();
+public:
+virtual	void			Undo(BClipboard *clipboard);
+		undo_state		UndoState(bool *isRedo) const;
 
-virtual void			_ReservedTextView1();
-virtual void			_ReservedTextView2();
+protected:
+virtual	void			GetDragParameters(BMessage	*drag, 
+										  BBitmap	**bitmap,
+										  BPoint	*point,
+										  BHandler	**handler);
+ 
+/*----- Private or reserved -----------------------------------------*/
+private:
+friend status_t	_init_interface_kit_();
+
+#if _PR2_COMPATIBLE_
+friend void		_ReservedTextView2__9BTextViewFv(BTextView	*object, 
+												 BMessage	*drag, 
+												 BBitmap	**bitmap, 
+												 BPoint		*point, 
+												 BHandler	**handler);
+#endif
+
 virtual void			_ReservedTextView3();
 virtual void			_ReservedTextView4();
 virtual void			_ReservedTextView5();
@@ -254,7 +297,7 @@ virtual void			_ReservedTextView8();
 		void			DrawLines(int32	startLine, 
 								  int32	endLine, 
 							  	  int32	startOffset = -1, 
-								  bool	erase = FALSE);
+								  bool	erase = false);
 		void			DrawCaret(int32 offset);
 		void			InvertCaret();
 		void			DragCaret(int32 offset);
@@ -290,6 +333,10 @@ virtual void			_ReservedTextView8();
 									int32		form, 
 									const char	*property,
 									BMessage	*reply);
+		bool			CountProperties(BMessage	*specifier,
+										int32		form,
+										const char	*property,
+										BMessage	*reply);
 
 static	void			LockWidthBuffer();
 static	void			UnlockWidthBuffer();	
@@ -322,21 +369,15 @@ static	void			UnlockWidthBuffer();
 		bool					fResizable;
 		BView*					fContainerView;
 		float					fLastWidth;
-		uint32					_reserved[8];
+		_BUndoBuffer_*			fUndo;
+		uint32					_reserved[7];	/* was 8 */
 
 static	_BWidthBuffer_*			sWidths;
 static	sem_id					sWidthSem;
 static	int32					sWidthAtom;
 };	
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-
-
-
-
-
-
-
-
-
+#endif /* _TEXT_VIEW_H */

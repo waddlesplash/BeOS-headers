@@ -11,6 +11,9 @@
 #ifndef RESOURCES_H
 #define RESOURCES_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <SupportDefs.h>
 #include <File.h>
 
@@ -22,10 +25,10 @@ class	RTDF;
 class	BResources {
 public:
 					BResources();
-					BResources(const BFile *file, bool truncate = FALSE);
+					BResources(const BFile *file, bool truncate = false);
 virtual				~BResources();
 
-		status_t	SetTo(const BFile *file, bool truncate = FALSE);
+		status_t	SetTo(const BFile *file, bool truncate = false);
 
 const	BFile &		File() const;
 

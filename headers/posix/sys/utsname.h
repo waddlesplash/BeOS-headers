@@ -2,6 +2,13 @@
 #ifndef _SYS_UTSNAME_H_
 #define _SYS_UTSNAME_H_
 
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_NET
+#define	_IMPEXP_NET
+#endif
+#endif
 
 struct utsname {
 	char sysname[32];
@@ -15,7 +22,7 @@ struct utsname {
 extern "C" {
 #endif
 
-int uname(struct utsname *name);
+_IMPEXP_NET int uname(struct utsname *name);
 
 #ifdef __cplusplus
 }

@@ -1,22 +1,24 @@
-//******************************************************************************
-//
-//	File:		Autolock.h
-//
-//	Description:	stack based auto locking/unlocking class
-//
-//	Copyright 1996-97, Be Incorporated
-//
-//******************************************************************************
-
+/******************************************************************************
+/
+/	File:			Autolock.h
+/
+/	Description:	BAutolock is a stack-based locking mechanism.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef	_AUTOLOCK_H
 #define	_AUTOLOCK_H
 
+#include <BeBuild.h>
 #include <Locker.h>
 #include <Looper.h>
 
-class BAutolock {
+/*-----------------------------------------------------------------*/
+/*----- BAutolock class --------------------------------------------*/
 
+class BAutolock {
 public:
 					BAutolock(BLocker *lock);
 					BAutolock(BLocker &lock);
@@ -25,11 +27,15 @@ public:
 		
 		bool		IsLocked();
 
+/*----- Private or reserved ---------------*/
 private:
 		BLocker		*fLock;
-		BLooper	*fLooper;
+		BLooper		*fLooper;
 		bool		fLocked;
 };
+
+/*-------------------------------------------------------------*/
+/*----- inline implementations --------------------------------*/
 
 inline BAutolock::BAutolock(BLooper *looper)
 {
@@ -67,4 +73,7 @@ inline bool BAutolock::IsLocked()
 	return fLocked;
 }
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _AUTOLOCK_H */

@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -158,8 +159,9 @@ inline int mutex::remove () const
 
 #elif defined(__BEOS__) // MW-h+ 960731
 	mutex *self = const_cast<mutex *>(this);
-	self->_lock = -1;
-    return (B_NO_ERROR);
+//	self->_lock = -1; /* DON'T DO THIS */
+ 	self->_lock = 0;
+   return (B_NO_ERROR);
 #endif
 }
 
@@ -314,14 +316,14 @@ public:
     inline TYPE operator-- ()
     {
         mutex_block<MUTEX>   _mutex (_lock);
-        return  --_count;
+        return  --_count;		
     }
 
     inline TYPE operator-- (int)
     {
         mutex_block<MUTEX>   _mutex (_lock);
-        return  _count--;
-    }
+        return  _count--;		
+   }
 
     // Decrement _count by i.
     inline TYPE operator-= (const TYPE i)
@@ -427,7 +429,9 @@ public:
 };
 
 
-#if 0
+
+#if 0			/* jcm 11/14/97 uncommented to try and get it to compile */
+
 
 inline rw_mutex::rw_mutex ()
 {
@@ -521,7 +525,7 @@ inline bool rw_mutex::try_wrlock ()
 
 }
 
-#endif /* 0 */
+#endif /* 0 */			/* jcm 11/14/97 uncommented in order to try to get it to compile */
 
 //
 // Recursive Mutex

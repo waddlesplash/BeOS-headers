@@ -1,17 +1,20 @@
-/***************************************************************************
-//
-//	File:			TypeConstants.h
-//
-//	Description:	List of type constants for use in BMessage, etc.
-//
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-//
-//*************************************************************************/
+/******************************************************************************
+/
+/	File:			TypeConstants.h
+/
+/	Description:	Constants that represent distinct data types, as used
+/					by BMessage et. al.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _TYPE_CONSTANTS_H
 #define _TYPE_CONSTANTS_H
 
-/* Data types */
+/*-------------------------------------------------------------*/
+/*----- Data Types --------------------------------------------*/
+
 enum {
 	B_ANY_TYPE 					= 'ANYT',
 	B_ASCII_TYPE 				= 'TEXT',
@@ -31,7 +34,6 @@ enum {
 	B_MONOCHROME_1_BIT_TYPE 	= 'MNOB',
 	B_OBJECT_TYPE 				= 'OPTR',
 	B_OFF_T_TYPE 				= 'OFFT',
-	B_PATH_TYPE					= 'PATH',
 	B_PATTERN_TYPE 				= 'PATN',
 	B_POINTER_TYPE 				= 'PNTR',
 	B_POINT_TYPE 				= 'BPNT',
@@ -50,4 +52,14 @@ enum {
 	B_UINT8_TYPE 				= 'UBYT'
 };
 
-#endif
+/*-------------------------------------------------------------*/
+/*----- Obsolete; do not use-----------------------------------*/
+
+enum {
+	_DEPRECATED_TYPE_1_			= 'PATH'
+};
+
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _TYPE_CONSTANTS_H */

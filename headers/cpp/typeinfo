@@ -1,9 +1,9 @@
-/*  Metrowerks Standard Library  Version 2.1  1996 December 29  */
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 
 /*
  *	typeinfo
  *	
- *		Copyright © 1996 Metrowerks, Inc.
+ *		Copyright © 1996-1997 Metrowerks, Inc.
  *		All rights reserved.
  */
  
@@ -12,7 +12,6 @@
 
 #include <mcompile.h>
 #include <exception> 	//960828 bkoz so that __priv_throwbadcast defined in runtime
-//#include <mexcept.h>
 
 #pragma options align=native
 #if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
@@ -32,7 +31,7 @@ class type_info
 	public:
 		// 960905 KO: This line creates a virtual table which throws off thecompiler generated
 		// RTTI code on x86.
-		#if	__dest_os != __win32_os
+		#if	(__dest_os != __win32_os) && !((__dest_os == __be_os) && defined(__INTEL__))	// Be-mani 980107
 			virtual 	~type_info	() {};
 		#endif
 		bool	operator==	(const type_info&)	const;
@@ -75,4 +74,5 @@ __end_namespace(std)
 //961221 bkoz	line 23 added moto pragme (mmoss)
 //961229 bkoz removed bool_type and substituted bool
 //970211 bkoz added defs for bad_cast ctors, bad_typeid dtor
+//980107 Be-mani	Don't mess up the vtable on BeOS/Intel either.
 */

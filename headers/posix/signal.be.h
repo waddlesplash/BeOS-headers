@@ -88,33 +88,42 @@ struct sigaction {
 #define SA_NOCLDSTOP  1  /* for sa_flags */
 
 
-#include <sys/types.h>  /* for pid_t */
+#include <sys/types.h>  	/* for pid_t */
+#if __BEOS__
+#include <BeBuild.h>
+#else
+#ifndef _IMPEXP_ROOT
+#define	_IMPEXP_ROOT
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
-int sigemptyset(sigset_t *set);
-int sigfillset(sigset_t *set);
-int sigaddset(sigset_t *set, int signo);
-int sigdelset(sigset_t *set, int signo);
-int sigismember(const sigset_t *set, int signo);
-int sigprocmask(int how, const sigset_t *set, sigset_t *oset);
+_IMPEXP_ROOT int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
+_IMPEXP_ROOT int sigemptyset(sigset_t *set);
+_IMPEXP_ROOT int sigfillset(sigset_t *set);
+_IMPEXP_ROOT int sigaddset(sigset_t *set, int signo);
+_IMPEXP_ROOT int sigdelset(sigset_t *set, int signo);
+_IMPEXP_ROOT int sigismember(const sigset_t *set, int signo);
+_IMPEXP_ROOT int sigprocmask(int how, const sigset_t *set, sigset_t *oset);
 
 #define SIG_BLOCK    1   /* defines for the how arg of sigprocmask() */
 #define SIG_UNBLOCK  2
 #define SIG_SETMASK  3
 
-int sigpending(sigset_t *set);
-int sigsuspend(const sigset_t *mask);
+_IMPEXP_ROOT int sigpending(sigset_t *set);
+_IMPEXP_ROOT int sigsuspend(const sigset_t *mask);
 
-int kill(pid_t pid, int sig);
-int send_signal(pid_t tid, uint sig);
-
+_IMPEXP_ROOT int kill(pid_t pid, int sig);
+_IMPEXP_ROOT int send_signal(pid_t tid, uint sig);
 
 /* signal handlers get this as the last argument */
-typedef struct vregs
+typedef struct vregs vregs;
+
+#if __POWERPC__
+struct vregs
 {
 	ulong pc,                                         /* program counter */
 	      r0,                                         /* scratch */
@@ -129,11 +138,51 @@ typedef struct vregs
 	ulong filler1,                                    /* place holder */
 	      fpscr,                                      /* fp condition codes */
 	      ctr, xer, cr, msr, lr;                      /* misc. status */
-}vregs;
+};
+#endif
 
+#if __INTEL__
 
-extern const char * const sys_siglist[];
-extern const char *strsignal(int sig);
+typedef struct fp_state fp_state;
+
+struct fp_state {
+	unsigned short	fp_cw;
+	unsigned short	res1;
+	unsigned short	fp_status;
+	unsigned short	res2;
+	unsigned short	fp_tag;
+	unsigned short	res3;
+	unsigned long	fp_eip;
+	unsigned short	fp_cs;
+	unsigned short	fp_opcode;
+	unsigned long	fp_datap;
+	unsigned short	fp_ds;
+	unsigned short	res4;
+	unsigned char	fp1[10];
+	unsigned char	fp2[10];
+	unsigned char	fp3[10];
+	unsigned char	fp4[10];
+	unsigned char	fp5[10];
+	unsigned char	fp6[10];
+	unsigned char	fp7[10];
+	unsigned char	fp8[10];
+};
+
+struct vregs {
+	ulong	eip,
+			eflags,
+			eax,
+			ecx,
+			edx,
+			esp,
+			ebp;	
+	fp_state	fpu;
+};
+#endif
+
+extern _IMPEXP_ROOT const char * const sys_siglist[];
+extern _IMPEXP_ROOT const char *strsignal(int sig);
+extern _IMPEXP_ROOT const void  set_signal_stack(void *ptr, size_t size);
 
 #ifdef __cplusplus
 }

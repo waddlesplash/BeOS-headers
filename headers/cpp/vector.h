@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -86,152 +87,76 @@ public:
     //
     // 23.2.5.2  construct/copy/destroy:
     //
+    inline
     explicit
-    vector (const Allocator& alloc = Allocator()) 
-    : allocator_(alloc), start (0), finish (0), end_of_storage (0) {}
+    vector (const Allocator& alloc = Allocator()) ;
 
     explicit
-    vector (size_type n, const T& value = T (),
-            const Allocator& alloc = Allocator())
-    : allocator_(alloc)
-    {
-        start = allocator_.allocate (n);
-        uninitialized_fill_n (start, n, value);
-        finish = start + n;
-        end_of_storage = finish;
-    }
+    vector (size_type n, const T& value = T (), const Allocator& alloc = Allocator());
 
-    vector (const vector<T, Allocator>& x)
-    : allocator_(x.allocator_)
-    {
-        start = allocator_.allocate (x.end () - x.begin ());
-        finish = uninitialized_copy (x.begin (), x.end (), start);
-        end_of_storage = finish;
-    }
+    vector (const vector<T, Allocator>& x);
 
-#ifdef MSIPL_MEMBER_TEMPLATE
-    template<class InputIterator>
-    vector (InputIterator first, InputIterator last,
-            const Allocator& alloc = Allocator())
-    : allocator_(alloc)
-    {
-        size_type n = 0;
-        n = distance (first, last);
-        start = allocator_.allocate (n);
-        finish = uninitialized_copy (first, last, start);
-        end_of_storage = finish;
-    }
+    vector (const_iterator first, const_iterator last, const Allocator& alloc = Allocator());
+    
+    ~vector ();
 
-    template<class InputIterator>
-    void assign (InputIterator first, InputIterator last)
-    {
-       erase (begin (), end ());
-       insert (begin (), first, last);
-    }
+    inline
+    void assign (const_iterator first, const_iterator last);
+    
+    inline
+    void assign (size_type n, const T& t = T ());
 
-    template <class Size, class Type>
-#ifdef MSIPL_TFN_DEFARG
-    void assign (Size n, const Type& t = Type())
-#else
-    void assign (Size n, const Type& t)
-#endif
-    {
-       erase (begin (), end ());
-       insert (begin (), n, t);
-    }
-
-#else
-    vector (const_iterator first, const_iterator last,
-            const Allocator& alloc = Allocator())
-    : allocator_(alloc)
-    {
-        size_type n = 0;
-        n = distance (first, last);
-        start = allocator_.allocate (n);
-        finish = uninitialized_copy (first, last, start);
-        end_of_storage = finish;
-    }
-    void assign (const_iterator first, const_iterator last)
-    {
-       erase (begin (), end ());
-       insert (begin (), first, last);
-    }
-    void assign (size_type n, const T& t = T ())
-    {
-       erase (begin (), end ());
-       insert (begin (), n, t);
-    }
-#endif
-
-    allocator_type
-    get_allocator () const 
-    {
-        return allocator_;
-    }
-
-    ~vector ()
-    {
-        destroy (start, finish);
-        allocator_.deallocate (start);
-        REMOVE(_mutex);
-    }
-
-    vector<T, Allocator>& operator= (const vector<T, Allocator>& x);
+    inline
+    allocator_type 
+    get_allocator () const ;
+ 
+    vector<T, Allocator>& 
+    operator= (const vector<T, Allocator>& x);
 
     //
     // 23.2.5.3  iterators:
     //
-    iterator                 begin ()       
-      { READ_LOCK(_mutex); return start;  }
-    const_iterator           begin () const 
-      { READ_LOCK(_mutex); return start;  }
-    iterator                 end ()         
-      { READ_LOCK(_mutex); return finish; }
-    const_iterator           end ()   const 
-      {  READ_LOCK(_mutex); return finish; }
+    inline
+    iterator                 begin ()    { READ_LOCK(_mutex); return start;  }
+    
+    inline
+    const_iterator           begin () const  { READ_LOCK(_mutex); return start;  }
+    
+    inline
+    iterator                 end ()   { READ_LOCK(_mutex); return finish; }
+    
+    inline
+    const_iterator           end ()   const {  READ_LOCK(_mutex); return finish; }
 
-    reverse_iterator       rbegin () 
-      { return reverse_iterator (end ()); }
-    const_reverse_iterator rbegin () const
-      { return const_reverse_iterator (end ()); }
-    reverse_iterator       rend () 
-      { return reverse_iterator (begin ()); }
-    const_reverse_iterator rend () const 
-      { return const_reverse_iterator (begin ()); }
+    inline
+    reverse_iterator       rbegin ()  { return reverse_iterator (end ()); }
+    
+    inline
+    const_reverse_iterator rbegin () const { return const_reverse_iterator (end ()); }
+    
+    inline
+    reverse_iterator       rend ()  { return reverse_iterator (begin ()); }
+    
+    inline
+    const_reverse_iterator rend () const  { return const_reverse_iterator (begin ()); }
 
     //
     // 23.2.5.4  capacity:
     // 
-    size_type size ()     const { return size_type (end () - begin ());  }
-    size_type max_size () const { return allocator_.max_size (); }
+    size_type 
+    size ()     const { return size_type (end () - begin ());  }
+    
+    size_type 
+    max_size () const { return allocator_.max_size (); }
 
-    void resize (size_type sz, T v = T ())
-    {
-        if (sz > size ())
-           insert (end (), sz-size (), v);
-        else if (sz < size ())
-           erase (begin ()+sz, end ());
-    }
+    void resize (size_type sz, T v = T ());
 
     size_type capacity () const
     { READ_LOCK(_mutex); return size_type (end_of_storage - begin ()); }
 
     bool empty () const { return begin () == end (); }
 
-    void reserve (size_type n)
-    {
-        if (capacity () < n)
-        {
-            WRITE_LOCK(_mutex);
-            iterator tmp = allocator_.allocate (n);
-            uninitialized_copy (begin (), end (), tmp);
-            destroy (start, finish);
-            allocator_.deallocate (start);
-            finish = tmp + size ();
-            start = tmp;
-            end_of_storage = begin () + n;
-        }
-    }
+    void reserve (size_type n);
 
     //
     // 23.2.5.5 element access:
@@ -248,7 +173,7 @@ public:
 
     const_reference at (size_type n) const
     {
-        if ( n > size() )
+        if ( n >= (end() - begin()))      // mm 970729
         {
 #ifdef  MSIPL_EXCEPT
             throw   out_of_range ("Out of range exception occurred");
@@ -262,7 +187,7 @@ public:
 
     reference at (size_type n) 
     {
-        if ( n > size() )
+        if ( n >= (end() - begin()) )      // mm 970729
         {
 #ifdef  MSIPL_EXCEPT
             throw   out_of_range ("Out of range exception occurred");
@@ -283,91 +208,23 @@ public:
     //
     // 23.2.5.6 modifiers:
     //
-    void push_back (const T& x)
-    {
-        WRITE_LOCK(_mutex);
-        if (finish != end_of_storage)
-        {
-            construct (finish, x);
-                finish++;
-        } else
-            insert_aux (end (), x);
-    }
+    void push_back (const T& x);
 
-    void pop_back ()
-    {
-        WRITE_LOCK(_mutex);
-        --finish;
-        destroy (finish); 
-    }
+    inline
+    void pop_back ();
 
-    iterator insert (iterator position, const T& x = T ())
-    {
-        WRITE_LOCK(_mutex);
-        size_type n = position - begin ();
-        if (finish != end_of_storage && position == end ())
-        {
-            construct (finish, x);
-                finish++;
-        } else
-            insert_aux (position, x);
-        return begin () + n;
-    }
+    iterator insert (iterator position, const T& x = T ());
 
-#ifdef MSIPL_MEMBER_TEMPLATE
-    template <class InputIterator>
-    void insert (iterator position,
-                 InputIterator first, InputIterator last);
-#else
-    void insert (iterator position,
-                 const_iterator first, const_iterator last);
-#endif
-	// void insert (iterator position, size_type n, const T& x);
+    void insert (iterator position, const_iterator first, const_iterator last);
+
     void insert (iterator position, size_type n, const T& x = T());
 	
-    iterator erase (iterator position) 
-    {
-        WRITE_LOCK(_mutex);
-        difference_type len = 0;
-        iterator ret_iter = begin ();
-        while (ret_iter != position) { len++; ret_iter++; }
-        if (position + 1 != end ())
-            copy (position + 1, end (), position);
-        --finish;
-        destroy (finish);
-        ret_iter = begin ();
-        for (int i=0; i < len; ++i) ++ret_iter;
-        return ret_iter;
-    }
+    iterator erase (iterator position) ;
 
-    iterator erase (iterator first, iterator last)
-    {
-        WRITE_LOCK(_mutex);
-        iterator ret_iter = begin ();
-        difference_type len = 0;
-        while (ret_iter != last) { len++; ++ret_iter; }
-        vector<T, Allocator>::iterator i = copy (last, end (), first);
-        destroy (i, finish);
-        // work around for destroy (copy (last, end (), first), finish);
-        finish = finish - (last - first); 
-        ret_iter = begin ();
-        for (int k = 0; k < len-(last - first); ++k) ++ret_iter;
-        return ret_iter;
-    }
+    iterator erase (iterator first, iterator last);
 
-    void swap (vector<T, Allocator>& x)
-    {
-        WRITE_LOCK(_mutex);
-#ifdef MSIPL_USING_NAMESPACE
-        std::swap (start, x.start);
-        std::swap (finish, x.finish);
-        std::swap (end_of_storage, x.end_of_storage);
-#else
-        ::swap (start, x.start);
-        ::swap (finish, x.finish);
-        ::swap (end_of_storage, x.end_of_storage);
-#endif
-    }
+    inline
+    void swap (vector<T, Allocator>& x);
 
     void clear ()  { erase (begin (), end ()); }
 };
@@ -389,7 +246,187 @@ inline bool operator< (const vector<T, Allocator>& x,
 }
 
 template <class T, class Allocator>
-inline
+vector<T, Allocator>::vector (const Allocator& alloc) 
+: allocator_(alloc), start (0), finish (0), end_of_storage (0) {}
+
+//#pragma dont_inline on
+template <class T, class Allocator>
+vector<T, Allocator>::vector (size_type n, const T& value, const Allocator& alloc)
+: allocator_(alloc)
+{
+    start = allocator_.allocate (n);
+    uninitialized_fill_n (start, n, value);
+    finish = start + n;
+    end_of_storage = finish;
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::vector (const vector<T, Allocator>& x)
+: allocator_(x.allocator_)
+{
+    start = allocator_.allocate (x.end () - x.begin ());
+    finish = uninitialized_copy (x.begin (), x.end (), start);
+    end_of_storage = finish;
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::vector (const_iterator first, const_iterator last, const Allocator& alloc)
+: allocator_(alloc)
+{
+    size_type n = 0;
+    n = distance (first, last);
+    start = allocator_.allocate (n);
+    finish = uninitialized_copy (first, last, start);
+    end_of_storage = finish;
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::~vector ()
+{
+    destroy (start, finish);
+    allocator_.deallocate (start);
+    REMOVE(_mutex);
+}
+// mf 101597 #pragma dont_inline reset
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::assign (const_iterator first, const_iterator last)
+{
+   erase (begin (), end ());
+   insert (begin (), first, last);
+}
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::assign (size_type n, const T& t)
+{
+   erase (begin (), end ());
+   insert (begin (), n, t);
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::allocator_type
+vector<T, Allocator>::get_allocator () const 
+{
+    return allocator_;
+}
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::resize (size_type sz, T v)
+    {
+        if (sz > size ())
+           insert (end (), sz-size (), v);
+        else if (sz < size ())
+           erase (begin ()+sz, end ());
+    }
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::reserve (size_type n)
+{
+    if (capacity () < n)
+    {
+        WRITE_LOCK(_mutex);
+        iterator tmp = allocator_.allocate (n);
+        uninitialized_copy (begin (), end (), tmp);
+        destroy (start, finish);
+        allocator_.deallocate (start);
+        finish = tmp + size ();
+        start = tmp;
+        end_of_storage = begin () + n;
+    }
+}
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::push_back (const T& x)
+{
+    WRITE_LOCK(_mutex);
+    if (finish != end_of_storage)
+    {
+        construct (finish, x);
+            finish++;
+    } else
+        insert_aux (end (), x);
+}
+
+template <class T, class Allocator>
+void 
+vector<T, Allocator>::pop_back ()
+{
+    WRITE_LOCK(_mutex);
+    --finish;
+    destroy (finish); 
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::iterator 
+vector<T, Allocator>::insert (iterator position, const T& x)
+{
+    WRITE_LOCK(_mutex);
+    size_type n = position - begin ();
+    if (finish != end_of_storage && position == end ())
+    {
+        construct (finish, x);
+            finish++;
+    } else
+        insert_aux (position, x);
+    return begin () + n;
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::iterator 
+vector<T, Allocator>::erase (iterator position) 
+{
+    WRITE_LOCK(_mutex);
+    difference_type len = 0;
+    iterator ret_iter = begin ();
+    while (ret_iter != position) { len++; ret_iter++; }
+    if (position + 1 != end ())
+        copy (position + 1, end (), position);
+    --finish;
+    destroy (finish);
+    ret_iter = begin ();
+    for (int i=0; i < len; ++i) ++ret_iter;
+    return ret_iter;
+}
+
+template <class T, class Allocator>
+vector<T, Allocator>::iterator 
+vector<T, Allocator>::erase (iterator first, iterator last)
+{
+    WRITE_LOCK(_mutex);
+    iterator ret_iter = begin ();
+    difference_type len = 0;
+    while (ret_iter != last) { len++; ++ret_iter; }
+    vector<T, Allocator>::iterator i = copy (last, end (), first);
+    destroy (i, finish);
+    // work around for destroy (copy (last, end (), first), finish);
+    finish = finish - (last - first); 
+    ret_iter = begin ();
+    for (int k = 0; k < len-(last - first); ++k) ++ret_iter;
+    return ret_iter;
+}
+
+template <class T, class Allocator>
+void
+vector<T, Allocator>::swap (vector<T, Allocator>& x)
+{
+    WRITE_LOCK(_mutex);
+#ifdef MSIPL_USING_NAMESPACE
+    std::swap (start, x.start);
+    std::swap (finish, x.finish);
+    std::swap (end_of_storage, x.end_of_storage);
+#else
+    ::swap (start, x.start);
+    ::swap (finish, x.finish);
+    ::swap (end_of_storage, x.end_of_storage);
+#endif
+}
+
+template <class T, class Allocator>
 vector<T, Allocator>& 
 vector<T, Allocator>::operator= (const vector<T, Allocator>& x)
 {
@@ -417,19 +454,16 @@ vector<T, Allocator>::operator= (const vector<T, Allocator>& x)
 }
 
 template <class T, class Allocator>
-inline
 void vector<T, Allocator>::insert_aux (iterator position, const T& x)
 {
-    if (finish != end_of_storage)
-    {
+    if (finish != end_of_storage) {
         construct (finish, *(finish - 1));
         copy_backward (position, finish - 1, finish);
         *position = x;
         ++finish;
-    } else
-    {
-        size_type len = size () ? 2 * size () 
-                               : allocator_.init_page_size ();
+    } 
+    else {
+        size_type len = size () ? 2 * size () : allocator_.init_page_size ();
         iterator tmp = allocator_.allocate (len);
         uninitialized_copy (begin (), position, tmp);
         construct (tmp + (position - begin ()), x);
@@ -443,7 +477,6 @@ void vector<T, Allocator>::insert_aux (iterator position, const T& x)
 }
 
 template <class T, class Allocator>
-inline
 void vector<T, Allocator>::insert (iterator position, size_type n, const T& x)
 {
     if (n == 0) return;
@@ -477,12 +510,8 @@ void vector<T, Allocator>::insert (iterator position, size_type n, const T& x)
     }
 }
 
-#ifdef MSIPL_MEMBER_TEMPLATE
 template <class T, class Allocator>
-template <class InputIterator>
-inline
-void vector<T, Allocator>::insert (iterator position,
-                        InputIterator first, InputIterator last)
+void vector<T, Allocator>::insert (iterator position, const_iterator first, const_iterator last)
 {
     if (first == last) return;
     size_type n = 0;
@@ -502,45 +531,8 @@ void vector<T, Allocator>::insert (iterator position,
             uninitialized_copy (first + (end () - position), last, end ());
         }
         finish += n;
-    } else
-    {
-        size_type len = size () + max (size (), n);
-        iterator tmp = allocator_.allocate (len);
-        uninitialized_copy (begin (), position, tmp);
-        uninitialized_copy (first, last, tmp + (position - begin ()));
-        uninitialized_copy (position, end (), tmp + (position - begin () + n));
-        destroy (begin (), end ());
-        allocator_.deallocate (begin ());
-        end_of_storage = tmp + len;
-        finish = tmp + size () + n;
-        start = tmp;
-    }
-}
-#else
-template <class T, class Allocator>
-inline
-void vector<T, Allocator>::insert (iterator position, 
-                        const_iterator first, const_iterator last)
-{
-    if (first == last) return;
-    size_type n = 0;
-    n = distance (first, last);
-    WRITE_LOCK(_mutex);
-    if (end_of_storage - finish >= n)
-    {
-        if (end () - position > n)
-        {
-            uninitialized_copy (end () - n, end (), end ());
-            copy_backward (position, end () - n, end ());
-            copy (first, last, position);
-        } else
-        {
-            uninitialized_copy (position, end (), position + n);
-            copy (first, first + (end () - position), position);
-            uninitialized_copy (first + (end () - position), last, end ());
-        }
-        finish += n;
-    } else
+    } 
+    else
     {
         size_type len = size () + max (size (), n);
         iterator tmp = allocator_.allocate (len);
@@ -555,14 +547,14 @@ void vector<T, Allocator>::insert (iterator position,
     }
 }
 
-#endif /* MSIPL_MEMBER_TEMPLATE */
 
 //
 //  provide vector<bool> specialization only if "bool" is a
 //  builtin data type
 //
-#if 0 /* bkoz from Metrowerks says that this is buggy so I'm
-	   * commenting it out */
+
+//970406 bkoz this implementation doesn't work, use 2.2 or general template
+/*
 #ifdef MSIPL_BOOL_BUILTIN
 
 #define MSIPL_WORD_BIT (numeric_limits<unsigned int>::digits)
@@ -576,7 +568,7 @@ template vector<class Allocator = allocator<unsigned int> >
 template vector<class Allocator>
 #endif
 class vector<bool, Allocator> {
-#else   /* !MSIPL_PARTIAL_TEMPL */
+#else   
 null_template
 class vector<bool, DefAllocator<unsigned int> > {
 #endif
@@ -1396,14 +1388,21 @@ insert (iterator position, const_iterator first, const_iterator last)
     }
 }
 
-#endif /* MSIPL_MEMBER_TEMPLATE */
+#endif 
 
 #undef MSIPL_WORD_BIT
 
-#endif /* MSIPL_BOOL_BUILTIN */
-#endif /* 0 */
+#endif 
+*/
 
 #undef vector
+
+#ifdef __MSL_NO_INSTANTIATE__
+	template __dont_instantiate class vector<void*, allocator<void*> >;
+	template __dont_instantiate class vector<long, allocator<long> >;
+	template __dont_instantiate class vector<char, allocator<char> >;
+#endif
+
 
 #ifdef MSIPL_USING_NAMESPACE
 } /* namespace std */
@@ -1420,3 +1419,4 @@ insert (iterator position, const_iterator first, const_iterator last)
 //961210 bkoz added alignment wrapper
 //961216 ah changed memory to mmemory
 //961223 bkoz line 323 added default argument to vector::insert();
+// mm 970729   Corrected at function to throw out of range exception properly. [23.1.1] BW00200

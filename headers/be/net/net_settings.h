@@ -6,6 +6,8 @@
  */
 #ifndef _NET_SETTINGS_H
 #define _NET_SETTINGS_H
+
+#include <BeBuild.h>
 #include <SupportDefs.h>
 
 #if __cplusplus
@@ -40,9 +42,11 @@ typedef struct _net_settings {
 /*
  * For finding and setting network preferences
  */
+extern _IMPEXP_NET 
 char *find_net_setting(net_settings *ncw, 
 					   const char *heading, const char *name, char *value,
 					   unsigned nbytes);
+extern _IMPEXP_NET 
 status_t set_net_setting(net_settings *ncw, 
 						 const char *heading, const char *name, 
 						 const char *value);

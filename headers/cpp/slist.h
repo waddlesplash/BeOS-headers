@@ -1,3 +1,4 @@
+/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
 /**
  ** Lib++     : The Modena C++ Standard Library,
  **             Version 2.1, November 1996
@@ -58,7 +59,8 @@ protected:
 
     Allocator                           value_allocator;
 
-#ifdef MSIPL_MULTITHREAD
+// #ifdef MSIPL_MULTITHREAD								// MW-jcm 971114
+#if defined (MSIPL_MULTITHREAD) && !defined (__BEOS__)	// MW-jcm 971114
     static mutex_arith<bool, mutex>  separate_copying;
 #else
     static bool                      separate_copying;
@@ -298,7 +300,8 @@ public:
         buffer_allocator(x.buffer_allocator)
 #endif
     {
-        if (separate_copying)
+        if (separate_copying)		// was getting illegal operand error
+        //if (separate_copying >= 1)		// MW-jcm 971114 added >=
         {
            node = get_node ();
           (*node).next = NULL;
@@ -308,7 +311,8 @@ public:
     }
     ~slist ()
     {
-        if (separate_copying)
+        if (separate_copying)		// was getting illegal operand error
+        //if (separate_copying >= 1)		// MW-jcm 971114 added >=
         {
             erase (begin (), end ());
             put_node (node);
@@ -462,12 +466,15 @@ public:
 */
 };
 
-#ifdef MSIPL_MULTITHREAD
-template <class T, class Allocator>
-mutex_arith<bool, mutex> slist<T, Allocator>::separate_copying = false;
+#if !__option(precompile)
+// #ifdef MSIPL_MULTITHREAD								// MW-jcm 971114
+#if defined (MSIPL_MULTITHREAD) && !defined (__BEOS__)	// MW-jcm 971114
+	template <class T, class Allocator>
+	mutex_arith<bool, mutex> slist<T, Allocator>::separate_copying = false;
 #else
-template <class T, class Allocator>
-bool slist<T, Allocator>::separate_copying = false;
+	template <class T, class Allocator>
+	bool slist<T, Allocator>::separate_copying = false;
+#endif
 #endif
 
 template <class T, class Allocator>

@@ -1,36 +1,45 @@
-/*
-	
-	Debug.h
-	
-	Copyright 1994-97 Be, Inc. All Rights Reserved.
-	
-*/
-
+/******************************************************************************
+/
+/	File:			Debug.h
+/
+/	Description:	Compile time and runtime switchable debug macros.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _DEBUG_H
 #define _DEBUG_H
 
+#include <BeBuild.h>
 #include <SupportDefs.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <OS.h>
 
-/* runtime switch for enabling the debug code */
+/*------------------------------*/
+/*----- Private... -------------*/
 #ifdef __cplusplus
 extern "C" {
 #endif
-	extern bool _rtDebugFlag;
-	bool _debugFlag();
-	bool _setDebugFlag(bool);
+	extern _IMPEXP_ROOT bool _rtDebugFlag;
+
+	_IMPEXP_ROOT bool _debugFlag();
+	_IMPEXP_ROOT bool _setDebugFlag(bool);
 	
-	int _debugPrintf(const char *, ...);
-	int _sPrintf(const char *, ...);
-	int _xdebugPrintf(const char *, ...);
-	int _debuggerAssert(const char *, int, char *);
+	_IMPEXP_ROOT int _debugPrintf(const char *, ...);
+	_IMPEXP_ROOT int _sPrintf(const char *, ...);
+	_IMPEXP_ROOT int _xdebugPrintf(const char *, ...);
+	_IMPEXP_ROOT int _debuggerAssert(const char *, int, char *);
 #ifdef __cplusplus
 	}
 #endif
+/*-------- ...to here ----------*/
+
+
+/*-------------------------------------------------------------*/
+/*----- Debug macros ------------------------------------------*/
 
 #if DEBUG
 	#define SET_DEBUG_ENABLED(FLAG)	_setDebugFlag(FLAG)
@@ -40,7 +49,7 @@ extern "C" {
 	#define PRINT(ARGS) 			_debugPrintf ARGS
 	#define PRINT_OBJECT(OBJ)		if (_rtDebugFlag) {		\
 										PRINT(("%s\t", #OBJ));	\
-										OBJ.PrintToStream(); 	\
+										(OBJ).PrintToStream(); 	\
 										} ((void) 0)
 	#define TRACE()					_debugPrintf("File: %s, Line: %d, Thread: %d\n", \
 										__FILE__, __LINE__, find_thread(NULL))
@@ -60,7 +69,7 @@ extern "C" {
 	
 	#define DEBUG_ONLY(arg)		arg
 
-#else
+#else /* DEBUG == 0 */
 	#define SET_DEBUG_ENABLED(FLAG)	(void)0
 	#define	IS_DEBUG_ENABLED()		(void)0
 	
@@ -78,5 +87,7 @@ extern "C" {
 	#define DEBUG_ONLY(x)
 #endif
 
-#endif
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
+#endif /* _DEBUG_H */

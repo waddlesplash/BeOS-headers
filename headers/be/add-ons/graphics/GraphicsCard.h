@@ -1,20 +1,22 @@
-//*****************************************************************************
-//
-//	File:		 GraphicsCard.h
-//
-//	Description: Application Server interface for graphics card add-ons
-//
-//	Copyright 1996-97, Be Incorporated
-//
-//******************************************************************************/
+/******************************************************************************
+/
+/	File:			GraphicsCard.h
+/
+/	Description:	App Server interface for graphics card add-ons.
+/
+/	Copyright 1993-98, Be Incorporated
+/
+/******************************************************************************/
 
 #ifndef _GRAPHICS_CARD_H
 #define _GRAPHICS_CARD_H
 
+#include <BeBuild.h>
 #include <GraphicsDefs.h>
+#include <SupportDefs.h>
 
-//----------------------------------------------------------------
-// graphic add-on commands
+/*-------------------------------------------------------------*/
+/*----- Command Constants -------------------------------------*/
 
 enum {
 	B_OPEN_GRAPHICS_CARD,
@@ -37,39 +39,39 @@ enum {
 	B_MOVE_DISPLAY_AREA}
 ;
 
-//----------------------------------------------------------------
-// graphic add-on optional abilities
+/*----- Optional ---------------*/
 
 enum {
 	B_CRT_CONTROL = 0x0001,
 	B_GAMMA_CONTROL = 0x0002,
-	B_FRAME_BUFFER_CONTROL = 0x0004
+	B_FRAME_BUFFER_CONTROL = 0x0004,
+	B_PARALLEL_BUFFER_ACCESS = 0x0008
 };
 
-//-------------------------------------------------------
-// graphic add-on specific data structures
+/*-------------------------------------------------------------*/
+/*----- Structures --------------------------------------------*/
 
 typedef struct {
-	short           version;
-	short           id;
+	int16           version;
+	int16           id;
 	void            *frame_buffer;
 	char            rgba_order[4];
-	short           flags;
-	short			bits_per_pixel;
-	short           bytes_per_row;
-	short			width;
-	short			height;
+	int16           flags;
+	int16			bits_per_pixel;
+	int16           bytes_per_row;
+	int16			width;
+	int16			height;
 } graphics_card_info;
 
 
 typedef struct {
-	long	        index;
+	int32	        index;
 	rgb_color       color;
 } indexed_color;
 
 
 typedef struct {
-	ulong           space;
+	uint32           space;
 	float           refresh_rate;
 	uchar           h_position;
 	uchar           v_position;
@@ -88,40 +90,40 @@ typedef struct {
 typedef struct {
 	void            *screen_base;
 	void            *io_base;
-	ulong           vendor_id;
-	ulong           device_id;
-	ulong           _reserved1_;
-	ulong           _reserved2_;
+	uint32           vendor_id;
+	uint32           device_id;
+	uint32           _reserved1_;
+	uint32           _reserved2_;
 } graphics_card_spec;
 
 
 typedef struct {
-	short           x1;
-	short           y1;
-	short           x2;
-	short           y2;
+	int16           x1;
+	int16           y1;
+	int16           x2;
+	int16           y2;
 	rgb_color       color;
 } rgb_color_line;
 
 
 typedef struct {
-	short           x1;
-	short           y1;
-	short           x2;
-	short           y2;
+	int16           x1;
+	int16           y1;
+	int16           x2;
+	int16           y2;
 	uchar           color;
 } indexed_color_line;
 
 
 typedef struct {
-    short           bits_per_pixel;
-	short           bytes_per_row;
-	short           width;
-	short           height;
-    short           display_width;
-	short           display_height;
-	short           display_x;
-	short           display_y;
+    int16           bits_per_pixel;
+	int16           bytes_per_row;
+	int16           width;
+	int16           height;
+    int16           display_width;
+	int16           display_height;
+	int16           display_x;
+	int16           display_y;
 } frame_buffer_info;
 
 
@@ -131,13 +133,41 @@ typedef struct {
 	uchar           blue[256];
 } screen_gamma;
 
+
+/*-------------------------------------------------------------*/
+/*----- Hook Function -----------------------------------------*/
+
 typedef void (*graphics_card_hook) ();
+
+#define B_GRAPHICS_HOOK_COUNT	48
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* debug calls for version 1 */
+#if __POWERPC__ && _BUILDING_graphics
+#pragma export on
+#endif
+
+_IMPEXP_GRAPHICS	int32	control_graphics_card(uint32, void*);	
+
+#if __POWERPC__ && _BUILDING_graphics
+#pragma export reset
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+
+/*-------------------------------------------------------------*/
+/*----- Debugging Functions ------------------------------------*/
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void    dprintf(const char *format, ...);
 bool    set_dprintf_enabled(bool);	/* returns old enable flag */
 
@@ -145,12 +175,16 @@ bool    set_dprintf_enabled(bool);	/* returns old enable flag */
 }
 #endif
 
-//-------------------------------------------------------
-// count of the hook table
 
-#define B_HOOK_COUNT  48
+/*-------------------------------------------------------------*/
+/*----- Obsolete  ---------------------------------------------*/
+#define B_HOOK_COUNT  B_GRAPHICS_HOOK_COUNT
 
-#endif
+
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
+
+#endif /* _GRAPHICS_CARD_H */
 
 
 

@@ -1,21 +1,22 @@
-/******************************************************************************
-//
-//	File:		InterfaceDefs.h
-//
-//	Description:	Basic Interface Kit types.  C++ only.
-//
-//	Copyright 1992-97, Be Incorporated
-//
-*******************************************************************************/
-
+/*******************************************************************************
+/
+/	File:			InterfaceDefs.h
+/
+/   Description:    General Interface Kit definitions and global functions.
+/
+/	Copyright 1992-98, Be Incorporated, All Rights Reserved
+/
+/******************************************************************************/
 
 #ifndef	_INTERFACE_DEFS_H
 #define	_INTERFACE_DEFS_H
 
+#include <BeBuild.h>
 #include <GraphicsDefs.h>
 #include <OS.h>
 #include <Rect.h>
 
+/*----------------------------------------------------------------*/
 
 struct key_info {
 	uint32	modifiers;
@@ -131,6 +132,32 @@ enum orientation {
 
 /*----------------------------------------------------------------*/
 
+enum button_width {
+	B_WIDTH_AS_USUAL,
+	B_WIDTH_FROM_WIDEST,
+	B_WIDTH_FROM_LABEL
+};
+
+/*----------------------------------------------------------------*/
+
+enum join_mode {
+	B_ROUND_JOIN=0,
+	B_MITER_JOIN,
+	B_BEVEL_JOIN,
+	B_BUTT_JOIN,
+	B_SQUARE_JOIN
+};
+
+enum cap_mode {
+	B_ROUND_CAP=B_ROUND_JOIN,
+	B_BUTT_CAP=B_BUTT_JOIN,
+	B_SQUARE_CAP=B_SQUARE_JOIN
+};
+
+#define B_DEFAULT_MITER_LIMIT 10.0
+
+/*----------------------------------------------------------------*/
+
 struct scroll_bar_info {
 	bool	proportional;
 	bool	double_arrows;
@@ -184,57 +211,51 @@ enum {
 /*----------------------------------------------------------------*/
 
 
-const color_map *system_colors();
+_IMPEXP_BE const color_map *system_colors();
 
-status_t	set_screen_space(int32 index, uint32 res, bool stick = TRUE);
+_IMPEXP_BE status_t		set_screen_space(int32 index, uint32 res,
+							bool stick = true);
 
-status_t	get_scroll_bar_info(scroll_bar_info *info);
-status_t	set_scroll_bar_info(scroll_bar_info *info);
+_IMPEXP_BE status_t		get_scroll_bar_info(scroll_bar_info *info);
+_IMPEXP_BE status_t		set_scroll_bar_info(scroll_bar_info *info);
 
-status_t	get_mouse_type(int32 *type);
-status_t	set_mouse_type(int32 type);
-status_t	get_mouse_map(mouse_map *map);
-status_t	set_mouse_map(mouse_map *map);
-status_t	get_click_speed(bigtime_t *speed);
-status_t	set_click_speed(bigtime_t speed);
-status_t	get_mouse_speed(int32 *speed);
-status_t	set_mouse_speed(int32 speed);
+_IMPEXP_BE status_t		get_mouse_type(int32 *type);
+_IMPEXP_BE status_t		set_mouse_type(int32 type);
+_IMPEXP_BE status_t		get_mouse_map(mouse_map *map);
+_IMPEXP_BE status_t		set_mouse_map(mouse_map *map);
+_IMPEXP_BE status_t		get_click_speed(bigtime_t *speed);
+_IMPEXP_BE status_t		set_click_speed(bigtime_t speed);
+_IMPEXP_BE status_t		get_mouse_speed(int32 *speed);
+_IMPEXP_BE status_t		set_mouse_speed(int32 speed);
 
-status_t	get_key_repeat_rate(int32 *rate);
-status_t	set_key_repeat_rate(int32 rate);
-status_t	get_key_repeat_delay(bigtime_t *delay);
-status_t	set_key_repeat_delay(bigtime_t  delay);
+_IMPEXP_BE status_t		get_key_repeat_rate(int32 *rate);
+_IMPEXP_BE status_t		set_key_repeat_rate(int32 rate);
+_IMPEXP_BE status_t		get_key_repeat_delay(bigtime_t *delay);
+_IMPEXP_BE status_t		set_key_repeat_delay(bigtime_t  delay);
 
-uint32		modifiers();
-status_t	get_key_info(key_info *info);
-void        get_key_map(key_map **map, char **key_buffer);
-status_t	get_keyboard_id(uint16 *ID);
-void		set_modifier_key(uint32 modifier, uint32 key);
-void		set_keyboard_locks(uint32 modifiers);
+_IMPEXP_BE uint32		modifiers();
+_IMPEXP_BE status_t		get_key_info(key_info *info);
+_IMPEXP_BE void			get_key_map(key_map **map, char **key_buffer);
+_IMPEXP_BE status_t		get_keyboard_id(uint16 *id);
+_IMPEXP_BE void			set_modifier_key(uint32 modifier, uint32 key);
+_IMPEXP_BE void			set_keyboard_locks(uint32 modifiers);
 
-rgb_color	keyboard_navigation_color();
+_IMPEXP_BE rgb_color	keyboard_navigation_color();
 
-int32		count_workspaces();
-void		set_workspace_count(int32 count);
-int32		current_workspace();
-void		activate_workspace(int32 workspace);
+_IMPEXP_BE int32		count_workspaces();
+_IMPEXP_BE void			set_workspace_count(int32 count);
+_IMPEXP_BE int32		current_workspace();
+_IMPEXP_BE void			activate_workspace(int32 workspace);
 
-bigtime_t	idle_time();
+_IMPEXP_BE bigtime_t	idle_time();
 
-void		run_select_printer_panel();	
-void		run_add_printer_panel();	
+_IMPEXP_BE void			run_select_printer_panel();	
+_IMPEXP_BE void			run_add_printer_panel();	
 
-#endif
+_IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
+_IMPEXP_BE bool			focus_follows_mouse();	
 
+/*-------------------------------------------------------------*/
+/*-------------------------------------------------------------*/
 
-
-
-
-
-
-
-
-
-
-
-
+#endif /* _INTERFACE_DEFS_H */

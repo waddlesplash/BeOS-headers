@@ -11,6 +11,9 @@
 #ifndef _NODE_H
 #define _NODE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <SupportDefs.h>
 #include <StorageDefs.h>
 #include <Statable.h>
@@ -58,6 +61,8 @@ public:
 			status_t		Lock();
 			status_t		Unlock();
 
+			status_t		Sync();
+
 			ssize_t			WriteAttr(const char *attr, type_code type,
 									off_t off, const void *buf, size_t l);
 			ssize_t			ReadAttr(const char *attr, type_code type,
@@ -75,6 +80,8 @@ public:
 			bool			operator!=(const BNode &node) const;
 
 private:
+friend class BEntry;
+friend class BVolume;
 friend class BFile;
 friend class BDirectory;
 friend class BSymLink;

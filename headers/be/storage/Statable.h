@@ -12,6 +12,9 @@
 #ifndef _STATABLE_H
 #define	_STATABLE_H
 
+#ifndef _BE_BUILD_H
+#include <BeBuild.h>
+#endif
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <SupportDefs.h>
