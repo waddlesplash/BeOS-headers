@@ -19,7 +19,7 @@ pid_t waitpid(pid_t pid, int *stat_loc, int options);
 #define WUNTRACED  0x2
 
 
-#define WIFEXITED(val)    ((val) == 0)
+#define WIFEXITED(val)    (((val) & ~(0xff)) == 0)
 #define WEXITSTATUS(val)  ((val) & 0xff)
 #define WIFSIGNALED(val)  ((((val) >>  8) & 0xff) != 0)
 #define WTERMSIG(val)     (((val)  >>  8) & 0xff)

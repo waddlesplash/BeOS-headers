@@ -2,7 +2,7 @@
 //
 //	File:	GameKit.h
 //
-//	Copyright 1996, Be Incorporated.
+//	Copyright 1997, Be Incorporated.
 //
 /***************************************************************/
 

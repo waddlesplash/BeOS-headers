@@ -2,20 +2,17 @@
 	
 	ClassInfo.h
 	
-	Copyright 1994-96 Be, Inc. All Rights Reserved.
+	Copyright 1994-97 Be, Inc. All Rights Reserved.
 
 */
 
+
+#pragma once
 
 #ifndef _CLASS_INFO_H
 #define _CLASS_INFO_H
 
 #include <typeinfo.h>
-
-#define B_DECLARE_CLASS_INFO(BASE)
-#define B_DECLARE_ROOT_CLASS_INFO()
-#define B_DEFINE_CLASS_INFO(class, base)
-#define B_DEFINE_ROOT_CLASS_INFO(class)
 
 // returns pointer to class name.
 #define class_name(ptr)				((typeid(*(ptr))).name())

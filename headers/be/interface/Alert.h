@@ -4,25 +4,20 @@
 **
 **	Description:	Alert class.
 **
-**	Copyright 1993-96, Be Incorporated
+**	Copyright 1993-97, Be Incorporated
 **
 ********************************************************************************/
  
+#pragma once
+
 #ifndef	_ALERT_H
 #define	_ALERT_H
 
-#ifndef _WINDOW_H
-#include "Window.h"
-#endif
-#ifndef _BUTTON_H
-#include "Button.h"
-#endif
-#ifndef _TEXT_VIEW_H
-#include "TextView.h"
-#endif
-#ifndef _CLASS_INFO_H
+#include <Window.h>
+#include <Button.h>
+#include <TextView.h>
+#include <Invoker.h>
 #include <ClassInfo.h>
-#endif
 
 enum button_width {
 	B_WIDTH_AS_USUAL,
@@ -38,6 +33,7 @@ enum alert_type {
 	B_STOP_ALERT
 };
 
+class BBitmap;
 
 class BAlert : public BWindow
 {
@@ -50,32 +46,58 @@ public:
 							const char *button3 = NULL,
 							button_width width = B_WIDTH_AS_USUAL,
 							alert_type type = B_INFO_ALERT);
+					BAlert(BMessage *data);
+virtual				~BAlert();
+static	BAlert		*Instantiate(BMessage *data);
+virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 	
-		void		SetShortcut(long button_index, char key);
+		void		SetShortcut(int32 button_index, char key);
+		char		Shortcut(int32 button_index) const;
 
-		long		Go();
+		int32		Go();
+		status_t	Go(BInvoker *invoker);
+
 virtual	void		MessageReceived(BMessage *an_event);
-virtual	bool		FilterKeyDown(ulong *aKey, BView **target);	
 virtual	void		FrameResized(float new_width, float new_height);
-		BButton		*ButtonAt(long index) const;
+		BButton		*ButtonAt(int32 index) const;
 		BTextView	*TextView() const;
+
+virtual BHandler	*ResolveSpecifier(BMessage *msg,
+									int32 index,
+									BMessage *specifier,
+									int32 form,
+									const char *property);
+virtual	status_t	GetSupportedSuites(BMessage *data);
+
+virtual status_t	Perform(uint32 d, void *arg);
 
 // ------------------------------------------------------------------
 
 private:
-	long			fAlertSem;
-	long			fAlertVal;
-	BButton			*fButtons[3];
-	BTextView		*fTextView;
-	char			fKeys[3];
-	int				fMsgType;
+friend class _BAlertFilter_;
+
+virtual	void		_ReservedAlert1();
+virtual	void		_ReservedAlert2();
+virtual	void		_ReservedAlert3();
+
+		void		InitObject(const char *text,
+							const char *button1,
+							const char *button2 = NULL,
+							const char *button3 = NULL,
+							button_width width = B_WIDTH_AS_USUAL,
+							alert_type type = B_INFO_ALERT);
+		BBitmap		*InitIcon();
+
+		sem_id			fAlertSem;
+		int32			fAlertVal;
+		BButton			*fButtons[3];
+		BTextView		*fTextView;
+		char			fKeys[3];
+		alert_type		fMsgType;
+		button_width	fButtonWidth;
+		BInvoker		*fInvoker;
+		uint32			_reserved[4];
 };
-
-inline BButton *BAlert::ButtonAt(long index) const
-	{ return fButtons[index]; };
-
-inline BTextView *BAlert::TextView() const
-	{ return fTextView; };
 
 #endif
 

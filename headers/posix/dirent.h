@@ -3,20 +3,18 @@
 
 #include <sys/types.h>
 
-struct dirent           /* data from readdir() */
-{
-    ino_t   d_ino;      /* inode number of entry */
-    short   d_pad;      /* because ino_t is ushort */
-    off_t   d_off;      /* offset of disk directory entry */
-    ushort  d_reclen;   /* length of this record */
-    char    d_name[1];  /* name of file */
-};
+typedef struct dirent {
+	dev_t			d_dev;
+	dev_t			d_pdev;
+	ino_t			d_ino;
+	ino_t			d_pino;
+	unsigned short	d_reclen;
+	char			d_name[1];
+} dirent_t;
 
 typedef struct {
-    char            *path;
-    int             pos;
-    int             num;
-    struct dirent   *dp;
+	int				fd;
+	struct dirent	ent;
 } DIR;
 
 #ifndef DIRSIZ

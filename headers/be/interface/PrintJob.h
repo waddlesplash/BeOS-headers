@@ -4,71 +4,76 @@
 //
 //	Description:	client region class.
 //
-//	Copyright 1992-96, Be Incorporated
+//	Copyright 1992-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_PRINTSESSION_H
 #define	_PRINTSESSION_H
 
-#ifndef _INTERFACE_DEFS_H
-#include "InterfaceDefs.h"
-#endif
-#ifndef	_RECT_H
-#include "Rect.h"
-#endif
-#ifndef	_OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _CLASS_INFO_H
+#include <InterfaceDefs.h>
+#include <Rect.h>
+#include <View.h>
 #include <ClassInfo.h>
-#endif
 
 //------------------------------------------------------------------
 
-typedef	struct	{
-	long	version;
-	long	page_count;
-	long	_reserved_1_;
-	long	_reserved_2_;
-	long	_reserved_3_;
-	long	_reserved_4_;
-	long	_reserved_5_;
-} print_file_header;
+struct	print_file_header {
+	int32	version;
+	int32	page_count;
+	int32	_reserved_1_;
+	int32	_reserved_2_;
+	int32	_reserved_3_;
+	int32	_reserved_4_;
+	int32	_reserved_5_;
+};
 
 //------------------------------------------------------------------------------
 
-class BPrintJob : public BObject {
+class BPrintJob {
 public:
 
-					BPrintJob(char *job_name);
+					BPrintJob(const char *job_name);
 virtual				~BPrintJob();
 
-		long		InitJob();
+		int32		ConfigPage();
+		int32		ConfigJob();
 virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
-		void		Commit();
-		long		FirstPage();
-		long		LastPage();
+		void		CommitJob();	
+		int32		FirstPage();
+		int32		LastPage();
 		BRect		PaperRect();
 		BRect		PrintableRect();
 		bool		CanContinue();
-		void		BeginPrinting();
+		void		BeginJob();	
 		void		SpoolPage();
-		BMessage	*Config();
-		void		SetConfig(BMessage *a_msg);
+		BMessage	*Settings();	
+		void		SetSettings(BMessage *a_msg);	
 		void		CancelJob();
 private:
+
+virtual void		_ReservedPrintJob1();
+virtual void		_ReservedPrintJob2();
+virtual void		_ReservedPrintJob3();
+virtual void		_ReservedPrintJob4();
+
+					BPrintJob(const BPrintJob &);
+		BPrintJob	&operator=(const BPrintJob &);
+
 		int			AddToSpoolQueue(BPicture *a_picture, BRect *a_rect, BPoint where);
 		void		mangle_name(char *filename);
 		void		add_setup_spec();
-		void		HandleSetup(BMessage *a_message);
+		void		HandlePageSetup(BMessage *setup);
+		void		HandlePrintSetup(BMessage *setup);
 		void		seek_to_end();
-		long		current_position();
+		int32		current_position();
 		int			end_of_page();
-private:
-		char				*print_job_name;
-		long				page_number;
-		long				spool_file_ref;
+
+		char		*print_job_name;
+		int32		page_number;
+		int32		spool_file_ref;
 		print_file_header	current_header;
 		BRect				paper_size;
 		BRect				usable_size;
@@ -77,8 +82,11 @@ private:
 		BMessage			*setup_msg;
 		BMessage			*job_msg;
 		char				stop_the_show;
-		long				cur_page_desc_offset;
-		long				num_pict_in_page;
+		int32				cur_page_desc_offset;
+		int32				num_pict_in_page;
+		int32				first_page;
+		int32				last_page;
+		uint32				_reserved[4];
 };
 
 #endif

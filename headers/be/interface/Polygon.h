@@ -4,32 +4,24 @@
 //
 //	Description:	Client polygon class.
 //
-//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_POLYGON_H
 #define	_POLYGON_H
 
-#ifndef _INTERFACE_DEFS_H
-#include "InterfaceDefs.h"
-#endif
-#ifndef	_RECT_H
-#include "Rect.h"
-#endif
-#ifndef	_OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
+#include <InterfaceDefs.h>
+#include <Rect.h>
 
 //------------------------------------------------------------------------------
 
-class BPolygon : public BObject {
+class BPolygon {
 
 public:
-					BPolygon(BPoint *ptArray, long numPoints);
+					BPolygon(const BPoint *ptArray, int32 numPoints);
 					BPolygon();
 					BPolygon(const BPolygon *poly);
 virtual				~BPolygon();	
@@ -37,8 +29,8 @@ virtual				~BPolygon();
 		BPolygon	&operator=(const BPolygon &from);
 
 		BRect		Frame() const;
-		void		AddPoints(const BPoint *ptArray, long numPoints);
-		long		CountPoints() const;
+		void		AddPoints(const BPoint *ptArray, int32 numPoints);
+		int32		CountPoints() const;
 		void		MapTo(BRect srcRect, BRect dstRect);
 		void		PrintToStream() const;
 
@@ -53,14 +45,8 @@ friend class BView;
 		void	map_rect(BRect *, BRect srcRect, BRect dstRect);
 
 		BRect	fBounds;
-		long	fCount;
+		int32	fCount;
 		BPoint	*fPts;
 };
-
-inline BRect BPolygon::Frame() const
-			{ return(fBounds); }
-
-inline long BPolygon::CountPoints() const
-			{ return(fCount); }
 
 #endif

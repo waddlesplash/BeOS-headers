@@ -2,38 +2,42 @@
 
 	File:	MediaDefs.h
 
-	Copyright 1995-96, Be Incorporated
+	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
-
+#pragma once
 #ifndef _MEDIA_DEFS_H
 #define _MEDIA_DEFS_H
 
-#ifndef _OS_H
-#include <OS.h>
-#endif
-
-#ifndef _ERRORS_H
+#include <SupportDefs.h>
 #include <Errors.h>
-#endif
+
+/* Buffer header for audio server */
+
+typedef struct audio_buffer_header {
+  int32 buffer_number;
+  int32 subscriber_count;
+  bigtime_t time;
+  int32 reserved_1;
+  int32 reserved_2;
+  int32 reserved_3;
+  int32 reserved_4;
+} audio_buffer_header;
+
 
 #define		B_MEDIA_LEVEL	B_REAL_TIME_PRIORITY
 
 #define 	B_NO_CHANGE (-1)
+
 /* ================
    Subscriber IDs and special values
    ================ */
 
-#define			B_NO_SUBSCRIBER_ID		((subscriber_id)0)
+#define			B_NO_SUBSCRIBER_ID		((subscriber_id)-1)
 #define			B_NO_SUBSCRIBER_NAME		"not subscribed"
 
-#define			B_SHARED_SUBSCRIBER_ID	((subscriber_id)-1)
+#define			B_SHARED_SUBSCRIBER_ID	((subscriber_id)-2)
 #define			B_SHARED_SUBSCRIBER_NAME	"shared subscriber"
-
-/* The Invisible Subscriber is entitled to join ANY clique */
-#define			B_INVISIBLE_SUBSCRIBER_ID			((subscriber_id)-2)
-#define			B_INVISIBLE_SUBSCRIBER_NAME		"invisible subscriber"
-
 
 /* ================
    Values for sound files and audio streams 

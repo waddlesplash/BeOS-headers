@@ -2,83 +2,62 @@
 //
 //	File:		Clipboard.h
 //
-//	Copyright 1994-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1994-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_CLIPBOARD_H
 #define	_CLIPBOARD_H
 
-#ifndef	_OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _OS_H
 #include <OS.h>
-#endif
-#ifndef _MESSENGER_H
 #include <Messenger.h>
-#endif
-#ifndef _MESSAGE_H
 #include <Message.h>
-#endif
-#ifndef _LOCKER_H
 #include <Locker.h>
-#endif
-#ifndef _STDDEF_H
 #include <stddef.h>
-#endif
-
-extern "C" int	_init_clipboard_();
 
 class BWindow;
 class BApplication;
 
 class BClipboard {
-
-	// because BRoster is a shared object (across address spaces) it
-	// can't have any virtual functions. Therefore it doesn't inherit from
-	// BObject or participate in the Class Info system.
-
 public:
+					BClipboard(const char *name, bool transient = FALSE);
+virtual				~BClipboard();
+
+		const char	*Name() const;
+
 		bool		Lock();
 		void		Unlock();
 		
-		void		Clear();
-		void		Commit();
+		status_t	Clear();
+		status_t	Commit();
 
-		void		AddText(const char *string);
-		void		AddData(ulong type, const void *data, long numBytes);
-
-		const char	*FindText(long *numBytes);
-		const void	*FindData(ulong type, long *numBytes);
-		const void	*FindData(ulong type, long index, long *numBytes);
-
-		long		CountEntries(ulong type);
-		BMessenger	DataOwner();
+		BMessenger	DataSource() const;
+		BMessage	*Data() const;
 
 private:
-friend BApplication;
-friend BWindow;
-friend int	_init_clipboard_();
 
-		void		*operator new(size_t size, bool shared);
-		void		operator delete(void *p, size_t size);
-					BClipboard(	const char *name,
-								bool fromDisk,
-								BClipboard *sysClip = NULL);
-					~BClipboard();
+					BClipboard(const BClipboard &);
+		BClipboard	&operator=(const BClipboard &);
 
-		void		UpdateFromSys();
+virtual	void		_ReservedClipboard1();
+virtual	void		_ReservedClipboard2();
+virtual	void		_ReservedClipboard3();
+
+		bool		AssertLocked() const;
+		status_t	DownloadFromSystem();
+		status_t	UploadToSystem();
 		bool		IsLocked() const;
 
-		long		fCount;
-		BClipboard	*fSystemClip;
-		long		fSystemCount;
-		BMessage	fData;
+		uint32		fCount;
+		BMessage	*fData;
 		BLocker		fLock;
-
-private:
-		bool		AssertLocked() const;
+		BMessenger	fClipHandler;
+		BMessenger	fDataSource;
+		uint32		fSystemCount;
+		char		*fName;
+		uint32		_reserved[4];
 };
 
 extern BClipboard *be_clipboard;

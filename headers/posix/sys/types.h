@@ -1,20 +1,15 @@
 #ifndef _SYS_TYPES_H
 #define _SYS_TYPES_H
 
-#ifndef __time__
 #include <time.h>
-#endif
+#include <null.h>
 
-#ifndef NULL
-#define NULL ((void *) 0)
-#endif
-
-typedef unsigned int        ino_t;      /* <inode> type */
+typedef long long           ino_t;      /* <inode> type */
 typedef int                 cnt_t;      /* <count> type */
 typedef unsigned int        mode_t;     /* file modes */
 typedef int                 nlink_t;
-typedef int                 dev_t;      /* <old device number> type */
-typedef long                off_t;      /* <offset> type */
+typedef long                dev_t;      /* <old device number> type */
+typedef long long           off_t;      /* <offset> type */
 typedef long		        pid_t;      /* process ids */
 
 typedef unsigned int uid_t;
@@ -38,10 +33,6 @@ typedef unsigned long ulong;
 
 typedef char *caddr_t;
 
-#ifndef __size_t__
 #include <size_t.h>
-#endif
-
-typedef size_t ssize_t;
 
 #endif

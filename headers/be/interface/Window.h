@@ -4,64 +4,33 @@
 //
 //	Description:	Client window class.
 //
-//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_WINDOW_H
 #define	_WINDOW_H
 
-#ifndef _INTERFACE_DEFS_H
-#include "InterfaceDefs.h"
-#endif
-#ifndef _RECT_H
-#include "Rect.h"
-#endif
-#ifndef _VIEW_H
-#include "View.h"
-#endif
-#ifndef	_MESSAGE_QUEUE_H
+#include <StorageDefs.h>
+#include <InterfaceDefs.h>
+#include <Rect.h>
+#include <View.h>
 #include <MessageQueue.h>
-#endif
-#ifndef	_LOOPER_H
 #include <Looper.h>
-#endif
-#ifndef _MESSAGE_H
 #include <Message.h>
-#endif
-#ifndef _MESSENGER_H
 #include <Messenger.h>
-#endif
-#ifndef _LIST_H
-#include <List.h>
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
-#ifndef _CLIPBOARD_H
 #include <Clipboard.h>
-#endif
+#include <List.h>
 
 /*----------------------------------------------------------------*/
 
 enum window_type {
 	B_TITLED_WINDOW = 1,
-	B_BORDERED_WINDOW = 2,
 	B_MODAL_WINDOW = 3,
-	B_DOCUMENT_WINDOW = 11
-};
-
-/*----------------------------------------------------------------*/
-/* window part codes */
-
-enum {
-	B_UNKNOWN_AREA,
-	B_TITLE_AREA,
-	B_CONTENT_AREA,
-	B_RESIZE_AREA,
-	B_CLOSE_AREA,
-	B_ZOOM_AREA,
-	B_MINIMIZE_AREA
+	B_DOCUMENT_WINDOW = 11,
+	B_BORDERED_WINDOW = 20
 };
 
 /*----------------------------------------------------------------*/
@@ -100,6 +69,7 @@ class BMenuItem;
 class BMenuBar;
 class BButton;
 struct _cmd_key_;
+struct _view_attr_;
 
 /*----------------------------------------------------------------*/
 
@@ -109,45 +79,28 @@ public:
 						BWindow(BRect frame,
 								const char *title, 
 								window_type type,
-								ulong flags,
-								ulong workspace = B_CURRENT_WORKSPACE);
+								uint32 flags,
+								uint32 workspace = B_CURRENT_WORKSPACE);
 virtual					~BWindow();
+
+						BWindow(BMessage *data);
+static	BWindow			*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Quit();
 		void			Close();
-		void			SetDiscipline(bool yesno);
 		window_type		WindowType() const;
 
-		long			RunSavePanel(	const char* save_name = NULL,
-										const char* title = NULL,
-										const char* button_name = NULL,
-										const char* cancel_button_name = NULL,
-										BMessage* configuration = NULL);
-		bool			IsSavePanelRunning();
-		void			CloseSavePanel();
-virtual	void			SaveRequested(record_ref directory, const char *name);
-virtual	void			SavePanelClosed(BMessage* message);
-
-virtual	bool			FilterKeyDown(ulong *aKey, BView **targetView);	
-virtual	bool			FilterMouseDown(BPoint loc, BView **targetView);
-virtual	bool			FilterMouseMoved(	BPoint loc,
-											ulong code,
-											BMessage *a_message,
-											BView **targetView);
-virtual	bool			FilterMessageDropped(	BMessage *a_message,
-												BPoint loc,
-												BView **targetView);
-
-virtual	void			AddChild(BView *view);
-virtual	bool			RemoveChild(BView *view);
-		long			CountChildren() const;
-		BView			*ChildAt(long index) const;
+		void			AddChild(BView *child, BView *before = NULL);
+		bool			RemoveChild(BView *child);
+		int32			CountChildren() const;
+		BView			*ChildAt(int32 index) const;
 
 virtual	void			DispatchMessage(BMessage *message, BHandler *handler);
 virtual	void			MessageReceived(BMessage *message);
 virtual	void			FrameMoved(BPoint new_position);
-virtual void			WorkspacesChanged(ulong old_ws, ulong new_ws);
-virtual void			WorkspaceActivated(long ws, bool state);
+virtual void			WorkspacesChanged(uint32 old_ws, uint32 new_ws);
+virtual void			WorkspaceActivated(int32 ws, bool state);
 virtual	void			FrameResized(float new_width, float new_height);
 virtual void			Minimize(bool minimize);
 virtual void			Zoom(	BPoint rec_position,
@@ -156,25 +109,25 @@ virtual void			Zoom(	BPoint rec_position,
 		void			Zoom();
 		void			SetZoomLimits(float max_h, float max_v);
 virtual void			ScreenChanged(BRect screen_size, color_space depth);
-		void			SetPulseRate(double rate);
-		double			PulseRate() const;
-		void			AddShortcut(	ulong key,
-										ulong modifiers,
+		void			SetPulseRate(bigtime_t rate);
+		bigtime_t		PulseRate() const;
+		void			AddShortcut(	uint32 key,
+										uint32 modifiers,
 										BMessage *msg);
-		void			AddShortcut(	ulong key,
-										ulong modifiers,
+		void			AddShortcut(	uint32 key,
+										uint32 modifiers,
 										BMessage *msg,
 										BHandler *target);
-		void			RemoveShortcut(ulong key, ulong modifiers);
+		void			RemoveShortcut(uint32 key, uint32 modifiers);
 		void			SetDefaultButton(BButton *button);
 		BButton			*DefaultButton() const;
-virtual	void			MenusWillShow();
+virtual	void			MenusBeginning();
+virtual	void			MenusEnded();
 		bool			NeedsUpdate() const;
 		void			UpdateIfNeeded();
 		BView			*FindView(const char *view_name) const;
 		BView			*FindView(BPoint) const;
 		BView			*CurrentFocus() const;
-		BHandler		*PreferredHandler() const;
 		void			Flush() const;
 		void			Activate(bool = TRUE);
 virtual	void			WindowActivated(bool state);
@@ -212,10 +165,20 @@ virtual	void			Hide();
 										float *max_h,
 										float *min_v,
 										float *max_v);
-		ulong			Workspaces() const;
-		void			SetWorkspaces(ulong);
+		uint32			Workspaces() const;
+		void			SetWorkspaces(uint32);
 
-virtual	void			HandlersRequested(BMessage *msg);
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+		void			AddFloater(BWindow *a_floating_window);
+		void			RemoveFloater(BWindow *a_floating_window);
+
+virtual status_t		Perform(uint32 d, void *arg);
 
 // ------------------------------------------------------------------
 
@@ -229,25 +192,45 @@ friend class BMenuItem;
 friend class BWindowScreen;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
 
+virtual	void			_ReservedWindow1();
+virtual	void			_ReservedWindow2();
+virtual	void			_ReservedWindow3();
+virtual	void			_ReservedWindow4();
+virtual	void			_ReservedWindow5();
+virtual	void			_ReservedWindow6();
+virtual	void			_ReservedWindow7();
+virtual	void			_ReservedWindow8();
+
+					BWindow();
+					BWindow(BWindow &);
+		BWindow		&operator=(BWindow &);
+					
 					BWindow(BRect frame, color_space depth);
+		void		InitData(BRect frame,
+							const char *title, 
+							window_type type,
+							uint32 flags,
+							uint32 workspace);
+		status_t	ArchiveChildren(BMessage *data, bool deep) const;
+		status_t	UnarchiveChildren(BMessage *data);
 		void		BitmapClose();
 virtual	void		task_looper();
 		void		start_drag(	BMessage *msg,
-								long token,
+								int32 token,
 								BPoint offset,
 								BRect track_rect,
 								BHandler *reply_to);
 		void		start_drag(	BMessage *msg,
-								long token,
+								int32 token,
 								BPoint offset,
-								long bitmap_token,
+								int32 bitmap_token,
 								BHandler *reply_to);
 		void		view_builder(BView *a_view);
 		void		attach_builder(BView *a_view);
 		void		detach_builder(BView *a_view);
-		long		get_server_token() const;
+		int32		get_server_token() const;
 		BMessage	*extract_drop(BMessage *an_event, BHandler **target);
-		void		movesize(long opcode, float h, float v);
+		void		movesize(uint32 opcode, float h, float v);
 		
 		void		handle_activate(BMessage *an_event);
 		void		do_view_frame(BMessage *an_event);
@@ -255,51 +238,53 @@ virtual	void		task_looper();
 		void		do_mouse_down(BMessage *an_event, BView *target);
 		void		do_mouse_moved(BMessage *an_event, BView *target);
 		void		do_key_down(BMessage *an_event, BHandler *handler);
+		void		do_key_up(BMessage *an_event, BHandler *handler);
 		void		do_menu_event(BMessage *an_event);
-		void		do_draw_view(message *a_message);
-		void		*read_message(long *code);
-		void		queue_new_message(void *data);
-		void		queue_event_message(void *data, long code);
-		void		DoPulse();
-		_cmd_key_	*allocShortcut(ulong key, ulong modifiers);
-		_cmd_key_	*FindShortcut(ulong key, ulong modifiers);
-		void		AddShortcut(ulong key,
-								ulong modifiers,
+		void		do_draw_views(message *a_message);
+virtual BMessage	*ConvertToMessage(void *raw, int32 code);
+		_cmd_key_	*allocShortcut(uint32 key, uint32 modifiers);
+		_cmd_key_	*FindShortcut(uint32 key, uint32 modifiers);
+		void		AddShortcut(uint32 key,
+								uint32 modifiers,
 								BMenuItem *item);
 		void		post_message(BMessage *message);
 		void		SetLocalTitle(const char *new_title);
 		void		enable_pulsing(bool enable);
 		BHandler	*determine_target(BMessage *msg, BHandler *target);
 		void		kb_navigate();
-		void		navigate_to_next(long direction);
+		void		navigate_to_next(int32 direction, bool group = FALSE);
+		void		set_focus(BView *focus);
+		bool		InUpdate();
+		void		DequeueAll();
+		void		find_token_and_handler(BMessage *msg,
+											int32 *token,
+											BHandler **handler);
 
 		char			*fTitle;
-		long			server_token;
-		char			update_buzy;
+		int32			server_token;
+		char			fInUpdate;
 		char			f_active;
 		short			fShowLevel;
-		ulong			fFlags;
+		uint32			fFlags;
 
-		long			send_port;
-		long			receive_port;
+		port_id			send_port;
+		port_id			receive_port;
 
 		BView			*top_view;
-		BView			*focus;
+		BView			*fFocus;
 		BView			*last_mm_target;
 		_BSession_		*a_session;
-		void			*fBuffer;
-		long			fBufferSize;
+//+		void			*fMsgBuffer;
+//+		int32			fMsgBufferSize;
 		BMenuBar		*fKeyMenuBar;
 		BButton			*fDefaultButton;
 		BList			accelList;
-		long			top_view_token;
+		int32			top_view_token;
 		bool			pulse_enabled;
-		long			pulse_phase;
-		double			pulse_rate;
-		bool			discipline;
+		int32			pulse_phase;
+		int32			pulse_queued;
+		bigtime_t		pulse_rate;
 		bool			fWaitingForMenu;
-		BMessenger		fPanelMessenger;
-		record_ref		fLastSavePanelDir;
 		bool			fOffscreen;
 		sem_id			fMenuSem;
 		float			fMaxZoomH;
@@ -310,12 +295,14 @@ virtual	void		task_looper();
 		float			fMaxWindV;
 		BRect			fFrame;
 		window_type		fType;
+		_view_attr_		*fCurDrawViewState;
+
+		uint32			_reserved[8];
 };
 
 //------------------------------------------------------------------------------
 
-inline void  BWindow::Close()			{ Quit(); }
-inline window_type  BWindow::WindowType() const		{ return fType; }
+inline void  BWindow::Close()			{ Quit(); }		// OK, no private parts
 
 //------------------------------------------------------------------------------
 

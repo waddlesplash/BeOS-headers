@@ -4,43 +4,40 @@
 //
 //	Description:	List class header.
 //	
-//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_LIST_H
 #define	_LIST_H
 
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
+#include <SupportDefs.h>
 
 // -----------------------------------------------------------------------
-class BList : public BObject {
+class BList {
 
 public:
-				BList(long itemsPerBlock = 20);
+				BList(int32 itemsPerBlock = 20);
 				BList(const BList&);
 virtual			~BList();
 
 		BList	&operator=(const BList &from);
 		bool	AddItem(void *item);
-		bool	AddItem(void *item, long atIndex);
+		bool	AddItem(void *item, int32 atIndex);
 		bool	AddList(BList *newItems);
-		bool	AddList(BList *newItems, long atIndex);
+		bool	AddList(BList *newItems, int32 atIndex);
 		bool	RemoveItem(void *item);
-		void	*RemoveItem(long index);
-		void	*ItemAt(long) const;
-		void	*ItemAtFast(long) const;
-		long	IndexOf(void *item) const;
+		void	*RemoveItem(int32 index);
+		bool	RemoveItems(int32 index, int32 count);
+		void	*ItemAt(int32) const;
+		void	*ItemAtFast(int32) const;
+		int32	IndexOf(void *item) const;
 		void	*FirstItem() const;
 		void	*LastItem() const;
 		bool	HasItem(void *item) const;
-		long	CountItems() const;
+		int32	CountItems() const;
 		void	MakeEmpty();
 		bool	IsEmpty() const;
 		void	DoForEach(bool (*func)(void *));
@@ -51,54 +48,17 @@ virtual			~BList();
 // -----------------------------------------------------------------------
 
 private:
-		void	Resize(bool makeLarger);
+
+virtual	void			_ReservedList1();
+virtual	void			_ReservedList2();
+
+		void	Resize(int32 count);
 
 		void**	fObjectList;
-		long	fPhysicalSize;
-		long	fItemCount;
-		long	fBlockSize;
+		size_t	fPhysicalSize;
+		int32	fItemCount;
+		int32	fBlockSize;
+		uint32	_reserved[2];
 };
-
-
-inline void		*BList::Items() const
-			{ return(fObjectList); }
-
-inline void		*BList::ItemAt(long indx) const
-			{	if (indx < 0 || indx >= fItemCount)
-					return(NIL);
-				else
-					return(fObjectList[indx]);
-			}
-
-inline void		*BList::ItemAtFast(long indx) const
-			{ return(fObjectList[indx]); }
-
-inline bool		BList::AddItem(void* item)
-			{ return(AddItem(item, fItemCount)); }
-
-inline long		BList::CountItems() const
-			{ return(fItemCount); }
-
-inline void 		*BList::FirstItem()	 const
-			{
-				if (fItemCount == 0)
-					return(NIL);
-				else
-					return(fObjectList[0]);
-			}
-
-inline void 		*BList::LastItem() 	 const
-			{
-				if (fItemCount == 0)
-					return(NIL);
-				else
-					return(fObjectList[fItemCount - 1]);
-			}
-
-inline bool		BList::IsEmpty() const
-			{ return(fItemCount == 0); }
-
-inline bool		BList::HasItem(void* item) const
-			{ return(IndexOf(item) != -1); }
 
 #endif

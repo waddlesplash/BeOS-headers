@@ -2,15 +2,16 @@
 //
 //	File:	mediaKit.h
 //
-//	Copyright 1992-96, Be Incorporated.
+//	Copyright 1992-97, Be Incorporated.
 //
 /***************************************************************/
 
 
-#include <AudioSubscriber.h>
-#include <Beep.h>
+#include <AudioStream.h>
+#include <BufferMsgs.h>
+#include <BufferStream.h>
+#include <BufferStreamManager.h>
 #include <MediaDefs.h>
 #include <SoundFile.h>
-#include <Stream.h>
-#include <StreamController.h>
 #include <Subscriber.h>
+

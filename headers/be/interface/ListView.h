@@ -4,126 +4,160 @@
 **
 **	Description:	client list view class.
 **
-**	Copyright 1992-96, Be Incorporated
+**	Copyright 1992-97, Be Incorporated
 **
 *******************************************************************************/
+
+#pragma once
+
 #ifndef _LIST_VIEW_H
 #define _LIST_VIEW_H
 
-#ifndef _VIEW_H
-#include "View.h"
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
-#ifndef _LOOPER_H
+#include <View.h>
 #include <Looper.h>
-#endif
-#ifndef _LIST_H
 #include <List.h>
-#endif
+#include <ListItem.h>
+#include <Invoker.h>
 
+enum list_view_type {
+	B_SINGLE_SELECTION_LIST,
+	B_MULTIPLE_SELECTION_LIST
+};
 
-class BListView : public BView
+class BListView : public BView, public BInvoker
 {
 
 public:
-					BListView(	BRect frame,
-								const char *name,
-								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-								ulong flags = B_WILL_DRAW | B_FRAME_EVENTS |
-												B_NAVIGABLE);
-virtual				~BListView();
-virtual	void		Draw(BRect updateRect);
-virtual	void		MouseDown(BPoint where);
-virtual	void		KeyDown(ulong aKey);
-virtual	void		MakeFocus(bool state = TRUE);
-virtual	void		FrameResized(float newWidth, float newHeight);
-		bool		AddItem(void *item);
-		bool		AddItem(void *item, long atIndex);
-		bool		AddList(BList *newItems);
-		bool		AddList(BList *newItems, long atIndex);
-		bool		RemoveItem(void * item);
-		void		*RemoveItem(long index);
+						BListView(	BRect frame,
+									const char *name,
+									list_view_type type = B_SINGLE_SELECTION_LIST,
+									uint32 resizeMask = B_FOLLOW_LEFT |
+														B_FOLLOW_TOP,
+									uint32 flags = B_WILL_DRAW | B_FRAME_EVENTS |
+													B_NAVIGABLE);
+						BListView(BMessage *data);
+virtual					~BListView();
+static	BListView		*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+virtual	void			Draw(BRect updateRect);
+virtual	void			MessageReceived(BMessage *msg);
+virtual	void			MouseDown(BPoint where);
+virtual	void			KeyDown(const char *bytes, int32 numBytes);
+virtual	void			MakeFocus(bool state = TRUE);
+virtual	void			FrameResized(float newWidth, float newHeight);
+virtual	void			TargetedByScrollView(BScrollView *scroller);
+		void			ScrollTo(float x, float y);
+virtual	void			ScrollTo(BPoint where);
+virtual	bool			AddItem(BListItem *item);
+virtual bool			AddItem(BListItem *item, int32 atIndex);
+virtual bool			AddList(BList *newItems);
+virtual bool			AddList(BList *newItems, int32 atIndex);
+virtual bool			RemoveItem(BListItem *item);
+virtual BListItem		*RemoveItem(int32 index);
+virtual bool			RemoveItems(int32 index, int32 count);
 
-virtual	long		SetTarget(BHandler *target);
-virtual long		SetTarget(BLooper *target, bool preferred);
-virtual	void		SetSelectionMessage(BMessage *message);
-virtual	void		SetInvocationMessage(BMessage *message);
+virtual	void			SetSelectionMessage(BMessage *message);
+virtual	void			SetInvocationMessage(BMessage *message);
 
-		BHandler	*Target(BLooper **looper = NULL) const;
-		BMessage	*SelectionMessage() const;
-		ulong		SelectionCommand() const;
-		BMessage	*InvocationMessage() const;
-		ulong		InvocationCommand() const;
+		BMessage		*SelectionMessage() const;
+		uint32			SelectionCommand() const;
+		BMessage		*InvocationMessage() const;
+		uint32			InvocationCommand() const;
 
-		void		*ItemAt(long) const;
-		long		IndexOf(void *item) const;
-		void		*FirstItem() const;
-		void		*LastItem() const;
-		bool		HasItem(void *) const;
-		long		CountItems() const;
-		void		MakeEmpty();
-		bool		IsEmpty() const;
-		void		DoForEach(bool (*func)(void *));
-		void		DoForEach(bool (*func)(void *, void *), void *);
-		void		*Items() const;
-		void		InvalidateItem(long index);
+virtual	void			SetListType(list_view_type type);
+		list_view_type	ListType() const;
 
-virtual	void		Select(long index);
-		bool		IsItemSelected(long index) const;
-		long		CurrentSelection() const;
+		BListItem		*ItemAt(int32 index) const;
+		int32			IndexOf(BPoint point) const;
+		int32			IndexOf(BListItem *item) const;
+		BListItem		*FirstItem() const;
+		BListItem		*LastItem() const;
+		bool			HasItem(BListItem *item) const;
+		int32			CountItems() const;
+virtual	void			MakeEmpty();
+		bool			IsEmpty() const;
+		void			DoForEach(bool (*func)(BListItem *));
+		void			DoForEach(bool (*func)(BListItem *, void *), void *);
+		const BListItem	**Items() const;
+		void			InvalidateItem(int32 index);
+		void			ScrollToSelection();
 
-virtual void		Invoke(long index);
+		void			Select(int32 index, bool extend = FALSE);
+		void			Select(int32 from, int32 to, bool extend = FALSE);
+		bool			IsItemSelected(int32 index) const;
+		int32			CurrentSelection(int32 index = 0) const;
+virtual	status_t		Invoke(BMessage *msg = NULL);
 
-		void		SortItems(int (*cmp)(const void *, const void *));
+		void			DeselectAll();
+		void			DeselectExcept(int32 except_from, int32 except_to);
+		void			Deselect(int32 index);
+
+virtual void			SelectionChanged();
+
+		void			SortItems(int (*cmp)(const void *, const void *));
 	
-virtual	void		AttachedToWindow();
-virtual void		SetFontName(const char *name);
-virtual void		SetSymbolSet(const char *name);
-virtual void		SetFontSize(float pointSize);
-virtual void		SetFontShear(float degrees);
-virtual void		SetFontRotation(float degrees);
+virtual	void			AttachedToWindow();
+virtual	void			FrameMoved(BPoint new_position);
 
-// ------------------------------------------------------------------
+		BRect			ItemFrame(int32 index);
 
-protected:
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
 
-virtual	void		DrawItem(BRect updateRect, long index);
-virtual	void		HighlightItem(bool on, long index);
-virtual float		ItemHeight();
-		BRect		ItemFrame(long index);
-		float		BaselineOffset();
+virtual status_t		Perform(uint32 d, void *arg);
 
-
+virtual void			WindowActivated(bool state);
+virtual	void			MouseUp(BPoint pt);
+virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
+virtual	void			DetachedFromWindow();
+virtual bool			InitiateDrag(BPoint pt, int32 itemIndex, 
+										bool initialySelected);
+							// return false if list does not support drag and 
+							// drop else process drag and return true
+			
 // ------------------------------------------------------------------
 
 private:
-		void		FixupScrollBar();
-		void		InvalidateFrom(long y);
-		BScrollBar	*ScrollBar();
-		void		Invoke(BMessage *msg, long index);
-		void		FontChanged();
-		void		DrawFocusIndicator(bool smart);
+friend class BOutlineListView;
 
-		BList		fList;
-		long		fSelected;
-		BScrollBar	*fScroll;
-		float		fItemHeight;
-		float		fBaselineOffset;
-		BMessage	*fSelectMessage;
-		BMessage	*fInvokeMessage;
-		BHandler	*fTarget;
-		BLooper		*fLooper;
+virtual	void			_ReservedListView1();
+virtual	void			_ReservedListView2();
+virtual	void			_ReservedListView3();
+virtual	void			_ReservedListView4();
+
+		BListView		&operator=(const BListView &);
+
+		void			InitObject(list_view_type type);
+		void			FixupScrollBar();
+		void			InvalidateFrom(int32 index);
+		status_t		PostMsg(BMessage *msg);
+		void			FontChanged();
+		int32			RangeCheck(int32 index);
+		bool			_Select(int32 index, bool extend);
+		bool			_Select(int32 from, int32 to, bool extend);
+		bool			_Deselect(int32 index);
+		bool			_DeselectAll(int32 except_from, int32 except_to);
+		int32			CalcFirstSelected(int32 after);
+		int32			CalcLastSelected(int32 before);
+virtual void			DrawItem(BListItem *item, BRect itemRect, 
+							bool complete = false);
+
+		BList			fList;
+		list_view_type	fListType;
+		int32			fFirstSelected;
+		int32			fLastSelected;
+		int32			fAnchorIndex;
+		float			fWidth;
+		BMessage		*fSelectMessage;
+		BScrollView		*fScrollView;
+		uint32			_reserved[4];
 };
 
-inline void *BListView::Items() const
-	{ return fList.Items(); }
-
-inline bool BListView::IsItemSelected(long index) const
-	{ return(fSelected == index); }
-
-inline long BListView::CurrentSelection() const
-	{ return(fSelected); }
+inline void	BListView::ScrollTo(float x, float y)		// OK, no private parts
+	{ ScrollTo(BPoint(x, y)); }
 
 #endif

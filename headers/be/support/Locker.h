@@ -2,54 +2,46 @@
 //
 //	File:		Locker.h
 //
-//	Copyright 1992-96, Be Incorporated
+//	Copyright 1992-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_LOCKER_H
 #define	_LOCKER_H
 
-#ifndef _OS_H
 #include <OS.h>
-#endif
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _STDDEF_H
-#include <stddef.h>
-#endif
+#include <SupportDefs.h>
 
 //------------------------------------------------------------------------------
-extern "C" int	_init_shared_heap_();
 
-class BLocker : public BObject {
+class BLocker {
 public:
-		void		*operator new(size_t size);
-
 					BLocker();
 					BLocker(const char *name);
 virtual				~BLocker();	
 
 		bool		Lock();
 		void		Unlock();
-		thread_id	LockOwner() const;
 		bool		IsLocked() const;
 
+		// should only be used in special situations.
+		status_t		LockWithTimeout(bigtime_t timeout);
+
+		// following functions are useful for debugging.
+		thread_id	LockingThread() const;
+		int32		CountLocks() const;
+		int32		CountLockRequests() const;
+		sem_id		Sem() const;
+
 private:
-friend int	_init_shared_heap_();
-		
-		void	*operator new(size_t size, void *buffer);
+		bool		_Lock(bigtime_t timeout, status_t *error);
 
-		long	fCount;
-		sem_id	fSem;
-		long	fOwner;
-		int		fOwnerCount;
+		int32		fCount;
+		sem_id		fSem;
+		int32		fOwner;
+		int32		fOwnerCount;
 };
-
-inline thread_id BLocker::LockOwner() const
-	{ return fOwner; }
-
-inline bool BLocker::IsLocked() const
-	{ return (fOwner == find_thread(NULL)); }
 
 #endif

@@ -1,12 +1,13 @@
 /*
  * netdb.h
- * Copyright (c) 1995-96 Be, Inc.	All Rights Reserved 
+ * Copyright (c) 1995-97 Be, Inc.	All Rights Reserved 
  *
  * BSD network database-like interface
  *
  * Do not expect total BSD compatibility from this interface!
  *
  */
+#pragma once
 #ifndef _NETDB_H
 #define _NETDB_H
 
@@ -25,7 +26,11 @@ extern "C" {
 #define NO_RECOVERY 3
 #define NO_DATA 4
 
-extern int h_errno;
+#ifndef h_errno
+extern int *_h_errnop(void);
+#define h_errno (*_h_errnop())
+#endif /* h_errno */
+
 
 struct hostent {
 	char *h_name;

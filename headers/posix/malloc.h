@@ -122,10 +122,12 @@ enum mcheck_status
 
 
    BEBOX USERS TAKE NOTE:
-     You can't call this function in main() because malloc() has already
-     been called by then.  To turn on this feature you must set the
-     environment variable MALLOC_DEBUG to have mcheck() called for you.  
-     Unfortunately it is currently not possible to specify the __abortfunc.
+      If, in the shell, you set the environment variable MALLOC_DEBUG to any 
+	  value ("export MALLOC_DEBUG=true" works well) then when you run your
+	  app, malloc debugging will be turned on.  If you want to change what
+	  happens when the mcheck code detects a problem, you should call 
+	  mcheck() with a function pointer to the routine you want to handle
+	  the error.
 */
 extern int mcheck(void (*__abortfunc)(enum mcheck_status));
 

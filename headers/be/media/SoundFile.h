@@ -1,135 +1,99 @@
 /******************************************************************************
 
-	File:			SoundFile.h
+	File: SoundFile.h
 
 	Description:	Interface for a format-insensitive sound file object.
 
-	Copyright 1995-96, Be Incorporated
+	Copyright 1995-97, Be Incorporated
 
 ******************************************************************************/
+
+#pragma once
 
 #ifndef _SOUND_FILE_H
 #define _SOUND_FILE_H
 
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
-
-#ifndef _FILE_H
-#include <File.h>
-#endif
-
-#ifndef _MEDIA_DEFS_H
 #include <MediaDefs.h>
-#endif
+#include <Entry.h>
+#include <File.h>
 
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
+enum  // sound_format
+{ B_UNKNOWN_FILE, 
+  B_AIFF_FILE, 
+  B_WAVE_FILE, 
+  B_UNIX_FILE };
 
-#ifndef _STORAGE_DEFS_H
-#include <StorageDefs.h>
-#endif
-
-enum { B_UNKNOWN_FILE, B_AIFF_FILE, B_WAVE_FILE, B_UNIX_FILE };
-
-class BSoundFile : public BFile {
-
-
+class BSoundFile  {
 
 public:
 					BSoundFile();
-					BSoundFile(record_ref ref);
+					BSoundFile(const entry_ref *ref,
+							   uint32 open_mode);
 	virtual			~BSoundFile();
 
-virtual long		Open(long open_mode);
-virtual	long		Close();
+	status_t		InitCheck() const;
 
-	long			FileFormat();
-	long			SamplingRate();		/* aka sampling rate */
-	long			CountChannels();		/* aka channel count */
-	long			SampleSize();		/* aka sample size */
-	long			ByteOrder();
-	long			SampleFormat();
-	long			FrameSize();
-	long			CountFrames();
+	status_t		SetTo(const entry_ref *ref, uint32 open_mode);
 
-	bool			IsCompressed();
-	long			CompressionType();
-	char	 		*CompressionName();
+	int32			FileFormat() const;
+	int32			SamplingRate() const;
+	int32			CountChannels() const;
+	int32			SampleSize() const;
+	int32			ByteOrder() const;
+	int32			SampleFormat() const;
+	int32			FrameSize() const;
+	off_t			CountFrames() const;
 
-	virtual long 	SetFileFormat(long format);
-	virtual long	SetSamplingRate(long fps);
-	virtual long	SetChannelCount(long spf);
-	virtual long	SetSampleSize(long bps);
-	virtual long	SetByteOrder(long bord);
-	virtual long	SetSampleFormat(long fmt);
-	virtual long	SetCompressionType(long type);
+	bool			IsCompressed() const;
+	int32			CompressionType() const;
+	char	 		*CompressionName() const;
+
+	virtual int32 	SetFileFormat(int32 format);
+	virtual int32	SetSamplingRate(int32 fps);
+	virtual int32	SetChannelCount(int32 spf);
+	virtual int32	SetSampleSize(int32 bps);
+	virtual int32	SetByteOrder(int32 bord);
+	virtual int32	SetSampleFormat(int32 fmt);
+	virtual int32	SetCompressionType(int32 type);
 	virtual char   	*SetCompressionName(char *name);
 	virtual bool	SetIsCompressed(bool tf);
-	virtual	long	SetDataLocation(long offset);
-	virtual long	SetFrameCount(long count);
+	virtual	off_t	SetDataLocation(off_t offset);
+	virtual off_t	SetFrameCount(off_t count);
+	
+	size_t			ReadFrames(char *buf,  size_t count);
+	size_t			WriteFrames(char *buf, size_t count);
+	virtual off_t	SeekToFrame(off_t n);
+	off_t 			FrameIndex() const;
+	off_t			FramesRemaining() const;
 
-	long			ReadFrames(char *buf, long count);
-	virtual long	SeekToFrame(ulong n);
-	long 			FrameIndex();
-	long			FramesRemaining();
+	BFile			*fSoundFile;
 
 private:
-	long			fFileFormat;
-	long			fSamplingRate;
-	long 			fChannelCount;
-	long			fSampleSize;
-	long			fByteOrder;
-	long			fSampleFormat;
-	
-	long			fByteOffset;	/* offset to first sample */
 
-	long			fFrameCount;
-	long			fFrameIndex;
+virtual	void		_ReservedSoundFile1();
+virtual	void		_ReservedSoundFile2();
+virtual	void		_ReservedSoundFile3();
+
+	int32			fFileFormat;
+	int32			fSamplingRate;
+	int32 			fChannelCount;
+	int32			fSampleSize;
+	int32			fByteOrder;
+	int32			fSampleFormat;
+	
+	off_t			fByteOffset;	/* offset to first sample */
+
+	off_t			fFrameCount;
+	off_t			fFrameIndex;
 
 	bool			fIsCompressed;
-	long			fCompressionType;
+	int32			fCompressionType;
 	char			*fCompressionName;
-
-	void _init_sound_stats(void);
-	void _init_raw_stats(void);
+	status_t		fCStatus;
+	void _init_raw_stats();
+	status_t _ref_to_file(const entry_ref *ref);	  
+	uint32			_reserved[4];
 };
 
-inline bool BSoundFile::IsCompressed()
-{	return(fIsCompressed);	}
-
-inline long BSoundFile::CompressionType()
-{	return(fCompressionType);	}
-
-inline char *BSoundFile::CompressionName()
-{	return(fCompressionName);	}
-
-inline long BSoundFile::FileFormat()
-{	return(fFileFormat);	}
-
-inline long BSoundFile::SamplingRate()
-{	return(fSamplingRate);	}
-
-inline long BSoundFile::CountChannels()
-{	return(fChannelCount);	}
-
-inline long BSoundFile::SampleSize()
-{	return(fSampleSize);	}
-
-inline long BSoundFile::ByteOrder()
-{	return(fByteOrder);	}
-
-inline long BSoundFile::SampleFormat()
-{	return(fSampleFormat);	}
-
-inline long BSoundFile::FrameSize()
-{ 	return(fSampleSize * fChannelCount);	}
-
-inline long BSoundFile::CountFrames()
-{	return(fFrameCount);	}
-
-inline long BSoundFile::FrameIndex()
-{	return(fFrameIndex);	}
 
 #endif			// #ifndef _SOUND_FILE_H

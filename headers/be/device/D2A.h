@@ -4,40 +4,42 @@
 //
 //	Description:	Digital-To-Analog converter class header.
 //	
-//	Copyright 1996, Be Incorporated, All Rights Reserved.
+//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_D2A_H
 #define	_D2A_H
 
-#ifndef _SUPPORT_DEFS_H
+#include <stddef.h>
 #include <SupportDefs.h>
-#endif
-
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
 
 // -----------------------------------------------------------------------
-class BD2A : public BObject {
+class BD2A {
 
 public:
-				BD2A();
-virtual			~BD2A();
+					BD2A();
+virtual				~BD2A();
 
-long			Open(const char *portName);
-void			Close(void);
-bool			IsOpen(void);
+		status_t	Open(const char *portName);
+		void		Close(void);
+		bool		IsOpen(void);
 
-long			Read(uchar *buf);
-long			Write(uchar value);
+		ssize_t		Read(uint8 *buf);
+		ssize_t		Write(uint8 value);
 
 // -----------------------------------------------------------------------
 
 private:
 
-int				ffd;
+virtual	void		_ReservedD2A1();
+virtual	void		_ReservedD2A2();
+virtual	void		_ReservedD2A3();
+
+		int			ffd;
+		uint32		_fReserved[3];
 };
 
 #endif

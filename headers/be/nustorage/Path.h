@@ -1,0 +1,79 @@
+/***************************************************************************
+//
+//	File:			Path.h
+//
+//	Description:	Lightweight class that stores (and allocates
+//					storage for) a string pathname.
+//					The pathname is ALWAYS absolute; the 
+//					file that's identified by the pathname needn't
+//					actually exist:  You can create an "abstract"
+//					pathname that you use to search for or create
+//					a file (as two examples).
+//
+//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//
+//*************************************************************************/
+
+#pragma once
+
+#ifndef _PATH_H
+#define _PATH_H
+
+#include <sys/types.h>
+#include <StorageDefs.h>
+#include <Message.h>
+
+class BDirectory;
+
+class BPath : public BFlattenable {
+public:
+						BPath();
+						BPath(const char *dir, const char *leaf = NULL,
+							bool normalize = FALSE);
+						BPath(const BDirectory *dir, const char *leaf,
+							bool normalize = FALSE);
+						BPath(const BPath &path);
+
+	virtual				~BPath();
+
+			status_t	InitCheck() const;
+
+			status_t	SetTo(const char *path, const char *leaf = NULL,
+							bool normalize = FALSE);
+			status_t	SetTo(const BDirectory *dir, const char *path,
+							bool normalize = FALSE);
+			status_t	Append(const char *path, bool normalize = FALSE);
+			void		Unset();
+
+			const char *Path() const;
+			const char *Leaf() const;
+
+			status_t	GetParent(BPath *) const;
+			
+			bool		operator==(const BPath &item) const;
+			bool		operator==(const char *path) const;
+			bool		operator!=(const BPath &item) const;
+			bool		operator!=(const char *path) const;
+			BPath &		operator=(const BPath &item);
+			BPath &		operator=(const char *path);
+
+virtual		bool		IsFixedSize() const;
+virtual		type_code	TypeCode() const;
+virtual		ssize_t		FlattenedSize() const;
+virtual		status_t	Flatten(void *buffer, ssize_t size) const;
+virtual		bool		AllowsTypeCode(type_code code) const;
+virtual		status_t	Unflatten(type_code c, const void *buf, ssize_t size);
+
+private:
+
+		/* FBC */
+virtual	void		_WarPath1();
+virtual	void		_WarPath2();
+virtual	void		_WarPath3();
+		uint32		_warData[4];
+
+			status_t	clear();
+			char		*fName;
+			status_t	fCStatus;
+};
+#endif

@@ -1,24 +1,19 @@
-//******************************************************************************
+//*****************************************************************************
 //
 //	File:			BMidiText.h
 //
-//	Description:	Midi text input/output object class.
+//	Description:	Midi debug aid
 //
-//	Written by:		Eric Knight
+//	Copyright 1994-97, Be Incorporated
 //
-//	Copyright 1994-96, Be Incorporated
-//
-//******************************************************************************
+//*****************************************************************************
+#pragma once
 
 #ifndef _MIDI_TEXT_H
 #define _MIDI_TEXT_H
 
-#ifndef _MIDI_H
-#include "Midi.h"
-#endif
-#ifndef _STDIO_H
+#include <Midi.h>
 #include <stdio.h>
-#endif
 
 /*------------------------------------------------------------*/
 
@@ -30,38 +25,58 @@ virtual			~BMidiText();
 virtual	void	NoteOff(uchar channel, 
 						uchar note, 
 						uchar velocity,
-						ulong time = B_NOW);
+						uint32 time = B_NOW);
+
 virtual	void	NoteOn(uchar channel, 
 					   uchar note, 
 					   uchar velocity,
-					   ulong time = B_NOW);
+			    	   uint32 time = B_NOW);
+
 virtual	void	KeyPressure(uchar channel, 
 							uchar note, 
 							uchar pressure,
-							ulong time = B_NOW);
+							uint32 time = B_NOW);
+
 virtual	void	ControlChange(uchar channel, 
-							  uchar controlNumber, 
+							  uchar controlNumber,
 							  uchar controlValue, 
-							  ulong time = B_NOW);
+							  uint32 time = B_NOW);
+
 virtual	void	ProgramChange(uchar channel, 
-							  uchar programNumber,
-							  ulong time = B_NOW);
-virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+								uchar programNumber,
+							  	uint32 time = B_NOW);
+
+virtual	void	ChannelPressure(uchar channel, 
+								uchar pressure, 
+								uint32 time = B_NOW);
+
 virtual	void	PitchBend(uchar channel, 
 						  uchar lsb, 
 						  uchar msb,
-						  ulong time = B_NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+			    		  uint32 time = B_NOW);
+
+virtual	void	SystemExclusive(void* data, 
+								size_t dataLength, 
+								uint32 time = B_NOW);
+
 virtual	void	SystemCommon(uchar statusByte, 
 							 uchar data1, 
 							 uchar data2,
-							 ulong time = B_NOW);
-virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
+							 uint32 time = B_NOW);
+
+virtual	void	SystemRealTime(uchar statusByte, uint32 time = B_NOW);
 
 	void	ResetTimer(bool start=FALSE);
+
 private:
+
+virtual	void		_ReservedMidiText1();
+virtual	void		_ReservedMidiText2();
+virtual	void		_ReservedMidiText3();
+
 virtual	void	Run();
-	long	fStartTime;
+	int32	fStartTime;
+	uint32	_reserved[4];
 };
 
 /*------------------------------------------------------------*/

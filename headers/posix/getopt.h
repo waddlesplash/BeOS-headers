@@ -98,15 +98,20 @@ struct option
 #define required_argument	1
 #define optional_argument	2
 
+#include <ansi_parms.h>
+
 #if defined (__STDC__) && __STDC__
-#ifdef __GNU_LIBRARY__
+#if defined(__GNU_LIBRARY__) || __dest_os == __be_os
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in stdlib.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
+/*
+ * But at Be we only use GNU so this is OK
+ */
 extern int getopt (int argc, char *const *argv, const char *shortopts);
-#else /* not __GNU_LIBRARY__ */
+#else /* not __GNU_LIBRARY__  or __BEOS__ */
 extern int getopt ();
-#endif /* __GNU_LIBRARY__ */
+#endif /* __GNU_LIBRARY__ || __BEOS__ */
 extern int getopt_long (int argc, char *const *argv, const char *shortopts,
 		        const struct option *longopts, int *longind);
 extern int getopt_long_only (int argc, char *const *argv,

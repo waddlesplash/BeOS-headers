@@ -4,26 +4,21 @@
 //
 //	Description:	MessageQueue object.
 //
-//	Copyright 1993-96, Be Incorporated
+//	Copyright 1993-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_MESSAGE_QUEUE_H
 #define	_MESSAGE_QUEUE_H
 
-#ifndef _MESSAGE_H
 #include <Message.h>
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
-#ifndef _LOCKER_H
 #include <Locker.h>
-#endif
 
 //------------------------------------------------------------------------------
 
-class	BMessageQueue : BObject {
+class	BMessageQueue {
 
 public:
 					BMessageQueue();	
@@ -32,9 +27,9 @@ virtual				~BMessageQueue();
 		void		AddMessage(BMessage *an_event);
 		BMessage	*NextMessage();
 		bool		RemoveMessage(BMessage *an_event);
-		BMessage	*FindMessage(long index) const;
-		BMessage	*FindMessage(ulong what, long index = 0) const;
-		long		CountMessages() const;
+		BMessage	*FindMessage(int32 index) const;
+		BMessage	*FindMessage(uint32 what, int32 index = 0) const;
+		int32		CountMessages() const;
 		bool		IsEmpty() const;
 
 		bool		Lock();
@@ -43,16 +38,22 @@ virtual				~BMessageQueue();
 // ------------------------------------------------------------------
 
 private:
+
+virtual	void		_ReservedMessageQueue1();
+virtual	void		_ReservedMessageQueue2();
+virtual	void		_ReservedMessageQueue3();
+
+					BMessageQueue(const BMessageQueue &);
+		BMessageQueue &operator=(const BMessageQueue &);
+
 		char		message_filter(BMessage *an_event);
-		BMessage	*FindMessage(bool anyWhat, ulong what, long index) const;
+		BMessage	*FindMessage(bool anyWhat, uint32 what, int32 index) const;
 
 		BMessage	*the_queue;
 		BMessage	*tail;
-		long		message_count;
-		char		debug;
-		long		event_mask;
-		long		system_mask;
+		int32		message_count;
 		BLocker		locker;
+		uint32		_reserved[3];
 };
 
 #endif

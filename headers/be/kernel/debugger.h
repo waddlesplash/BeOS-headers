@@ -2,23 +2,17 @@
 	File:			debugger.h
 	Description:	kernel interface for a debugger.
 
-	Copyright (c) 1995-96 by Be Incorporated.  All Rights Reserved.
+	Copyright (c) 1995-97 by Be Incorporated.  All Rights Reserved.
 +++++ */
+
+#pragma once
 
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H
 
-#ifndef _OS_H
 #include <OS.h>
-#endif
-
-#ifndef _IMAGE_H
 #include <image.h>
-#endif
-
-#ifndef _SUPPORT_DEFS_H
 #include <SupportDefs.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,10 +22,10 @@ extern "C" {
 	kernel calls
 ----- */
 
-extern int		install_default_debugger (port_id to_debugger_port);
+extern status_t	install_default_debugger (port_id to_debugger_port);
 extern port_id	install_team_debugger (team_id team, port_id to_debugger_port);
-extern int		remove_team_debugger (team_id team);
-extern int		debug_thread (thread_id thread);
+extern status_t	remove_team_debugger (team_id team);
+extern status_t	debug_thread (thread_id thread);
 
 
 /* -----
@@ -65,28 +59,50 @@ typedef enum {
 ----- */
 
 typedef struct {
-	long	pc;
-	long	msr;
-	long	lr;
-	long	ctr;
-	long	xer;
-	long	cr;
-	long	filler1;
-	long	fpscr;
-	long	r0;
-	long	r1;			/* stack ptr */
-	long	r2;
-	long	r3;
-	long	r4;
-	long	r5;
-	long	r6;
-	long	r7;
-	long	r8;
-	long	r9;
-	long	r10;
-	long	r11;
-	long	r12;
-	long	r13;
+	int32	filler1;
+	int32	fpscr;
+	int32	pc;
+	int32	msr;
+	int32	lr;
+	int32	ctr;
+	int32	xer;
+	int32	cr;
+	int32	sprg0;
+	int32	filler2;	/* force alignment on quad-word */
+	int32	filler3;
+	int32	filler4;
+	int32	r0;
+	int32	r1;			/* stack ptr */
+	int32	r2;
+	int32	r3;
+	int32	r4;
+	int32	r5;
+	int32	r6;
+	int32	r7;
+	int32	r8;
+	int32	r9;
+	int32	r10;
+	int32	r11;
+	int32	r12;
+	int32	r13;
+	int32	r14;
+	int32	r15;
+	int32	r16;
+	int32	r17;
+	int32	r18;
+	int32	r19;
+	int32	r20;
+	int32	r21;
+	int32	r22;
+	int32	r23;
+	int32	r24;
+	int32	r25;
+	int32	r26;
+	int32	r27;
+	int32	r28;
+	int32	r29;
+	int32	r30;
+	int32	r31;
 	double	f0;
 	double	f1;
 	double	f2;
@@ -119,24 +135,6 @@ typedef struct {
 	double	f29;
 	double	f30;
 	double	f31;
-	long	r14;
-	long	r15;
-	long	r16;
-	long	r17;
-	long	r18;
-	long	r19;
-	long	r20;
-	long	r21;
-	long	r22;
-	long	r23;
-	long	r24;
-	long	r25;
-	long	r26;
-	long	r27;
-	long	r28;
-	long	r29;
-	long	r30;
-	long	r31;
 } cpu_state;
 	
 /* -----
@@ -166,41 +164,41 @@ enum debug_nub_message {
 
 typedef struct {
 	port_id		reply_port;				/* port for reply from kernel */
+	int32		count;					/* # bytes */
 	char		*addr;					/* address to read */
-	int			count;					/* # bytes */
 } nub_read_memory_msg;
 	
 typedef struct {
 	port_id		reply_port;				/* port for reply from kernel */
+	int32		count;					/* # bytes */
 	char		*addr;					/* address to write */
-	int			count;					/* # bytes */
 } nub_write_memory_msg;
 
 typedef struct {
 	thread_id	thread;					/* thread id */
-	long		align_to_double;		/* for alignment */
+	int32		align_to_double;		/* for alignment */
 	cpu_state	cpu;					/* cpu state */
 } nub_run_thread_msg;
 
 typedef struct {
 	thread_id	thread;					/* thread id */
+	int32		align_to_double;		/* for alignment */
+	cpu_state	cpu;					/* cpu state */
 	char		*low_pc;				/* low end of pc range */
 	char		*high_pc;				/* highend of pc range */
-	long		align_to_double;		/* for alignment */
-	cpu_state	cpu;					/* cpu state */
 } nub_step_thread_msg;
 
 typedef struct {
 	thread_id	thread;					/* thread id */
+	int32		align_to_double;		/* for alignment */
+	cpu_state	cpu;					/* cpu state */
 	char		*low_pc;				/* low end of pc range */
 	char		*high_pc;				/* highend of pc range */
-	long		align_to_double;		/* for alignment */
-	cpu_state	cpu;					/* cpu state */
 } nub_step_over_thread_msg;
 
 typedef struct {
 	thread_id	thread;					/* thread id */
-	long		align_to_double;		/* for alignment */
+	int32		align_to_double;		/* for alignment */
 	cpu_state	cpu;					/* cpu state */
 } nub_step_out_thread_msg;
 
@@ -226,18 +224,18 @@ typedef struct {
 } nub_get_thread_debug_info_msg;
 
 typedef struct {
-	long	debug_flags;				/* returned thread debugging flags */
+	int32	debug_flags;				/* returned thread debugging flags */
 } nub_get_thread_debug_info_reply;
 
 typedef struct {
-	long	token;
+	int32	token;
 } nub_acknowlege_image_created_msg;
 
 typedef struct {
 	port_id		reply_port;				/* port for reply from kernel */
 	thread_id	thid;
-	long		num;
-	long		slots[1];
+	int32		num;
+	int32		slots[1];
 } nub_start_profiler_msg;	
 
 typedef struct {
@@ -246,8 +244,8 @@ typedef struct {
 } nub_stop_profiler_msg;	
 
 typedef struct {
-	long		num;
-	long		slots[1];
+	int32		num;
+	int32		slots[1];
 } nub_stop_profiler_reply;
 
 /* -----
@@ -306,7 +304,7 @@ typedef struct {
 } db_team_deleted_msg;
 
 typedef struct {
-	long		reply_token;	/* token to acknowledge receipt (REQUIRED!) */
+	int32		reply_token;	/* token to acknowledge receipt (REQUIRED!) */
 	team_id		team;			/* team id */
 	thread_id	thread;			/* id of thread that is loading the image */
 	image_info	info;			/* info for the image */

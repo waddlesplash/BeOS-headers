@@ -1,77 +1,95 @@
-//******************************************************************************
+//****************************************************************************
 //
-//	File:			BMidiPort.h
+//	File:			Midi.h
 //
-//	Description:	Midi physical interface port object class.
+//	Description:	Abstract MIDI object class.
 //
-//	Written by:		Eric Knight
+//	Copyright 1997, Be Incorporated
 //
-//	Copyright 1994-96, Be Incorporated
-//
-//******************************************************************************
+//****************************************************************************
 
+#pragma once
 #ifndef _MIDI_PORT_H
 #define _MIDI_PORT_H
 
-#ifndef _MIDI_H
-#include "Midi.h"
-#endif
+#include <Midi.h>
 
 /*------------------------------------------------------------*/
 
 class BMidiPort : public BMidi {
+
 public:
-				BMidiPort();
+				BMidiPort(const char *name=NULL);
 				~BMidiPort();
 
-				Open(const char *name);
+		status_t	InitCheck() const; 
+		status_t	Open(const char *name);
 		void	Close();
 
 virtual	void	NoteOff(uchar channel, 
 						uchar note, 
 						uchar velocity,
-						ulong time = B_NOW);
+						uint32 time = B_NOW);
+
 virtual	void	NoteOn(uchar channel, 
 					   uchar note, 
 					   uchar velocity,
-					   ulong time = B_NOW);
+			    	   uint32 time = B_NOW);
+
 virtual	void	KeyPressure(uchar channel, 
 							uchar note, 
 							uchar pressure,
-							ulong time = B_NOW);
+							uint32 time = B_NOW);
+
 virtual	void	ControlChange(uchar channel, 
 							  uchar controlNumber,
 							  uchar controlValue, 
-							  ulong time = B_NOW);
+							  uint32 time = B_NOW);
+
 virtual	void	ProgramChange(uchar channel, 
-							  uchar programNumber,
-							  ulong time = B_NOW);
-virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+								uchar programNumber,
+							  	uint32 time = B_NOW);
+
+virtual	void	ChannelPressure(uchar channel, 
+								uchar pressure, 
+								uint32 time = B_NOW);
+
 virtual	void	PitchBend(uchar channel, 
 						  uchar lsb, 
 						  uchar msb,
-						  ulong time = B_NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+			    		  uint32 time = B_NOW);
+
+virtual	void	SystemExclusive(void* data, 
+								size_t dataLength, 
+								uint32 time = B_NOW);
+
 virtual	void	SystemCommon(uchar statusByte, 
 							 uchar data1, 
 							 uchar data2,
-							 ulong time = B_NOW);
-virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
+							 uint32 time = B_NOW);
 
-		void	AllNotesOff(bool justChannel = TRUE, ulong time = B_NOW);
+virtual	void	SystemRealTime(uchar statusByte, uint32 time = B_NOW);
 
-virtual	long	Start();
+virtual	status_t	Start();
 virtual	void	Stop();
 
 private:
-		uchar	NextFilteredByte(bool* driverClosed = NIL);
+
+virtual	void		_ReservedMidiPort1();
+virtual	void		_ReservedMidiPort2();
+virtual	void		_ReservedMidiPort3();
+
 virtual	void	Run();
 
-		long	Read(void *buffer, ulong numBytes);
-		long	Write(void *buffer, ulong numBytes, ulong time);
+		ssize_t	Read(void *buffer, size_t numBytes) const;
+		ssize_t	Write(void *buffer, size_t numBytes, uint32 time) const;
 
-		long	fWriteDriverRef;
-		long	fReadDriverRef;
+		int32	fWriteDriverRef;
+		int32	fReadDriverRef;
+
+		char*	fName;
+		status_t fCStatus;
+		uint32		_reserved[4];
 };
 
 /*------------------------------------------------------------*/

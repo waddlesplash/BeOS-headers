@@ -1,45 +1,26 @@
-//******************************************************************************
+/*******************************************************************************
 //
 //	File:		View.h
 //
 //	Description:	client view class.
 //
-//	Copyright 1992-96, Be Incorporated
+//	Copyright 1992-97, Be Incorporated
 //
-//******************************************************************************
+//*****************************************************************************/
+
+#pragma once
 
 #ifndef	_VIEW_H
 #define	_VIEW_H
 
-#ifndef _INTERFACE_DEFS_H
-#include "InterfaceDefs.h"
-#endif
-#ifndef	_RECT_H
-#include "Rect.h"
-#endif
-#ifndef	_HANDLER_H
+#include <InterfaceDefs.h>
+#include <Rect.h>
 #include <Handler.h>
-#endif
-#ifndef _MESSAGE_H
 #include <Message.h>
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
-#ifndef _CLIPBOARD_H
+#include <Font.h>
 #include <Clipboard.h>
-#endif
-#ifndef	_PICTURE_H
 #include <Picture.h>
-#endif
 
-struct key_info
-	{
-	ulong	char_code;
-	ulong	key_code;
-	ulong	modifiers;
-	uchar	key_states[16];
-	};
 
 enum {
 	B_PRIMARY_MOUSE_BUTTON = 0x01,
@@ -60,40 +41,34 @@ enum {
 
 //------------------------------------------------------------------------------
 
-
-struct font_info
-	{
-		font_name name;
-		float	size;
-		float	shear;
-		float	rotation;
-		float	ascent;
-		float	descent;
-		float	leading;
-	};
-
-struct edge_info
-	{
-		float	left;
-		float	right;
-	};
+enum {
+	B_FONT_FAMILY_AND_STYLE	= 0x00000001,
+	B_FONT_SIZE				= 0x00000002,
+	B_FONT_SHEAR			= 0x00000004,
+	B_FONT_ROTATION			= 0x00000008,
+	B_FONT_SPACING     		= 0x00000010,
+	B_FONT_ENCODING			= 0x00000020,
+	B_FONT_FACE				= 0x00000040,
+	B_FONT_FLAGS			= 0x00000080,
+	B_FONT_ALL				= 0x000000FF
+};
 
 /*----------------------------------------------------------------*/
 
-enum { B_FULL_UPDATE_ON_RESIZE =	0x80000000	/* 31 */,
-       _B_RESERVED1_ =				0x40000000	/* 30 */,
-       B_WILL_DRAW =				0x20000000	/* 29 */,
-       B_PULSE_NEEDED =				0x10000000	/* 28 */,
-       B_BORDERED =					0x08000000	/* 27 */,
-       B_FRAME_EVENTS =				0x04000000	/* 26 */,
-       B_NAVIGABLE =				0x02000000	/* 25 */,
-       _B_RESERVED4_ =				0x01000000	/* 24 */,
-       _B_RESERVED5_ =				0x00800000	/* 23 */,
-       _B_RESERVED6_ =				0x00400000	/* 23 */,
-       _B_RESERVED7_ =				0x00200000	/* 22 */ };
+enum { B_FULL_UPDATE_ON_RESIZE =  (int) 0x80000000	/* 31 */,
+       _B_RESERVED1_ =					0x40000000	/* 30 */,
+       B_WILL_DRAW =					0x20000000	/* 29 */,
+       B_PULSE_NEEDED =					0x10000000	/* 28 */,
+       B_NAVIGABLE_JUMP =				0x08000000	/* 27 */,
+       B_FRAME_EVENTS =					0x04000000	/* 26 */,
+       B_NAVIGABLE =					0x02000000	/* 25 */,
+       _B_RESERVED4_ =					0x01000000	/* 24 */,
+       _B_RESERVED5_ =					0x00800000	/* 23 */,
+       _B_RESERVED6_ =					0x00400000	/* 23 */,
+       _B_RESERVED7_ =					0x00200000	/* 22 */ };
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
-		 	B_PULSE_NEEDED|B_BORDERED|B_FRAME_EVENTS|B_NAVIGABLE|\
+		 	B_PULSE_NEEDED|B_NAVIGABLE_JUMP|B_FRAME_EVENTS|B_NAVIGABLE|\
 			_B_RESERVED4_|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
 
 enum {
@@ -105,7 +80,7 @@ enum {
 };
 
 // the FOLLOW flags take 16 bits in total
-inline long _rule_(long r1, long r2, long r3, long r4)
+inline uint32 _rule_(int32 r1, int32 r2, int32 r3, int32 r4)
 	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
 
 #define B_FOLLOW_NONE 0
@@ -131,6 +106,7 @@ class BRegion;
 class BPoint;
 class BPolygon;
 class BScrollBar;
+class BScrollView;
 struct _view_attr_;
 struct _array_data_;
 struct _array_hdr_;
@@ -140,19 +116,25 @@ class BView : public BHandler {
 public:
 						BView(	BRect frame,
 								const char *name,
-								ulong resizeMask,
-								ulong flags);
+								uint32 resizeMask,
+								uint32 flags);
 virtual					~BView();
+
+						BView(BMessage *data);
+static	BView			*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			AttachedToWindow();
 virtual	void			AllAttached();
 virtual	void			DetachedFromWindow();
 virtual	void			AllDetached();
 
-virtual	void			AddChild(BView *aView);
-virtual	bool			RemoveChild(BView *childView);
-		long			CountChildren() const;
-		BView			*ChildAt(long index) const;
+virtual	void			MessageReceived(BMessage *msg);
+
+		void			AddChild(BView *child, BView *before = NULL);
+		bool			RemoveChild(BView *child);
+		int32			CountChildren() const;
+		BView			*ChildAt(int32 index) const;
 		BView			*NextSibling() const;
 		BView			*PreviousSibling() const;
 		bool			RemoveSelf();
@@ -161,23 +143,26 @@ virtual	bool			RemoveChild(BView *childView);
 
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
+virtual	void			MouseUp(BPoint where);
 virtual	void			MouseMoved(	BPoint where,
-									ulong code,
-									BMessage *a_message);
+									uint32 code,
+									const BMessage *a_message);
 virtual	void			WindowActivated(bool state);
-virtual	void			KeyDown(ulong aKey);
+virtual	void			KeyDown(const char *bytes, int32 numBytes);
+virtual	void			KeyUp(const char *bytes, int32 numBytes);
 virtual	void			Pulse();
 virtual	void			FrameMoved(BPoint new_position);
 virtual	void			FrameResized(float new_width, float new_height);
 
+virtual	void			TargetedByScrollView(BScrollView *scroll_view);
 		void			BeginRectTracking(	BRect startRect,
-											ulong style = B_TRACK_WHOLE_RECT);
+											uint32 style = B_TRACK_WHOLE_RECT);
 		void			EndRectTracking();
 	
 		void			GetMouse(	BPoint* location,
-									ulong *buttons,
-									bool checkMessageQueue = TRUE) const;
-		long			GetKeys(key_info *info, bool checkMessageQueue);
+									uint32 *buttons,
+									bool checkMessageQueue = TRUE);
+
 		void			DragMessage(BMessage *aMessage,
 									BRect dragRect,
 									BHandler *reply_to = NULL);
@@ -237,7 +222,7 @@ virtual	void			SetLowColor(rgb_color a_color);
 		void			StrokeLine(	BPoint pt0,
 									BPoint pt1,
 									pattern p = B_SOLID_HIGH);
-		void			BeginLineArray(long count);
+		void			BeginLineArray(int32 count);
 		void			AddLine(BPoint pt0, BPoint pt1, rgb_color col);
 		void			EndLineArray();
 	
@@ -245,21 +230,21 @@ virtual	void			SetLowColor(rgb_color a_color);
 									    bool  closed = TRUE,
 										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
-										long numPts,
+										int32 numPts,
 									    bool  closed = TRUE,
 										pattern p = B_SOLID_HIGH);
 		void			StrokePolygon(	const BPoint *ptArray,
-										long numPts,
+										int32 numPts,
 										BRect bounds,
 									    bool  closed = TRUE,
 										pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPolygon *aPolygon,
 									pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
-									long numPts,
+									int32 numPts,
 									pattern p = B_SOLID_HIGH);
 		void			FillPolygon(const BPoint *ptArray,
-									long numPts,
+									int32 numPts,
 									BRect bounds,
 									pattern p = B_SOLID_HIGH);
 	
@@ -284,6 +269,7 @@ virtual	void			SetLowColor(rgb_color a_color);
 
 		void			StrokeRect(BRect r, pattern p = B_SOLID_HIGH);
 		void			FillRect(BRect r, pattern p = B_SOLID_HIGH);
+		void			FillRegion(BRegion *a_region, pattern p= B_SOLID_HIGH);
 		void			InvertRect(BRect r);
 
 		void			StrokeRoundRect(BRect r,
@@ -340,52 +326,50 @@ virtual	void			SetLowColor(rgb_color a_color);
 		void			DrawBitmap(const BBitmap *aBitmap);
 		void			DrawBitmap(const BBitmap *aBitmap, BPoint where);
 		void			DrawBitmap(const BBitmap *aBitmap, BRect dstRect);
-	
-virtual void			SetFontName(const char* name);
-virtual void			SetFontSize(float pointSize);
-virtual void			SetFontShear(float degrees);
-virtual void			SetFontRotation(float degrees);
-virtual void			SetSymbolSet(const char* name);
-		void			GetFontInfo(font_info *info) const;
-		float			StringWidth(const char *aString) const;
-		float			StringWidth(const char *aString, long length) const;
-		void			GetCharEscapements(	char charArray[],
-											long numChars,
-											float escapementArray[],
-											float* escapementUnits) const;
-		void			GetCharEdges(	char charArray[],
-										long numChars,
-										edge_info edgeArray[]) const;
+
 		void			DrawChar(char aChar);
 		void			DrawChar(char aChar, BPoint location);
-		void			DrawString(const char *aString);
-		void			DrawString(const char *aString, BPoint location);
-		void			DrawString(const char *aString, long length);
-		void			DrawString(	const char *aString,
-									long length,
-									BPoint location);
-
+		void			DrawString(const char *aString,
+								   escapement_delta *delta = NULL);
+		void			DrawString(const char *aString, BPoint location,
+								   escapement_delta *delta = NULL);
+		void			DrawString(const char *aString, int32 length,
+								   escapement_delta *delta = NULL);
+		void			DrawString(const char *aString,
+								   int32 length,
+								   BPoint location,
+								   escapement_delta *delta = 0L);
+virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
+		void            GetFont(BFont *font);
+		float			StringWidth(const char *string) const;
+		float			StringWidth(const char *string, int32 length) const;
+		void			GetStringWidths(char *stringArray[], 
+										int32 lengthArray[],
+										int32 numStrings,
+										float widthArray[]) const;	
+		void			SetFontSize(float size);
+		void			GetFontHeight(font_height *height) const;
+	
 		void			Invalidate(BRect invalRect);
 		void			Invalidate();
 
 		void			BeginPicture(BPicture *a_picture);
-		void			BeginPicture_pr(BPicture *a_picture, BRect r);
 		BPicture		*EndPicture();
 		void			DrawPicture(const BPicture *a_picture);
 		void			DrawPicture(const BPicture *a_picture, BPoint where);
 
-virtual	void			SetFlags(ulong flags);
-		ulong			Flags() const;
-virtual	void			SetResizingMode(ulong mode);
-		ulong			ResizingMode() const;
+virtual	void			SetFlags(uint32 flags);
+		uint32			Flags() const;
+virtual	void			SetResizingMode(uint32 mode);
+		uint32			ResizingMode() const;
 		void			MoveBy(float dh, float dv);
 		void			MoveTo(BPoint where);
 		void			MoveTo(float x, float y);
 		void			ResizeBy(float dh, float dv);
 		void			ResizeTo(float width, float height);
 		void			ScrollBy(float dh, float dv);
-		void			ScrollTo(BPoint where);
 		void			ScrollTo(float x, float y);
+virtual	void			ScrollTo(BPoint where);
 virtual	void			MakeFocus(bool focusState = TRUE);
 		bool			IsFocus() const;
 	
@@ -396,11 +380,23 @@ virtual	void			Hide();
 		void			Flush() const;
 		void			Sync() const;
 
+virtual	void			GetPreferredSize(float *width, float *height);
+virtual	void			ResizeToPreferred();
+
 		BScrollBar		*ScrollBar(orientation posture) const;
 
-virtual	void			HandlersRequested(BMessage *msg);
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
+
 		bool			IsPrinting() const;
 		void			SetScale(float scale) const;
+
+virtual status_t		Perform(uint32 d, void *arg);
+
 // ------------------------------------------------------------------
 
 private:
@@ -410,34 +406,49 @@ friend class BWindow;
 friend class BBitmap;
 friend class BPrintJob;
 
-		bool		SaveAsResource(long resID);
+virtual	void			_ReservedView1();
+virtual	void			_ReservedView2();
+virtual	void			_ReservedView3();
+virtual	void			_ReservedView4();
+virtual	void			_ReservedView5();
+virtual	void			_ReservedView6();
+virtual	void			_ReservedView7();
+virtual	void			_ReservedView8();
+
+					BView(const BView &);
+		BView		&operator=(const BView &);
+
+		void		InitData(BRect f, const char *name, uint32 rs, uint32 fl);
+		status_t	ArchiveChildren(BMessage *data, bool deep) const;
+		status_t	UnarchiveChildren(BMessage *data, BWindow *w = NULL);
+		void		BeginPicture_pr(BPicture *a_picture, BRect r);
 		void		StrokeLineToNoPat(BPoint pt);
 		void		StrokeRectNoPat(BRect r);
 		bool		remove_from_list(BView *a_view);
 		bool		remove_self();
 		bool		do_owner_check() const;
 		void		set_owner(BWindow *the_owner);
-		void		do_activate(long msg);
-		void		end_draw();
+		void		do_activate(int32 state);
 		void		check_lock() const;
-		void		movesize(long code, long h, long v);
+		void		movesize(uint32 code, int32 h, int32 v);
 		void		handle_tick();
-		char		*test_area(long length);
+		char		*test_area(int32 length);
 		void		remove_comm_array();
-		_array_hdr_	*new_comm_array(long cnt);
+		_array_hdr_	*new_comm_array(int32 cnt);
 		BView		*RealParent() const;
 		void		SetScroller(BScrollBar *sb);
 		void		UnsetScroller(BScrollBar *sb);
 		void		RealScrollTo(BPoint);
 		void		init_cache();
-		void		set_cached_attributes();
-
-		long			server_token;
-		BRect			f_bound;
-		long			f_type;
+		void		set_cached_state();
+		void		update_cached_state();
+		void        set_font_state(const BFont *font, uint32 mask);
+		uchar		font_encoding() const;
+						
+		int32			server_token;
+		uint32			f_type;
 		float			origin_h;
 		float			origin_v;
-
 		BWindow*		owner;
 		BView*			parent;
 		BView*			next_sibling;
@@ -448,23 +459,57 @@ friend class BPrintJob;
 		bool			top_level_view;
 		BPicture		*cpicture;
 		_array_data_	*comm;
-		rgb_color		high_color;
-		rgb_color		low_color;
-		rgb_color		view_color;
 
 		BScrollBar		*fVerScroller;
 		BScrollBar		*fHorScroller;
 		bool			f_is_printing;
 		bool			attached;
-		_view_attr_		*attr_cache;
+		_view_attr_		*fPermanentState;
+		_view_attr_		*fState;
+		BRect			fCachedBounds;
+		uint32			_reserved[8];
 };
 
-inline ulong	BView::Flags() const
-	{ return(f_type & ~(_RESIZE_MASK_)); }
 
-inline ulong	BView::ResizingMode() const
-	{ return(f_type & (_RESIZE_MASK_)); }
+/*
+ All the inlines below are OK. They don't refer to anything private
+*/
 
-//------------------------------------------------------------------------------
+/*---------------------------------------------------------------*/
+
+inline void	BView::ScrollTo(float x, float y)
+	{ ScrollTo(BPoint(x, y)); }
+
+/*---------------------------------------------------------------*/
+
+inline void	BView::SetViewColor(uchar r, uchar g, uchar b, uchar a)
+{
+	rgb_color	a_color;
+	a_color.red = r;		a_color.green = g;
+	a_color.blue = b;		a_color.alpha = a;
+	SetViewColor(a_color);
+}
+
+/*---------------------------------------------------------------*/
+
+inline void	BView::SetHighColor(uchar r, uchar g, uchar b, uchar a)
+{
+	rgb_color	a_color;
+	a_color.red = r;		a_color.green = g;
+	a_color.blue = b;		a_color.alpha = a;
+	SetHighColor(a_color);
+}
+
+/*---------------------------------------------------------------*/
+
+inline void	BView::SetLowColor(uchar r, uchar g, uchar b, uchar a)
+{
+	rgb_color	a_color;
+	a_color.red = r;		a_color.green = g;
+	a_color.blue = b;		a_color.alpha = a;
+	SetLowColor(a_color);
+}
+
+/*---------------------------------------------------------------*/
 
 #endif

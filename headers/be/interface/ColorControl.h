@@ -4,19 +4,17 @@
 //
 //	Description:	 a control for picking a color
 //
-//	Copyright 1996, Be Incorporated
+//	Copyright 1996-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef _COLOR_CONTROL_H
 #define _COLOR_CONTROL_H
 
-#ifndef _CONTROL_H
 #include <Control.h>
-#endif
-#ifndef _BITMAP_H
 #include <Bitmap.h>
-#endif
 
 /*------------------------------------------------------------*/
 
@@ -29,6 +27,7 @@ enum color_control_layout {
 };
 
 /*------------------------------------------------------------*/
+class BTextControl;
 
 class BColorControl : public BControl {
 	DECLARE_CLASS_INFO(BControl);
@@ -36,50 +35,107 @@ class BColorControl : public BControl {
 public:
 						BColorControl(	BPoint start,
 										color_control_layout layout,
-										long cell_size,
+										float cell_size,
 										const char *name,
 										BMessage *message = NULL,
 										bool use_offscreen = FALSE);
 virtual					~BColorControl();
 
-virtual	void			SetValue(long color_value);
-virtual	void			SetValue(rgb_color color);
+						BColorControl(BMessage *data);
+static	BColorControl	*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
+virtual	void			SetValue(int32 color_value);
+		void			SetValue(rgb_color color);
 		rgb_color		ValueAsColor();
 
+virtual	void			SetEnabled(bool state);
+
 virtual	void			AttachedToWindow();
+virtual	void			MessageReceived(BMessage *msg);
 virtual	void			Draw(BRect updateRect);
 virtual	void			MouseDown(BPoint where);
-virtual	void			KeyDown(ulong key);
+virtual	void			KeyDown(const char *bytes, int32 numBytes);
+
+virtual	void			SetCellSize(float size);
+		float			CellSize() const;
+virtual	void			SetLayout(color_control_layout layout);
+		color_control_layout Layout() const;
+
+virtual void			WindowActivated(bool state);
+virtual	void			MouseUp(BPoint pt);
+virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
+virtual	void			DetachedFromWindow();
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			ResizeToPreferred();
+virtual	status_t		Invoke(BMessage *msg = NULL);
+virtual	void			FrameMoved(BPoint new_position);
+virtual	void			FrameResized(float new_width, float new_height);
+
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
+virtual status_t		Perform(uint32 d, void *arg);
 
 private:
+
+virtual	void			_ReservedColorControl1();
+virtual	void			_ReservedColorControl2();
+virtual	void			_ReservedColorControl3();
+virtual	void			_ReservedColorControl4();
+
+		BColorControl	&operator=(const BColorControl &);
+
+		void			LayoutView(bool calc_frame);
 		void			UpdateOffscreen();
+		void			UpdateOffscreen(BRect update);
+		void			DrawColorArea(BView *target, BRect update);
 		void			ColorRamp(	BRect r,
 									BRect where,
+									BView *target,
 									rgb_color c,
 									short flag,
 									bool focused);
-		void			KbAdjustColor(ulong key);
-		void			key_down32(ulong key);
-		void			key_down8(ulong key);
+		void			KbAdjustColor(uint32 key);
+		bool			key_down32(uint32 key);
+		bool			key_down8(uint32 key);
 static	BRect			CalcFrame(	BPoint start,
 									color_control_layout layout,
-									long size);
+									int32 size);
+		void			InitData(	color_control_layout layout,
+									float size,
+									bool use_offscreen,
+									BMessage *data = NULL);
 
-		long			fCellSize;
-		long			fRows;
-		long			fColumns;
+		float			fCellSize;
+		int32			fRows;
+		int32			fColumns;
 
+		BTextControl	*fRedText;
+		BTextControl	*fGreenText;
+		BTextControl	*fBlueText;
 		BBitmap			*fBitmap;
-		BColorControl	*fOffscreenView;
-		BColorControl	*fRealView;
+		BView			*fOffscreenView;
+		color_space		fLastMode;
+		float			fRound;
+		int32			fFocusedComponent;
+		int32			fCachedIndex;
+		uint32			_reserved[4];
 		bool			fTracking;
 		bool			fFocused;
-		long			fFocusedComponent;
 		bool			fRetainCache;
-		long			fCachedIndex;
-		bool			fast_set_value;
+		bool			fFastSet;
 };
 
 /*------------------------------------------------------------*/
+
+inline void BColorControl::SetValue(rgb_color color)	// OK, no private parts
+{
+	int32 c = (color.red << 24) + (color.green << 16) + (color.blue << 8);
+	SetValue(c);
+}
 
 #endif

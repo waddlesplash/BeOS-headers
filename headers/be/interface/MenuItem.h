@@ -2,28 +2,20 @@
 	
 	MenuItem.h
 	
-	Copyright 1994-96 Be, Inc. All Rights Reserved.
+	Copyright 1994-97 Be, Inc. All Rights Reserved.
 	
 */
+
+#pragma once
 
 #ifndef _MENU_ITEM_H
 #define _MENU_ITEM_H
 
-#ifndef _INTERFACE_DEFS_H
 #include <InterfaceDefs.h>
-#endif
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _MESSAGE_H
+#include <Archivable.h>
 #include <Message.h>
-#endif
-#ifndef _LOOPER_H
-#include <Looper.h>
-#endif
-#ifndef _MENU_H
-#include "Menu.h"
-#endif
+#include <Menu.h>
+#include <Invoker.h>
 
 class BWindow;
 class BView;
@@ -31,8 +23,7 @@ class BMenu;
 class BPopUpMenu;
 class BMenuBar;
 
-class BMenuItem : public BObject
-{
+class BMenuItem : public BArchivable, public BInvoker {
 public:
 
 /* Public Interface for clients of this class */
@@ -40,27 +31,24 @@ public:
 						BMenuItem(	const char *label,
 									BMessage *message,
 									char shortcut = 0,
-									ulong modifiers = 0);
+									uint32 modifiers = 0);
 						BMenuItem(BMenu *menu, BMessage *message = NULL);
+						BMenuItem(BMessage *data);
 virtual					~BMenuItem();
+static	BMenuItem		*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 	
 virtual	void			SetLabel(const char *name);
-virtual	long			SetTarget(BHandler *target);
-virtual long			SetTarget(BLooper *target, bool preferred);
 virtual	void			SetEnabled(bool state);
 virtual	void			SetMarked(bool state);
-virtual void			SetMessage(BMessage *message);
 virtual void			SetTrigger(char ch);
-virtual void			SetShortcut(char ch, ulong modifiers);
+virtual void			SetShortcut(char ch, uint32 modifiers);
 
 		const char		*Label() const;
-		BHandler		*Target(BLooper **looper = NULL) const;
 		bool			IsEnabled() const;
 		bool			IsMarked() const;
-		ulong			Command() const;
-		BMessage		*Message() const;
 		char			Trigger() const;
-		char			Shortcut(ulong *modifiers = NULL) const;
+		char			Shortcut(uint32 *modifiers = NULL) const;
 		
 		BMenu			*Submenu() const;
 		BMenu			*Menu() const;
@@ -69,6 +57,7 @@ virtual void			SetShortcut(char ch, ulong modifiers);
 protected:
 
 virtual	void			GetContentSize(float *width, float *height);
+virtual	void			TruncateLabel(float max, char *new_label);
 virtual	void			DrawContent();
 virtual	void			Draw();
 virtual	void			Highlight(bool on);
@@ -80,27 +69,34 @@ friend	BMenu;
 friend	BPopUpMenu;
 friend	BMenuBar;
 
+virtual	void		_ReservedMenuItem1();
+virtual	void		_ReservedMenuItem2();
+virtual	void		_ReservedMenuItem3();
+virtual	void		_ReservedMenuItem4();
+
+					BMenuItem(const BMenuItem &);
+		BMenuItem	&operator=(const BMenuItem &);
+
 		void		InitData();
-		void		Invoke();
+		void		InitMenuData(BMenu *menu);
 		void		Install(BWindow *window);
+virtual	status_t	Invoke(BMessage *msg = NULL);
 		void		Uninstall();
 		void		SetSuper(BMenu *super);
 		void		Select(bool on);
-		bool		IsSelected();
 		void		DrawMarkSymbol();
 		void		DrawShortcutSymbol();
 		void		DrawSubmenuSymbol();
+		void		DrawControlChar(const char *control);
 		void		SetSysTrigger(char ch);
 		
 		char		*fLabel;
-		BMessage	*fMessage;
 		BMenu		*fSubmenu;
 		BWindow		*fWindow;
-		BHandler	*fTarget;
-		BLooper		*fLooper;
 		BMenu		*fSuper;
 		BRect		fBounds;		// in coord system of Super menu view
-		ulong		fModifiers;
+		uint32		fModifiers;
+		float		fCachedWidth;
 		short		fTriggerIndex;
 		char		fUserTrigger;
 		char		fSysTrigger;
@@ -108,20 +104,32 @@ friend	BMenuBar;
 		bool		fMark;
 		bool		fEnabled;
 		bool		fSelected;
+
+		uint32		_reserved[4];
 };
 
 class BSeparatorItem : public BMenuItem
 {
 public:
-				BSeparatorItem();
-virtual			~BSeparatorItem();
-virtual	void	SetEnabled(bool state);
+						BSeparatorItem();
+						BSeparatorItem(BMessage *data);
+virtual					~BSeparatorItem();
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+static	BSeparatorItem	*Instantiate(BMessage *data);
+virtual	void			SetEnabled(bool state);
 
 protected:
 
-virtual	void	GetContentSize(float *width, float *height);
-virtual	void	Draw();
+virtual	void			GetContentSize(float *width, float *height);
+virtual	void			Draw();
 
+private:
+virtual	void		_ReservedSeparatorItem1();
+virtual	void		_ReservedSeparatorItem2();
+
+		BSeparatorItem	&operator=(const BSeparatorItem &);
+
+		uint32		_reserved[1];
 };
 
 #endif

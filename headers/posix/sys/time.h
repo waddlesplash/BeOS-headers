@@ -2,8 +2,8 @@
 #define _SYS_TIME_H
 
 struct timeval {
-	unsigned long tv_sec;
-	unsigned long tv_usec;
+	long tv_sec;
+	long tv_usec;
 };
 
 /*

@@ -4,43 +4,44 @@
 //
 //	Description:	Joystick port class header.
 //	
-//	Copyright 1996, Be Incorporated, All Rights Reserved.
+//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_JOYSTICK_H
 #define	_JOYSTICK_H
 
-#ifndef SUPPORT_DEFS_H
 #include <SupportDefs.h>
-#endif
-
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
 
 // -----------------------------------------------------------------------
-class BJoystick : public BObject {
+class BJoystick {
 
 public:
-				BJoystick();
-virtual			~BJoystick();
+					BJoystick();
+virtual				~BJoystick();
 
-long			Open(const char *portName);
-void			Close(void);
+		status_t	Open(const char *portName);
+		void		Close(void);
 
-long			Update(void);
-double			timestamp;
-short			horizontal;
-short			vertical;
-bool			button1;
-bool			button2;
+		status_t	Update(void);
+		bigtime_t	timestamp;
+		int16		horizontal;
+		int16		vertical;
+		bool		button1;
+		bool		button2;
 
 // -----------------------------------------------------------------------
 
 private:
 
-int				ffd;
+virtual	void		_ReservedJoystick1();
+virtual	void		_ReservedJoystick2();
+virtual	void		_ReservedJoystick3();
+
+		int			ffd;
+		uint32		_fReserved[3];
 };
 
 #endif

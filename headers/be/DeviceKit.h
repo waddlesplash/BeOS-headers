@@ -2,7 +2,7 @@
 //
 //	File:	deviceKit.h
 //
-//	Copyright 1992-96, Be Incorporated.
+//	Copyright 1992-97, Be Incorporated.
 //
 /***************************************************************/
 

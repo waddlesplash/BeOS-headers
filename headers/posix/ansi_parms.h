@@ -1,7 +1,9 @@
+/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+
 /*
  *	ansi_parms.h
  *	
- *		Copyright © 1995 Metrowerks, Inc.
+ *		Copyright © 1995-1996 Metrowerks, Inc.
  *		All rights reserved.
  */
  
@@ -12,6 +14,8 @@
 
 #define __extern_c								extern "C" {
 #define __end_extern_c						}
+
+#define __std(ref)								/*std::*/ref
 
 #define __namespace(space)				//namespace space {
 #define __end_namespace(space)		//}
@@ -30,6 +34,8 @@
 #define __extern_c
 #define __end_extern_c
 
+#define __std(ref)								ref
+
 #define __namespace(space)
 #define __end_namespace(space)
 
@@ -41,10 +47,23 @@
 
 #endif /* __cplusplus */
 
-#define __undef_os	0
+#define __undef_os		0
 #define __mac_os		1
 #define __be_os			2
+#define __win32_os		3
+#define __powertv_os	4
+
+
+#if	__dest_os	== __win32_os
+#define	__tls	 __declspec(thread)
+#define __LITTLE_ENDIAN
+#else
+#define	__tls 
+#endif
 
 #define __dest_os	__be_os
 
 #endif /* ndef __ansi_parms__ */
+
+/*     Change record
+*/

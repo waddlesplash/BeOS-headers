@@ -1,18 +1,16 @@
 /*
 	
-	Copyright 1994-96 Be, Inc. All Rights Reserved.
+	Copyright 1994-97 Be, Inc. All Rights Reserved.
 	
 */
+
+#pragma once
 
 #ifndef _MENU_FIELD_H
 #define _MENU_FIELD_H
 
-#ifndef _MENU_H
 #include <Menu.h>
-#endif
-#ifndef _MENU_BAR_H
 #include <MenuBar.h>
-#endif
 
 class BMenuField : public BView
 {
@@ -21,16 +19,27 @@ public:
 									const char *name,
 									const char *label,
 									BMenu *menu,
-									ulong resize = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-									ulong flags = B_WILL_DRAW | B_NAVIGABLE); 
+									uint32 resize = B_FOLLOW_LEFT | B_FOLLOW_TOP,
+									uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
+						BMenuField(BMessage *data);
 virtual					~BMenuField();
+static	BMenuField		*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Draw(BRect update);
 virtual	void			AttachedToWindow();
 virtual	void			AllAttached();
 virtual	void			MouseDown(BPoint where);
-virtual	void			KeyDown(ulong key);
+virtual	void			KeyDown(const char *bytes, int32 numBytes);
 virtual	void			MakeFocus(bool state);
+virtual void			MessageReceived(BMessage *msg);
+virtual void			WindowActivated(bool state);
+virtual	void			MouseUp(BPoint pt);
+virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
+virtual	void			DetachedFromWindow();
+virtual	void			AllDetached();
+virtual	void			FrameMoved(BPoint new_position);
+virtual	void			FrameResized(float new_width, float new_height);
 
 		BMenu			*Menu() const;
 		BMenuBar		*MenuBar() const;
@@ -46,10 +55,29 @@ virtual	void			SetAlignment(alignment label);
 virtual	void			SetDivider(float dividing_line);
 		float			Divider() const;
 
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+virtual status_t		Perform(uint32 d, void *arg);
+
 private:
 friend class _BMCMenuBar_;
 
-		void			DrawLabel(BRect bounds);
+virtual	void			_ReservedMenuField1();
+virtual	void			_ReservedMenuField2();
+virtual	void			_ReservedMenuField3();
+
+		BMenuField		&operator=(const BMenuField &);
+
+
+		void			InitObject(const char *label);
+		void			InitObject2();
+		void			DrawLabel(BRect bounds, BRect update);
+static	void			InitMenu(BMenu *menu);
 static	long			MenuTask(void *arg);
 
 		char			*fLabel;
@@ -62,8 +90,7 @@ static	long			MenuTask(void *arg);
 		bool			fSelected;
 		bool			fTransition;
 		thread_id		fMenuTaskID;
-		BMessageFilter	*fKeyDownFilter;
-		BMessageFilter	*fMouseDownFilter;
+		uint32			_reserved[3];
 };
 
 #endif

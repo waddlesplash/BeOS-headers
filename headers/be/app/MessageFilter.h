@@ -2,19 +2,16 @@
 //
 //	File:			MessageFilter.h
 //
-//	Copyright 1996, Be Incorporated, All Rights Reserved.
+//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef _MESSAGE_FILTER_H
 #define _MESSAGE_FILTER_H
 
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _HANDLER_H
 #include <Handler.h>
-#endif
 
 /*-------------------------------------------------------------*/
 
@@ -35,53 +32,55 @@ enum message_source {
 	B_LOCAL_SOURCE
 };
 
+class BHandler;
+class BMessage;
+
 /*-------------------------------------------------------------*/
 
-class BMessageFilter : public BObject {
+typedef filter_result (*filter_hook)
+	(BMessage *message, BHandler **target, BMessageFilter *filter);
+
+class BMessageFilter {
 
 public:
-							BMessageFilter(	message_delivery delivery,
-											message_source source);
+							BMessageFilter(	uint32 what,
+											filter_hook func = NULL);
 							BMessageFilter(	message_delivery delivery,
 											message_source source,
-											ulong what);
+											filter_hook func = NULL);
+							BMessageFilter(	message_delivery delivery,
+											message_source source,
+											uint32 what,
+											filter_hook func = NULL);
+							BMessageFilter(const BMessageFilter &filter);
+							BMessageFilter(const BMessageFilter *filter);
 virtual						~BMessageFilter();
+
+		BMessageFilter		&operator=(const BMessageFilter &from);
 
 virtual	filter_result		Filter(BMessage *message, BHandler **target);
 
-		message_delivery	MessageDelivery();
-		message_source		MessageSource();
-		ulong				Command();
-		bool				FiltersAnyCommand();
+		message_delivery	MessageDelivery() const;
+		message_source		MessageSource() const;
+		uint32				Command() const;
+		bool				FiltersAnyCommand() const;
+		BLooper				*Looper() const;
 
 private:
+friend	class BLooper;
 
+virtual	void			_ReservedMessageFilter1();
+virtual	void			_ReservedMessageFilter2();
+
+		void				SetLooper(BLooper *owner);
+		filter_hook			FilterFunction() const;
 		bool				fFiltersAny;
-		ulong				what;
+		uint32				what;
 		message_delivery	fDelivery;
 		message_source		fSource;
+		BLooper				*fLooper;
+		filter_hook			fFilterFunction;
+		uint32				_reserved[3];
 };
-
-/*-------------------------------------------------------------*/
-
-inline message_delivery BMessageFilter::MessageDelivery()
-	{ return fDelivery; };
-
-/*-------------------------------------------------------------*/
-
-inline message_source BMessageFilter::MessageSource()
-	{ return fSource; };
-
-/*-------------------------------------------------------------*/
-
-inline ulong BMessageFilter::Command()
-	{ return what; };
-
-/*-------------------------------------------------------------*/
-
-inline bool BMessageFilter::FiltersAnyCommand()
-	{ return fFiltersAny; };
-
-/*-------------------------------------------------------------*/
 
 #endif

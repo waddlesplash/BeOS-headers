@@ -1,22 +1,40 @@
+/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+
 /*
  *	math.h
  *	
- *		Copyright © 1995 Metrowerks, Inc.
+ *		Copyright © 1995-1996 Metrowerks, Inc.
  *		All rights reserved.
+ *   Change recore
+ *   mm-9607225  Added declaration for pi for Infinity Marathon.
  */
  
-#ifndef __math__
-#define __math__
+#ifndef __cmath__
+#define __cmath__
 
-#pragma options align=mac68k
 #pragma direct_destruction off
 
 #include <ansi_parms.h>
-#include <be_math.h>       /* useful constants like M_PI, etc */
 
-#define HUGE_VAL	(*__huge_val)
+#if __dest_os == __be_os
+	#include <math.be.h>       /* useful constants like M_PI, etc */
+#endif
+
+__namespace(__stdc_space(math))
+
+#if __dest_os == _be_os
+	
+#define HUGE_VAL	(*__huge_val))
 
 extern const double *__huge_val;
+
+#else /* __dest_os == _be_os */
+
+#define HUGE_VAL	(* (double *) __std(__huge_val))
+
+extern unsigned char *	__huge_val;
+
+#endif  /* __dest_os == _be_os */
 
 /*
  *  Set the following define to 1 to force the ANSI math header to inline FPU
@@ -61,7 +79,7 @@ float fmodf(float, float);
 
 __end_extern_c
 
-#if __POWERPC__
+#if __POWERPC__ || __INTEL__
 
 __extern_c
 
@@ -90,13 +108,21 @@ double fmod(double, double);
 
 __end_extern_c
 
-#ifdef __cplusplus
-		/* double inlines, for C++ */
-inline double fabs(double x)	{ return __fabs(x); }
+#ifdef	__INTEL__
+
+	double fabs(double);
+
+#elif defined __cplusplus
+
+			/* double inlines, for C++ */
+	inline double fabs(double x)	{ return __fabs(x); }
+
 #else
-		/* double macro overrides, for C */
-double fabs(double);
-#define fabs(x)			__fabs(x)
+
+			/* double macro overrides, for C */
+	double fabs(double);
+	#define fabs(x)			__fabs(x)
+
 #endif
 
 #else	/* !__POWERPC__ */
@@ -364,7 +390,15 @@ __end_extern_c
 
 #endif	/* __POWERPC__ */
 
+__end_namespace(stdc_space(math))
+
+__import_stdc_into_std_space(math)
+
 #pragma options align=reset
 #pragma direct_destruction reset
 
 #endif
+/*     Change record
+mm-960722       Inserted declaration for pi
+mm-961008       Removed declaration for pi since it does not conform to the ANSI C Standard
+*/

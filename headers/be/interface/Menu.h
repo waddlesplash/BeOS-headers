@@ -2,30 +2,24 @@
 	
 	Menu.h
 	
-	Copyright 1994-96 Be, Inc. All Rights Reserved.
+	Copyright 1994-97 Be, Inc. All Rights Reserved.
 	
 */
+
+#pragma once
 
 #ifndef _MENU_H
 #define _MENU_H
 
-#ifndef _INTERFACE_DEFS_H
 #include <InterfaceDefs.h>
-#endif
-#ifndef _VIEW_H
 #include <View.h>
-#endif
-#ifndef _LOOPER_H
 #include <Looper.h>
-#endif
-#ifndef _LIST_H
 #include <List.h>
-#endif
 
 class BMenuItem;
 class BMenuBar;
 class BMenuWindow;
-extern "C" long _init_interface_kit_();
+extern "C" status_t _init_interface_kit_();
 
 enum menu_layout {
 	B_ITEMS_IN_ROW = 0,
@@ -35,15 +29,16 @@ enum menu_layout {
 
 struct menu_info {
 	float		font_size;
-	font_name	font;
+	font_family	f_family;
+	font_style	f_style;
 	rgb_color	background_color;
-	long		separator;
+	int32		separator;
 	bool		click_to_open;
 	bool		triggers_always_shown;
 };
 
-long	set_menu_info(menu_info *info);
-long	get_menu_info(menu_info *info);
+status_t	set_menu_info(menu_info *info);
+status_t	get_menu_info(menu_info *info);
 
 class BMenu : public BView
 {
@@ -56,51 +51,68 @@ public:
 						BMenu(const char *title, float width, float height);
 virtual					~BMenu();
 
+						BMenu(BMessage *data);
+static	BMenu			*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
 virtual void			AttachedToWindow();
+virtual void			DetachedFromWindow();
 
 		bool			AddItem(BMenuItem *item);
-		bool			AddItem(BMenuItem *item, long index);
+		bool			AddItem(BMenuItem *item, int32 index);
 		bool			AddItem(BMenuItem *item, BRect frame);
 		bool			AddItem(BMenu *menu);
-		bool			AddItem(BMenu *menu, long index);
+		bool			AddItem(BMenu *menu, int32 index);
 		bool			AddItem(BMenu *menu, BRect frame);
 		bool			AddSeparatorItem();
 		bool			RemoveItem(BMenuItem *item);
-		BMenuItem		*RemoveItem(long index);
+		BMenuItem		*RemoveItem(int32 index);
 		bool			RemoveItem(BMenu *menu);
 
-		BMenuItem		*ItemAt(long index) const;
-		BMenu			*SubmenuAt(long index) const;
-		long			CountItems() const;
-		long			IndexOf(BMenuItem *item) const;
-		long			IndexOf(BMenu *menu) const;
-		BMenuItem		*FindItem(ulong command) const;
+		BMenuItem		*ItemAt(int32 index) const;
+		BMenu			*SubmenuAt(int32 index) const;
+		int32			CountItems() const;
+		int32			IndexOf(BMenuItem *item) const;
+		int32			IndexOf(BMenu *menu) const;
+		BMenuItem		*FindItem(uint32 command) const;
 		BMenuItem		*FindItem(const char *name) const;
 
-virtual	long			SetTargetForItems(BHandler *target);
+virtual	status_t		SetTargetForItems(BHandler *target);
+virtual	status_t		SetTargetForItems(BMessenger messenger);
 virtual	void			SetEnabled(bool state);
 virtual	void			SetRadioMode(bool state);
 virtual	void			SetTriggersEnabled(bool state);
+virtual void			SetMaxContentWidth(float max);
 
 		bool			IsEnabled() const;	
 		bool			IsRadioMode() const;
 		bool			AreTriggersEnabled() const;
-		
+		float			MaxContentWidth() const;
+
 		BMenuItem		*FindMarked();
 
-	// used to "walk" around the menu hierarchy.
 		BMenu			*Supermenu() const;
 		BMenuItem		*Superitem() const;
 
 /* Public Interface for derived classes of the menu system */
 
-virtual	void			KeyDown(ulong key);
+virtual void			MessageReceived(BMessage *msg);
+virtual	void			KeyDown(const char *bytes, int32 numBytes);
 virtual void			Draw(BRect updateRect);
-		
-	// Need this function in order to "dirty" a menu layout in
-	// order to force and relayout
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			ResizeToPreferred();
+virtual	void			FrameMoved(BPoint new_position);
+virtual	void			FrameResized(float new_width, float new_height);
 		void			InvalidateLayout();
 	
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+virtual status_t		Perform(uint32 d, void *arg);
 
 // -------------------------------------------------------------//
 // -------------------------------------------------------------//
@@ -110,8 +122,8 @@ protected:
 					// other subclasses of BMenu.
 					BMenu(	BRect frame,
 							const char *viewName,
-							ulong resizeMask,
-							ulong flags,
+							uint32 resizeMask,
+							uint32 flags,
 							menu_layout layout,
 							bool resizeToFit);
 
@@ -119,6 +131,15 @@ virtual	BPoint		ScreenLocation();
 
 		void		SetLabelFromMarked(bool on);
 		bool		IsLabelFromMarked();
+
+		void		SetItemMargins(	float left, 
+									float top, 
+									float right, 
+									float bottom);
+		void		GetItemMargins(	float *left, 
+									float *top, 
+									float *right, 
+									float *bottom) const;
 
 		menu_layout	Layout() const;
 
@@ -131,21 +152,29 @@ virtual	void		Show();
 // -------------------------------------------------------------//
 // -------------------------------------------------------------//
 private:
-friend BWindow;		// it calls InvokeItem for menu shortcuts
+friend BWindow;
 friend BMenuBar;
 friend BMenuItem;
-friend long _init_interface_kit_();
-friend long	set_menu_info(menu_info *);
-friend long	get_menu_info(menu_info *);
+friend status_t _init_interface_kit_();
+friend status_t	set_menu_info(menu_info *);
+friend status_t	get_menu_info(menu_info *);
 
-		void		InitData();
-		void		SetPad(BRect pad);
+virtual	void			_ReservedMenu1();
+virtual	void			_ReservedMenu2();
+virtual	void			_ReservedMenu3();
+virtual	void			_ReservedMenu4();
+virtual	void			_ReservedMenu5();
+virtual	void			_ReservedMenu6();
+
+		BMenu			&operator=(const BMenu &);
+
+		void		InitData(BMessage *data = NULL);
 		void		_show(bool selectFirstItem = FALSE);
 		void		_hide();
 		BMenuItem	*_track(int *action, long start = -1);
-		void		RemoveItem(long index, BMenuItem *item);
-		void		LayoutItems(long index);
-		BRect		Bump(BRect current, BPoint extent, int index) const;
+		void		RemoveItem(int32 index, BMenuItem *item);
+		void		LayoutItems(int32 index);
+		BRect		Bump(BRect current, BPoint extent, int32 index) const;
 		BPoint		ItemLocInRect(BRect frame) const;
 		BRect		CalcFrame(BPoint where, bool *scrollOn);
 		bool		ScrollMenu(BRect bounds, BPoint loc, bool *fast);
@@ -167,10 +196,10 @@ friend long	get_menu_info(menu_info *);
 		void		Install(BWindow *target);
 		void		Uninstall();
 		void		SelectItem(	BMenuItem *m,
-								int showSubmenu = 0,
+								uint32 showSubmenu = 0,
 								bool selectFirstItem = FALSE);
 		BMenuItem	*CurrentSelection() const;
-		void		SelectNextItem(BMenuItem *item, bool forward);
+		bool		SelectNextItem(BMenuItem *item, bool forward);
 		BMenuItem	*NextItem(BMenuItem *item, bool forward) const;
 		bool		IsItemVisible(BMenuItem *item) const;
 		void		SetIgnoreHidden(bool on);
@@ -182,7 +211,6 @@ friend long	get_menu_info(menu_info *);
 		bool		IsStickyPrefOn();
 		void		RedrawAfterSticky(BRect bounds);
 
-static	menu_info	*GetSystemMenuInfoPtr();
 static	menu_info	sMenuInfo;
 
 		BMenuItem	*fChosenItem;
@@ -196,11 +224,13 @@ static	menu_info	sMenuInfo;
 		float		fAscent;
 		float		fDescent;
 		float		fFontHeight;
-		int			fState;
+		uint32		fState;
 		menu_layout	fLayout;
-		char		fTrigger;
 		BRect		*fExtraRect;
+		float		fMaxContentWidth;
+		uint32		_reserved[4];
 
+		char		fTrigger;
 		bool		fResizeToFit;
 		bool		fUseCachedMenuLayout;
 		bool		fEnabled;

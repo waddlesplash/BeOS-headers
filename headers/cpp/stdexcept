@@ -1,0 +1,112 @@
+/*  Metrowerks Standard Library  Version 2.1  1996 December 29  */
+/************************************************************************/
+/*	Project...:	Standard C++ Library									*/
+/*	Name......:	stdexcept												*/
+/*	Purpose...:	exception handling										*/
+/*  Copyright.: ©Copyright 1993-96 by metrowerks inc					*/
+/************************************************************************/
+#ifndef _STDEXCEPT_
+#define _STDEXCEPT_                  //MW-mm 960530
+
+#ifdef __MODENALIB__		//	Modena C++ Libes
+	#include <mexcept.h>
+#else						//	Plauger C++ Libes
+
+	#undef	__MODENALIB__
+
+	//#ifdef __NOSTRING__
+	class string;		//	we don't want to include <string>
+	//#else
+	//#include <string>
+	//#endif
+
+	#if __MWERKS__
+	#pragma options align=mac68k
+	#pragma direct_destruction off
+	#endif
+
+	class exception;
+	class logic_error;
+	class domain_error;
+	class invalid_argument;
+	class length_error;
+	class out_of_range;
+	class runtime_error;
+	class range_error;
+	class overflow_error;
+
+	class exception {
+	public:
+		exception() {}
+		exception(const exception&) {}
+		exception& operator=(const exception&) throw() { return *this; }
+	//	virtual ~exception() throw();
+		virtual const char* what() const throw();
+	};
+
+	class logic_error : public exception {
+		const string&	mwhat;
+	public:
+		logic_error(const string& what_arg) : mwhat(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class domain_error : public logic_error {
+	public:
+		domain_error(const string& what_arg) : logic_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class invalid_argument : public logic_error {
+	public:
+		invalid_argument(const string& what_arg) : logic_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class length_error : public logic_error {
+	public:
+		length_error(const string& what_arg) : logic_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class out_of_range : public logic_error {
+	public:
+		out_of_range(const string& what_arg) : logic_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class runtime_error : public exception {
+		const string&	mwhat;
+	public:
+		runtime_error(const string& what_arg) : mwhat(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class range_error : public runtime_error {
+	public:
+		range_error(const string& what_arg) : runtime_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+	class overflow_error : public runtime_error {
+	public:
+		overflow_error(const string& what_arg) : runtime_error(what_arg) {}
+		virtual const char* what() const;
+	};
+
+#endif
+
+#if __MWERKS__
+	#pragma options align=reset
+	#pragma direct_destruction reset
+#endif
+
+#ifndef __MODENALIB__
+extern void __priv_throwbadcast(void);
+#endif
+
+#endif
+
+/* Change record
+//MW-mm 960530 Moved some includes and flag settings to allow stdexcept to compile by itself
+*/

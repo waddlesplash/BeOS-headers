@@ -5,9 +5,7 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
-
-void *alloca(size_t size);
+#define alloca __alloca
 
 
 #ifdef __cplusplus

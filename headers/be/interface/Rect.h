@@ -4,22 +4,18 @@
 //
 //	Description:	BRect class header.
 //	
-//	Copyright 1993-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1993-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_RECT_H
 #define	_RECT_H
 
-#ifndef	_MATH_H
 #include <math.h>
-#endif
-#ifndef _SUPPORT_DEFS_H
 #include <SupportDefs.h>
-#endif
-#ifndef _POINT_H
-#include "Point.h"
-#endif
+#include <Point.h>
 
 class BRect {
 
@@ -74,9 +70,9 @@ public:
 		bool		Intersects(BRect r) const;
 		bool		IsValid() const;
 		float		Width() const;
-		long		IntegerWidth() const;
+		int32		IntegerWidth() const;
 		float		Height() const;
-		long		IntegerHeight() const;
+		int32		IntegerHeight() const;
 		bool		Contains(BPoint) const;
 		bool		Contains(BRect) const;
 };
@@ -160,7 +156,7 @@ inline bool BRect::IsValid() const
 		return FALSE;
 }
 
-inline long BRect::IntegerWidth() const
+inline int32 BRect::IntegerWidth() const
 {
 	return(ceil(right - left));
 }
@@ -170,7 +166,7 @@ inline float BRect::Width() const
 	return(right - left);
 }
 
-inline long BRect::IntegerHeight() const
+inline int32 BRect::IntegerHeight() const
 {
 	return(ceil(bottom - top));
 }

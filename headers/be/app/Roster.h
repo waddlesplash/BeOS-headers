@@ -1,40 +1,31 @@
-//******************************************************************************
+/*****************************************************************************
 //
 //	File:			Roster.h
 //
 //	Description:	Client BRoster class. Used to keep track of all running
 //					applications in the system.
 //
-//	Copyright 1992-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
 //
-//******************************************************************************
+******************************************************************************/
+#pragma once
 
 #ifndef _ROSTER_H
 #define _ROSTER_H
 
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _OS_H
 #include <OS.h>
-#endif
-#ifndef _MESSAGE_H
 #include <Message.h>
-#endif
-#ifndef _STORAGE_DEFS_H
 #include <StorageDefs.h>
-#endif
-#ifndef _LIST_H
 #include <List.h>
-#endif
-#ifndef _LOCKER_H
 #include <Locker.h>
-#endif
+#include <Mime.h>
 
 class BApplication;
 class BWindow;
 class BMessenger;
-struct _p_ainfo_;
+class BResourceFile;
+class BNodeInfo;
+
 extern "C" int	_init_roster_();
 
 #define B_LAUNCH_MASK				(0x3)
@@ -48,120 +39,140 @@ extern "C" int	_init_roster_();
 #define _B_APP_INFO_RESERVED1_		(0x10000000)
 
 struct app_info {
-	ulong		signature;
+				app_info();
+				~app_info();
+
 	thread_id	thread;
 	team_id		team;
 	port_id		port;
-	record_ref	ref;
-	ulong		flags;
+	uint32		flags;
+	entry_ref	ref;
+	char		signature[B_MIME_TYPE_LENGTH];
 };
 
 //------------------------------------------------------------------------------
 
 class BRoster {
-	
-	// because BRoster is a shared object (across address spaces) it
-	// can't have any virtual functions. Therefore it doesn't inherit from
-	// BObject or participate in the Class Info system.
-
 public:
-		bool		IsRunning(ulong signature) const;
-		bool		IsRunning(record_ref ref) const;
-		team_id		TeamFor(ulong signature) const;
-		team_id		TeamFor(record_ref ref) const;
+					BRoster();
+					~BRoster();
+		
+		bool		IsRunning(const char *mime_sig) const;
+		bool		IsRunning(entry_ref *ref) const;
+		team_id		TeamFor(const char *mime_sig) const;
+		team_id		TeamFor(entry_ref *ref) const;
 		void		GetAppList(BList *team_id_list) const;
-		void		GetAppList(ulong signature, BList *team_id_list) const;
-		long		GetAppInfo(ulong signature, app_info *info) const;
-		long		GetAppInfo(record_ref ref, app_info *info) const;
-		long		GetRunningAppInfo(team_id team, app_info *info) const;
-		long		GetActiveAppInfo(app_info *info) const;
-		long		Launch(	ulong signature,
-							BMessage *initial_message = NULL,
-							team_id *app_team = NULL);
-		long		Launch(	ulong signature,
+		void		GetAppList(const char *sig, BList *team_id_list) const;
+		status_t	GetAppInfo(const char *sig, app_info *info) const;
+		status_t	GetAppInfo(entry_ref *ref, app_info *info) const;
+		status_t	GetRunningAppInfo(team_id team, app_info *info) const;
+		status_t	GetActiveAppInfo(app_info *info) const;
+		status_t	ActivateApp(team_id team) const;
+		status_t	Broadcast(BMessage *msg) const;
+
+		status_t	Launch(	const char *mime_type,
+							BMessage *initial_msgs = NULL,
+							team_id *app_team = NULL) const;
+		status_t	Launch(	const char *mime_type,
 							BList *message_list,
-							team_id *app_team = NULL);
-		long		Launch(	ulong signature,
-							long argc,
+							team_id *app_team = NULL) const;
+		status_t	Launch(	const char *mime_type,
+							int argc,
 							char **args,
-							team_id *app_team = NULL);
-		long		Launch(	record_ref ref,
+							team_id *app_team = NULL) const;
+
+		status_t	Launch(	entry_ref *ref,
 							BMessage *initial_message = NULL,
-							team_id *app_team = NULL);
-		long		Launch(	record_ref ref,
+							team_id *app_team = NULL) const;
+		status_t	Launch(	entry_ref *ref,
 							BList *message_list,
-							team_id *app_team = NULL);
-		long		Launch(	record_ref ref,
-							long argc,
+							team_id *app_team = NULL) const;
+		status_t	Launch(	entry_ref *ref,
+							int argc,
 							char **args,
-							team_id *app_team = NULL);
-		void		RemoveApp(team_id team);
+							team_id *app_team = NULL) const;
+
+		status_t	FindApp(const char *mime_type, entry_ref *app) const;
+		status_t	FindApp(entry_ref *ref, entry_ref *app) const;
 
 //------------------------------------------------------------------------------
 private:
 
 friend class BApplication;
 friend class BWindow;
-friend class _BAppInit_;
+friend class _BAppCleanup_;
 friend int	_init_roster_();
-friend void	activate_app(team_id);
+friend status_t _send_to_roster_(BMessage *, BMessage *, bool);
+friend bool _is_valid_roster_mess_(bool);
 
-		void		*operator new(size_t size);
-		void		operator delete(void *p, size_t size);
-
-					BRoster();
-					~BRoster();
-		
-		ulong		AddApplication(	ulong signature,
-									record_ref ref,
-									ulong flags,
+		uint32		AddApplication(	const char *mime_sig,
+									entry_ref *ref,
+									uint32 flags,
 									team_id team,
+									thread_id thread,
 									port_id port,
-									bool full_reg);
-		void		SetSignature(thread_id thread, ulong signature);
-		void		SetThread(team_id team, thread_id tid);
-		void		SetThreadAndTeam(ulong entry_token,
+									bool full_reg) const;
+		void		SetSignature(team_id team, const char *mime_sig) const;
+		void		SetThread(team_id team, thread_id tid) const;
+		void		SetThreadAndTeam(uint32 entry_token,
 									 thread_id tid,
-									 team_id team);
-		void		CompleteRegistration(team_id team, port_id port);
-		bool		IsAppPreRegistered(	record_ref ref,
+									 team_id team) const;
+		void		CompleteRegistration(team_id team,
+										thread_id,
+										port_id port) const;
+		bool		IsAppPreRegistered(	entry_ref *ref,
 										team_id team,
 										app_info *info) const;
-		void		RemovePreRegApp(ulong signature, record_ref ref);
-		long		IndexOfApp(ulong signature) const;
-		long		IndexOfThread(thread_id thread) const;
-		long		IndexOfTeam(team_id thread) const;
-		long		IndexOfRef(record_ref) const;
-		long		IndexOfPort(port_id port) const;
-		long		IndexOfToken(ulong a_token) const;
-		long		GetIndexInfo(long index, app_info *info) const;
-		void		RemoveIndex(long index);
-		long		LaunchAppPrivate(	ulong signature,
-										record_ref ref,
-										BList* msg_list,
-										long cargs,
-										char **args,
-										team_id *app_team);
-		long		FindRecord(	ulong signature,
-								record_ref ref,
-								BRecord **rec) const;
-		void		NotifyBrowser(	ulong signature,
-									team_id team,
-									ulong flags,
-									record_ref ref);
-		bool		UpdateActiveApp(team_id team);
-		void		SetAppFlags(team_id team, ulong flags);
+		void		RemovePreRegApp(uint32 entry_token) const;
+		void		RemoveApp(team_id team) const;
 
-		BLocker		fLock;
-		long		fCount;
-		_p_ainfo_	*fData;
-		long		fPhysicalCount;
-		ulong		fListeners[50];
-		BMessenger	*fBrowser;
-		ulong		fEntryToken;
-		team_id		fActiveApp;
+		status_t	xLaunchAppPrivate(	const char *mime_sig,
+										entry_ref *ref,
+										BList* msg_list,
+										int cargs,
+										char **args,
+										team_id *app_team) const;
+		bool		UpdateActiveApp(team_id team) const;
+		void		SetAppFlags(team_id team, uint32 flags) const;
+		void		DumpRoster() const;
+		status_t	resolve_app(const char *in_type,
+								const entry_ref *ref,
+								entry_ref *app_ref,
+								char *app_sig,
+								uint32 *app_flags,
+								bool *was_document) const;
+		status_t	translate_ref(const entry_ref *ref,
+								BMimeType *app_meta,
+								entry_ref *app_ref,
+								BFile *app_file,
+								char *app_sig,
+								bool *was_document) const;
+		status_t	translate_type(const char *mime_type,
+								BMimeType *meta,
+								entry_ref *app_ref,
+								BFile *app_file,
+								char *app_sig) const;
+		status_t	sniff_file(const entry_ref *file,
+								BNodeInfo *finfo,
+								char *mime_type) const;
+		status_t	query_for_app(BMimeType *meta, entry_ref *app_ref) const;
+		status_t	get_unique_supporting_app(const BMessage *apps,
+											char *out_sig) const;
+		char		**build_arg_vector(char **args, int *pargs,
+										const entry_ref *app_ref,
+										const entry_ref *doc_ref) const;
+		status_t	send_to_running(team_id tema,
+									const entry_ref *app_ref,
+									int cargs, char **args,
+									const BList *msg_list,
+									const entry_ref *ref) const;
+		void		InitMessengers();
+
+		BMessenger	fMess;
+		BMessenger	fMimeMess;
+		uint32		_fReserved[3];
 };
 
-extern BRoster *be_roster;
+extern const BRoster *be_roster;
 
 #endif

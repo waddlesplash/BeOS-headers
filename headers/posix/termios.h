@@ -132,6 +132,8 @@ struct winsize {                    /* for the TIOCGWINSZ ioctl */
 #define	B38400		0x0F
 #define B57600		0x10
 #define B115200		0x11
+#define B230400		0x12
+#define B31250		0x13			/* for MIDI */
 
 #define	CSIZE		0x20			/* character size */
 #define	CS5			0x00			/* only 7 and 8 bits supported */
@@ -230,7 +232,7 @@ int   tcflush(int fd, int queue_selector);
 
 #define TCIFLUSH  0x01
 #define TCOFLUSH  0x02
-#define TCIOFLUSH (TCIFLUSH | TCIOFLUSH)
+#define TCIOFLUSH (TCIFLUSH | TCOFLUSH)
 
 int   tcsetpgrp(int fd, pid_t pgrpid);
 pid_t tcgetpgrp(int fd);

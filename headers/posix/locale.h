@@ -1,16 +1,20 @@
+/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+
 /*
  *	locale.h
  *	
- *		Copyright © 1995 Metrowerks, Inc.
+ *		Copyright © 1995-1996 Metrowerks, Inc.
  *		All rights reserved.
  */
  
-#ifndef __locale__
-#define __locale__
+#ifndef __clocale__
+#define __clocale__
 
-#pragma options align=mac68k
 
 #include <ansi_parms.h>
+#include <null.h>
+
+__namespace(__stdc_space(locale))
 
 struct lconv {
 	char	* decimal_point;
@@ -51,6 +55,12 @@ struct lconv	* localeconv(void);
 
 __end_extern_c
 
+__end_namespace(stdc_space(locale))
+
+__import_stdc_into_std_space(locale)
+
 #pragma options align=reset
 
-#endif /* __locale__ */
+#endif /* __clocale__ */
+/*     Change record
+*/

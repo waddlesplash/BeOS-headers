@@ -4,25 +4,28 @@
 //
 //	Description:	status bar class.
 //
-//	Copyright 1996, Be Incorporated
+//	Copyright 1996-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_STATUS_BAR_H
 #define	_STATUS_BAR_H
 
-#ifndef _VIEW_H
 #include <View.h>
-#endif
 
 class BStatusBar : public BView {
 
 public:
 					BStatusBar(	BRect frame,
 								const char *name,
-								const char *static_label = NULL,
-								const char *trailing_static_label = NULL);
+								const char *label = NULL,
+								const char *trailing_label = NULL);
+					BStatusBar(BMessage *data);
 virtual				~BStatusBar();
+static	BStatusBar	*Instantiate(BMessage *data);
+virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
 virtual	void		AttachedToWindow();
 virtual	void		MessageReceived(BMessage *msg);
@@ -32,20 +35,52 @@ virtual	void		SetBarColor(rgb_color color);
 virtual	void		SetBarHeight(float height);
 virtual	void		SetText(const char *str);
 virtual	void		SetTrailingText(const char *str);
-virtual	void		SetMaximum(float max);
+virtual	void		SetMaxValue(float max);
 
-virtual	void		Progress(	float delta,
-								const char *main_text = NULL,
-								const char *trailing_text = NULL);
-virtual	void		Reset(	const char *static_label = NULL,
-							const char *trailing_static_label = NULL);
-		float		Current() const;
-		float		Maximum() const;
+virtual	void		Update(	float delta,
+							const char *main_text = NULL,
+							const char *trailing_text = NULL);
+virtual	void		Reset(	const char *label = NULL,
+							const char *trailing_label = NULL);
+
+		float		CurrentValue() const;
+		float		MaxValue() const;
+		rgb_color	BarColor() const;
+		float		BarHeight() const;
+		const char	*Text() const;
+		const char	*TrailingText() const;
+		const char	*Label() const;
+		const char	*TrailingLabel() const;
+
+virtual	void		MouseDown(BPoint pt);
+virtual	void		MouseUp(BPoint pt);
+virtual	void		WindowActivated(bool state);
+virtual	void		MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
+virtual	void		DetachedFromWindow();
+virtual	void		FrameMoved(BPoint new_position);
+virtual	void		FrameResized(float new_width, float new_height);
+
+virtual BHandler	*ResolveSpecifier(BMessage *msg,
+									int32 index,
+									BMessage *specifier,
+									int32 form,
+									const char *property);
+virtual status_t	Perform(uint32 d, void *arg);
 
 private:
+
+virtual	void		_ReservedStatusBar1();
+virtual	void		_ReservedStatusBar2();
+virtual	void		_ReservedStatusBar3();
+virtual	void		_ReservedStatusBar4();
+
+		BStatusBar	&operator=(const BStatusBar &);
+
+		void		InitObject(const char *l, const char *aux_l);
 		void		SetTextData(char **pp, const char *str);
 		void		FillBar(BRect r);
 		void		Resize();
+		void		_Draw(BRect updateRect, bool bar_only);
 
 		char		*fLabel;
 		char		*fTrailingLabel;
@@ -58,6 +93,7 @@ private:
 		rgb_color	fBarColor;
 		float		fEraseText;
 		float		fEraseTrailingText;
+		uint32		_reserved[4];
 };
 
 #endif

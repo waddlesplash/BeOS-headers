@@ -1,32 +1,21 @@
+/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+
 /*
  *	ctype.h
  *	
- *		Copyright © 1995 Metrowerks, Inc.
+ *		Copyright © 1995-1996 Metrowerks, Inc.
  *		All rights reserved.
  */
  
-#ifndef __ctype__
-#define __ctype__
+#ifndef __cctype__
+#define __cctype__
 
-#pragma options align=mac68k
 
 #include <ansi_parms.h>
 
-__extern_c
+__namespace(__stdc_space(ctype))
 
-int isalnum (int);
-int isalpha (int);
-int iscntrl (int);
-int isdigit (int);
-int isgraph (int);
-int islower (int);
-int isprint (int);
-int ispunct (int);
-int isspace (int);
-int isupper (int);
-int isxdigit(int);
-int tolower (int);
-int toupper (int);
+__extern_c
 
 unsigned char	__ctype_map[];
 unsigned char	__lower_map[];
@@ -52,6 +41,38 @@ __end_extern_c
 
 #define __zero_fill(c)	((int) (unsigned char) (c))
 
+#ifdef __cplusplus
+
+inline int isalnum(int c)		{ return __ctype_map[__zero_fill(c)] & __alphanumeric; }
+inline int isalpha(int c)		{ return __ctype_map[__zero_fill(c)] & __letter      ; }
+inline int iscntrl(int c)		{ return __ctype_map[__zero_fill(c)] & __control     ; }
+inline int isdigit(int c)		{ return __ctype_map[__zero_fill(c)] & __digit       ; }
+inline int isgraph(int c)		{ return __ctype_map[__zero_fill(c)] & __graphic     ; }
+inline int islower(int c)		{ return __ctype_map[__zero_fill(c)] & __lower_case  ; }
+inline int isprint(int c)		{ return __ctype_map[__zero_fill(c)] & __printable   ; }
+inline int ispunct(int c)		{ return __ctype_map[__zero_fill(c)] & __punctuation ; }
+inline int isspace(int c)		{ return __ctype_map[__zero_fill(c)] & __whitespace  ; }
+inline int isupper(int c)		{ return __ctype_map[__zero_fill(c)] & __upper_case  ; }
+inline int isxdigit(int c)	{ return __ctype_map[__zero_fill(c)] & __hex_digit   ; }
+inline int tolower(int c)		{ return __lower_map[__zero_fill(c)]; }
+inline int toupper(int c)		{ return __upper_map[__zero_fill(c)]; }
+
+#else
+
+int isalnum (int);
+int isalpha (int);
+int iscntrl (int);
+int isdigit (int);
+int isgraph (int);
+int islower (int);
+int isprint (int);
+int ispunct (int);
+int isspace (int);
+int isupper (int);
+int isxdigit(int);
+int tolower (int);
+int toupper (int);
+
 #define isalnum(c)	((int) (__ctype_map[__zero_fill(c)] & __alphanumeric))
 #define isalpha(c)	((int) (__ctype_map[__zero_fill(c)] & __letter      ))
 #define iscntrl(c)	((int) (__ctype_map[__zero_fill(c)] & __control     ))
@@ -66,6 +87,14 @@ __end_extern_c
 #define tolower(c)	((int)  __lower_map[__zero_fill(c)])
 #define toupper(c)	((int)  __upper_map[__zero_fill(c)])
 
+#endif
+
+__end_namespace(__stdc_space(ctype))
+
+__import_stdc_into_std_space(ctype)
+
 #pragma options align=reset
 
-#endif /* __ctype__ */
+#endif /* __cctype__ */
+/*     Change record
+*/

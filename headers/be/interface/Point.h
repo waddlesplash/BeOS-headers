@@ -4,16 +4,16 @@
 //
 //	Description:	BPoint class header.
 //	
-//	Copyright 1993-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1993-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_POINT_H
 #define	_POINT_H
 
-#ifndef _SUPPORT_DEFS_H
 #include <SupportDefs.h>
-#endif
 
 class BRect;
 

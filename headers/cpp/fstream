@@ -1,0 +1,11 @@
+/*  Metrowerks Standard Library  Version 2.1  1996 December 29  */
+/*
+ *	fstream
+ *	
+ *		Copyright © 1996 Metrowerks, Inc.
+ *		All rights reserved.
+ */
+
+#include <fstream.h>
+/*     Change record
+*/

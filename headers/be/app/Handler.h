@@ -4,32 +4,34 @@
 //
 //	Description:	Client handler class.
 //
-//	Copyright 1995-96, Be Incorporated, All Rights Reserved.
+//	Copyright 1995-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef _HANDLER_H
 #define _HANDLER_H
 
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _MESSAGE_H
+#include <Archivable.h>
 #include <Message.h>
-#endif
 
 class BLooper;
 class BMessageFilter;
+class BMessage;
 class BList;
 
-class BHandler : public BObject {
+class BHandler : public BArchivable {
 
 public:
 					BHandler(const char *name = NULL);
 virtual				~BHandler();
 
+					BHandler(BMessage *data);
+static	BHandler	*Instantiate(BMessage *data);
+virtual	status_t	Archive(BMessage *data, bool deep = true) const;
+
 virtual	void		MessageReceived(BMessage *message);
-virtual	void		HandlersRequested(BMessage *msg);
 		BLooper		*Looper() const;
 
 		const char	*Name() const;
@@ -43,17 +45,37 @@ virtual	bool		RemoveFilter(BMessageFilter *filter);
 virtual	void		SetFilterList(BList *filters);
 		BList		*FilterList();
 
+// functions related to the scripting architecture.
+virtual BHandler	*ResolveSpecifier(BMessage *msg,
+									int32 index,
+									BMessage *specifier,
+									int32 form,
+									const char *property);
+virtual status_t	GetSupportedSuites(BMessage *data);
+
+virtual status_t	Perform(uint32 d, void *arg);
+
 private:
-friend inline long _get_object_token_(const BHandler *);
-friend inline BLooper *_get_handler_looper_(const BHandler *);
+friend inline int32 _get_object_token_(const BHandler *);
 friend class BLooper;
 friend class BMessageFilter;
 
-		long		fToken;
+virtual	void		_ReservedHandler1();
+virtual	void		_ReservedHandler2();
+virtual	void		_ReservedHandler3();
+virtual	void		_ReservedHandler4();
+
+		void		InitData(const char *name);
+
+					BHandler(const BHandler &);
+		BHandler	&operator=(const BHandler &);
+
+		int32		fToken;
 		char		*fName;
 		BLooper		*fLooper;
 		BHandler	*fNextHandler;
 		BList		*fFilters;
+		uint32		_reserved[4];
 };
 
 #endif

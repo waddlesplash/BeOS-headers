@@ -1,6 +1,7 @@
 #ifndef _GRP_H_
 #define _GRP_H_
 
+#include <sys/types.h>
 
 struct group {
        char *gr_name;
@@ -14,8 +15,8 @@ struct group {
 extern "C" {
 #endif
 
-extern void *getgrgid(gid_t gid);
-extern void *getgrnam(const char *name);
+extern struct group *getgrgid(gid_t gid);
+extern struct group *getgrnam(const char *name);
 
 extern struct group *getgrent(void);
 extern void          setgrent(void);

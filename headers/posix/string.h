@@ -1,20 +1,31 @@
+/*/  Metrowerks Standard Library  Version 1.6  1996 November 01  /*/
+
 /*
  *	string.h
  *	
- *		Copyright © 1995 Metrowerks, Inc.
+ *		Copyright © 1995-1996 Metrowerks, Inc.
  *		All rights reserved.
  */
  
-#ifndef __string__
-#define __string__
+#ifndef __cstring__
+#define __cstring__
 
-#pragma options align=mac68k
 
 #include <ansi_parms.h>
+
+__namespace(__stdc_space(string))
+
 #include <size_t.h>
 #include <null.h>
 
-#include <bsd_mem.h>
+
+#if macintosh && !defined(__dest_os)               /*MW-mm 960927a*/
+  #define __dest_os __mac_os                       /*MW-mm 960927a*/
+#endif                                             /*MW-mm 960927a*/
+#if __dest_os == __be_os
+	#include <bsd_mem.h>
+	#include <string.be.h>
+#endif
 
 #define __max_errstr	32
 
@@ -156,20 +167,49 @@ char * strstr(const char * str, const char * pat);
 
 char * strerror(int errnum);
 
+char * __strerror(int errnum, char * str);
+
 void * __memrchr(const void * src, int val, size_t n);
 
-#if __dest_os == __be_os
+#if (__dest_os == __be_os) || (__dest_os == __powertv_os)
 
 /* prototypes for some useful but non-standard string routines */
-int strcasecmp(const char *str1, const char *str2);
-int strncasecmp(const char *str1, const char *str2, unsigned nchars);
-char *strdup(const char *str);
-char *stpcpy(char *dest, const char *src);
 
-#endif /* __be_os */
+int			strcasecmp (const char *str1, const char *str2);
+int			strncasecmp(const char *str1, const char *str2, unsigned nchars);
+
+char *	strdup(const char *str);
+char *	stpcpy(char *dest, const char *src);
+
+#endif
+#if (__dest_os	== __win32_os)
+	/* This #ifdef block contains declarations found in the corresponding */
+	/* Visual C++ ANSI header.		*/
+
+	/* These functions are defined in extras.c */
+	int _stricmp(const char *s1, const char *s2);
+	int _strnicmp(const char *s1, const char *s2, int n);
+	char * _strrev(char *str);
+	char *_strdup(const char *str);
+	char *_strupr(char *str);
+	size_t wcslen(const wchar_t *);
+	wchar_t *wcscpy(wchar_t *, const wchar_t *);
+
+#endif
+
+
 
 __end_extern_c
+
+__end_namespace(stdc_space(string))
+
+__import_stdc_into_std_space(string)
 
 #pragma options align=reset
 
 #endif
+
+/*     Change record
+//MW-mm 960927a Inserted setting of __dest_os to __mac_os when not otherwise set.
+*/
+

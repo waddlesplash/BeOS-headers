@@ -4,62 +4,86 @@
 //
 //	Description:	auto-scrollbar(s) and bordered view class interface
 //
-//	Copyright 1993-96, Be Incorporated
+//	Copyright 1993-97, Be Incorporated
 //
 //******************************************************************************
  
+#pragma once
+
 #ifndef	_SCROLL_VIEW_H
 #define	_SCROLL_VIEW_H
 
-#ifndef _SCROLL_BAR_H
-#include "ScrollBar.h"
-#endif
-#ifndef _VIEW_H
-#include "View.h"
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
+#include <ScrollBar.h>
+#include <View.h>
 
-//------------------------------------------------------------------------------
+/* --------------------------------------------------------------------- */
 
 class BScrollView : public BView {
 
 public:
-					BScrollView(const char *name,
+						BScrollView(const char *name,
 								BView *target,
-								ulong resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP,
-								ulong flags = 0,
+								uint32 resizeMask = B_FOLLOW_LEFT |
+													B_FOLLOW_TOP,
+								uint32 flags = 0,
 								bool horizontal = FALSE,
 								bool vertical = FALSE, 
-								bool bordered = TRUE);
-virtual				~BScrollView();
+								border_style border = B_FANCY_BORDER);
+						BScrollView(BMessage *data);
+virtual					~BScrollView();
+static	BScrollView		*Instantiate(BMessage *data);
+virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
-virtual	void		Draw(BRect updateRect);
-virtual	void		AttachedToWindow();
-		BScrollBar	*ScrollBar(orientation flag) const;
+virtual	void			Draw(BRect updateRect);
+virtual	void			AttachedToWindow();
+		BScrollBar		*ScrollBar(orientation flag) const;
 
-virtual	void		SetBordered(bool bordered);
-		bool		IsBordered() const;
+virtual	void			SetBorder(border_style border);
+		border_style	Border() const;
 
-//------------------------------------------------------------------------------
+virtual	status_t		SetBorderHighlighted(bool state);
+		bool			IsBorderHighlighted() const;
+
+virtual void			MessageReceived(BMessage *msg);
+virtual	void			MouseDown(BPoint pt);
+virtual void			WindowActivated(bool state);
+virtual	void			MouseUp(BPoint pt);
+virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
+virtual	void			DetachedFromWindow();
+virtual	void			AllAttached();
+virtual	void			AllDetached();
+virtual	void			FrameMoved(BPoint new_position);
+virtual	void			FrameResized(float new_width, float new_height);
+
+virtual BHandler		*ResolveSpecifier(BMessage *msg,
+										int32 index,
+										BMessage *specifier,
+										int32 form,
+										const char *property);
+virtual status_t		Perform(uint32 d, void *arg);
 
 private:
 
 friend class BView;
 
-static	BRect		CalcFrame(BView *, bool, bool, bool);
-		long		ModFlags(long, bool);
+virtual	void			_ReservedScrollView1();
+virtual	void			_ReservedScrollView2();
+virtual	void			_ReservedScrollView3();
+virtual	void			_ReservedScrollView4();
 
-		BView		*the_view;
-		BScrollBar	*fHSB;	
-		BScrollBar	*fVSB;	
-		bool		fFramed;
+		BScrollView		&operator=(const BScrollView &);
+
+static	BRect			CalcFrame(BView *, bool, bool, border_style);
+		int32			ModFlags(int32, border_style);
+		void			InitObject();
+
+		BView			*fTarget;
+		BScrollBar		*fHSB;	
+		BScrollBar		*fVSB;	
+		border_style	fBorder;
+		uint32			_reserved[4];
+
+		bool			fHighlighted;
 };
-
-inline bool BScrollView::IsBordered() const
-	{ return fFramed; };
-
-//------------------------------------------------------------------------------
 
 #endif

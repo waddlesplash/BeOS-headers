@@ -1,14 +1,16 @@
 /*
  * socket.h
- * Copyright (c) 1995-96 Be, Inc.	All Rights Reserved 
+ * Copyright (c) 1995-97 Be, Inc.	All Rights Reserved 
  *
  * BSD socket-like interface
  *
  * Do not expect total BSD compatibility from this interface!
  */
+#pragma once
 #ifndef _SOCKET_H
 #define _SOCKET_H
 
+#include <size_t.h>
 #include <sys/time.h>       /* for timeval/timezone structs & gettimeofday */
 
 #if __cplusplus
@@ -40,7 +42,7 @@ extern "C" {
 /* 
  * Be extension
  */
-#define B_UDP_MAX_SIZE (8192 + 64) /* enough for 8K data plus header */
+#define B_UDP_MAX_SIZE (65536 - 1024) 
 
 struct sockaddr {
 	unsigned short sa_family;
@@ -48,7 +50,7 @@ struct sockaddr {
 };
 
 struct in_addr {
-	unsigned long s_addr;
+	unsigned int s_addr;
 };
 
 struct sockaddr_in {
@@ -64,35 +66,55 @@ struct sockaddr_in {
 #define htonl(x) x
 #define ntohl(x) x
 
+/*
+ * You can define your own FDSETSIZE if you want more bits
+ */
+
+#ifndef FD_SETSIZE
+#define FD_SETSIZE 256
+#endif /* FD_SETSIZE */
+
+/*
+ * Compatibily only: use FD_SETSIZE instead
+ */
+#ifndef FDSETSIZE
+#define FDSETSIZE FD_SETSIZE
+#endif /* FDSETSIZE */
+
+#define NFDBITS 32
+
 typedef struct fd_set {
-	unsigned long mask;
+	unsigned mask[FDSETSIZE / NFDBITS];
 } fd_set;
 
-#define FD_ZERO(setp) (setp)->mask = 0
-#define FD_SET(fd, setp) ((setp)->mask |= (1 << (fd)))
-#define FD_CLR(fd, setp) ((setp)->mask &= ~(1 << (fd)))
-#define FD_ISSET(fd, setp) ((setp)->mask & (1 << (fd)))
+#define _FDMSKNO(fd) ((fd) / NFDBITS)
+#define _FDBITNO(fd) ((fd) % NFDBITS)
+#define FD_ZERO(setp) memset((setp)->mask, 0, sizeof((setp)->mask))
+#define FD_SET(fd, setp) ((setp)->mask[_FDMSKNO(fd)] |= (1 << (_FDBITNO(fd))))
+#define FD_CLR(fd, setp) ((setp)->mask[_FDMSKNO(fd)] &= ~(1 << (_FDBITNO(fd))))
+#define FD_ISSET(fd, setp) ((setp)->mask[_FDMSKNO(fd)] & (1 << (_FDBITNO(fd))))
 
 
 int socket(int family, int type, int proto);
-int bind(int fd, struct sockaddr *addr, int size);
+int bind(int fd, const struct sockaddr *addr, int size);
 int getsockname(int fd, struct sockaddr *addr, int *size);
-int recvfrom(int fd, char *buf, int size, int flags,
+int getpeername(int fd, struct sockaddr *addr, int *size);
+ssize_t recvfrom(int fd, void *buf, size_t size, int flags,
 			 struct sockaddr *from, int *fromlen);
-int sendto(int fd, const char *buf, int size, int flags,
-		   struct sockaddr *to, int tolen);
+ssize_t sendto(int fd, const void *buf, size_t size, int flags,
+		   const struct sockaddr *to, int tolen);
 
-int send(int fd, const char *buf, int size, int flags);
-int recv(int fd, char *buf, int size, int flags);
+ssize_t send(int fd, const void *buf, size_t size, int flags);
+ssize_t recv(int fd, void *buf, size_t size, int flags);
 
 
-int connect(int fd, struct sockaddr *addr, int size);
+int connect(int fd, const struct sockaddr *addr, int size);
 int accept(int fd, struct sockaddr *addr, int *size);
 
 
 int listen(int fd, int backlog);
 int closesocket(int fd);
-int setsockopt(int sd, int prot, int opt, char *data, unsigned datasize);
+int setsockopt(int sd, int prot, int opt, const void *data, unsigned datasize);
 
 int select(int nbits, 
 		   struct fd_set *rbits, 

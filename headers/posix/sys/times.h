@@ -1,10 +1,12 @@
 #ifndef _SYS_TIMES_H_
 #define _SYS_TIMES_H_
 
-#ifndef __time__
-#define __time__
-typedef unsigned long clock_t;
-#endif
+#ifndef _CLOCK_T_DEFINED_
+
+typedef long	clock_t;
+#define _CLOCK_T_DEFINED_
+
+#endif /* _CLOCK_T_DEFINED_ */
 
 struct tms {
     clock_t tms_utime;      /* user time */

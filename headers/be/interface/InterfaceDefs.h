@@ -2,96 +2,37 @@
 //
 //	File:		InterfaceDefs.h
 //
-//	Description:	Basic Interface Kit types.
+//	Description:	Basic Interface Kit types.  C++ only.
 //
-//	Copyright 1992-96, Be Incorporated
+//	Copyright 1992-97, Be Incorporated
 //
 *******************************************************************************/
+
+#pragma once
 
 #ifndef	_INTERFACE_DEFS_H
 #define	_INTERFACE_DEFS_H
 
-#ifndef _SUPPORT_DEFS_H
-#include <SupportDefs.h>
-#endif
-#ifndef _OS_H
+#include <GraphicsDefs.h>
 #include <OS.h>
-#endif
-#ifndef _RECT_H
 #include <Rect.h>
-#endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
-/*----------------------------------------------------------------*/
-
-typedef struct
-	{
-		uchar		data[8];
-	} pattern;
+struct key_info {
+	uint32	modifiers;
+	uint8	key_states[16];
+};
 
 /*----------------------------------------------------------------*/
 
-extern const pattern B_SOLID_HIGH;
-extern const pattern B_MIXED_COLORS;
-extern const pattern B_SOLID_LOW;
-
-/*----------------------------------------------------------------*/
-
-typedef struct
-	{
-		uchar		red;
-		uchar		green;
-		uchar		blue;
-		uchar		alpha;
-	} rgb_color;
-
-/*----------------------------------------------------------------*/
-
-typedef	struct
-	{
-		long		id;
-		rgb_color	color_list[256];
-		uchar		inversion_map[256];
-		uchar		index_map[32768];
-	} color_map;
-
-/*----------------------------------------------------------------*/
-
-typedef enum { B_MONOCHROME_1_BIT = 1,
-               B_GRAYSCALE_8_BIT = 2,
-               B_COLOR_8_BIT = 4,
-               B_RGB_32_BIT = 8,
-			   B_RGB_16_BIT = 16 } color_space;
-	      
-/*----------------------------------------------------------------*/
-typedef struct {
-		color_space	mode;
-		BRect		frame;
-		ulong		spaces;
-		float		min_refresh_rate;
-		float		max_refresh_rate;
-		float		refresh_rate;
-		uchar		h_position;
-		uchar		v_position;
-		uchar		h_size;
-		uchar		v_size;
-	} screen_info;
-
-/*----------------------------------------------------------------*/
-
-typedef enum {	B_OP_COPY,
-		B_OP_OVER,
-		B_OP_ERASE,
-		B_OP_INVERT,
-		B_OP_ADD,
-		B_OP_SUBTRACT,
-		B_OP_BLEND,
-		B_OP_MIN,
-		B_OP_MAX
-	} drawing_mode;
+#define B_UTF8_ELLIPSIS		"\xE2\x80\xA6"
+#define B_UTF8_OPEN_QUOTE	"\xE2\x80\x9C"
+#define B_UTF8_CLOSE_QUOTE	"\xE2\x80\x9D"
+#define B_UTF8_COPYRIGHT	"\xC2\xA9"
+#define B_UTF8_REGISTERED	"\xC2\xAE"
+#define B_UTF8_TRADEMARK	"\xE2\x84\xA2"
+#define B_UTF8_SMILING_FACE	"\xE2\x98\xBB"
+#define B_UTF8_HIROSHI		"\xE5\xBC\x98"
 
 /*----------------------------------------------------------------*/
 
@@ -132,69 +73,79 @@ enum {	B_F1_KEY			= 0x02,
 		B_SCROLL_KEY		= 0x0f,
 		B_PAUSE_KEY			= 0x10 };
 
-typedef	struct {
-		ulong	version;
-		ulong	caps_key;
-		ulong	scroll_key;
-		ulong	num_key;
-		ulong	left_shift_key;
-		ulong	right_shift_key;
-		ulong	left_command_key;
-		ulong	right_command_key;
-		ulong	left_control_key;
-		ulong	right_control_key;
-		ulong	left_option_key;
-		ulong	right_option_key;
-		ulong	menu_key;
-		ulong	lock_settings;
-		ulong	control_map[128];
-		ulong	option_caps_shift_map[128];
-		ulong	option_caps_map[128];
-		ulong	option_shift_map[128];
-		ulong	option_map[128];
-		ulong	caps_shift_map[128];
-		ulong	caps_map[128];
-		ulong	shift_map[128];
-		ulong	normal_map[128];
-		ulong	acute_dead_key[32];
-		ulong	grave_dead_key[32];
-		ulong	circumflex_dead_key[32];
-		ulong	dieresis_dead_key[32];
-		ulong	tilde_dead_key[32];
-		ulong	acute_tables;
-		ulong	grave_tables;
-		ulong	circumflex_tables;
-		ulong	dieresis_tables;
-		ulong	tilde_tables;
-	} key_map;
+struct key_map {
+		uint32	version;
+		uint32	caps_key;
+		uint32	scroll_key;
+		uint32	num_key;
+		uint32	left_shift_key;
+		uint32	right_shift_key;
+		uint32	left_command_key;
+		uint32	right_command_key;
+		uint32	left_control_key;
+		uint32	right_control_key;
+		uint32	left_option_key;
+		uint32	right_option_key;
+		uint32	menu_key;
+		uint32	lock_settings;
+		int32	control_map[128];
+		int32	option_caps_shift_map[128];
+		int32	option_caps_map[128];
+		int32	option_shift_map[128];
+		int32	option_map[128];
+		int32	caps_shift_map[128];
+		int32	caps_map[128];
+		int32	shift_map[128];
+		int32	normal_map[128];
+		int32	acute_dead_key[32];
+		int32	grave_dead_key[32];
+		int32	circumflex_dead_key[32];
+		int32	dieresis_dead_key[32];
+		int32	tilde_dead_key[32];
+		uint32	acute_tables;
+		uint32	grave_tables;
+		uint32	circumflex_tables;
+		uint32	dieresis_tables;
+		uint32	tilde_tables;
+};
 
-typedef struct {
-	ulong	left;
-	ulong	right;
-	ulong	middle;
-} mouse_map;
+struct mouse_map {
+	uint32	left;
+	uint32	right;
+	uint32	middle;
+};
 
 /*----------------------------------------------------------------*/
 
-typedef enum {
+enum border_style {
+	B_PLAIN_BORDER,
+	B_FANCY_BORDER,
+	B_NO_BORDER
+};
+
+/*----------------------------------------------------------------*/
+
+enum orientation {
 	B_HORIZONTAL,
 	B_VERTICAL
-} orientation;
-
-typedef struct {
-	bool	proportional;
-	bool	double_arrows;
-	long	knob;
-	long	min_knob_size;
-} scroll_bar_info;
+};
 
 /*----------------------------------------------------------------*/
 
-typedef enum {
+struct scroll_bar_info {
+	bool	proportional;
+	bool	double_arrows;
+	int32	knob;
+	int32	min_knob_size;
+};
+
+/*----------------------------------------------------------------*/
+
+enum alignment {
 	B_ALIGN_LEFT,
     B_ALIGN_RIGHT,
     B_ALIGN_CENTER
-} alignment;
+};
 
 /*----------------------------------------------------------------*/
 
@@ -233,104 +184,58 @@ enum {
 
 /*----------------------------------------------------------------*/
 
-#define B_FONT_NAME_LENGTH 64
-typedef char font_name[B_FONT_NAME_LENGTH + 1];
-typedef font_name symbol_set_name;
 
-/*----------------------------------------------------------------*/
+const color_map *system_colors();
 
-//??? This is temporary until alpha channel gets going
-extern const uchar B_TRANSPARENT_8_BIT;
-extern const rgb_color B_TRANSPARENT_32_BIT;
+status_t	set_screen_space(int32 index, uint32 res, bool stick = TRUE);
 
-#ifdef __cplusplus
-}
-#endif
+status_t	get_scroll_bar_info(scroll_bar_info *info);
+status_t	set_scroll_bar_info(scroll_bar_info *info);
 
-uchar		index_for_color(rgb_color c);
-uchar		index_for_color(uchar r, uchar g, uchar b, uchar a = 0);
-rgb_color	desktop_color();
-void		set_desktop_color(rgb_color c, bool stick = TRUE);
-color_map	*system_colors();
+status_t	get_mouse_type(int32 *type);
+status_t	set_mouse_type(int32 type);
+status_t	get_mouse_map(mouse_map *map);
+status_t	set_mouse_map(mouse_map *map);
+status_t	get_click_speed(bigtime_t *speed);
+status_t	set_click_speed(bigtime_t speed);
+status_t	get_mouse_speed(int32 *speed);
+status_t	set_mouse_speed(int32 speed);
 
+status_t	get_key_repeat_rate(int32 *rate);
+status_t	set_key_repeat_rate(int32 rate);
+status_t	get_key_repeat_delay(bigtime_t *delay);
+status_t	set_key_repeat_delay(bigtime_t  delay);
 
-/*----------------------------------------------------------------*/
+uint32		modifiers();
+status_t	get_key_info(key_info *info);
+void        get_key_map(key_map **map, char **key_buffer);
+status_t	get_keyboard_id(uint16 *ID);
+void		set_modifier_key(uint32 modifier, uint32 key);
+void		set_keyboard_locks(uint32 modifiers);
 
-long		count_screens();
-void		get_screen_info(screen_info *info);
-void		get_screen_info(long index, screen_info *info);
+rgb_color	keyboard_navigation_color();
 
-enum {
-	B_8_BIT_640x480    = 0x00000001,
-	B_8_BIT_800x600    = 0x00000002,
-	B_8_BIT_1024x768   = 0x00000004,
-	B_8_BIT_1280x1024  = 0x00000008,
-	B_8_BIT_1600x1200  = 0x00000010,
-	B_16_BIT_640x480   = 0x00000020,
-	B_16_BIT_800x600   = 0x00000040,
-	B_16_BIT_1024x768  = 0x00000080,
-	B_16_BIT_1280x1024 = 0x00000100,
-	B_16_BIT_1600x1200 = 0x00000200,
-	B_32_BIT_640x480   = 0x00000400,
-	B_32_BIT_800x600   = 0x00000800,
-	B_32_BIT_1024x768  = 0x00001000,
-	B_32_BIT_1280x1024 = 0x00002000,
-	B_32_BIT_1600x1200 = 0x00004000,
-    B_8_BIT_1152x900   = 0x00008000,
-    B_16_BIT_1152x900  = 0x00010000,
-    B_32_BIT_1152x900  = 0x00020000,
-	B_8_BIT_640x400	   = 0x80000000
-};
+int32		count_workspaces();
+void		set_workspace_count(int32 count);
+int32		current_workspace();
+void		activate_workspace(int32 workspace);
 
-long		set_screen_space(long index, ulong res, bool stick = TRUE);
-long		set_screen_refresh_rate(long index, float rate, bool stick = TRUE);
-long		adjust_crt(long index, uchar x_position, uchar y_position,
-					   uchar x_size, uchar y_size, bool stick = TRUE);
+bigtime_t	idle_time();
 
-long		get_dock_width(float *width);
-
-ulong		modifiers();
-key_map		*system_key_map();
-void		restore_key_map();
-long		get_keyboard_id(ushort *ID);
-void		set_modifier_key(ulong modifier, ulong key);
-void		set_keyboard_locks(ulong modifiers);
-
-long		get_scroll_bar_info(scroll_bar_info *info);
-long		set_scroll_bar_info(scroll_bar_info *info);
-
-long		get_mouse_type(long *type);
-long		set_mouse_type(long type);
-long		get_mouse_map(mouse_map *map);
-long		set_mouse_map(mouse_map *map);
-long		get_click_speed(double *speed);
-long		set_click_speed(double speed);
-long		get_mouse_speed(long *speed);
-long		set_mouse_speed(long speed);
-
-long		get_key_repeat_rate(int     *rate);
-long		set_key_repeat_rate(int      rate);
-long		get_key_repeat_delay(double *delay);
-long		set_key_repeat_delay(double  delay);
-
-
-long		count_fonts();
-void		get_font_name(long index, font_name* name);
-long		count_symbol_sets();
-void		get_symbol_set_name(long index, symbol_set_name* name);
-
-void		activate_app(team_id);
-
-void		animate_window(	BRect from,
-							BRect to,
-							long num_frames,
-							bool restore_last);
-
-long		count_workspaces();
-void		set_workspace_count(long count);
-long		current_workspace();
-void		activate_workspace(long workspace);
-
-double		idle_time();
+void		run_select_printer_panel();	
+void		run_add_printer_panel();	
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+

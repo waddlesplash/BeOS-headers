@@ -2,24 +2,23 @@
 	File:			image.h
 	Description:	kernel interface for managing executable images
 
-	Copyright (c) 1995-96 by Be Incorporated.  All Rights Reserved.
+	Copyright (c) 1995-97 by Be Incorporated.  All Rights Reserved.
 +++++ */
+
+#pragma once
 
 #ifndef _IMAGE_H
 #define	_IMAGE_H
 
-#ifndef _OS_H
 #include <OS.h>
-#endif
+#include <sys/param.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct BFile;
-typedef struct BFile	BFile;
-
-typedef	long image_id;
+typedef	int32 image_id;
 
 typedef enum {
 	B_APP_IMAGE = 1,
@@ -35,26 +34,36 @@ typedef enum {
 ----- */
 
 typedef struct {
-	long		volume;						/* volume */
-	long		directory;					/* directory */
-	char		name [B_FILE_NAME_LENGTH];	/* file name */
 	image_id	id;							/* image id */
-	void		*text;						/* address of text */
-	long		text_size;					/* size of text */
-	void		*data;						/* address of data */
-	long		data_size;					/* size of data */
 	image_type	type;						/* type */
+	int32		sequence;					/* sequence number */
+	int32		init_order;					/* the larger the later to be inited */
+	B_PFV		init_routine;				/* init routine */
+	B_PFV		term_routine;				/* term routine */
+	dev_t		device;						/* device and node for file */
+	ino_t		node;
+	char        name[MAXPATHLEN];           /* full pathname of image */
+	void		*text;						/* address of text */
+	void		*data;						/* address of data */
+	int32		text_size;					/* size of text */
+	int32		data_size;					/* size of data */
 } image_info;
 
 
-extern thread_id	load_executable(BFile *file, long argc, const char **argv,
-						const char **envp);
+extern thread_id	load_image(int32 argc, const char **argv, const char **envp);
+extern image_id		load_add_on(const char *path);
+extern status_t		unload_add_on(image_id imid);
 
-extern image_id		load_add_on(BFile *file);
-extern long			unload_add_on(image_id imid);
+extern status_t		_get_image_info (image_id image, image_info *info,
+									 size_t size);
+extern status_t		_get_next_image_info (team_id team, int32 *cookie,
+										  image_info *info, size_t size);
 
-extern long			get_image_info (image_id image, image_info *info);
-extern long			get_nth_image_info (team_id team, long n, image_info *info);
+#define get_image_info(image, info)                        \
+              _get_image_info((image), (info), sizeof(*(info)))
+#define get_next_image_info(team, cookie, info)   \
+	          _get_next_image_info((team), (cookie), (info), sizeof(*(info)))
+
 
 /* Symbol type constants */
 #define	B_SYMBOL_TYPE_CODE		0x0
@@ -63,10 +72,20 @@ extern long			get_nth_image_info (team_id team, long n, image_info *info);
 #define	B_SYMBOL_TYPE_TOC		0x3
 #define	B_SYMBOL_TYPE_GLUE		0x4
 
-extern long			get_image_symbol(image_id imid, char *name,
-						long sclass, void **ptr);
-extern long			get_nth_image_symbol(image_id imid, long index,
-							char *buf, long *bufsize, long *sclass, void **ptr);
+extern status_t		get_image_symbol(image_id imid, const char *name,
+						int32 sclass, void **ptr);
+extern status_t		get_nth_image_symbol(image_id imid, int32 index,
+							char *buf, int32 *bufsize, int32 *sclass, void **ptr);
+
+
+/* the flags for clear_caches() */
+#define B_FLUSH_DCACHE         0x0001   /* data cache */
+#define B_INVALIDATE_DCACHE    0x0002
+#define B_FLUSH_ICACHE         0x0004
+#define B_INVALIDATE_ICACHE    0x0008   /* instruction cache */
+
+void clear_caches(void *addr, size_t len, uint32 flags);
+
 
 #ifdef __cplusplus
 }

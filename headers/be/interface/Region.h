@@ -4,29 +4,21 @@
 //
 //	Description:	client region class.
 //
-//	Copyright 1992-96, Be Incorporated
+//	Copyright 1992-97, Be Incorporated
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_REGION_H
 #define	_REGION_H
 
-#ifndef _INTERFACE_DEFS_H
-#include "InterfaceDefs.h"
-#endif
-#ifndef	_RECT_H
-#include "Rect.h"
-#endif
-#ifndef	_OBJECT_H
-#include <Object.h>
-#endif
-#ifndef _CLASS_INFO_H
-#include <ClassInfo.h>
-#endif
+#include <InterfaceDefs.h>
+#include <Rect.h>
 
 //------------------------------------------------------------------------------
 
-class BRegion : public BObject {
+class BRegion {
 
 public:
 				BRegion();
@@ -36,11 +28,13 @@ virtual			~BRegion();
 		BRegion	&operator=(const BRegion &from);
 
 		BRect	Frame() const;	
+		BRect	RectAt(int32 index);
+		int32	CountRects();
 		void	Set(BRect newBounds);
 		bool	Intersects(BRect r) const;
 		bool	Contains(BPoint pt) const;
 		void	PrintToStream() const;
-		void	OffsetBy(long dh, long dv);
+		void	OffsetBy(int32 dh, int32 dv);
 		void	MakeEmpty();
 		void	Include(BRect r);
 		void	Include(const BRegion*);
@@ -72,6 +66,7 @@ friend void sub_region(BRegion*, BRegion*, BRegion*);
 		void	set_size(long new_size);
 		long	find_small_bottom(long y1, long y2, long *hint, long *where);
 
+private:
 		long	f_count;
 		long	f_data_size;
 		BRect	f_bound;

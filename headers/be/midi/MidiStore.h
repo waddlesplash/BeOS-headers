@@ -1,24 +1,21 @@
-//******************************************************************************
+//****************************************************************************
 //
-//	File:			BMidiStore.h
+//	File:			MidiStore.h
 //
-//	Description:	Midi event storage object class.
+//	Description:	MIDI event storage class
 //
-//	Written by:		Eric Knight
+//	Copyright 1997, Be Incorporated
 //
-//	Copyright 1994-96, Be Incorporated
-//
-//******************************************************************************
+//****************************************************************************
+#pragma once
 
 #ifndef _MIDI_STORE_H
 #define _MIDI_STORE_H
 
-#ifndef _MIDI_H
-#include "Midi.h"
-#endif
-#ifndef _STDIO_H
-#include <stdio.h>
-#endif
+#include <Midi.h>
+
+struct entry_ref;
+
 class BMidiEvent;
 class BFile;
 
@@ -32,135 +29,157 @@ virtual			~BMidiStore();
 virtual	void	NoteOff(uchar channel, 
 						uchar note, 
 						uchar velocity,
-						ulong time = B_NOW);
+						uint32 time = B_NOW);
+
 virtual	void	NoteOn(uchar channel, 
 					   uchar note, 
 					   uchar velocity,
-			    	   ulong time = B_NOW);
+			    	   uint32 time = B_NOW);
+
 virtual	void	KeyPressure(uchar channel, 
 							uchar note, 
-							uchar pressure, 
-							ulong time = B_NOW);
+							uchar pressure,
+							uint32 time = B_NOW);
+
 virtual	void	ControlChange(uchar channel, 
-							  uchar controlNumber, 
+							  uchar controlNumber,
 							  uchar controlValue, 
-							  ulong time = B_NOW);
+							  uint32 time = B_NOW);
+
 virtual	void	ProgramChange(uchar channel, 
-							  uchar programNumber, 
-							  ulong time = B_NOW);
-virtual	void	ChannelPressure(uchar channel, uchar pressure, ulong time = B_NOW);
+								uchar programNumber,
+							  	uint32 time = B_NOW);
+
+virtual	void	ChannelPressure(uchar channel, 
+								uchar pressure, 
+								uint32 time = B_NOW);
+
 virtual	void	PitchBend(uchar channel, 
 						  uchar lsb, 
 						  uchar msb,
-						  ulong time = B_NOW);
-virtual	void	SystemExclusive(void* data, long dataLength, ulong time = B_NOW);
+			    		  uint32 time = B_NOW);
+
+virtual	void	SystemExclusive(void* data, 
+								size_t dataLength, 
+								uint32 time = B_NOW);
+
 virtual	void	SystemCommon(uchar statusByte, 
 							 uchar data1, 
 							 uchar data2,
-							 ulong time = B_NOW);
-virtual	void	SystemRealTime(uchar statusByte, ulong time = B_NOW);
+							 uint32 time = B_NOW);
 
-virtual	void	TempoChange(long bpm, ulong time = B_NOW);
+virtual	void	SystemRealTime(uchar statusByte, uint32 time = B_NOW);
 
-		void	Import(BFile*);
-		void	Export(BFile*, long format);
+virtual	void	TempoChange(int32 bpm, uint32 time = B_NOW);
+
+		status_t	Import(const entry_ref *ref);
+		status_t	Export(const entry_ref *ref, int32 format);
 
 		void	SortEvents(bool force=FALSE);
-		ulong	CountEvents();
-		ulong	CurrentEvent();
-		void	SetCurrentEvent(ulong);
-		ulong	DeltaOfEvent(ulong eventNumber);
-		ulong	EventAtDelta(ulong time);
-		ulong	BeginTime();
+		uint32	CountEvents() const;
+
+		uint32	CurrentEvent() const;
+		void	SetCurrentEvent(uint32 eventNumber);
+
+		uint32	DeltaOfEvent(uint32 eventNumber) const;
+		uint32	EventAtDelta(uint32 time) const;
+
+		uint32	BeginTime() const;
 	
-		void	SetTempo(long bpm);
-		long	Tempo();
+		void	SetTempo(int32 bpm);
+		int32	Tempo() const;
 
 private:
+
+virtual	void		_ReservedMidiStore1();
+virtual	void		_ReservedMidiStore2();
+virtual	void		_ReservedMidiStore3();
+
 virtual	void	Run();
 
-		void	AddEvent(ulong time, 
+		void	AddEvent(uint32 time, 
 						 bool inMS, 
 						 uchar type, 
 		   	         	 uchar data1 = 0, 
 						 uchar data2 = 0,
 		   	         	 uchar data3 = 0, 	 
 						 uchar data4 = 0);
-		void	AddSystemExclusive(void* data, long dataLength);
+
+		void	AddSystemExclusive(void* data, size_t dataLength);
 	
-		void	Error(char*);
-	
-		void	ReadHeader();
-		long	ReadMT(char*);
-		long	GetC();
-		long	Read32Bit();
-		long	EGetC();
-		long	To32Bit(long, long, long, long);
-		long	Read16Bit();
-		long	To16Bit(long, long);
+		status_t ReadHeader();
+		bool	ReadMT(char*);
+		int32	Read32Bit();
+		int32	EGetC();
+		int32	To32Bit(int32, int32, int32, int32);
+		int32	Read16Bit();
+		int32	To16Bit(int32, int32);
 		bool	ReadTrack();
-		long	ReadVariNum();
-		void	ChannelMessage(long, long, long);
+		int32	ReadVariNum();
+		void	ChannelMessage(int32, int32, int32);
 		void	MsgInit();
-		void	MsgAdd(long);
+		void	MsgAdd(int32);
 		void	BiggerMsg();
-		void	MetaEvent(long);
-		long	MsgLength();
+		void	MetaEvent(int32);
+		int32	MsgLength();
 		uchar*	Msg();
-		void	BadByte(long);
+		void	BadByte(int32);
 	
-		long	PutC(long c);
-		bool	WriteTrack(long track);
+		int32	PutC(int32 c);
+		bool	WriteTrack(int32 track);
 		void	WriteTempoTrack();
-		bool	WriteTrackChunk(long whichTrack);
-		void	WriteHeaderChunk(long format);
-		bool	WriteMidiEvent(ulong deltaTime, 
-							   ulong type, 
-							   ulong channel, 
+		bool	WriteTrackChunk(int32 whichTrack);
+		void	WriteHeaderChunk(int32 format);
+		bool	WriteMidiEvent(uint32 deltaTime, 
+							   uint32 type, 
+							   uint32 channel, 
 							   uchar* data, 
-							   ulong size);
-		bool	WriteMetaEvent(ulong deltaTime, 
-							   ulong type, 
+							   uint32 size);
+		bool	WriteMetaEvent(uint32 deltaTime, 
+							   uint32 type, 
 							   uchar* data, 
-							   ulong size);
-		bool	WriteSystemExclusiveEvent(ulong deltaTime, 
+							   uint32 size);
+		bool	WriteSystemExclusiveEvent(uint32 deltaTime, 
 							    uchar* data, 
-							    ulong size);
-		void	WriteTempo(ulong deltaTime, long tempo);
-		void	WriteVarLen(ulong value);
-		void	Write32Bit(ulong data);
+							    uint32 size);
+		void	WriteTempo(uint32 deltaTime, int32 tempo);
+		void	WriteVarLen(uint32 value);
+		void	Write32Bit(uint32 data);
 		void	Write16Bit(ushort data);
-		long	EPutC(uchar c);
+		int32	EPutC(uchar c);
 	
-		ulong	TicksToMilliseconds(ulong ticks);
-		ulong	MillisecondsToTicks(ulong ms);
+		uint32	TicksToMilliseconds(uint32 ticks) const;
+		uint32	MillisecondsToTicks(uint32 ms) const;
 
 		BMidiEvent*	fEvents;
-		ulong		fNumEvents;
-		ulong		fEventsSize;
-		ulong		fCurrEvent;
+		uint32		fNumEvents;
+		uint32		fEventsSize;
+		uint32		fCurrEvent;
 		bool		fNeedsSorting;
 		bool		fResetTimer;
-		ulong		fStartTime;
+		uint32		fStartTime;
 		BFile*		fFile;
 		short		fDivision;
 		float		fDivisionFactor;
-		long		fTempo;
-		long		fCurrTime;
-		long		fCurrTrack;
-		long		fNumTracks;
+		int32		fTempo;
+		int32		fCurrTime;
+		int32		fCurrTrack;
+		int32		fNumTracks;
 		
-		long		fToBeRead;
-		long		fMsgIndex;
-		long		fMsgSize;
+		int32		fToBeRead;
+		int32		fMsgIndex;
+		int32		fMsgSize;
 		uchar*		fMsgBuff;
 	
-		long		fNumBytesWritten;
+		int32		fNumBytesWritten;
+
+		uchar*		fFileBuffer;
+		int32		fFileBufferMax;
+		int32		fFileBufferSize;
+		int32		fFileBufferIndex;
+		uint32		_reserved[4];
 };
 
-inline	ulong		BMidiStore::CountEvents() { return fNumEvents; };
-inline	ulong		BMidiStore::CurrentEvent() { return fCurrEvent; };
-inline	ulong		BMidiStore::BeginTime() { return fStartTime; };
 
 /*------------------------------------------------------------*/
 

@@ -1,6 +1,8 @@
 #ifndef _PWD_H_
 #define _PWD_H_
 
+#include <sys/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

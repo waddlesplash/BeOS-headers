@@ -4,39 +4,40 @@
 //
 //	Description:	Analog-to-Digital converter class header.
 //	
-//	Copyright 1996, Be Incorporated, All Rights Reserved.
+//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
 //
 //******************************************************************************
+
+#pragma once
 
 #ifndef	_A2D_H
 #define	_A2D_H
 
-#ifndef _SUPPORT_DEFS_H
+#include <stddef.h>
 #include <SupportDefs.h>
-#endif
-
-#ifndef _OBJECT_H
-#include <Object.h>
-#endif
 
 // -----------------------------------------------------------------------
-class BA2D : public BObject {
+class BA2D {
 
 public:
-				BA2D();
-virtual			~BA2D();
+					BA2D();
+virtual				~BA2D();
 
-long			Open(const char *portName);
-void			Close(void);
-bool			IsOpen(void);
+		status_t	Open(const char *portName);
+		void		Close(void);
+		bool		IsOpen(void);
 
-long			Read(ushort *buf);
+		ssize_t		Read(ushort *buf);
 
 // -----------------------------------------------------------------------
 
 private:
+virtual	void		_ReservedA2D1();
+virtual	void		_ReservedA2D2();
+virtual	void		_ReservedA2D3();
 
-int				ffd;
+		int			ffd;
+		uint32		_fReserved[3];
 };
 
 #endif
