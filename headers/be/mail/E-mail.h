@@ -11,9 +11,9 @@
 #ifndef _E_MAIL_H
 #define _E_MAIL_H
 
-#include <List.h>
 #include <UTF8.h>
 
+class BList;
 
 /* -----------------------------------------------------------------------*/
 /* 'E-Mail' attributes...*/

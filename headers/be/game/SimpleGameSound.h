@@ -22,6 +22,9 @@ public:
 									const entry_ref * inFile,
 									BGameSoundDevice * device = NULL);
 							BSimpleGameSound(
+									const char * inFile,
+									BGameSoundDevice * device = NULL);
+							BSimpleGameSound(
 									const void * inData,
 									size_t inFrameCount,
 									const gs_audio_format * format,

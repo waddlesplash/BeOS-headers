@@ -15,18 +15,12 @@
 #define _ROSTER_H
 
 #include <BeBuild.h>
-#include <OS.h>
-#include <Message.h>
-#include <StorageDefs.h>
-#include <List.h>
-#include <Locker.h>
+#include <Messenger.h>
 #include <Mime.h>
 #include <Clipboard.h>
 
-class BApplication;
-class BWindow;
-class BMessenger;
-class BResourceFile;
+class BList;
+class BMessage;
 class BNodeInfo;
 
 extern "C" int	_init_roster_();
@@ -95,32 +89,39 @@ public:
 		status_t	Broadcast(BMessage *msg) const;
 		status_t	Broadcast(BMessage *msg, BMessenger reply_to) const;
 		status_t	StartWatching(BMessenger target,
-									uint32 event_mask = B_REQUEST_LAUNCHED |
-										B_REQUEST_QUIT) const;
+						uint32 event_mask = B_REQUEST_LAUNCHED | B_REQUEST_QUIT) const;
 		status_t	StopWatching(BMessenger target) const;
 		status_t	ActivateApp(team_id team) const;
-		status_t	Launch(	const char *mime_type,
-							BMessage *initial_msgs = NULL,
-							team_id *app_team = NULL) const;
-		status_t	Launch(	const char *mime_type,
-							BList *message_list,
-							team_id *app_team = NULL) const;
-		status_t	Launch(	const char *mime_type,
-							int argc,
-							char **args,
-							team_id *app_team = NULL) const;
+		status_t	Launch(const char *mime_type, BMessage *initial_msgs = NULL,
+						team_id *app_team = NULL) const;
+		status_t	Launch(const char *mime_type, BList *message_list,
+						team_id *app_team = NULL) const;
+		status_t	Launch(const char *mime_type, int argc, char **args,
+						team_id *app_team = NULL) const;
 
-		status_t	Launch(	/* const */ entry_ref *ref,
-							BMessage *initial_message = NULL,
-							team_id *app_team = NULL) const;
-		status_t	Launch(	/* const */ entry_ref *ref,
-							BList *message_list,
-							team_id *app_team = NULL) const;
-		status_t	Launch(	/* const */ entry_ref *ref,
-							int argc,
-							char **args,
-							team_id *app_team = NULL) const;
+		status_t	Launch(const entry_ref *ref, const BMessage *initial_message = NULL,
+						team_id *app_team = NULL) const;
+		status_t	Launch(const entry_ref *ref, const BList *message_list,
+						team_id *app_team = NULL) const;
+		status_t	Launch(const entry_ref *ref, int argc, const char * const *args,
+						team_id *app_team = NULL) const;
 
+/* Recent document and app support */
+		void		GetRecentDocuments(BMessage *refList, int32 maxCount,
+						const char *ofType = NULL,
+						const char *openedByAppSig = NULL) const;
+		void		GetRecentDocuments(BMessage *refList, int32 maxCount,
+						const char *ofTypeList[], int32 ofTypeListCount,
+						const char *openedByAppSig = NULL) const;
+		void		GetRecentFolders(BMessage *refList, int32 maxCount,
+						const char *openedByAppSig = NULL) const;
+		void		GetRecentApps(BMessage *refList, int32 maxCount) const;
+
+		void		AddToRecentDocuments(const entry_ref *doc,
+						const char *appSig = NULL) const;
+		void		AddToRecentFolders(const entry_ref *folder,
+						const char *appSig = NULL) const;
+		
 /*----- Private or reserved ------------------------------*/
 private:
 
@@ -167,7 +168,7 @@ friend status_t BClipboard::StopWatching(BMessenger);
 		void		RemoveApp(team_id team) const;
 
 		status_t	xLaunchAppPrivate(	const char *mime_sig,
-										entry_ref *ref,
+										const entry_ref *ref,
 										BList* msg_list,
 										int cargs,
 										char **args,

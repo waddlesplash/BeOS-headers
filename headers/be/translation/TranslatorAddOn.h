@@ -19,9 +19,12 @@
 
 
 class BView;
-struct BRect;
+class BRect;
 class BPositionIO;
 
+
+/*	This is the 4.0 and 4.5 compatible API. For later versions, use the		*/
+/*	BTranslator-based API (make_nth_translator)								*/
 
 /*	These variables and functions should be exported by a translator add-on	*/
 

@@ -122,7 +122,7 @@ inline int getc(FILE * file)
 	{ return file->_buffer_len-- ? *file->_buffer_ptr++ : __get_char(file); }
 
 inline int putc(int c, FILE *file)
-	{ return file->_buffer_len-- ? (*file->_buffer_ptr++ = c) : __put_char(c, file); }
+	{ return file->_buffer_len-- ? (*file->_buffer_ptr++ = (unsigned char)c) : __put_char(c, file); }
 
 inline int getchar()
 	{ return getc(stdin); }

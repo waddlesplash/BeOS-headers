@@ -18,6 +18,7 @@ struct tty {
 struct ttyfile {
 	struct tty	*tty;
 	uint		flags;
+	bigtime_t	vtime;
 };
 
 

@@ -1,3 +1,4 @@
+//depot/maui/headers/interface/TextView.h#4 - edit change 36576 (text)
 /*******************************************************************************
 /
 /	File:			TextView.h
@@ -12,8 +13,6 @@
 #define _TEXTVIEW_H
 
 #include <BeBuild.h>
-#include <InterfaceDefs.h>
-#include <SupportDefs.h>
 #include <View.h>
 
 /*----------------------------------------------------------------*/
@@ -59,6 +58,8 @@ class _BStyleBuffer_;
 class _BWidthBuffer_;
 class _BUndoBuffer_;
 class _BInlineInput_;
+class _BTextTrackState_;
+class _BTextChangeResult_;
 
 extern "C" status_t	_init_interface_kit_();
 
@@ -228,6 +229,8 @@ virtual	void			ScrollToOffset(int32 inOffset);
 		bool			IsResizable() const;
 		void			SetDoesUndo(bool undo);
 		bool			DoesUndo() const;		
+		void			HideTyping(bool enabled);
+		bool			IsTypingHidden(void) const;	
 
 virtual void			ResizeToPreferred();
 virtual void			GetPreferredSize(float *width, float *height);
@@ -259,6 +262,7 @@ virtual	void			GetDragParameters(BMessage	*drag,
 /*----- Private or reserved -----------------------------------------*/
 private:
 friend status_t	_init_interface_kit_();
+friend class _BTextTrackState_;
 
 #if _PR2_COMPATIBLE_
 friend void		_ReservedTextView2__9BTextViewFv(BTextView	*object, 
@@ -307,7 +311,16 @@ virtual void			_ReservedTextView12();
 									float	*outAscent = NULL, 
 									float	*outDescent = NULL) const;
 		float			ActualTabWidth(float location) const;
-							
+		
+		void			DoInsertText(const char				*inText, 
+									 int32					inLength, 
+									 int32					inOffset,
+									 const text_run_array	*inRuns,
+									 _BTextChangeResult_	*outResult);
+		void			DoDeleteText(int32					fromOffset,
+									 int32					toOffset,
+									 _BTextChangeResult_	*outResult);
+		
 		void			DrawLines(int32	startLine, 
 								  int32	endLine, 
 							  	  int32	startOffset = -1, 
@@ -316,7 +329,13 @@ virtual void			_ReservedTextView12();
 		void			InvertCaret();
 		void			DragCaret(int32 offset);
 		
-		void			TrackMouse(BPoint where, const BMessage *message);
+		void			StopMouseTracking();
+		bool			PerformMouseUp(BPoint where);
+		bool			PerformMouseMoved(BPoint			where, 
+										  uint32			code);
+		
+		void			TrackMouse(BPoint where, const BMessage *message,
+								   bool force = false);
 
 		void			TrackDrag(BPoint where);
 		void			InitiateDrag();
@@ -325,9 +344,9 @@ virtual void			_ReservedTextView12();
 									   BPoint	offset);
 											
 		void			UpdateScrollbars();
-		void			AutoResize();
+		void			AutoResize(bool doredraw=true);
 		
-		void			NewOffscreen(float padding = 0.0);
+		void			NewOffscreen(float padding = 0.0F);
 		void			DeleteOffscreen();
 
 		void			Activate();
@@ -371,7 +390,7 @@ static	void			UnlockWidthBuffer();
 		int32					fClickCount;
 		bigtime_t				fClickTime;
 		int32					fDragOffset;
-		bool					unused;
+		uint8					fCursor;
 		bool					fActive;
 		bool					fStylable;
 		float					fTabWidth;
@@ -386,13 +405,14 @@ static	void			UnlockWidthBuffer();
 		color_space				fColorSpace;
 		bool					fResizable;
 		BView*					fContainerView;
-		float					fLastWidth;
 		_BUndoBuffer_*			fUndo;			/* was _reserved[0] */
 		_BInlineInput_*			fInline;		/* was _reserved[1] */
 		BMessageRunner *		fDragRunner;	/* was _reserved[2] */
 		BMessageRunner *		fClickRunner;	/* was _reserved[3] */
 		BPoint					fWhere;
-		uint32					_reserved[2];	/* was 8 */
+		_BTextTrackState_*		fTrackingMouse;	/* was _reserved[6] */
+		_BTextChangeResult_*	fTextChange;	/* was _reserved[7] */
+		uint32					_reserved[1];	/* was 8 */
 #if !_PR3_COMPATIBLE_
 		uint32					_more_reserved[8];
 #endif

@@ -108,7 +108,8 @@ static	long			TrackTask(void *arg);
 		thread_id		fTrackingPID;
 		int32			fPrevFocusToken;
 		sem_id			fMenuSem;
-		uint32			_reserved[3];
+		BRect*			fLastBounds;
+		uint32			_reserved[2];	// was 3
 
 		bool			fTracking;
 };

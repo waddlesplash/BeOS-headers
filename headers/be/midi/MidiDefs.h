@@ -50,6 +50,9 @@ enum
 typedef unsigned char uchar;
 #endif
 
+#ifndef _MIDI_CONSTANTS_
+#define _MIDI_CONSTANTS_
+
 /* Channel Message Masks*/
 const uchar 	B_NOTE_OFF			= 0x80;
 const uchar 	B_NOTE_ON			= 0x90;
@@ -117,6 +120,8 @@ const uchar	B_MONO_MODE_ON			= 0x7e;
 const uchar	B_POLY_MODE_ON			= 0x7f;
 
 const uchar	B_TEMPO_CHANGE			= 0x51;
+
+#endif
 
 /*------------------------------------------------------------*/
 

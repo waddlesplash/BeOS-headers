@@ -186,8 +186,9 @@ struct winsize {                    /* for the TIOCGWINSZ ioctl */
 #define TCGETBITS		(TCGETA+9)
 #define	TCSETDTR		(TCGETA+10)
 #define TCSETRTS		(TCGETA+11)
-#define TIOCGWINSZ      (TCGETA+12)  /* pass in a struct winsize */
-#define TIOCSWINSZ      (TCGETA+13)  /* pass in a struct winsize */
+#define TIOCGWINSZ		(TCGETA+12)		/* pass in a struct winsize */
+#define TIOCSWINSZ		(TCGETA+13)		/* pass in a struct winsize */
+#define TCVTIME			(TCGETA+14)		/* pass in bigtime_t, old val saved */
 
 /*
  * Bits for the TCGETBITS control

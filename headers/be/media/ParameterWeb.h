@@ -71,9 +71,13 @@ extern _IMPEXP_MEDIA const char * const B_WEB_ADC_CONVERTER;		/* from analog to 
 extern _IMPEXP_MEDIA const char * const B_WEB_DAC_CONVERTER;		/* from digital to analog signals */
 extern _IMPEXP_MEDIA const char * const B_WEB_LOGICAL_INPUT;		/* an "input" that may not be physical */
 extern _IMPEXP_MEDIA const char * const B_WEB_LOGICAL_OUTPUT;
+extern _IMPEXP_MEDIA const char * const B_WEB_LOGICAL_BUS;			/* a logical connection point that is neither input nor output; auxilliary bus */
 extern _IMPEXP_MEDIA const char * const B_WEB_BUFFER_INPUT;		/* an input that corresponds to a media_input */
 extern _IMPEXP_MEDIA const char * const B_WEB_BUFFER_OUTPUT;
 
+	// a simple transport control is a discrete parameter with five values (states):
+	// rewinding, stopped, playing, paused, and fast-forwarding
+extern _IMPEXP_MEDIA const char * const B_SIMPLE_TRANSPORT;
 
 class BList;
 class BParameterGroup;
@@ -81,6 +85,15 @@ class BParameter;
 class BNullParameter;
 class BContinuousParameter;
 class BDiscreteParameter;
+
+
+/*	Set these flags on parameters and groups to control how a Theme will	*/
+/*	render the Web. Hidden means, generally, "don't show". Advanced means,	*/
+/*	generally, that you can show it or not depending on your whim.		*/
+enum media_parameter_flags {
+	B_HIDDEN_PARAMETER = 0x1,
+	B_ADVANCED_PARAMETER = 0x2
+};
 
 
 class BParameterWeb :
@@ -157,6 +170,9 @@ public:
 		BParameterWeb * Web() const;
 		const char * Name() const;
 
+		void SetFlags(uint32 flags);
+		uint32 Flags() const;
+
 		BNullParameter * MakeNullParameter(
 				int32 id,
 				media_type m_type,
@@ -217,7 +233,8 @@ virtual		status_t _Reserved_ControlGroup_7(void *);
 		BList * mControls;
 		BList * mGroups;
 		char * mName;
-		uint32 _reserved_control_group_[8];
+		uint32 mFlags;
+		uint32 _reserved_control_group_[7];
 
 		BParameter * MakeControl(
 				int32 type);
@@ -246,6 +263,9 @@ public:
 		const char * Kind() const;
 		const char * Unit() const;
 		int32 ID() const;
+
+		void SetFlags(uint32 flags);
+		uint32 Flags() const;
 
 virtual	type_code ValueType() = 0;
 		/* These functions are typically used by client apps; they will result in */
@@ -325,7 +345,8 @@ virtual		status_t _Reserved_Control_7(void *);
 		bool mSwapDetected;
 		media_type mMediaType;
 		int32 mChannels;
-		uint32 _reserved_control_[8];
+		uint32 mFlags;
+		uint32 _reserved_control_[7];
 
 virtual	void FixRefs(
 				BList & old,

@@ -14,6 +14,7 @@
 #include <BeBuild.h>
 #include <SupportDefs.h>
 #include <Flattenable.h>
+#include <TypeConstants.h>	/* For convenience */
 
 /*----------------------------------------------------------------*/
 /*----- the property_info structure ------------------------------*/

@@ -13,11 +13,13 @@
 #define _MENU_FIELD_H
 
 #include <BeBuild.h>
-#include <Menu.h>
-#include <MenuBar.h>
+#include <Menu.h>		/* For convenience */
+#include <View.h>
+
+class BMenuBar;
 
 /*----------------------------------------------------------------*/
-/*----- BmenuField class -----------------------------------------*/
+/*----- BMenuField class -----------------------------------------*/
 
 class BMenuField : public BView
 {

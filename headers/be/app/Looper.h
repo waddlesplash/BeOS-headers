@@ -12,13 +12,12 @@
 #define _LOOPER_H
 
 #include <BeBuild.h>
-#include <OS.h>
 #include <List.h>
-#include <Message.h>
+#include <OS.h>
 #include <Handler.h>
 
+class BMessage;
 class BMessageQueue;
-class BMessenger;
 struct _loop_data_;
 
 /*-------------------------------------------------------------*/

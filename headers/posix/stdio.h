@@ -67,6 +67,9 @@ int  	fprintf(FILE *file, const char *format, ...);
 int 	sprintf(char *s, const char *format, ...);
 int 	vfprintf(FILE *file, const char *format, va_list arg);
 int 	vprintf(const char *format, va_list arg);
+#if __INTEL__
+int asprintf (char **string_ptr, const char *format, ...);
+#endif
 
 int  	scanf (const char *format, ...);
 int  	fscanf (FILE *file, const char *format, ...);

@@ -44,17 +44,17 @@ inline BAutolock::BAutolock(BLooper *looper)
 	fLocked = fLooper->Lock();
 }
 
-inline BAutolock::BAutolock(BLocker *lock)
+inline BAutolock::BAutolock(BLocker *target)
 {
 	fLooper = NULL;
-	fLock = lock;
+	fLock = target;
 	fLocked = fLock->Lock();
 }
 
-inline BAutolock::BAutolock(BLocker &lock)
+inline BAutolock::BAutolock(BLocker &target)
 {
 	fLooper = NULL;
-	fLock = &lock;
+	fLock = &target;
 	fLocked = fLock->Lock();
 }
 

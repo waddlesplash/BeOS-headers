@@ -56,7 +56,8 @@ typedef enum {
 	B_ALIGNMENT_EXCEPTION,
 	B_PROGRAM_EXCEPTION,
 	B_GET_PROFILING_INFO,
-	B_WATCHPOINT_HIT
+	B_WATCHPOINT_HIT,
+	B_SYSCALL_HIT
 } db_why_stopped;
 #endif
 
@@ -79,22 +80,8 @@ typedef enum {
 		B_GENERAL_PROTECTION_FAULT,
 		B_FLOATING_POINT_EXCEPTION,
 		B_GET_PROFILING_INFO,
-		B_WATCHPOINT_HIT
-} db_why_stopped;
-#endif
-
-#if __SH__
-typedef enum {
-		B_THREAD_NOT_RUNNING,
-		B_DEBUGGER_CALL,
-		B_BREAKPOINT_HIT,
-		B_NMI,
-		B_MACHINE_CHECK_EXCEPTION,
-		B_DATA_ACCESS_EXCEPTION,
-		B_INSTRUCTION_ACCESS_EXCEPTION,
-		B_ALIGNMENT_EXCEPTION,
-		B_PROGRAM_EXCEPTION,
-		B_GET_PROFILING_INFO
+		B_WATCHPOINT_HIT,
+		B_SYSCALL_HIT
 } db_why_stopped;
 #endif
 
@@ -223,21 +210,6 @@ typedef struct {
 } cpu_state;
 #endif
 
-#if __SH__
-
-/*
- * all the SH registers including the segment registers and the 
- * general registers.
- */
-
-typedef struct {
-	ulong	cs;				/* user cs */
-	ulong	eflags;			/* user elfags */
-	ulong	uesp;			/* user esp */
-	ulong	ss;				/* user ss */
-} cpu_state;
-#endif
-
 /* -----
 	messages from debug server to the nub running in a target
 	thread's address space.
@@ -260,7 +232,9 @@ enum debug_nub_message {
 	B_SET_WATCHPOINT,			/* set a watchpoint */
 	B_CLEAR_WATCHPOINT,			/* clear a watchpoint */
 	B_STOP_ON_DEBUG,            /* stop all threads in team when one enters db*/
-	B_GET_THREAD_STACK_TOP      /* get top of ustack of a thread in the kernel*/
+	B_GET_THREAD_STACK_TOP,     /* get top of ustack of a thread in the kernel*/
+	B_HANDOFF_TO_OTHER_DEBUGGER,/* prepare debug nub for handing off to another debugger */
+	B_GET_WHY_STOPPED			/* ask why the thread is stopped */
 };
 
 /* -----
@@ -336,16 +310,39 @@ typedef struct {
 	int32	token;
 } nub_acknowlege_image_created_msg;
 
+
+
+typedef	enum
+{
+	PERFMON_USER_MODE	= 0,
+	PERFMON_KERNEL_MODE,
+	PERFMON_KERNEL_AND_USER_MODE
+} perfmon_privilege;
+
+
+typedef	struct
+{
+	uint32				event;
+	uint32				event_qualifier;
+	perfmon_privilege	privilege;
+	int32				init_val;	/* usually should be 0; should be negative for interrupts */
+	uint32				flags;		/* HW-specific bits, usually 0 */
+}	perfmon_event_selector;
+
+
 typedef struct {
-	port_id		reply_port;				/* port for reply from kernel */
-	thread_id	thid;
-	int32		num;
-	int32		slots[1];
+	port_id					reply_port;				/* port for reply from kernel */
+	thread_id				thid;
+	int32					perfmon_counter;
+	perfmon_event_selector	perfmon_event;	
+	int32					num;
+	int32					slots[1];
 } nub_start_profiler_msg;	
 
 typedef struct {
 	port_id		reply_port;				/* port for reply from kernel */
 	thread_id	thid;
+	int32		perfmon_counter;
 } nub_stop_profiler_msg;	
 
 typedef struct {
@@ -380,6 +377,15 @@ typedef struct {
 	void        *pc;                	/* program ctr at entry to the kernel */
 } nub_get_thread_stack_top_reply;
 
+typedef struct {
+	port_id		reply_port;
+	port_id		new_db_port;
+} nub_handoff_msg;
+
+typedef struct {
+	thread_id	thread;
+} nub_get_why_stopped_msg;
+
 /* -----
 	union of all stuctures passed to the nub
 ----- */
@@ -402,6 +408,8 @@ typedef union {
 	nub_clear_watchpoint_msg			nub_clear_watchpoint;
 	nub_stop_on_debug_msg				nub_stop_on_debug;
 	nub_get_thread_stack_top_msg		nub_get_thread_stack_top;
+	nub_handoff_msg						nub_handoff;
+	nub_get_why_stopped_msg				nub_get_why_stopped;
 } to_nub_msg;
 
 
@@ -421,14 +429,12 @@ enum debugger_message {
 	B_PEF_IMAGE_CREATED	= 3,	/* pef image was created */
 	B_PEF_IMAGE_DELETED	= 4,	/* pef image was deleted */
 #elif __INTEL__
-	B_PE_IMAGE_CREATED	= 3,	/* pe image was created */
-	B_PE_IMAGE_DELETED	= 4,	/* pe image was deleted */
-#elif __SH__
-	B_ELF_IMAGE_CREATED	= 3,	/* elf image was created */
-	B_ELF_IMAGE_DELETED	= 4,	/* elf image was deleted */
+	B_ELF_IMAGE_CREATED	= 3,	/* pe image was created */
+	B_ELF_IMAGE_DELETED	= 4,	/* pe image was deleted */
 #endif
 	B_THREAD_CREATED	= 5,	/* thread was created */
-	B_THREAD_DELETED	= 6		/* thread was deleted */
+	B_THREAD_DELETED	= 6,	/* thread was deleted */
+	B_SYSCALL_POST		= 7 	/* end of syscall */
 };
 
 /* ----------
@@ -457,6 +463,7 @@ typedef struct {
 	team_id		team;			/* team id */
 	thread_id	thread;			/* id of thread that is loading the image */
 	image_info	info;			/* info for the image */
+	port_id		nub_port;		/* port to nub for this team */
 } db_pef_image_created_msg;
 
 typedef struct {
@@ -478,6 +485,17 @@ typedef struct {
 	thread_id	thread;
 } db_get_profile_info_msg;
 
+typedef struct {
+	thread_id	thread;			/* thread id */
+	team_id		team;			/* team id */
+	bigtime_t	start_time;		/* time of syscall start */
+	bigtime_t	end_time;		/* time of syscall completion */
+	uint32		rethi;			/* upper word of return value */
+	uint32		retlo;			/* lower word of return value */
+	uint32		syscall;		/* the syscall number */
+	uint32		args[8];		/* syscall args */
+} db_syscall_post_msg;
+
 /* -----
 	union of all structures passed to external debugger
 ----- */
@@ -491,7 +509,21 @@ typedef union {
 	db_thread_created_msg		thread_created;
 	db_thread_deleted_msg		thread_deleted;
 	db_get_profile_info_msg		get_profile_info;
+	db_syscall_post_msg			syscall_post;
 } to_debugger_msg;
+
+/*
+ * debugger flags, state constants.
+ * Bottom sixteen bits of a word are reserved for Kernel use.
+ * Rest are used for user-level control by debuggers
+ * using the debugging API. See nukernel/inc/thread.h.
+ */
+#define DEBUG_USER_FLAGS_MASK		0xffff0000
+
+#define DEBUG_syscall_tracing_only			0x00010000 /* used by _kstrace_init_ */
+#define DEBUG_syscall_fast_trace			0x00020000
+#define DEBUG_syscall_trace_through_spawns	0x00040000
+#define DEBUG_syscall_trace_whole_team		0x00080000
 
 #ifdef __cplusplus
 }

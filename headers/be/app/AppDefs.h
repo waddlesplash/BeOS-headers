@@ -12,14 +12,20 @@
 #define _APP_DEFS_H
 
 #include <BeBuild.h>
-#include <SupportDefs.h>
-#include <TypeConstants.h>
 
 /*---------------------------------------------------------*/
 /*----- Global Cursors ------------------------------------*/
 
+// Old-style cursors
 extern _IMPEXP_BE const unsigned char B_HAND_CURSOR[];
 extern _IMPEXP_BE const unsigned char B_I_BEAM_CURSOR[];
+
+// New-style cursors
+#ifdef  __cplusplus
+class BCursor;
+extern _IMPEXP_BE const BCursor *B_CURSOR_SYSTEM_DEFAULT;
+extern _IMPEXP_BE const BCursor *B_CURSOR_I_BEAM;
+#endif
 
 /*---------------------------------------------------------------*/
 /*----- System Message Codes ------------------------------------*/
@@ -42,6 +48,7 @@ enum {
 	B_MOUSE_MOVED 				= '_MMV',
 	B_MOUSE_ENTER_EXIT			= '_MEX',
 	B_MOUSE_UP 					= '_MUP',
+	B_MOUSE_WHEEL_CHANGED		= '_MWC',
 	B_OPEN_IN_WORKSPACE			= '_OWS',
 	B_PRINTER_CHANGED			= '_PCH',
 	B_PULSE 					= '_PUL',
@@ -115,7 +122,11 @@ enum {
 	B_INPUT_METHOD_EVENT		= 'IMEV',
 	B_WINDOW_MOVE_TO			= 'WDMT',
 	B_WINDOW_MOVE_BY			= 'WDMB',
-	B_SILENT_RELAUNCH			= 'AREL'
+	B_SILENT_RELAUNCH			= 'AREL',
+	B_OBSERVER_NOTICE_CHANGE 	= 'NTCH',
+	B_CONTROL_INVOKED			= 'CIVK',
+	B_CONTROL_MODIFIED			= 'CMOD'
+
 	/* Media Kit reserves all reserved codes starting in 'TRI' */
 };
 

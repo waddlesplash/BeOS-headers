@@ -12,7 +12,6 @@
 #define _STRING_VIEW_H
 
 #include <BeBuild.h>
-#include <InterfaceDefs.h>
 #include <View.h>
 
 /*----------------------------------------------------------------*/

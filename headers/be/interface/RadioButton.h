@@ -15,7 +15,6 @@
 
 #include <BeBuild.h>
 #include <Control.h>
-#include <Window.h>
 
 /*----------------------------------------------------------------*/
 /*----- BRadioButton class ---------------------------------------*/
@@ -69,7 +68,7 @@ virtual status_t		GetSupportedSuites(BMessage *data);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
-friend	int32			_init_interface_kit_();
+friend	status_t		_init_interface_kit_();
 
 virtual	void			_ReservedRadioButton1();
 virtual	void			_ReservedRadioButton2();

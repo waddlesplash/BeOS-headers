@@ -104,7 +104,11 @@ virtual	void		_ReservedStatusBar4();
 		rgb_color	fBarColor;
 		float		fEraseText;
 		float		fEraseTrailingText;
-		uint32		_reserved[4];
+		bool		fCustomBarHeight;
+		bool		_pad1;
+		bool		_pad2;
+		bool		_pad3;
+		uint32		_reserved[3];		// was 4
 };
 
 /*-------------------------------------------------------------*/

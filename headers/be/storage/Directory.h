@@ -79,6 +79,9 @@ virtual	int32			CountEntries();
 
 private:
 
+friend class		BEntry;
+friend class		BVolume;
+
 		/* FBC */
 virtual	void		_ErectorDirectory1();
 virtual	void		_ErectorDirectory2();
@@ -86,9 +89,12 @@ virtual	void		_ErectorDirectory3();
 virtual	void		_ErectorDirectory4();
 virtual	void		_ErectorDirectory5();
 virtual	void		_ErectorDirectory6();
-		uint32		_erectorData[8];
+		uint32		_erectorData[7];
 
-virtual void			close_fd();
+virtual void		close_fd();
+		status_t	set_fd(int fd);
+
+		int			fDirFd;
 };
 
 

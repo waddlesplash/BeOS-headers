@@ -4,6 +4,7 @@
 #include	<termios.h>
 #include	<tty/rico.h>
 #include	<tty/str.h>
+#include	<tty/barrier.h>
 #include	<tty/dd.h>
 #include	<tty/tty.h>
 

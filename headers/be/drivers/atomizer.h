@@ -81,12 +81,12 @@ typedef struct {
 
 typedef struct {
 	module_info		minfo;
-	void *			(*find_or_make_atomizer)(const char *string);
-	status_t		(*delete_atomizer)(void *atomizer);
-	void *			(*atomize)(void *atomizer, const char *string, int create);
-	const char *	(*string_for_token)(void * atomizer, void *atom);
+	const void *	(*find_or_make_atomizer)(const char *string);
+	status_t		(*delete_atomizer)(const void *atomizer);
+	const void *	(*atomize)(const void *atomizer, const char *string, int create);
+	const char *	(*string_for_token)(const void * atomizer, const void *atom);
 	status_t		(*get_next_atomizer_info)(void **cookie, atomizer_info *info);
-	void *			(*get_next_atom)(void *atomizer, uint32 *cookie);
+	const void *	(*get_next_atom)(const void *atomizer, uint32 *cookie);
 } atomizer_module_info;
 
 #ifdef __cplusplus
@@ -94,3 +94,4 @@ typedef struct {
 #endif
 
 #endif
+

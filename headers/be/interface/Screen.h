@@ -62,10 +62,12 @@ const   color_map*		ColorMap();
         void			SetDesktopColor( rgb_color rgb, bool stick=true );
         void			SetDesktopColor( rgb_color rgb, uint32 index, bool stick=true );
 
-		status_t		ProposeDisplayMode(display_mode *target, const display_mode *low, const display_mode *high);
+		status_t		ProposeMode(display_mode *target, const display_mode *low, const display_mode *high);
 		status_t		GetModeList(display_mode **mode_list, uint32 *count);
 		status_t		GetMode(display_mode *mode);
+		status_t		GetMode(uint32 workspace, display_mode *mode);
 		status_t		SetMode(display_mode *mode, bool makeDefault = false);
+		status_t		SetMode(uint32 workspace, display_mode *mode, bool makeDefault = false);
 		status_t		GetDeviceInfo(accelerant_device_info *adi);
 		status_t		GetPixelClockLimits(display_mode *mode, uint32 *low, uint32 *high);
 		status_t		GetTimingConstraints(display_timing_constraints *dtc);
@@ -77,6 +79,7 @@ const   color_map*		ColorMap();
 
 /*----- Private or reserved -----------------------------------------*/
 private:
+		status_t		ProposeDisplayMode(display_mode *target, const display_mode *low, const display_mode *high);
 		BScreen			&operator=(const BScreen &screen);
 						BScreen(const BScreen &screen);
         void*			BaseAddress();

@@ -52,13 +52,14 @@ virtual				~BQuery();
 		void	PushAttr(const char *);
 		void	PushOp(query_op op);
 
-		void	PushUInt32(uint32 c);
-		void	PushInt32(int32 c);
-		void	PushUInt64(uint64 c);
-		void	PushInt64(int64 c);
-		void	PushFloat(float c);
-		void	PushDouble(double c);
-		void	PushString(const char *c, bool case_insensitive = false);
+		void	PushUInt32(uint32);
+		void	PushInt32(int32);
+		void	PushUInt64(uint64);
+		void	PushInt64(int64);
+		void	PushFloat(float);
+		void	PushDouble(double);
+		void	PushString(const char *string, bool case_insensitive = false);
+		status_t	PushDate(const char *date);
 
 		status_t	SetVolume(const BVolume *vol);
 		status_t	SetPredicate(const char *expr);
@@ -69,6 +70,8 @@ virtual				~BQuery();
 		status_t	GetPredicate(char *buf, size_t length);
 		size_t		PredicateLength();			
 		
+		status_t	GetPredicate(BString *);
+
 		dev_t		TargetDevice() const;
 		
 		status_t	Fetch();

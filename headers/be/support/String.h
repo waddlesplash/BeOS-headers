@@ -20,6 +20,7 @@ public:
 						BString();
 						BString(const char *);
 						BString(const BString &);
+						BString(const char *, int32 maxLength);
 					
 						~BString();
 			
@@ -236,50 +237,69 @@ public:
 						/* Converts first character in each white-space-separated
 						 * word to upper-case, rest to lower-case
 						 */
+/*----- Escaping and Deescaping --------------------------------------------*/
+	BString				&CharacterEscape(const char *original,
+							const char *setOfCharsToEscape, char escapeWith);
+						/* copies original into <this>, escaping characters
+						 * specified in <setOfCharsToEscape> by prepending
+						 * them with <escapeWith>
+						 */
+	BString				&CharacterEscape(const char *setOfCharsToEscape,
+							char escapeWith);
+						/* escapes characters specified in <setOfCharsToEscape>
+						 * by prepending them with <escapeWith>
+						 */
+
+	BString				&CharacterDeescape(const char *original, char escapeChar);
+						/* copy <original> into the string removing the escaping
+						 * characters <escapeChar> 
+						 */
+	BString				&CharacterDeescape(char escapeChar);
+						/* remove the escaping characters <escapeChar> from 
+						 * the string
+						 */
 
 /*---- Simple sprintf replacement calls ------------------------------------*/
 /*---- Slower than sprintf but type and overflow safe ----------------------*/
-	BString &operator<<(const char *);
-	BString &operator<<(const BString &);
-	BString &operator<<(char);
-	BString &operator<<(uint32);
-	BString &operator<<(int32);
-	BString &operator<<(uint64);
-	BString &operator<<(int64);
-	BString &operator<<(float);
+	BString 		&operator<<(const char *);
+	BString 		&operator<<(const BString &);
+	BString 		&operator<<(char);
+	BString 		&operator<<(int);
+	BString 		&operator<<(unsigned int);
+	BString 		&operator<<(uint32);
+	BString 		&operator<<(int32);
+	BString 		&operator<<(uint64);
+	BString 		&operator<<(int64);
+	BString 		&operator<<(float);
 		/* float output hardcodes %.2f style formatting */
 	
 /*----- Private or reserved ------------------------------------------------*/
 private:
-	void _Init(const char *, int32);
-	void _DoAssign(const char *, int32);
-	void _DoAppend(const char *, int32);
-	char *_GrowBy(int32);
-	char *_OpenAtBy(int32, int32);
-	char *_ShrinkAtBy(int32, int32);
-	void _DoPrepend(const char *, int32);
+	void 			_Init(const char *, int32);
+	void 			_DoAssign(const char *, int32);
+	void 			_DoAppend(const char *, int32);
+	char 			*_GrowBy(int32);
+	char 			*_OpenAtBy(int32, int32);
+	char 			*_ShrinkAtBy(int32, int32);
+	void 			_DoPrepend(const char *, int32);
 	
-	int32 _FindAfter(const char *, int32, int32) const;
-	int32 _IFindAfter(const char *, int32, int32) const;
-	int32 _ShortFindAfter(const char *, int32) const;
-	int32 _FindBefore(const char *, int32, int32) const;
-	int32 _IFindBefore(const char *, int32, int32) const;
-	void _SetLength(int32);
+	int32 			_FindAfter(const char *, int32, int32) const;
+	int32 			_IFindAfter(const char *, int32, int32) const;
+	int32 			_ShortFindAfter(const char *, int32) const;
+	int32 			_FindBefore(const char *, int32, int32) const;
+	int32 			_IFindBefore(const char *, int32, int32) const;
+	void 			_SetLength(int32);
 
 #if DEBUG
-	void _SetUsingAsCString(bool);
-	void _AssertNotUsingAsCString() const;
+	void			_SetUsingAsCString(bool);
+	void 			_AssertNotUsingAsCString() const;
 #else
-	void _SetUsingAsCString(bool) {}
-	void _AssertNotUsingAsCString() const {}
+	void 			_SetUsingAsCString(bool) {}
+	void			_AssertNotUsingAsCString() const {}
 #endif
 
 protected:
 	char *_privateData;
-
-public:
-	/* deprecated */
-	BString &operator<<(BString &);
 };
 
 /*----- Comutative compare operators --------------------------------------*/

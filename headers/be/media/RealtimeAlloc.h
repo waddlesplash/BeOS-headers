@@ -36,8 +36,9 @@ _IMPEXP_MEDIA status_t rtm_delete_pool(rtm_pool * pool);
 /* If NULL is passed for pool, the default pool is used (if created). */
 _IMPEXP_MEDIA void * rtm_alloc(rtm_pool * pool, size_t size);
 _IMPEXP_MEDIA status_t rtm_free(void * data);
-/* status_t rtm_realloc(void ** data, size_t new_size); */	/* not yet implemented */
+_IMPEXP_MEDIA status_t rtm_realloc(void ** data, size_t new_size);
 _IMPEXP_MEDIA status_t rtm_size_for(void * data);
+_IMPEXP_MEDIA status_t rtm_phys_size_for(void * data);
 
 /* Return the default pool, or NULL if not yet initialized */
 _IMPEXP_MEDIA rtm_pool * rtm_default_pool();

@@ -12,8 +12,8 @@
 #define _FS_INDEX_H
 
 #include <BeBuild.h>
+#include <SupportDefs.h>
 #include <dirent.h>
-
 
 typedef struct index_info
 {

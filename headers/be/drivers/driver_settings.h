@@ -3,6 +3,10 @@
 
 #include <OS.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct driver_parameter {
 	char *name;
 	int	value_count;
@@ -36,5 +40,9 @@ extern const driver_settings   *get_driver_settings(void *handle);
 
 /* Pass this as the key value to check if safe mode is enabled */
 #define B_SAFEMODE_SAFE_MODE		"safemode"
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

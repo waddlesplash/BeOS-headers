@@ -43,6 +43,7 @@ virtual	status_t			Perform(perform_code d, void *arg);
 /*----- Private or reserved -----------------------------------------*/
 private:
 
+friend class BWindow;
 friend class BView;
 friend class BPrintJob;
 

@@ -23,6 +23,11 @@ extern "C" {
 /*---------------------------------------------------------*/
 /*----- Image types, info, and functions ------------------*/
 
+#define	B_INIT_BEFORE_FUNCTION_NAME		"initialize_before"
+#define B_INIT_AFTER_FUNCTION_NAME		"initialize_after"
+#define	B_TERM_BEFORE_FUNCTION_NAME		"terminate_before"
+#define B_TERM_AFTER_FUNCTION_NAME		"terminate_after"
+
 typedef	int32 image_id;
 
 typedef enum {
@@ -37,8 +42,8 @@ typedef struct {
 	image_type	type;				
 	int32		sequence;			
 	int32		init_order;			
-	B_PFV		init_routine;		
-	B_PFV		term_routine;		
+	void		(*init_routine)();
+	void		(*term_routine)();
 	dev_t		device;				
 	ino_t		node;
 	char        name[MAXPATHLEN];  

@@ -100,6 +100,8 @@ inline int ispunct(int c)		{ return __ctype_map[__zero_fill(c)] & __punctuation 
 inline int isspace(int c)		{ return __ctype_map[__zero_fill(c)] & __whitespace  ; }
 inline int isupper(int c)		{ return __ctype_map[__zero_fill(c)] & __upper_case  ; }
 inline int isxdigit(int c)		{ return __ctype_map[__zero_fill(c)] & __hex_digit   ; }
+inline int isascii(int c)		{ return (((c) & ~0x7f) == 0); }
+
 /*
  * -1 case added for EOF handling
  */
@@ -121,6 +123,7 @@ inline int toascii(int c) 	{ return (c & 0x7f); }
 #define isupper(c)	((int) (__ctype_map[__zero_fill(c)] & __upper_case  ))
 #define isxdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __hex_digit   ))
 #define toascii(c) 	((int) (c & 0x7f))
+#define	isascii(c)	(((c) & ~0x7f) == 0)
 
 #endif /* __cplusplus */
 

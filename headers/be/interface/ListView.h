@@ -13,18 +13,17 @@
 #define _LIST_VIEW_H
 
 #include <BeBuild.h>
-#include <View.h>
-#include <Looper.h>
 #include <List.h>
-#include <ListItem.h>
+#include <ListItem.h>		/* For convenience */
 #include <Invoker.h>
+#include <View.h>
+
+struct track_data;
 
 enum list_view_type {
 	B_SINGLE_SELECTION_LIST,
 	B_MULTIPLE_SELECTION_LIST
 };
-
-struct track_data;
 
 /*----------------------------------------------------------------*/
 /*----- BListView class ------------------------------------------*/
@@ -166,6 +165,8 @@ virtual	void			_ReservedListView4();
 		bool			_Deselect(int32 index);
 		void			Deselect(int32 from, int32 to);
 		bool			_DeselectAll(int32 except_from, int32 except_to);
+		void			PerformDelayedSelect();
+		bool			TryInitiateDrag(BPoint where);
 		int32			CalcFirstSelected(int32 after);
 		int32			CalcLastSelected(int32 before);
 virtual void			DrawItem(BListItem *item, BRect itemRect, 

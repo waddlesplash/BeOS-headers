@@ -14,13 +14,16 @@
 
 #include <BeBuild.h>
 #include <Archivable.h>
-#include <Message.h>
-#include <PropertyInfo.h>
 
 class BLooper;
 class BMessageFilter;
 class BMessage;
 class BList;
+class _ObserverList;
+
+#define B_OBSERVE_WHAT_CHANGE "be:observe_change_what"
+#define B_OBSERVE_ORIGINAL_WHAT "be:observe_orig_what"
+const uint32 B_OBSERVER_OBSERVE_ALL = 0xffffffff;
 
 /*----------------------------------------------------------------*/
 /*----- BHandler class --------------------------------------------*/
@@ -62,16 +65,33 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
 
-/*----- Private or reserved -----------------------------------------*/
-virtual status_t	Perform(perform_code d, void *arg);
+/* Observer calls, inter-looper and inter-team */
+		status_t	StartWatching(BMessenger, uint32 what);
+		status_t	StartWatchingAll(BMessenger);
+		status_t	StopWatching(BMessenger, uint32 what);
+		status_t	StopWatchingAll(BMessenger);
 
+/* Observer calls for observing targets in the same BLooper */
+		status_t	StartWatching(BHandler *, uint32 what);
+		status_t	StartWatchingAll(BHandler *);
+		status_t	StopWatching(BHandler *, uint32 what);
+		status_t	StopWatchingAll(BHandler *);
+
+
+/* Reserved */
+virtual status_t	Perform(perform_code d, void *arg);
+	
+/* Notifier calls */
+virtual	void 		SendNotices(uint32 what, const BMessage * = 0);
+		bool		IsWatched() const;
+
+/*----- Private or reserved -----------------------------------------*/
 private:
 typedef BArchivable _inherited;
 friend inline int32 _get_object_token_(const BHandler *);
 friend class BLooper;
 friend class BMessageFilter;
 
-virtual	void		_ReservedHandler1();
 virtual	void		_ReservedHandler2();
 virtual	void		_ReservedHandler3();
 virtual	void		_ReservedHandler4();
@@ -87,7 +107,8 @@ virtual	void		_ReservedHandler4();
 		BLooper		*fLooper;
 		BHandler	*fNextHandler;
 		BList		*fFilters;
-		uint32		_reserved[4];
+		_ObserverList *fObserverList;
+		uint32		_reserved[3];
 };
 
 /*-------------------------------------------------------------*/

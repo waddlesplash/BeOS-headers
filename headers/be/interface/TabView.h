@@ -15,8 +15,9 @@
 #define _TAB_VIEW_H
 
 #include <BeBuild.h>
-#include <Message.h>
 #include <View.h>
+
+class BMessage;
 
 /*----------------------------------------------------------------*/
 /*----- tab definitions ------------------------------------------*/

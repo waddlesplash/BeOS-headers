@@ -15,20 +15,18 @@
 #define _MESSAGE_H
 
 #include <BeBuild.h>
-#include <stddef.h>
-#include <AppDefs.h>
-#include <Rect.h>
 #include <OS.h>
-#include <Locker.h>
-#include <Messenger.h>
+#include <Rect.h>
 #include <DataIO.h>
-#include <ClassInfo.h>
-#include <Entry.h>
 #include <Flattenable.h>
+
+#include <AppDefs.h>		/* For convenience */
+#include <TypeConstants.h>	/* For convenience */
 
 class	BBlockCache;
 class	BMessenger;
 class	BHandler;
+class	BString;
 
 /*-----------------------------------------*/
 /*----- Private or reserved ---------------*/
@@ -70,7 +68,6 @@ public:
 					BMessage();
 					BMessage(uint32 what);
 					BMessage(const BMessage &a_message);
-					BMessage(BMessage *a_message);
 virtual				~BMessage();
 
 		BMessage	&operator=(const BMessage &msg);
@@ -136,6 +133,7 @@ virtual				~BMessage();
 		status_t	AddRect(const char *name, BRect a_rect);
 		status_t	AddPoint(const char *name, BPoint a_point);
 		status_t	AddString(const char *name, const char *a_string);
+		status_t	AddString(const char *name, const BString& a_string);
 		status_t	AddInt8(const char *name, int8 val);
 		status_t	AddInt16(const char *name, int16 val);
 		status_t	AddInt32(const char *name, int32 val);
@@ -163,6 +161,8 @@ virtual				~BMessage();
 		status_t	FindPoint(const char *name, int32 index, BPoint *pt) const;
 		status_t	FindString(const char *name, const char **str) const;
 		status_t	FindString(const char *name, int32 index, const char **str) const;
+		status_t	FindString(const char *name, BString *str) const;
+		status_t	FindString(const char *name, int32 index, BString *str) const;
 		status_t	FindInt8(const char *name, int8 *value) const;
 		status_t	FindInt8(const char *name, int32 index, int8 *val) const;
 		status_t	FindInt16(const char *name, int16 *value) const;
@@ -199,6 +199,8 @@ virtual				~BMessage();
 		status_t	ReplacePoint(const char *name, int32 index, BPoint a_point);
 		status_t	ReplaceString(const char *name, const char *string);
 		status_t	ReplaceString(const char *name, int32 index, const char *string);
+		status_t	ReplaceString(const char *name, const BString& string);
+		status_t	ReplaceString(const char *name, int32 index, const BString& string);
 		status_t	ReplaceInt8(const char *name, int8 val);
 		status_t	ReplaceInt8(const char *name, int32 index, int8 val);
 		status_t	ReplaceInt16(const char *name, int16 val);
@@ -252,8 +254,10 @@ virtual				~BMessage();
 		BRect		FindRect(const char *, int32 n = 0) const;
 		BPoint		FindPoint(const char *, int32 n = 0) const;
 		const char	*FindString(const char *, int32 n = 0) const;
+		int8		FindInt8(const char *, int32 n = 0) const;
 		int16		FindInt16(const char *, int32 n = 0) const;
 		int32		FindInt32(const char *, int32 n = 0) const;
+		int64		FindInt64(const char *, int32 n = 0) const;
 		bool		FindBool(const char *, int32 n = 0) const;
 		float		FindFloat(const char *, int32 n = 0) const;
 		double		FindDouble(const char *, int32 n = 0) const;
@@ -271,6 +275,9 @@ friend inline	void		_set_message_reply_(BMessage *, BMessenger);
 friend inline	int32		_get_message_target_(BMessage *);
 friend inline	bool		_use_preferred_target_(BMessage *);
 
+					/* deprecated */
+					BMessage(BMessage *a_message);
+					
 virtual	void		_ReservedMessage1();
 virtual	void		_ReservedMessage2();
 virtual	void		_ReservedMessage3();
@@ -373,7 +380,7 @@ static	BBlockCache	*sMsgCache;
 		int32		da_pad_8(int32 val) const
 						{ return (val + 7) & ~7; }
 		int32		da_total_size(dyn_array *da) const
-						{ return sizeof(dyn_array) + da->fEntryHdrSize +
+						{ return (int32)sizeof(dyn_array) + da->fEntryHdrSize +
 											da->fPhysicalBytes; }
 		char		*da_start_of_data(dyn_array *da) const
 						{ return ((char *) da) + (sizeof(dyn_array) +

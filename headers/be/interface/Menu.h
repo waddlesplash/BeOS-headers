@@ -13,9 +13,8 @@
 
 #include <BeBuild.h>
 #include <InterfaceDefs.h>
-#include <View.h>
-#include <Looper.h>
 #include <List.h>
+#include <View.h>
 
 /*----------------------------------------------------------------*/
 /*----- Menu decalrations and structures -------------------------*/
@@ -23,7 +22,9 @@
 class BMenuItem;
 class BMenuBar;
 class BMenuWindow;
-extern "C" status_t _init_interface_kit_();
+class BMenuFrame;
+
+class _ExtraMenuData_;
 
 enum menu_layout {
 	B_ITEMS_IN_ROW = 0,
@@ -43,6 +44,8 @@ struct menu_info {
 
 _IMPEXP_BE status_t	set_menu_info(menu_info *info);
 _IMPEXP_BE status_t	get_menu_info(menu_info *info);
+
+typedef bool (* menu_tracking_hook )(BMenu *, void *);
 
 /*----------------------------------------------------------------*/
 /*----- BMenu class ----------------------------------------------*/
@@ -164,6 +167,8 @@ public:
 virtual	bool		AddDynamicItem(add_state s);
 virtual void		DrawBackground(BRect update);
 
+		void		SetTrackingHook(menu_tracking_hook func, void *state);
+						
 /*----- Private or reserved -----------------------------------------*/
 private:
 friend BWindow;
@@ -190,6 +195,8 @@ virtual	void			_ReservedMenu6();
 								BMenuItem *item,
 								bool del = false);
 		void		LayoutItems(int32 index);
+		void		ComputeLayout(int32 index, bool bestFit, bool moveItems,
+								  float* width, float* height);
 		BRect		Bump(BRect current, BPoint extent, int32 index) const;
 		BPoint		ItemLocInRect(BRect frame) const;
 		BRect		CalcFrame(BPoint where, bool *scrollOn);
@@ -233,7 +240,7 @@ virtual	void			_ReservedMenu6();
 						BMenu **tmenu, BMenuItem **titem, int32 *user_data,
 						BMessage *reply) const;
 
-		status_t	DoMenuMsg(BMenu **next, BMenu *tar, BMessage *m,
+		status_t	DoMenuMsg(BMenuItem **next, BMenu *tar, BMessage *m,
 						BMessage *r, BMessage *spec, int32 f) const;
 		status_t	DoMenuItemMsg(BMenuItem **next, BMenu *tar, BMessage *m,
 						BMessage *r, BMessage *spec, int32 f) const;
@@ -247,7 +254,7 @@ virtual	void			_ReservedMenu6();
 		status_t	DoDeleteMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
 						BMessage *r) const;
 		status_t	DoCreateMsg(BMenuItem *ti, BMenu *tm, BMessage *m,
-						BMessage *r) const;
+						BMessage *r, bool menu) const;
 
 static	menu_info	sMenuInfo;
 static	bool		sSwapped;
@@ -268,7 +275,9 @@ static	bool		sSwapped;
 		BRect		*fExtraRect;
 		float		fMaxContentWidth;
 		BPoint		*fInitMatrixSize;
-		uint32		_reserved[3];
+		_ExtraMenuData_	*fExtraMenuData;	// !!
+
+		uint32		_reserved[2];
 
 		char		fTrigger;
 		bool		fResizeToFit;

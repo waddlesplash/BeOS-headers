@@ -52,6 +52,7 @@ enum icon_size {
 class BBitmap;
 class BResources;
 class BAppFileInfo;
+class BMessenger;
 
 enum app_verb {
 	B_OPEN
@@ -81,6 +82,7 @@ enum {
 	B_APP_HINT_CHANGED				= 0x00000080,
 	B_MIME_TYPE_CREATED				= 0x00000100,
 	B_MIME_TYPE_DELETED				= 0x00000200,
+	B_SNIFFER_RULE_CHANGED			= 0x00000400,
 
 	B_EVERYTHING_CHANGED			= (int)0xFFFFFFFF
 };
@@ -146,17 +148,34 @@ static	bool		IsValid(const char *string);
 								const BBitmap *icon,
 								icon_size which);
 
+		/* sniffer rule manipulation */
+		status_t	GetSnifferRule(BString *result) const;
+		status_t	SetSnifferRule(const char *);
+static	status_t	CheckSnifferRule(const char *rule, BString *parseError);
+
+		/* calls to ask the sniffer to identify the MIME type of a file or data in memory */
+static	status_t	GuessMimeType(const entry_ref *file, BMimeType *result);
+static	status_t	GuessMimeType(const void *buffer, int32 length, BMimeType *result);
+static	status_t	GuessMimeType(const char *filename, BMimeType *result);
+
 static	status_t	StartWatching(BMessenger target);
 static	status_t	StopWatching(BMessenger target);
 
-		/* Misnomer.  Use SetTo instead. */
-		status_t	SetType(const char *MIME_type);
+		/* Deprecated  Use SetTo instead. */
+		status_t	SetType(const char *MIME_type);		
 
 private:
+
 friend	class BAppFileInfo;
 friend	class BRoster;
+friend  class TRosterApp;
+friend  class TMimeWorker;
+
 friend	status_t	_update_mime_info_(const char *, int32);
 friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
+
+static  void		_set_local_dispatch_target_(BMessenger *, void (*)(BMessage *));
+		void        _touch_(); 
 
 virtual	void		_ReservedMimeType1();
 virtual	void		_ReservedMimeType2();

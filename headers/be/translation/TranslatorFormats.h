@@ -15,9 +15,8 @@
 #define _TRANSLATOR_FORMATS_H
 
 
-#include <SupportDefs.h>
-#include <InterfaceDefs.h>
-
+#include <GraphicsDefs.h>
+#include <Rect.h>
 
 /*	extensions used in the extension BMessage. Use of these 	*/
 /*	is described in the documentation.	*/

@@ -10,7 +10,7 @@
 
 
 namespace BPrivate {
-	class _IMPEXP_MEDIA Extractor;
+	class MediaExtractor;
 	class _IMPEXP_MEDIA MediaWriter;
 	class _AddonManager;
 }
@@ -24,7 +24,10 @@ class BView;
 
 // flags for the BMediaFile constructor
 enum {
-	B_MEDIA_FILE_REPLACE_MODE = 0x00000001
+	B_MEDIA_FILE_REPLACE_MODE    = 0x00000001,
+	B_MEDIA_FILE_NO_READ_AHEAD   = 0x00000002,
+	B_MEDIA_FILE_UNBUFFERED      = 0x00000006,
+	B_MEDIA_FILE_BIG_BUFFERS     = 0x00000008
 };
 
 // BMediaFile represents a media file (AVI, Quicktime, MPEG, AIFF, WAV, etc)
@@ -42,9 +45,15 @@ enum {
 class BMediaFile {
 
 public:
-					BMediaFile(const entry_ref *ref);  // these two are read-only 
-					BMediaFile(BDataIO   *source);     // BFile is a BDataIO
+					//	these four constructors are used for read-only access
+					BMediaFile(	const entry_ref *ref); 
+					BMediaFile(	BDataIO * source);     // BFile is a BDataIO
+					BMediaFile(	const entry_ref * ref,
+								int32 flags);
+					BMediaFile(	BDataIO * source,
+								int32 flags);     // BFile is a BDataIO
 
+					//	these two constructors are for read-write access
 					BMediaFile(const entry_ref *ref,   // these two are write-only
 							   const media_file_format * mfi,
 							   int32 flags=0);
@@ -108,8 +117,8 @@ public:
 	virtual	status_t Perform(int32 selector, void * data);
 
 private:
-	BPrivate::Extractor 	*fExtractor;
-	int32					fExtractorID;
+	BPrivate::MediaExtractor *fExtractor;
+	int32					_reserved_BMediaFile_was_fExtractorID;
 	int32					fTrackNum;
 	status_t				fErr;
 
@@ -119,11 +128,12 @@ private:
 	int32					fWriterID;
 	media_file_format		fMFI;
 
-	void 					*_fUnused;
+	bool					fFileClosed;
+	bool					_reserved_was_fUnused[3];
 	BList					*fTrackList;
 
 	void					Init();
-	void					InitReader(BDataIO *source);
+	void					InitReader(BDataIO *source, int32 flags = 0);
 	void					InitWriter(BDataIO *source, const media_file_format * mfi,
 									   int32 flags);
 

@@ -16,15 +16,11 @@
 #include <BeBuild.h>
 #include <InterfaceDefs.h>
 #include <Archivable.h>
-#include <Message.h>
-#include <Menu.h>
 #include <Invoker.h>
+#include <Menu.h>			/* For convenience */
 
+class BMessage;
 class BWindow;
-class BView;
-class BMenu;
-class BPopUpMenu;
-class BMenuBar;
 
 /*----------------------------------------------------------------*/
 /*----- BMenuItem class ------------------------------------------*/

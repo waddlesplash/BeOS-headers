@@ -35,15 +35,13 @@ double		difftime(time_t time1, time_t time2);
 time_t		mktime(struct tm *timeptr);
 time_t		time(time_t *timer);
 char 	   *asctime(const struct tm *timeptr);
-/* XXXdbg char 	   *asctime_r(const struct tm *timeptr, char *buf); */
-void		get_asctime(const struct tm *timeptr, char *result);	
+char 	   *asctime_r(const struct tm *timeptr, char *buf);
 char 	   *ctime(const time_t *timer);
-/* XXXdbg char 	   *ctime_r(const time_t *timer, char *buf); */
-void		get_ctime(const time_t *const timep, char *result);
+char 	   *ctime_r(const time_t *timer, char *buf);
 struct tm  *gmtime(const time_t *timer);
 int 		gmtime_r(const time_t *timer, struct tm *t); 
 struct tm  *localtime(const time_t *timer);
-int 		localtime_r(const time_t *timer, struct tm *t);
+struct tm  *localtime_r(const time_t *timer, struct tm *t);
 size_t		strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
 
 #define MAX_TIMESTR	70	/* maximum length of a string returned by asctime or ctime */

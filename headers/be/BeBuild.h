@@ -13,14 +13,21 @@
 
 #define B_BEOS_VERSION_4	0x0400
 #define B_BEOS_VERSION_4_5	0x0450
-#define B_BEOS_VERSION		B_BEOS_VERSION_4_5
+#define B_BEOS_VERSION_5	0x0500
+
+#define B_BEOS_VERSION		B_BEOS_VERSION_5
+#define B_BEOS_VERSION_MAUI B_BEOS_VERSION_5
 
 #if defined(__powerc) || defined(powerc)
 	#define _PR2_COMPATIBLE_ 1
 	#define _PR3_COMPATIBLE_ 1
+	#define _R4_COMPATIBLE_ 1
+	#define _R4_5_COMPATIBLE_ 1
 #else
 	#define _PR2_COMPATIBLE_ 0
 	#define _PR3_COMPATIBLE_ 0
+	#define _R4_COMPATIBLE_ 1
+	#define _R4_5_COMPATIBLE_ 1
 #endif
 
 
@@ -50,6 +57,7 @@
 #define	_IMPEXP_DEVICE
 #define	_IMPEXP_MEDIA
 #define	_IMPEXP_MIDI
+#define _IMPEXP_MIDI2
 #define _IMPEXP_GAME
 #define _IMPEXP_GSOUND
 #define _IMPEXP_TRANSLATION
@@ -129,6 +137,12 @@
 #define	_IMPEXP_MEDIA	__declspec(dllimport)
 #endif
 
+#if _BUILDING_midi2
+#define	_IMPEXP_MIDI2	__declspec(dllexport)
+#else
+#define	_IMPEXP_MIDI2	__declspec(dllimport)
+#endif
+
 #if _BUILDING_midi
 #define	_IMPEXP_MIDI	__declspec(dllexport)
 #else
@@ -184,6 +198,7 @@
 #define	_IMPEXP_DEVICE
 #define	_IMPEXP_MEDIA
 #define	_IMPEXP_MIDI
+#define _IMPEXP_MIDI2
 #define	_IMPEXP_GAME
 #define _IMPEXP_GSOUND
 #define _IMPEXP_TRANSLATION
@@ -314,6 +329,8 @@ class _IMPEXP_BE BAlert;
 class _IMPEXP_BE BBitmap;
 class _IMPEXP_BE BBox;
 class _IMPEXP_BE BButton;
+class _IMPEXP_BE BChannelControl;
+class _IMPEXP_BE BChannelSlider;
 class _IMPEXP_BE BCheckBox;
 class _IMPEXP_BE BColorControl;
 class _IMPEXP_BE BControl;
@@ -328,6 +345,8 @@ class _IMPEXP_BE BMenu;
 class _IMPEXP_BE BMenuBar;
 class _IMPEXP_BE BMenuField;
 class _IMPEXP_BE BMenuItem;
+class _IMPEXP_BE BOptionControl;
+class _IMPEXP_BE BOptionPopUp;
 class _IMPEXP_BE BOutlineListView;
 class _IMPEXP_BE BPicture;
 class _IMPEXP_BE BPictureButton;
@@ -385,10 +404,10 @@ class _IMPEXP_ATALK _PrinterNode;
 
 /* tracker kit */
 class _IMPEXP_TRACKER BFilePanel;
-class _IMPEXP_TRACKER BNavMenu;
-class _IMPEXP_TRACKER BSlowMenu;
-
-class _IMPEXP_TRACKER CopyLoopControl;
+class _IMPEXP_TRACKER BRecentItemsList;
+class _IMPEXP_TRACKER BRecentFilesList;
+class _IMPEXP_TRACKER BRecentFoldersList;
+class _IMPEXP_TRACKER BRecentAppsList;
 
 /* mail kit */
 class _IMPEXP_MAIL	BMailMessage;
@@ -440,7 +459,7 @@ class _IMPEXP_MEDIA BMediaEventLooper;
 class _IMPEXP_MEDIA BMediaFile;
 class _IMPEXP_MEDIA BMediaTrack;
 
-struct _IMPEXP_MEDIA media_node;
+class _IMPEXP_MEDIA media_node;
 struct _IMPEXP_MEDIA media_input;
 struct _IMPEXP_MEDIA media_output;
 struct _IMPEXP_MEDIA live_node_info;
@@ -468,6 +487,13 @@ class _IMPEXP_MIDI		BMidiText;
 class _IMPEXP_MIDI		BSamples;
 class _IMPEXP_MIDI		BSynth;
 
+class _IMPEXP_MIDI2		BMidiEndpoint;
+class _IMPEXP_MIDI2		BMidiProducer;
+class _IMPEXP_MIDI2		BMidiConsumer;
+class _IMPEXP_MIDI2		BMidiLocalProducer;
+class _IMPEXP_MIDI2		BMidiLocalConsumer;
+class _IMPEXP_MIDI2		BMidiRoster;
+
 /* game kit */
 class _IMPEXP_GAME		BWindowScreen;
 class _IMPEXP_GAME		BDirectWindow;
@@ -494,15 +520,22 @@ class _IMPEXP_GL BGLScreen;
 class _IMPEXP_GL GLUnurbs;
 class _IMPEXP_GL GLUquadric;
 class _IMPEXP_GL GLUtesselator;
+
+typedef class _IMPEXP_GL GLUnurbs GLUnurbsObj;
+typedef class _IMPEXP_GL GLUquadric GLUquadricObj;
+typedef class _IMPEXP_GL GLUtesselator GLUtesselatorObj;
+typedef class _IMPEXP_GL GLUtesselator GLUtriangulatorObj;
+
 #else
 typedef struct _IMPEXP_GL GLUnurbs GLUnurbs;
 typedef struct _IMPEXP_GL GLUquadric GLUquadric;
 typedef struct _IMPEXP_GL GLUtesselator GLUtesselator;
-#endif
+
 typedef struct _IMPEXP_GL GLUnurbs GLUnurbsObj;
 typedef struct _IMPEXP_GL GLUquadric GLUquadricObj;
 typedef struct _IMPEXP_GL GLUtesselator GLUtesselatorObj;
 typedef struct _IMPEXP_GL GLUtesselator GLUtriangulatorObj;
+#endif
 
 /* input_server */
 class _IMPEXP_INPUT	BInputServerDevice;

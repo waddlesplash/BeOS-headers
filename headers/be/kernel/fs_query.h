@@ -12,7 +12,7 @@
 #define _FS_QUERY_H
 
 #include <BeBuild.h>
-#include <SupportDefs.h>
+#include <OS.h>
 #include <dirent.h>
 
 

@@ -39,7 +39,7 @@ operator delete (void * ptr)
 {
   Allocator::deallocate(ptr, sizeof(Rep) +
 			reinterpret_cast<Rep *>(ptr)->res *
-			sizeof (charT)); 
+			sizeof (charT));
 }
 
 template <class charT, class traits, class Allocator>
@@ -325,10 +325,12 @@ basic_string <charT, traits, Allocator>::size_type
 basic_string <charT, traits, Allocator>::
 find_last_of (const charT* s, size_type pos, size_type n) const
 {
+  if (length() == 0)
+    return npos;
   size_t xpos = length () - 1;
   if (xpos > pos)
     xpos = pos;
-  for (; xpos; --xpos)
+  for (++xpos; xpos-- > 0;)
     if (_find (s, data () [xpos], 0, n) != npos)
       return xpos;
   return npos;
@@ -363,10 +365,12 @@ basic_string <charT, traits, Allocator>::size_type
 basic_string <charT, traits, Allocator>::
 find_last_not_of (const charT* s, size_type pos, size_type n) const
 {
+  if (length() == 0)
+    return npos;
   size_t xpos = length () - 1;
   if (xpos > pos)
     xpos = pos;
-  for (; xpos; --xpos)
+  for (++xpos; xpos-- > 0;)
     if (_find (s, data () [xpos], 0, n) == npos)
       return xpos;
   return npos;
@@ -377,10 +381,12 @@ basic_string <charT, traits, Allocator>::size_type
 basic_string <charT, traits, Allocator>::
 find_last_not_of (charT c, size_type pos) const
 {
+  if (length() == 0)
+    return npos;
   size_t xpos = length () - 1;
   if (xpos > pos)
     xpos = pos;
-  for (; xpos; --xpos)
+  for (++xpos; xpos-- > 0;)
     if (traits::ne (data () [xpos], c))
       return xpos;
   return npos;
@@ -444,7 +450,7 @@ operator>> (istream &is, basic_string <charT, traits, Allocator> &s)
 	      sb->sungetc ();
 	      break;
 	    }
-	  s += ch;
+	  s += static_cast<charT> (ch);
 	  if (--w == 1)
 	    break;
 	}
@@ -490,7 +496,7 @@ getline (istream &is, basic_string <charT, traits, Allocator>& s, charT delim)
 	  if (ch == delim)
 	    break;
 
-	  s += ch;
+	  s += static_cast<charT> (ch);
 
 	  if (s.length () == s.npos - 1)
 	    {

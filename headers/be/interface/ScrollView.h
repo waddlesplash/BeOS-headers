@@ -13,7 +13,7 @@
 #define	_SCROLL_VIEW_H
 
 #include <BeBuild.h>
-#include <ScrollBar.h>
+#include <ScrollBar.h>		/* For convenience */
 #include <View.h>
 
 /*----------------------------------------------------------------*/

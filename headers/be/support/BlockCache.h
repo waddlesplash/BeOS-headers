@@ -13,10 +13,7 @@
 #define _BLOCK_CACHE_H
 
 #include <BeBuild.h>
-#include <stddef.h>
 #include <Locker.h>
-
-class BMessage;
 
 /*-----------------------------------------------------------------*/
 /*-----Allocation type --------------------------------------------*/

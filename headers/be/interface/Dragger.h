@@ -15,10 +15,10 @@
 #include <Locker.h>
 #include <List.h>
 #include <View.h>
-#include <Message.h>
 
-class BShelf;
 class BBitmap;
+class BMessage;
+class BShelf;
 
 /*----------------------------------------------------------------*/
 /*----- BDragger class -------------------------------------------*/

@@ -12,8 +12,8 @@
 #define	_PICTURE_BUTTON_H
 
 #include <BeBuild.h>
-#include <Picture.h>
 #include <Control.h>
+#include <Picture.h>	/* For convenience */
 
 enum {
 	B_ONE_STATE_BUTTON,

@@ -40,7 +40,14 @@ static	status_t ClipDataToRegion(
 
 protected:
 explicit	BBufferProducer(
-				media_type producer_type = B_MEDIA_UNKNOWN_TYPE);
+				media_type producer_type /* = B_MEDIA_UNKNOWN_TYPE */);
+
+		enum suggestion_quality {
+			B_ANY_QUALITY = 0,
+			B_LOW_QUALITY = 10,
+			B_MEDIUM_QUALITY = 50,
+			B_HIGH_QUALITY = 100
+		};
 
 	/* functionality of BBufferProducer */
 virtual	status_t FormatSuggestionRequested(

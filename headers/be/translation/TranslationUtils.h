@@ -58,6 +58,9 @@ static	BBitmap * GetBitmap(
 static	BBitmap * GetBitmapFile(
 				const char * name,
 				BTranslatorRoster * use = NULL);
+static	BBitmap * GetBitmap(
+				const entry_ref * ref,
+				BTranslatorRoster * use = NULL);
 		/*	Get bitmap - from open file (or BMemoryIO) */
 static	BBitmap * GetBitmap(
 				BPositionIO * stream,	/*	not NULL	*/

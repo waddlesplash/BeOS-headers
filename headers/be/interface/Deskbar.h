@@ -2,7 +2,11 @@
 #define _DESKBAR_H
 
 #include <BeBuild.h>
-#include <View.h>
+
+#include <Rect.h>
+
+class BMessenger;
+class BView;
 
 enum deskbar_location {
 	B_DESKBAR_TOP,
@@ -34,7 +38,8 @@ public:
 								
 		uint32				CountItems() const; 
 			
-		status_t			AddItem(BView* archivableView, int32* id=NULL); 
+		status_t			AddItem(BView* archivableView, int32* id=NULL);
+		status_t			AddItem(entry_ref* addon, int32* id=NULL);
 	
 		status_t			RemoveItem(int32 id); 
 		status_t			RemoveItem(const char* name);

@@ -36,7 +36,7 @@ static	status_t RegionToClipData(
 
 protected:
 explicit	BBufferConsumer(
-				media_type consumer_type = B_MEDIA_UNKNOWN_TYPE);
+				media_type consumer_type /* = B_MEDIA_UNKNOWN_TYPE */);
 
 static	void NotifyLateProducer(
 				const media_source & what_source,

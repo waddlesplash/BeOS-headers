@@ -59,8 +59,10 @@ extern "C" {
 										__FILE__, __LINE__, find_thread(NULL))
 	
 	#define DEBUGGER(MSG)			if (_rtDebugFlag) debugger(MSG)
-	#define ASSERT(E)				(!(E) ? _debuggerAssert(__FILE__,__LINE__, #E) \
+	#if !defined(ASSERT)
+		#define ASSERT(E)			(!(E) ? _debuggerAssert(__FILE__,__LINE__, #E) \
 										: (int)0)
+	#endif
 
 	#define ASSERT_WITH_MESSAGE(expr, msg) \
 								(!(expr) ? _debuggerAssert( __FILE__,__LINE__, msg) \
@@ -81,7 +83,9 @@ extern "C" {
 	#define SERIAL_TRACE()			(void)0
 	
 	#define DEBUGGER(MSG)			(void)0
-	#define ASSERT(E)				(void)0
+	#if !defined(ASSERT)
+		#define ASSERT(E)				(void)0
+	#endif
 	#define ASSERT_WITH_MESSAGE(expr, msg) \
 									(void)0
 	#define TRESPASS()				(void)0

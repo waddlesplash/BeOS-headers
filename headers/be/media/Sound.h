@@ -56,6 +56,8 @@ private:
 		friend class BSoundPlayer;
 		friend class _HostApp;
 
+		void Reset();
+
 virtual	~BSound();
 
 		void free_data();
@@ -100,7 +102,8 @@ virtual	status_t _Reserved_Sound_5(void *);
 		int32 _m_bind_flags;
 
 		BPrivate::BTrackReader * _m_trackReader;
-		uint32 _reserved_[9];
+		char m_tname[32];
+		uint32 _reserved_[1];
 
 };
 

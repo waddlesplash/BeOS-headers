@@ -16,7 +16,6 @@
 #include <SupportDefs.h>
 #include <InterfaceDefs.h>
 
-
 /*----------------------------------------------------------------*/
 /*----- BFont defines and structures -----------------------------*/
 
@@ -146,6 +145,7 @@ struct tuned_font_info {
 };
 
 class BShape;
+class BString;
 
 /*----------------------------------------------------------------*/
 /*----- Private --------------------------------------------------*/
@@ -195,6 +195,14 @@ public:
 		int32				CountTuned() const;
 		void				GetTunedInfo(int32 index, tuned_font_info *info) const;
 
+		void				TruncateString(BString* in_out,
+										   uint32 mode,
+										   float width) const;
+		void            	GetTruncatedStrings(const char *stringArray[], 
+												int32 numStrings, 
+												uint32 mode,
+												float width, 
+												BString resultArray[]) const;
 		void            	GetTruncatedStrings(const char *stringArray[], 
 												int32 numStrings, 
 												uint32 mode,
@@ -285,6 +293,11 @@ friend void _font_control_(BFont*, int32, void*);
 												  uint32 mode,
 												  float width, 
 												  char *resultArray[]) const;
+		void           		GetTruncatedStrings64(const char *stringArray[], 
+												  int32 numStrings, 
+												  uint32 mode,
+												  float width, 
+												  BString resultArray[]) const;
 		void				_GetEscapements_(const char charArray[],
 											 int32 numChars, 
 											 escapement_delta *delta,

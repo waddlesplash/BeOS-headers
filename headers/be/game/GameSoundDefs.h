@@ -15,7 +15,7 @@
 
 typedef int32 gs_id;
 
-#define B_GS_CUR_API_VERSION 0x100
+#define B_GS_CUR_API_VERSION B_BEOS_VERSION
 #define B_GS_MIN_API_VERSION 0x100
 
 //	invalid sound handle

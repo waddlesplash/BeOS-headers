@@ -12,7 +12,6 @@
 #define _MESSAGE_RUNNER_H
 
 #include <BeBuild.h>
-#include <Message.h>
 #include <Messenger.h>
 
 /*----------------------------------------------------------------------*/

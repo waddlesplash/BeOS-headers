@@ -38,5 +38,16 @@ typedef enum {
 	PAR_MODE_ECP_DEVICE_ID		/* ECP, request device ID (GET_MODE will always return PAR_MODE_ECP) */
 } parallel_mode;
 
+
+/* People who need this know who they are */
+enum {
+	DGL_READ_STATUS_REGISTER = B_DEVICE_OP_CODES_END+1,	/* (uint8) Read port PSTAT register */
+	DGL_READ_CONTROL_REGISTER,							/* (uint8) Read port PCON register */
+	DGL_WRITE_CONTROL_REGISTER,							/* (uint8) Write port PCON register */
+	DGL_LOCK,											/* Lock the parallel port */
+	DGL_UNLOCK											/* Unlock the parallel port */
+};
+
+
 #endif
 

@@ -12,10 +12,11 @@
 #define	_CONTROL_H
 
 #include <BeBuild.h>
-#include <View.h>
-#include <Message.h>
 #include <Invoker.h>
-#include <Looper.h>
+#include <Message.h>	/* For convenience */
+#include <View.h>
+
+class BWindow;
 
 /*----------------------------------------------------------------*/
 /*----- BControl defines -----------------------------------------*/
@@ -24,8 +25,6 @@ enum {
 	B_CONTROL_OFF = 0,
 	B_CONTROL_ON = 1
 };
-
-class BWindow;
 
 /*----------------------------------------------------------------*/
 /*----- BControl class -------------------------------------------*/

@@ -1,86 +1,53 @@
 /*
-   This file contains the structures that GNU malloc uses to manage
+   This file contains the structures that malloc uses to manage
    memory.  It is not intended for public consumption.
 
 */
 
+/* SVID2/XPG mallinfo structure */
 
-/* The allocator divides the heap into blocks of fixed size; large
-   requests receive one or more whole blocks, and small requests
-   receive a fragment of a block.  Fragment sizes are powers of two,
-   and all fragments of a block are the same size.  When all the
-   fragments in a block have been freed, the block itself is freed.  */
-#define INT_BIT         (CHAR_BIT * sizeof(int))
-#define BLOCKLOG        (INT_BIT > 16 ? 12 : 9) 
-#define BLOCKSIZE       (1 << BLOCKLOG)
-#define BLOCKIFY(SIZE)  (((SIZE) + BLOCKSIZE - 1) / BLOCKSIZE)
+struct mallinfo {
+  int arena;    /* total space allocated from system */
+  int ordblks;  /* number of non-inuse chunks */
+  int smblks;   /* unused -- always zero */
+  int hblks;    /* number of mmapped regions */
+  int hblkhd;   /* total space in mmapped regions */
+  int usmblks;  /* unused -- always zero */
+  int fsmblks;  /* unused -- always zero */
+  int uordblks; /* total allocated space */
+  int fordblks; /* total non-inuse space */
+  int keepcost; /* top-most, releasable (via malloc_trim) space */
+};	
 
-/* Determine the amount of memory spanned by the initial heap table
-   (not an absolute limit).  */
-#define HEAP            (INT_BIT > 16 ? 4194304 : 65536)
+/* SVID2/XPG mallopt options */
 
-/* Number of contiguous free blocks allowed to build up at the end of
-   memory before they will be returned to the system.  */
-#define FINAL_FREE_BLOCKS       8
+#define M_MXFAST  1    /* UNUSED in this malloc */
+#define M_NLBLKS  2    /* UNUSED in this malloc */
+#define M_GRAIN   3    /* UNUSED in this malloc */
+#define M_KEEP    4    /* UNUSED in this malloc */
 
-/* Data structure giving per-block information.  */
-typedef union
+/* mallopt options that actually do something */
+
+#define M_TRIM_THRESHOLD    -1
+#define M_TOP_PAD           -2
+#define M_MMAP_THRESHOLD    -3
+#define M_MMAP_MAX          -4
+
+#ifndef INTERNAL_SIZE_T
+# define INTERNAL_SIZE_T size_t
+#endif
+
+struct malloc_chunk
 {
-	/* Heap information for a busy block.  */
-	struct
-	{
-		/* Zero for a large (multiblock) object, or positive giving the
-		   logarithm to the base two of the fragment size.	*/
-		int type;
-		union
-		{
-			struct
-			{
-				size_t nfree;	/* Free frags in a fragmented block.	*/
-				size_t first;	/* First free fragment of the block.	*/
-			} frag;
-
-			/* For a large object, in its first block, this has the number
-			   of blocks in the object.	 In the other blocks, this has a
-			   negative number which says how far back the first block is.	*/
-			ptrdiff_t size;
-		} info;
-	} busy;
-
-	/* Heap information for a free block
-	   (that may be the first of a free cluster).  */
-	struct
-	{
-		size_t size;			/* Size (in blocks) of a free cluster.	*/
-		size_t next;			/* Index of next free cluster.	*/
-		size_t prev;			/* Index of previous free cluster.	*/
-	} free;
-} malloc_info;
-
-
-
-/* Address to block number and vice versa.  */
-#define BLOCK(A)        (((char *) (A) - ms->_heapbase) / BLOCKSIZE + 1)
-#define ADDRESS(B)      ((void *) (((B) - 1) * BLOCKSIZE + ms->_heapbase))
-
-
-/* Doubly linked lists of free fragments.  */
-struct list
-{
-    struct list *next;
-    struct list *prev;
+  INTERNAL_SIZE_T prev_size; /* Size of previous chunk (if free). */
+  INTERNAL_SIZE_T size;      /* Size in bytes, including overhead. */
+  struct malloc_chunk* fd;   /* double links -- used only if free. */
+  struct malloc_chunk* bk;
 };
 
+#define NAV             128   /* number of bins */
 
-/* List of blocks allocated with `memalign' (or `valloc').  */
-struct alignlist
-{
-    struct alignlist *next;
-    void * aligned;             /* The address that memaligned returned.  */
-    void * exact;               /* The address that malloc returned.  */
-};
-
-
+typedef struct malloc_chunk* mbinptr;
 
 /*
    This is all the state that the malloc routines need to know about.
@@ -95,36 +62,35 @@ typedef struct malloc_state {
 	/* Are you experienced?  */
 	int malloc_initialized;
 
-	/* Pointer to the base of the first block.  */
-	char *_heapbase;
+	/* bins */
+	mbinptr av_[NAV * 2 + 2];
+	
+	/* variables holding tunable values */
+	unsigned long trim_threshold;
+	unsigned long top_pad;
+	unsigned int n_mmaps_max;
+	unsigned long mmap_threshold;
 
-	/* Block information table.  Allocated with align/free (not malloc/free).  */
-	malloc_info *_heapinfo;
+	/* first value returned from sbrk */
+	char *sbrk_base;
 
-	/* Number of info entries.  */
-	size_t heapsize;
+	/* maximum memory obtained from system via sbrk */
+	unsigned long max_sbrked_mem;
 
-	/* Search index in the info table.  */
-	size_t _heapindex;
+	/* maximum via either sbrk or mmap */
+	unsigned long max_total_mem;
 
-	/* Limit of valid info table indices.  */
-	size_t _heaplimit;
+	/* internal working copy of mallinfo */
+	struct mallinfo current_mallinfo;
 
-	/* Free lists for each fragment size.  */
-	struct list _fraghead[BLOCKLOG];
-
-	/* List of blocks allocated with `memalign' (or `valloc').  */
-	struct alignlist *_aligned_blocks;
-
-	/* Instrumentation.  */
-	size_t _chunks_used;
-	size_t _bytes_used;
-	size_t _chunks_free;
-	size_t _bytes_free;
+	/* tracking mmaps */
+	unsigned long n_mmaps;
+	unsigned long max_n_mmaps;
+	unsigned long mmapped_mem;
+	unsigned long max_mmapped_mem;
 
 	/* private data used by the hooks */
-	void	*data;
-	
+	void *data;
 } malloc_state;
 
 

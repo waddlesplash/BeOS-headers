@@ -61,14 +61,14 @@ public:
 	int32				LoopOffCount() const;
 
 private:
-	virtual	void ReservedScreenSaver1();
-	virtual	void ReservedScreenSaver2();
-	virtual	void ReservedScreenSaver3();
-	virtual	void ReservedScreenSaver4();
-	virtual	void ReservedScreenSaver5();
-	virtual	void ReservedScreenSaver6();
-	virtual	void ReservedScreenSaver7();
-	virtual	void ReservedScreenSaver8();
+	virtual	void _ReservedScreenSaver1();
+	virtual	void _ReservedScreenSaver2();
+	virtual	void _ReservedScreenSaver3();
+	virtual	void _ReservedScreenSaver4();
+	virtual	void _ReservedScreenSaver5();
+	virtual	void _ReservedScreenSaver6();
+	virtual	void _ReservedScreenSaver7();
+	virtual	void _ReservedScreenSaver8();
 
 	bigtime_t	ticksize;
 	int32		looponcount;
@@ -78,5 +78,7 @@ private:
 };
 
 extern "C" _EXPORT BScreenSaver *instantiate_screen_saver(BMessage *msg, image_id id);
+
+_EXPORT int32 saverVersionID;
 
 #endif

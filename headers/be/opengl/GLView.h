@@ -36,6 +36,9 @@
 	struct __glContextRec;
 #endif
 
+typedef struct __glPerWindowDataRec __glPerWindowData;
+
+
 class BGLView : public BView {
 public:
 
@@ -47,6 +50,7 @@ virtual				~BGLView();
 		void		LockGL();
 		void		UnlockGL();
 		void		SwapBuffers();
+		void		SwapBuffers( bool vSync );
 		BView *     EmbeddedView();
 		status_t    CopyPixelsOut(BPoint source, BBitmap *dest);
 		status_t    CopyPixelsIn(BBitmap *source, BPoint dest);
@@ -116,7 +120,7 @@ virtual void        _ReservedGLView8();
 		BView *     m_embeddedBack;
 #else
 		void *		m_clip_info;
-		void *     	_reserved1;
+		__glPerWindowData *m_window_data;
 #endif
 		BBitmap *   m_ditherMap;
 		BRect       m_bounds;

@@ -12,14 +12,13 @@
 #define _LIST_ITEM_H
 
 #include <BeBuild.h>
-#include <Rect.h>
 #include <Archivable.h>
-#include <View.h>
-#include <Message.h>
+#include <Rect.h>
 
 class BFont;
-class BView;
+class BMessage;
 class BOutlineListView;
+class BView;
 
 /*----------------------------------------------------------------*/
 /*----- BListItem class ------------------------------------------*/

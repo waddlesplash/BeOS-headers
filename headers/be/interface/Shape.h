@@ -12,7 +12,6 @@
 #define _SHAPE_H
 
 #include <BeBuild.h>
-#include <InterfaceDefs.h>
 #include <Archivable.h>
 
 /*----------------------------------------------------------------*/
@@ -44,11 +43,11 @@ virtual	void			_ReservedShapeIterator4();
 /*----------------------------------------------------------------*/
 /*----- BShape class ---------------------------------------------*/
 
-class BShape : BArchivable {
+class BShape : public BArchivable {
 
 public:
 						BShape();
-						BShape(BShape &copyFrom);
+						BShape(const BShape &copyFrom);
 						BShape(BMessage *data);
 virtual					~BShape();
 
@@ -56,9 +55,9 @@ virtual	status_t		Archive(BMessage *into, bool deep = true) const;
 static	BArchivable		*Instantiate(BMessage *data);
 
 		void			Clear();
-		BRect			Bounds();
+		BRect			Bounds() const;
 
-		status_t		AddShape(BShape *other);
+		status_t		AddShape(const BShape *other);
 
 		status_t		MoveTo(BPoint point);
 		status_t		LineTo(BPoint linePoint);

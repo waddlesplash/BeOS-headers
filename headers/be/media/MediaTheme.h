@@ -15,8 +15,8 @@
 #define _CONTROL_THEME_H
 
 
+#include <Entry.h>
 #include <MediaDefs.h>
-
 
 class BParameterWeb;
 

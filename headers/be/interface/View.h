@@ -14,12 +14,9 @@
 
 #include <BeBuild.h>
 #include <InterfaceDefs.h>
-#include <Rect.h>
-#include <Handler.h>
-#include <Message.h>
 #include <Font.h>
-#include <Clipboard.h>
-#include <Picture.h>
+#include <Handler.h>
+#include <Rect.h>
 
 /*----------------------------------------------------------------*/
 /*----- view definitions -----------------------------------------*/
@@ -65,32 +62,30 @@ enum {
 	B_FONT_ALL				= 0x000000FF
 };
 
-enum { B_FULL_UPDATE_ON_RESIZE =  (int) 0x80000000	/* 31 */,
-       _B_RESERVED1_ =					0x40000000	/* 30 */,
-       B_WILL_DRAW =					0x20000000	/* 29 */,
-       B_PULSE_NEEDED =					0x10000000	/* 28 */,
-       B_NAVIGABLE_JUMP =				0x08000000	/* 27 */,
-       B_FRAME_EVENTS =					0x04000000	/* 26 */,
-       B_NAVIGABLE =					0x02000000	/* 25 */,
-       B_SUBPIXEL_PRECISE =				0x01000000	/* 24 */,
-       B_DRAW_ON_CHILDREN =				0x00800000	/* 23 */,
-       B_INPUT_METHOD_AWARE =			0x00400000	/* 23 */,
-       _B_RESERVED7_ =					0x00200000	/* 22 */};
+const uint32 B_FULL_UPDATE_ON_RESIZE 	= 0x80000000UL;	/* 31 */
+const uint32 _B_RESERVED1_ 				= 0x40000000UL;	/* 30 */
+const uint32 B_WILL_DRAW 				= 0x20000000UL;	/* 29 */
+const uint32 B_PULSE_NEEDED 			= 0x10000000UL;	/* 28 */
+const uint32 B_NAVIGABLE_JUMP 			= 0x08000000UL;	/* 27 */
+const uint32 B_FRAME_EVENTS				= 0x04000000UL;	/* 26 */
+const uint32 B_NAVIGABLE 				= 0x02000000UL;	/* 25 */
+const uint32 B_SUBPIXEL_PRECISE 		= 0x01000000UL;	/* 24 */
+const uint32 B_DRAW_ON_CHILDREN 		= 0x00800000UL;	/* 23 */
+const uint32 B_INPUT_METHOD_AWARE 		= 0x00400000UL;	/* 23 */
+const uint32 _B_RESERVED7_ 				= 0x00200000UL;	/* 22 */
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
 		 	B_PULSE_NEEDED|B_NAVIGABLE_JUMP|B_FRAME_EVENTS|B_NAVIGABLE|\
 			B_SUBPIXEL_PRECISE|B_DRAW_ON_CHILDREN|B_INPUT_METHOD_AWARE|_B_RESERVED7_)
 
-enum {
-	_VIEW_TOP_ = 1L,
-	_VIEW_LEFT_ = 2L,
-	_VIEW_BOTTOM_ = 3L,
-	_VIEW_RIGHT_ = 4L,
-	_VIEW_CENTER_ = 5L
-};
+const uint32 _VIEW_TOP_ 	= 1UL;
+const uint32 _VIEW_LEFT_ 	= 2UL;
+const uint32 _VIEW_BOTTOM_ 	= 3UL;
+const uint32 _VIEW_RIGHT_ 	= 4UL;
+const uint32 _VIEW_CENTER_ 	= 5UL;
 
-inline uint32 _rule_(int32 r1, int32 r2, int32 r3, int32 r4)
-	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); };
+inline uint32 _rule_(uint32 r1, uint32 r2, uint32 r3, uint32 r4)
+	{ return ((r1 << 12) | (r2 << 8) | (r3 << 4) | r4); }
 
 #define B_FOLLOW_NONE 0
 #define B_FOLLOW_ALL_SIDES		_rule_(_VIEW_TOP_, _VIEW_LEFT_, _VIEW_BOTTOM_,\
@@ -107,15 +102,18 @@ inline uint32 _rule_(int32 r1, int32 r2, int32 r3, int32 r4)
 #define B_FOLLOW_TOP_BOTTOM		_rule_(_VIEW_TOP_, 0, _VIEW_BOTTOM_, 0)
 #define B_FOLLOW_V_CENTER		_rule_(_VIEW_CENTER_, 0, _VIEW_CENTER_, 0)
 
-class BWindow;
 class BBitmap;
-class BRegion;
-class BPoint;
+class BCursor;
+class BMessage;
+class BPicture;
 class BPolygon;
-class BShape;
+class BRegion;
 class BScrollBar;
 class BScrollView;
+class BShape;
 class BShelf;
+class BString;
+class BWindow;
 struct _view_attr_;
 struct _array_data_;
 struct _array_hdr_;
@@ -228,6 +226,8 @@ virtual	void			SetDrawingMode(drawing_mode mode);
 
 virtual	void			SetPenSize(float size);
 		float			PenSize() const;
+
+		void			SetViewCursor(const BCursor *cursor, bool sync=true);
 
 virtual	void			SetViewColor(rgb_color c);
 		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 255);
@@ -418,12 +418,15 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 #else
 		void            GetFont(BFont *font);
 #endif
+		void			TruncateString(BString* in_out,
+									   uint32 mode,
+									   float width) const;
 		float			StringWidth(const char *string) const;
 		float			StringWidth(const char *string, int32 length) const;
-		void			GetStringWidths(char *stringArray[], 
+		void			GetStringWidths(char *stringArray[],
 										int32 lengthArray[],
 										int32 numStrings,
-										float widthArray[]) const;	
+										float widthArray[]) const;
 		void			SetFontSize(float size);
 		void			ForceFontAliasing(bool enable);
 		void			GetFontHeight(font_height *height) const;
@@ -443,7 +446,7 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 		void			DrawPicture(const char *filename, long offset, BPoint where);
 		void			DrawPictureAsync(const BPicture *a_picture);
 		void			DrawPictureAsync(const BPicture *a_picture, BPoint where);
-		void			DrawPictureAsync(char *filename, long offset, BPoint where);
+		void			DrawPictureAsync(const char *filename, long offset, BPoint where);
 
 		status_t		SetEventMask(uint32 mask, uint32 options=0);
 		uint32			EventMask();
@@ -467,6 +470,7 @@ virtual	void			MakeFocus(bool focusState = true);
 virtual	void			Show();
 virtual	void			Hide();
 		bool			IsHidden() const;
+		bool			IsHidden(const BView* looking_from) const;
 	
 		void			Flush() const;
 		void			Sync() const;

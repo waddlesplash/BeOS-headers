@@ -14,11 +14,6 @@
 
 #include <Region.h>
 #include <Window.h>
-#include <SupportDefs.h>
-#include <OS.h>
-#include <image.h>
-#include <GraphicsCard.h>
-#include <Screen.h>
 
 class BDirectDriver;
 					

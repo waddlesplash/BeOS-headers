@@ -14,9 +14,11 @@
 #define	_BITMAP_H
 
 #include <BeBuild.h>
+#include <Archivable.h>
 #include <InterfaceDefs.h>
-#include <GraphicsDefs.h>
-#include <Window.h>
+#include <Rect.h>
+
+class BWindow;
 
 enum {
 	B_BITMAP_CLEAR_TO_WHITE				= 0x00000001,

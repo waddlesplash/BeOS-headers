@@ -66,11 +66,6 @@ virtual	void		_ReservedNodeInfo3();
 		BNode		*fNode;
 		uint32		_reserved[2];
 		status_t	fCStatus;
-
-public:
-	/* deprecated */
-static	status_t	GetTrackerIcon(entry_ref *,
-					BBitmap *, icon_size k = B_LARGE_ICON);
 };
 
 #endif

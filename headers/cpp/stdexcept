@@ -37,6 +37,8 @@
 
 extern "C++" {
 
+namespace std {
+
 class logic_error : public exception {
   string _what;
 public:
@@ -88,6 +90,8 @@ public:
   underflow_error (const string& what_arg): runtime_error (what_arg) { }
 };
 
+} // namespace std
+ 
 } // extern "C++"
 
 #endif

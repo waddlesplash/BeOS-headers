@@ -12,10 +12,11 @@
 #define _SHELF_H
 
 #include <BeBuild.h>
-#include <View.h>
+#include <Handler.h>
 #include <List.h>
-#include <DataIO.h>
-#include <MessageFilter.h>
+
+class BDataIO;
+class BView;
 
 class BEntry;
 extern "C" void  _ReservedShelf1__6BShelfFv(BShelf *const, int32,

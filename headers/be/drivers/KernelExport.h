@@ -47,7 +47,7 @@ extern _IMPEXP_KERNEL void			restore_interrupts(cpu_status status);
 	interrupts disabled.
 --- */
 
-typedef vlong	spinlock;
+typedef vint32	spinlock;
 
 extern _IMPEXP_KERNEL void			acquire_spinlock (spinlock *lock);
 extern _IMPEXP_KERNEL void			release_spinlock (spinlock *lock);

@@ -194,8 +194,10 @@ virtual void        _ReservedWindowScreen4();
 		release_engine        m_re;
 		fill_rectangle        fill_rect;
 		screen_to_screen_blit blit_rect;
+		screen_to_screen_transparent_blit trans_blit_rect;
+		screen_to_screen_scaled_filtered_blit scaled_filtered_blit_rect;
 
-		uint32                _reserved_[23];
+		uint32                _reserved_[21];
 		
 static	BRect		CalcFrame(int32 index, int32 space, display_mode *dmode);
 		int32		SetFullscreen(int32 enable);

@@ -15,10 +15,11 @@
 #ifndef _BE_BUILD_H
 #include <BeBuild.h>
 #endif
-#include	<sys/stat.h>
-#include	<Entry.h>
-#include	<Directory.h>
-#include	<Node.h>
+
+#include <sys/stat.h>
+#include <Entry.h>
+#include <Directory.h>
+#include <Node.h>
 
 
 /*- Old fashioned, one-shot, heavily-defaulted panel functions. -*/ 
@@ -74,7 +75,7 @@ class BFilePanel {
 public:
 						BFilePanel(file_panel_mode mode = B_OPEN_PANEL,
 							BMessenger *target = 0,
-							entry_ref *start_directory = 0,
+							const entry_ref *start_directory = 0,
 							uint32 node_flavors = 0,
 							bool allow_multiple_selection = true,
 							BMessage *message = 0, 
@@ -95,7 +96,7 @@ virtual	void			SendMessage(const BMessenger*, BMessage*);
 		BWindow*		Window() const;
 		BMessenger		Messenger() const;
 		BRefFilter*		RefFilter() const;
-		void			GetPanelDirectory(entry_ref*) const;
+		void			GetPanelDirectory(entry_ref *) const;
 
 		file_panel_mode	PanelMode() const;
 
@@ -104,11 +105,11 @@ virtual	void			SendMessage(const BMessenger*, BMessage*);
 
 		void			SetRefFilter(BRefFilter* filter);
 		void			SetSaveText(const char* text);
-		void			SetButtonLabel(file_panel_button, const char* label);
+		void			SetButtonLabel(file_panel_button, const char *label);
 
-		void			SetPanelDirectory(BEntry* new_directory);
-		void			SetPanelDirectory(BDirectory* new_directory);
-		void			SetPanelDirectory(entry_ref* new_directory);
+		void			SetPanelDirectory(const BEntry *new_directory);
+		void			SetPanelDirectory(const BDirectory *new_directory);
+		void			SetPanelDirectory(const entry_ref *new_directory);
 		void 			SetPanelDirectory(const char *new_directory);
 
 		void			SetHideWhenDone(bool);

@@ -95,6 +95,7 @@ class BTimedEventQueue {
 		status_t  			RemoveFirstEvent(media_timed_event * outEvent = NULL);
 		
 		bool				HasEvents() const;
+		int32				EventCount() const;
 
 		/* Accessors */
 		const media_timed_event *	FirstEvent() const;

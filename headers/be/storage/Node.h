@@ -75,6 +75,9 @@ public:
 			status_t		GetNextAttrName(char *buf) ;
 			status_t		RewindAttrs() ;
 
+			status_t		WriteAttrString(const char *attr, const BString *);
+			status_t		ReadAttrString(const char *attr, BString *result) const;
+
 			BNode &			operator=(const BNode &node);
 			bool			operator==(const BNode &node) const;
 			bool			operator!=(const BNode &node) const;
@@ -100,9 +103,15 @@ virtual	void		_RudeNode6();
 
 			status_t		set_fd(int fd);
 	virtual	void			close_fd();
+			status_t		clear_virtual();
 			status_t		clear();
 
 	virtual	status_t		set_stat(struct stat &st, uint32 what);
+
+			status_t		set_to(const entry_ref *ref, bool traverse = false);
+			status_t		set_to(const BEntry *entry, bool traverse = false);
+			status_t		set_to(const char *path, bool traverse = false);
+			status_t		set_to(const BDirectory *dir, const char *path, bool traverse = false);
 
 			int				fFd;
 			int				fAttrFd;

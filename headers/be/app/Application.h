@@ -14,20 +14,16 @@
 #define _APPLICATION_H
 
 #include <BeBuild.h>
-#include <StorageDefs.h>
+#include <AppDefs.h>		/* For convenience */
 #include <InterfaceDefs.h>
 #include <Rect.h>
 #include <Point.h>
 #include <Looper.h>
-#include <Window.h>
-#include <OS.h>
 #include <Messenger.h>
-#include <Roster.h>
-#include <PopUpMenu.h>
 
-class BDirectory;
-class BView;
+class BCursor;
 class BList;
+class BWindow;
 class _BSession_;
 class BResources;
 class BMessageRunner;
@@ -75,6 +71,7 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 		void			ObscureCursor();
 		bool			IsCursorHidden() const;
 		void			SetCursor(const void *cursor);
+		void			SetCursor(const BCursor *cursor, bool sync=true);
 		int32			CountWindows() const;
 		BWindow			*WindowAt(int32 index) const;
 		int32			CountLoopers() const;
@@ -149,7 +146,9 @@ virtual	bool			ScriptReceived(BMessage *msg,
 		bool			quit_all_windows(bool force);
 		bool			window_quit_loop(bool, bool);
 		void			do_argv(BMessage *msg);
+#ifndef FIX_FOR_4_6
 		void			SetAppCursor();
+#endif
 		uint32			InitialWorkspace();
 		int32			count_windows(bool incl_menus) const;
 		BWindow			*window_at(uint32 index, bool incl_menus) const;
@@ -161,7 +160,11 @@ static	BLocker			_app_resources_lock;
 		const char		*fAppName;
 		int32			fServerFrom;
 		int32			fServerTo;
+#ifndef FIX_FOR_4_6
 		void			*fCursorData;
+#else
+		void			*_unused1;
+#endif
 		_server_heap_ *	fServerHeap;
 		bigtime_t		fPulseRate;
 		uint32			fInitialWorkspace;
@@ -181,4 +184,3 @@ extern _IMPEXP_BE BMessenger	be_app_messenger;
 /*-------------------------------------------------------------*/
 
 #endif /* _APPLICATION_H */
-

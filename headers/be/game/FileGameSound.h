@@ -25,6 +25,10 @@ public:
 									const entry_ref * file,
 									bool looping = true,
 									BGameSoundDevice * device = NULL);
+							BFileGameSound(
+									const char * file,
+									bool looping = true,
+									BGameSoundDevice * device = NULL);
 
 virtual						~BFileGameSound();
 
@@ -39,6 +43,16 @@ virtual	void				FillBuffer(
 									size_t inByteCount);
 
 virtual	status_t Perform(int32 selector, void * data);
+
+virtual	status_t			SetPaused(
+									bool isPaused,
+									bigtime_t rampTime);
+		enum {
+			B_NOT_PAUSED,
+			B_PAUSE_IN_PROGRESS,
+			B_PAUSED
+		};
+		int32				IsPaused();
 
 private:
 
@@ -62,6 +76,9 @@ private:
 		char *				_m_buffer;
 		size_t				_m_bufferSize;
 		int32				_m_stopCount;
+		int32				_m_pauseState;
+		float				_m_pauseGain;
+		float				_m_pausePan;
 
 static	status_t			stream_thread(
 									void * that);
@@ -80,9 +97,9 @@ static	status_t			stream_thread(
 
 	/* fbc data and virtuals */
 
-	uint32 _reserved_BFileGameSound_[11];
+	uint32 _reserved_BFileGameSound_[8];
 
-virtual	status_t _Reserved_BFileGameSound_0(int32 arg, ...);
+		status_t _Reserved_BFileGameSound_0(int32 arg, ...);	/* SetPaused(bool paused, bigtime_t ramp); */
 virtual	status_t _Reserved_BFileGameSound_1(int32 arg, ...);
 virtual	status_t _Reserved_BFileGameSound_2(int32 arg, ...);
 virtual	status_t _Reserved_BFileGameSound_3(int32 arg, ...);

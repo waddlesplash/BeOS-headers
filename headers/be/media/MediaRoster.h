@@ -18,7 +18,7 @@
 
 class BMimeType;
 struct dormant_flavor_info;
-struct BMediaAddOn;
+class BMediaAddOn;
 
 #define MEDIA_ROSTER_IS_LOOPER 1
 
@@ -42,6 +42,10 @@ public:
 				media_node * out_node);
 		status_t GetAudioOutput(
 				media_node * out_node);	/* Use the mixer rather than the output for most needs! */
+		status_t GetAudioOutput(
+				media_node * out_node,
+				int32 * out_input_id,
+				BString * out_input_name);
 		status_t GetTimeSource(
 				media_node * out_node);
 
@@ -59,6 +63,8 @@ public:
 				const dormant_node_info & consumer);
 		status_t SetAudioOutput(
 				const media_node & consumer);
+		status_t SetAudioOutput(
+				const media_input & input_to_output);
 		status_t SetAudioOutput(
 				const dormant_node_info & consumer);
 
@@ -175,6 +181,11 @@ public:
 				media_input * out_active_inputs,
 				int32 buf_num_inputs,
 				int32 * out_total_count);
+		status_t GetAllInputsFor(
+				const media_node & node,
+				media_input * out_inputs,
+				int32 buf_num_inputs,
+				int32 * out_total_count);
 		status_t GetFreeOutputsFor(
 				const media_node & node,
 				media_output * out_free_outputs,
@@ -184,6 +195,11 @@ public:
 		status_t GetConnectedOutputsFor(
 				const media_node & node,
 				media_output * out_active_outputs,
+				int32 buf_num_outputs,
+				int32 * out_total_count);
+		status_t GetAllOutputsFor(
+				const media_node & node,
+				media_output * out_outputs,
 				int32 buf_num_outputs,
 				int32 * out_total_count);
 
@@ -298,10 +314,30 @@ static	BMediaRoster * CurrentRoster();			//	won't create it if there isn't one
 				int32 in_write_count,
 				int32 * out_write_count);
 
+		status_t GetFormatFor(
+				const media_output & output,
+				media_format * io_format,
+				uint32 flags = 0);
+		status_t GetFormatFor(
+				const media_input & input,
+				media_format * io_format,
+				uint32 flags = 0);
+		status_t GetFormatFor(
+				const media_node & node,
+				media_format * io_format,
+				float quality = B_MEDIA_ANY_QUALITY);
 		ssize_t GetNodeAttributesFor(
 				const media_node & node,
 				media_node_attribute * outArray,
 				size_t inMaxCount);
+		media_node_id NodeIDFor(
+				port_id source_or_destination_port);
+		status_t GetInstancesFor(
+				media_addon_id addon,
+				int32 flavor,
+				media_node_id * out_id,
+				int32 * io_count = 0);	//	default to 1
+
 
 		status_t SetRealtimeFlags(
 				uint32 in_enabled);
@@ -365,16 +401,17 @@ friend class MLatentManager;
 friend class BBufferProducer;
 friend class media_node;
 friend class BBuffer;
+friend class BMediaNode;
 
 static	bool _isMediaServer;
 
 		BMediaRoster();
 
-		port_id _mReplyPort;
-		int32 _mReplyPortRes;
-		int32 _mReplyPortUnavailCount;
+static	port_id _mReplyPort;
+static	int32 _mReplyPortRes;
+static	int32 _mReplyPortUnavailCount;
 
-		uint32 _reserved_media_roster_[64];
+		uint32 _reserved_media_roster_[67];
 
 
 static	BMediaRoster * _sDefault;
@@ -391,9 +428,9 @@ static	status_t ParseCommand(
 		
 		void RegisterNode(media_node_id, BMediaNode*);
 
-		port_id checkout_reply_port(
+static	port_id checkout_reply_port(
 				const char * name = NULL);
-		void checkin_reply_port(
+static	void checkin_reply_port(
 				port_id port);
 
 };

@@ -13,7 +13,6 @@
 
 #include <BeBuild.h>
 #include <Control.h>
-#include <Message.h>
 
 /*----------------------------------------------------------------*/
 /*----- slider definitions ---------------------------------------*/
@@ -21,7 +20,9 @@
 enum hash_mark_location {
 	B_HASH_MARKS_NONE = 0,
 	B_HASH_MARKS_TOP = 1,
+	B_HASH_MARKS_LEFT = 1,
 	B_HASH_MARKS_BOTTOM = 2,
+	B_HASH_MARKS_RIGHT = 2,
 	B_HASH_MARKS_BOTH = 3
 };
 
@@ -42,6 +43,18 @@ public:
 									BMessage *message,
 									int32 minValue,
 									int32 maxValue,
+									thumb_style thumbType = B_BLOCK_THUMB,
+									uint32 resizingMode = B_FOLLOW_LEFT |
+														B_FOLLOW_TOP,
+									uint32 flags = B_NAVIGABLE | B_WILL_DRAW |
+														B_FRAME_EVENTS);
+							BSlider(BRect frame,
+									const char *name,
+									const char *label,
+									BMessage *message,
+									int32 minValue,
+									int32 maxValue,
+									orientation posture /*= B_HORIZONTAL*/,
 									thumb_style thumbType = B_BLOCK_THUMB,
 									uint32 resizingMode = B_FOLLOW_LEFT |
 														B_FOLLOW_TOP,
@@ -133,6 +146,13 @@ virtual	void 				UseFillColor(bool, const rgb_color* c=NULL);
 		
 		BView*				OffscreenView() const;
 	
+		orientation			Orientation() const;
+virtual void				SetOrientation(orientation);
+
+		float				BarThickness() const;
+virtual void				SetBarThickness(float thickness);
+
+virtual void				SetFont(const BFont *font, uint32 properties = B_FONT_ALL);
 /*----- Private or reserved -----------------------------------------*/
 private:
 		void				_DrawBlockThumb();
@@ -144,9 +164,9 @@ private:
 		float				_MinPosition() const;
 		float				_MaxPosition() const;
 			
-virtual	void				_ReservedSlider1();
-virtual	void				_ReservedSlider2();
-virtual	void				_ReservedSlider3();
+//virtual	void				_ReservedSlider1();
+//virtual	void				_ReservedSlider2();
+//virtual	void				_ReservedSlider3();
 virtual	void				_ReservedSlider4();
 virtual	void				_ReservedSlider5();
 virtual	void				_ReservedSlider6();
@@ -186,7 +206,10 @@ virtual	void				_ReservedSlider12();
 		BPoint 				fLocation;
 		BPoint				fInitialLocation;
 		
-		uint32				_reserved[10];
+		orientation			fOrientation;
+		float				fBarThickness;
+				
+		uint32				_reserved[8];
 };
 
 /*-------------------------------------------------------------*/

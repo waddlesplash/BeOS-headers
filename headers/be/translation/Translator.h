@@ -76,5 +76,13 @@ private:
 
 };
 
+/*	The post-4.5 API suggests implementing this function in your translator			*/
+/*	add-on rather than the separate functions and variables of the previous API.	*/
+/*	You will be called for values of n starting at 0 and increasing; return 0		*/
+/*	when you can't make another kind of translator (i e for n=1 if you only			*/
+/*	implement one subclass of BTranslator). Ignore flags for now.					*/
+extern "C" _EXPORT BTranslator *make_nth_translator(int32 n, image_id you, uint32 flags, ...);
+
+
 
 #endif /* _TRANSLATOR_H */

@@ -13,10 +13,11 @@
 
 #include <BeBuild.h>
 #include <Window.h>
-#include <Button.h>
-#include <TextView.h>
-#include <Invoker.h>
-#include <ClassInfo.h>
+
+class BBitmap;
+class BButton;
+class BInvoker;
+class BTextView;
 
 /*----------------------------------------------------------------*/
 /*----- enum for flavors of alert --------------------------------*/
@@ -34,8 +35,6 @@ enum button_spacing {
 	B_EVEN_SPACING = 0,
 	B_OFFSET_SPACING
 };
-
-class BBitmap;
 
 /*----------------------------------------------------------------*/
 /*----- BAlert class ---------------------------------------------*/

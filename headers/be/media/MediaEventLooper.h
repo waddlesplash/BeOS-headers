@@ -67,7 +67,9 @@ class BMediaEventLooper :
 		/* the actual control loop function: */
 		/* 	waits for messages, Pops events off the queue and calls DispatchEvent */
 		virtual void		ControlLoop();
-		
+
+		thread_id			ControlThread();
+
 	protected:
 		BTimedEventQueue * 	EventQueue();
 		BTimedEventQueue *	RealTimeQueue();

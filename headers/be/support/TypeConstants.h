@@ -12,12 +12,13 @@
 #ifndef _TYPE_CONSTANTS_H
 #define _TYPE_CONSTANTS_H
 
+#include <BeBuild.h>
+
 /*-------------------------------------------------------------*/
 /*----- Data Types --------------------------------------------*/
 
 enum {
 	B_ANY_TYPE 					= 'ANYT',
-	B_ASCII_TYPE 				= 'TEXT',
 	B_BOOL_TYPE 				= 'BOOL',
 	B_CHAR_TYPE 				= 'CHAR',
 	B_COLOR_8_BIT_TYPE 			= 'CLRB',
@@ -52,7 +53,10 @@ enum {
 	B_UINT8_TYPE 				= 'UBYT',
 	B_MEDIA_PARAMETER_TYPE		= 'BMCT',
 	B_MEDIA_PARAMETER_WEB_TYPE	= 'BMCW',
-	B_MEDIA_PARAMETER_GROUP_TYPE= 'BMCG'
+	B_MEDIA_PARAMETER_GROUP_TYPE= 'BMCG',
+
+	/* deprecated, do not use */
+	B_ASCII_TYPE 				= 'TEXT'	/* use B_STRING_TYPE instead */
 };
 
 /*-------------------------------------------------------------*/
@@ -63,18 +67,18 @@ enum {
 	/* below.  When the user clicks on a link in NetPositive that your		 */
 	/* application is a handler for, you will get a B_ARGV_RECEIVED message  */
 	/* with the	full URL as the second argument.  							 */
-extern _IMPEXP_BE const char *B_URL_HTTP; 				// application/x-vnd.Be.URL.http
-extern _IMPEXP_BE const char *B_URL_HTTPS; 				// application/x-vnd.Be.URL.https
-extern _IMPEXP_BE const char *B_URL_FTP;				// application/x-vnd.Be.URL.ftp
-extern _IMPEXP_BE const char *B_URL_GOPHER; 			// application/x-vnd.Be.URL.gopher
-extern _IMPEXP_BE const char *B_URL_MAILTO; 			// application/x-vnd.Be.URL.mailto
-extern _IMPEXP_BE const char *B_URL_NEWS;				// application/x-vnd.Be.URL.news
-extern _IMPEXP_BE const char *B_URL_NNTP;				// application/x-vnd.Be.URL.nntp
-extern _IMPEXP_BE const char *B_URL_TELNET; 			// application/x-vnd.Be.URL.telnet
-extern _IMPEXP_BE const char *B_URL_RLOGIN; 			// application/x-vnd.Be.URL.rlogin
-extern _IMPEXP_BE const char *B_URL_TN3270; 			// application/x-vnd.Be.URL.tn3270
-extern _IMPEXP_BE const char *B_URL_WAIS;				// application/x-vnd.Be.URL.wais
-extern _IMPEXP_BE const char *B_URL_FILE;				// application/x-vnd.Be.URL.file
+extern _IMPEXP_BE const char *B_URL_HTTP; 				/* application/x-vnd.Be.URL.http */
+extern _IMPEXP_BE const char *B_URL_HTTPS; 				/* application/x-vnd.Be.URL.https */
+extern _IMPEXP_BE const char *B_URL_FTP;				/* application/x-vnd.Be.URL.ftp */
+extern _IMPEXP_BE const char *B_URL_GOPHER; 			/* application/x-vnd.Be.URL.gopher */
+extern _IMPEXP_BE const char *B_URL_MAILTO; 			/* application/x-vnd.Be.URL.mailto */
+extern _IMPEXP_BE const char *B_URL_NEWS;				/* application/x-vnd.Be.URL.news */
+extern _IMPEXP_BE const char *B_URL_NNTP;				/* application/x-vnd.Be.URL.nntp */
+extern _IMPEXP_BE const char *B_URL_TELNET; 			/* application/x-vnd.Be.URL.telnet */
+extern _IMPEXP_BE const char *B_URL_RLOGIN; 			/* application/x-vnd.Be.URL.rlogin */
+extern _IMPEXP_BE const char *B_URL_TN3270; 			/* application/x-vnd.Be.URL.tn3270 */
+extern _IMPEXP_BE const char *B_URL_WAIS;				/* application/x-vnd.Be.URL.wais */
+extern _IMPEXP_BE const char *B_URL_FILE;				/* application/x-vnd.Be.URL.file */
 
 /*-------------------------------------------------------------*/
 /*----- Obsolete; do not use-----------------------------------*/

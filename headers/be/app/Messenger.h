@@ -15,14 +15,11 @@
 
 #include <BeBuild.h>
 #include <OS.h>
-#include <Message.h>
-#include <Handler.h>
-#include <byteorder.h>
-#include <ClassInfo.h>
+#include <ByteOrder.h>
+#include <Message.h>		/* For convenience */
 
-class	BLooper;
-class	_TRoster_;
-class	BMessenger;
+class BHandler;
+class BLooper;
 
 /*---------------------------------------------------------------*/
 /* --------- BMessenger class----------------------------------- */

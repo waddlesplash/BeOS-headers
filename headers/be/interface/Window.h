@@ -15,17 +15,12 @@
 #include <BeBuild.h>
 #include <StorageDefs.h>
 #include <InterfaceDefs.h>
-#include <Rect.h>
-#include <View.h>
-#include <MessageQueue.h>
-#include <Looper.h>
-#include <Message.h>
-#include <Messenger.h>
-#include <Clipboard.h>
 #include <List.h>
+#include <Looper.h>
+#include <Rect.h>
 
 /*----------------------------------------------------------------*/
-/*-----  window deinfitions --------------------------------------*/
+/*-----  window definitions --------------------------------------*/
 
 
 enum window_type {
@@ -83,7 +78,8 @@ enum {
 	B_OUTLINE_RESIZE			= 0x00001000,
 	B_NO_WORKSPACE_ACTIVATION	= 0x00000100,
 	B_NOT_ANCHORED_ON_ACTIVATE	= 0x00020000,
-	B_ASYNCHRONOUS_CONTROLS		= 0x00080000
+	B_ASYNCHRONOUS_CONTROLS		= 0x00080000,
+	B_QUIT_ON_WINDOW_CLOSE		= 0x00100000
 };
 
 #define B_CURRENT_WORKSPACE	0
@@ -91,12 +87,16 @@ enum {
 
 /*----------------------------------------------------------------*/
 
-struct message;
 class _BSession_;
-class BMenuItem;
-class BMenuBar;
 class BButton;
+class BMenuBar;
+class BMenuItem;
+class BMessage;
 class BMessageRunner;
+class BMessenger;
+class BView;
+
+struct message;
 struct _cmd_key_;
 struct _view_attr_;
 

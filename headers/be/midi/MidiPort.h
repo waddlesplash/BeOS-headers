@@ -13,6 +13,9 @@
 
 #include <Midi.h>
 
+class BMidiLocalProducer;
+class BMidiPortConsumer;
+
 /*------------------------------------------------------------*/
 
 class BMidiPort : public BMidi {
@@ -87,6 +90,7 @@ virtual	void		_ReservedMidiPort2();
 virtual	void		_ReservedMidiPort3();
 
 virtual	void	Run();
+friend class BMidiPortConsumer;
 
 		void Dispatch(const unsigned char * buffer, size_t size, bigtime_t when);
 		ssize_t	Read(void *buffer, size_t numBytes) const;
@@ -94,16 +98,19 @@ virtual	void	Run();
 
         void        ScanDevices();
 
-		int32	fWriteDriverRef;
-		int32	fReadDriverRef;
-
+		BMidiProducer *remote_source;
+		BMidiConsumer *remote_sink;
+		
 		char*	fName;
 		status_t fCStatus;
 		BList *	_fDevices;
 		uint8 _m_prev_cmd;
 		bool _m_enhanced;
 		uint8 _m_reserved[2];
-		uint32		_reserved[2];
+		
+		// used to glue us to the new midi kit
+		BMidiLocalProducer *local_source;
+		BMidiPortConsumer *local_sink;
 };
 
 /*------------------------------------------------------------*/

@@ -58,9 +58,6 @@ protected:
 
 class BStandardPacket : public BNetPacket {
 public:
-	void *operator new(size_t size);
-	void operator delete(void *ptr);
-
 	BStandardPacket(unsigned size = 0);
 	~BStandardPacket(void);
 	unsigned Size(void);
@@ -68,6 +65,11 @@ public:
 	unsigned Base(void);
 	void SetBase(int offset);
 	char *DataBlock(unsigned offset, unsigned *size);
+	
+	// These dont do anything but call ::new and ::delete.  They're
+	// here to ensure binary compaitibility with older add-ons.
+	void *operator new(size_t size);
+	void operator delete(void *ptr);
 
 private:
 	char *store;

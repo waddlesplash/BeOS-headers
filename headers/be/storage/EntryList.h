@@ -26,8 +26,11 @@ class BEntryList
 {
 public:
 
+						BEntryList();
 #if !_PR3_COMPATIBLE_
 virtual					~BEntryList();
+#else
+						~BEntryList();
 #endif
 
 virtual status_t		GetNextEntry(BEntry *entry, 

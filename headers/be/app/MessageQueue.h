@@ -13,8 +13,8 @@
 #define _MESSAGE_QUEUE_H
 
 #include <BeBuild.h>
-#include <Message.h>
 #include <Locker.h>
+#include <Message.h>	/* For convenience */
 
 /*----------------------------------------------------------------------*/
 /*----- BMessageQueue class --------------------------------------------*/

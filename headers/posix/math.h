@@ -119,7 +119,6 @@ extern float frexpf(float x, int *exponent);
 extern float ldexpf(float x, int exponent);
 extern float logf(float x);
 extern float log10f(float x);
-extern float modff(float x, float *iptr);
 extern float expm1f(float x);
 extern float log1pf(float x);
 extern float logbf(float x);
@@ -258,9 +257,7 @@ double log2(double x);
 double scalbn(double x, int n); 
 
 double nearbyint(double x);
-long rinttol(double x);
 double round(double x);
-long roundtol(double x);
 double trunc(double x);
 double remquo(double x, double y, int *quo);
 double fdim(double x, double y);
@@ -483,16 +480,12 @@ ambiguity since we have exactly one overload */
 	
     inline double scalbln(double x, long n)
 		{return (double)scalbn(x, (long)n);}
-    inline long int lrint(double x)
-		{return rinttol(x);}
 	inline long long llrint(double x)
 		{return (long long)rint(x);}
-    inline long int lround(double x)
-		{return roundtol(x);}
 	inline long long llround(double x)
 		{return (long long)round(x);}
 			
-// long double math functions(fool's), we do not support true long double outside of macos 68K
+/* long double math functions(fool's), we do not support true long double outside of macos 68K */
 			
 	inline long double acosl(long double x)
 		{return acos((double)x);}

@@ -13,7 +13,7 @@
 
 #include <BeBuild.h>
 #include <Control.h>
-#include <TextView.h>
+#include <TextView.h>		/* For convenience */
 
 class _BTextInput_;
 

@@ -12,10 +12,10 @@
 #define	_PRINTSESSION_H
 
 #include <BeBuild.h>
-#include <InterfaceDefs.h>
+#include <Picture.h>		/* For convenience */
 #include <Rect.h>
-#include <View.h>
-#include <ClassInfo.h>
+
+class BView;
 
 /*----------------------------------------------------------------*/
 /*----- BPrintJob related structures -----------------------------*/
@@ -37,30 +37,40 @@ struct _page_header_;
 class BPrintJob {
 public:
 
+	enum 	// These values are returned by PrinterType()
+	{
+		B_BW_PRINTER = 0,
+		B_COLOR_PRINTER
+	};
+
+
 					BPrintJob(const char *job_name);
 virtual				~BPrintJob();
 
 		void		BeginJob();	
 		void		CommitJob();	
-		int32		ConfigJob();
+		status_t	ConfigJob();
 		void		CancelJob();
 
-		int32		ConfigPage();
+		status_t	ConfigPage();
 		void		SpoolPage();
 
 		bool		CanContinue();
 
 virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
 
-		BMessage	*Settings();	/* const */	
-		void		SetSettings(BMessage *a_msg);	
+		BMessage	*Settings()	/* const */ ;
+		void		SetSettings(BMessage *a_msg);
+		bool		IsSettingsMessageValid(BMessage *a_msg) const;
 
 		BRect		PaperRect();
 		BRect		PrintableRect();
 		void		GetResolution(int32 *xdpi, int32 *ydpi);
 
-		int32		FirstPage();	/* const */
-		int32		LastPage();		/* const */
+		int32		FirstPage()	/* const */ ;
+		int32		LastPage()	/* const */ ;
+		int32		PrinterType(void * = NULL) const;
+		
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -77,7 +87,6 @@ virtual void		_ReservedPrintJob4();
 		void				MangleName(char *filename);
 		void				HandlePageSetup(BMessage *setup);
 		bool				HandlePrintSetup(BMessage *setup);
-		void				CreateSpoolDir(const char *printer_name);
 
 		void				NewPage();
 		void				EndLastPage();
@@ -85,7 +94,7 @@ virtual void		_ReservedPrintJob4();
 		void				AddSetupSpec();
 		void				AddPicture(BPicture *picture, BRect *rect, BPoint where);
 
-		char*				GetCurrentPrinterName();
+		char*				GetCurrentPrinterName() const;
 		void				LoadDefaultSettings();
 
 		char *				print_job_name;

@@ -20,7 +20,7 @@ struct ddrover {
 	cpu_status	ps;
 	sem_id		sd,
 			se;
-	spinlock	l;
+	barrier		b;
 	struct ddentry	e[10];
 };
 

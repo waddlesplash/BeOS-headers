@@ -28,6 +28,7 @@
 
 class BDirectory;
 class BEntry;
+struct entry_ref;
 
 class BPath : public BFlattenable {
 public:
@@ -38,6 +39,7 @@ public:
 							bool normalize = false);
 						BPath(const BPath &path);
 						BPath(const BEntry *entry);
+						BPath(const entry_ref *ref);
 
 virtual					~BPath();
 
@@ -48,6 +50,7 @@ virtual					~BPath();
 			status_t	SetTo(const BDirectory *dir, const char *path,
 							bool normalize = false);
 			status_t	SetTo(const BEntry *entry);
+			status_t	SetTo(const entry_ref *ref);
 			status_t	Append(const char *path, bool normalize = false);
 			void		Unset();
 

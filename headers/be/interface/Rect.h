@@ -95,12 +95,12 @@ public:
 
 inline BPoint BRect::LeftTop() const
 {
-	return(*((BPoint*)&left));
+	return(*((const BPoint*)&left));
 }
 
 inline BPoint BRect::RightBottom() const
 {
-	return(*((BPoint*)&right));
+	return(*((const BPoint*)&right));
 }
 
 inline BPoint BRect::LeftBottom() const

@@ -60,6 +60,8 @@ enum {
 	B_FILL_RECTANGLE,			/* optional */
 	B_INVERT_RECTANGLE,			/* optional */
 	B_FILL_SPAN,				/* optional */
+	B_SCREEN_TO_SCREEN_TRANSPARENT_BLIT,	/* optional */
+	B_SCREEN_TO_SCREEN_SCALED_FILTERED_BLIT,	/* optional.  NOTE: source and dest may NOT overlap */
 	
 	/* 3D acceleration */
 	B_ACCELERANT_PRIVATE_START = (int)0x80000000
@@ -151,6 +153,17 @@ typedef struct {
 } blit_params;
 
 typedef struct {
+	uint16	src_left;	/* guaranteed constrained to virtual width and height */
+	uint16	src_top;
+	uint16	src_width;	/* 0 to N, where zero means one pixel, one means two pixels, etc. */
+	uint16	src_height;	/* 0 to M, where zero means one line, one means two lines, etc. */
+	uint16	dest_left;
+	uint16	dest_top;
+	uint16	dest_width;	/* 0 to N, where zero means one pixel, one means two pixels, etc. */
+	uint16	dest_height;	/* 0 to M, where zero means one line, one means two lines, etc. */
+} scaled_blit_params;
+
+typedef struct {
 	uint16	left;	/* guaranteed constrained to virtual width and height */
 	uint16	top;
 	uint16	right;
@@ -216,6 +229,8 @@ typedef status_t (*sync_to_token)(sync_token *st);
 typedef void (*screen_to_screen_blit)(engine_token *et, blit_params *list, uint32 count);
 typedef void (*fill_rectangle)(engine_token *et, uint32 color, fill_rect_params *list, uint32 count);
 typedef void (*invert_rectangle)(engine_token *et, fill_rect_params *list, uint32 count);
+typedef void (*screen_to_screen_transparent_blit)(engine_token *et, uint32 transparent_color, blit_params *list, uint32 count);
+typedef void (*screen_to_screen_scaled_filtered_blit)(engine_token *et, scaled_blit_params *list, uint32 count);
 
 typedef void (*fill_span)(engine_token *et, uint32 color, uint16 *list, uint32 count);
 /*

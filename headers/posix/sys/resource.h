@@ -3,6 +3,8 @@
 
 #include <sys/time.h>
 
+__extern_c_start
+
 /*
  * Resource control/accounting header file
  */
@@ -16,5 +18,7 @@ struct rusage {
 };
 
 extern int getrusage(int who, struct rusage *r); 
+
+__extern_c_end
 
 #endif /* _SYS_RESOURCE_H */

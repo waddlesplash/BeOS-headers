@@ -263,7 +263,6 @@ extern _IMPEXP_ROOT thread_id spawn_thread (
 	void			*arg
 );
 				 
-extern _IMPEXP_ROOT thread_id	find_thread(const char *name); 
 extern _IMPEXP_ROOT status_t	kill_thread(thread_id thread);
 extern _IMPEXP_ROOT status_t	resume_thread(thread_id thread);
 extern _IMPEXP_ROOT status_t	suspend_thread(thread_id thread);
@@ -272,10 +271,31 @@ extern _IMPEXP_ROOT status_t	set_thread_priority (thread_id thread, int32 new_pr
 extern _IMPEXP_ROOT void		exit_thread(status_t status);
 extern _IMPEXP_ROOT status_t	wait_for_thread (thread_id thread, 
 										status_t *thread_return_value);
+extern _IMPEXP_ROOT status_t	on_exit_thread(void (*callback)(void *), void *data);
 
 extern _IMPEXP_ROOT status_t	_get_thread_info(thread_id thread, thread_info *info, size_t size);
 extern _IMPEXP_ROOT status_t	_get_next_thread_info(team_id tmid, int32 *cookie, thread_info *info, size_t size);
-extern status_t 	_get_team_usage_info(team_id tmid, int32 who, team_usage_info *ti, size_t size);
+extern _IMPEXP_ROOT status_t 	_get_team_usage_info(team_id tmid, int32 who, team_usage_info *ti, size_t size);
+
+#if __INTEL__ && !_KERNEL_MODE
+
+static inline thread_id		find_thread(const char *name) {
+	thread_id	ret;
+	extern thread_id	_kfind_thread_(const char *name);
+	if (!name) {
+		__asm__ __volatile__ ( 
+			"movl	%%fs:4, %%eax \n\t"
+			: "=a"(ret) );
+	} else
+		ret = _kfind_thread_(name);
+	return ret;
+}
+
+#else
+
+extern _IMPEXP_ROOT thread_id	find_thread(const char *name); 
+
+#endif
 
 #define get_thread_info(thread, info)              \
             _get_thread_info((thread), (info), sizeof(*(info)))
@@ -356,10 +376,6 @@ extern _IMPEXP_ROOT status_t	_get_next_team_info(int32 *cookie, team_info *info,
 #define		B_MAX_CPU_COUNT		8
 #endif
 
-#if __SH__
-#define		B_MAX_CPU_COUNT		1
-#endif
-
 typedef enum cpu_types {
 	B_CPU_PPC_601	= 1,
 	B_CPU_PPC_603	= 2,
@@ -394,6 +410,7 @@ typedef enum cpu_types {
 	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,
 	B_CPU_INTEL_CELERON = 0x1066,
 	B_CPU_INTEL_PENTIUM_III = 0x1067,
+	B_CPU_INTEL_PENTIUM_III_MODEL_8 = 0x1068,
 	
 	B_CPU_AMD_X86 = 0x1100,
 	B_CPU_AMD_K5_MODEL0 = 0x1150,
@@ -409,6 +426,8 @@ typedef enum cpu_types {
 
 	B_CPU_AMD_K6_MODEL9 = 0x1159,
 	B_CPU_AMD_K6_III = 0x1159,
+	
+	B_CPU_AMD_ATHLON_MODEL1 = 0x1161,
 
 	B_CPU_CYRIX_X86 = 0x1200,
 	B_CPU_CYRIX_GXm = 0x1254,
@@ -445,6 +464,19 @@ typedef union {
 		uint32	reserved_2;
 	} eax_1;
 	
+struct {
+		uint8	call_num;
+		uint8	cache_descriptors[15];
+	} eax_2;
+
+	struct {
+		uint32	reserved[2];
+		uint32	serial_number_high;
+		uint32	serial_number_low;
+	} eax_3;
+
+	char		as_chars[16];
+
 	struct {
 		uint32	eax;
 		uint32	ebx;
@@ -453,7 +485,7 @@ typedef union {
 	} regs; 
 } cpuid_info;
 
-extern _IMPEXP_ROOT status_t get_cpuid(cpuid_info* info, uint32 eax_register);
+extern _IMPEXP_ROOT status_t get_cpuid(cpuid_info* info, uint32 eax_register, uint32 cpu_num);
 #endif
 
 
@@ -474,10 +506,10 @@ typedef enum platform_types {
 	B_NINTENDO_64_PLATFORM
 } platform_type;
 
-
 typedef struct {
-	bigtime_t	active_time;		/* # usec doing useful work since boot */
+	bigtime_t		active_time;		/* # usec doing useful work since boot */
 } cpu_info;
+
 
 typedef int32 machine_id[2];		/* unique machine ID */
 

@@ -13,7 +13,6 @@
 #define	_REGION_H
 
 #include <BeBuild.h>
-#include <InterfaceDefs.h>
 #include <Rect.h>
 
 /* Integer rect used to define a cliping rectangle. All bounds are included */
@@ -34,6 +33,7 @@ class BRegion {
 public:
 				BRegion();
 				BRegion(const BRegion &region);
+				BRegion(const BRect rect);
 virtual			~BRegion();	
 
 		BRegion	&operator=(const BRegion &from);

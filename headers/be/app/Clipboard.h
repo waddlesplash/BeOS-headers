@@ -13,14 +13,10 @@
 #define	_CLIPBOARD_H
 
 #include <BeBuild.h>
-#include <OS.h>
 #include <Messenger.h>
-#include <Message.h>
 #include <Locker.h>
-#include <stddef.h>
 
-class BWindow;
-class BApplication;
+class BMessage;
 
 enum {
 	B_CLIPBOARD_CHANGED = 'CLCH'

@@ -14,7 +14,8 @@
 
 #include <BeBuild.h>
 #include <Control.h>
-#include <Bitmap.h>
+
+class BBitmap;
 
 /*------------------------------------------------------------*/
 /*----- layout options for the color control -----------------*/

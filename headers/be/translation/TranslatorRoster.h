@@ -32,7 +32,6 @@ class BQuery;
 class BMessage;
 
 
-
 class BTranslatorRoster :
 	public BArchivable
 {
@@ -184,7 +183,12 @@ private:
 				uint32 hintType,
 				const char * hintMIME,
 				const translation_format * & outFormat);
+		status_t AddTranslatorLocked(
+				BTranslator * translator,
+				image_id image);
 
+
+		static void _roster_cleanup();
 
 static	BTranslatorRoster * _defaultTranslators;
 		friend class _AutoRosterDeleter;

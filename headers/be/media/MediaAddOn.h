@@ -96,24 +96,24 @@ explicit	BMediaAddOn(
 virtual	~BMediaAddOn();
 
 virtual	status_t InitCheck(
-				const char ** out_failure_text) = 0;
-virtual	int32 CountFlavors() = 0;
+				const char ** out_failure_text);
+virtual	int32 CountFlavors();
 virtual	status_t GetFlavorAt(
 				int32 n,
-				const flavor_info ** out_info) = 0;
+				const flavor_info ** out_info);
 virtual	BMediaNode * InstantiateNodeFor(
 				const flavor_info * info,
 				BMessage * config,
-				status_t * out_error) = 0;
+				status_t * out_error);
 virtual	status_t GetConfigurationFor(
 				BMediaNode * your_node,
-				BMessage * into_message) = 0;
-virtual	bool WantsAutoStart() = 0;
+				BMessage * into_message);
+virtual	bool WantsAutoStart();
 virtual	status_t AutoStart(
 				int in_count,
 				BMediaNode ** out_node,
 				int32 * out_internal_id,
-				bool * out_has_more) = 0;
+				bool * out_has_more);
 /* only implement if you have a B_FILE_INTERFACE node */
 virtual	status_t SniffRef(
 				const entry_ref & file,
@@ -143,6 +143,12 @@ virtual	status_t SniffTypeKind(				//	Like SniffType, but for the specific kind(
 		image_id ImageID();
 		media_addon_id AddonID();
 
+protected:
+
+		//	Calling this will cause everyone to get notified, and also
+		//	cause the server to re-scan your flavor info. It is thread safe.
+		status_t			NotifyFlavorChange();
+
 private:
 
 	friend class MLatentManager;	// apologies for the no-underscore name
@@ -165,8 +171,13 @@ virtual		status_t _Reserved_MediaAddOn_7(void *);
 
 		image_id _m_image;
 		media_addon_id _m_addon;
-		uint32 _reserved_media_add_on_[7];
+		status_t (*_m_owner_hook)(void * cookie, BMediaAddOn *);
+		void * _m_owner_cookie;
+		uint32 _reserved_media_add_on_[5];
 
+		void SetOwner(
+				status_t (*hook)(void *, BMediaAddOn *),
+				void * cookie);
 };
 
 

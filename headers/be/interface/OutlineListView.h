@@ -13,7 +13,8 @@
 
 #include <BeBuild.h>
 #include <ListView.h>
-#include <ListItem.h>
+
+class BListItem;
 
 /*----------------------------------------------------------------*/
 /*----- BOutlineListView class -----------------------------------*/

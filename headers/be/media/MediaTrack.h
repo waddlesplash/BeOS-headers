@@ -6,7 +6,7 @@
 #include <MediaFormats.h>
 
 namespace BPrivate {
-	class Extractor;
+	class MediaExtractor;
 	class Decoder;
 	class MediaWriter;
 	class Encoder;
@@ -17,7 +17,8 @@ class BParameterWeb;
 
 enum media_seek_type {
 	B_MEDIA_SEEK_CLOSEST_FORWARD = 1,
-	B_MEDIA_SEEK_CLOSEST_BACKWARD
+	B_MEDIA_SEEK_CLOSEST_BACKWARD = 2,
+	B_MEDIA_SEEK_DIRECTION_MASK = 3
 };
 
 //
@@ -101,10 +102,13 @@ public:
 	// frame/samples returned, and the start time for the frame, expressed 
 	// in microseconds, is in the media_header structure.
 
-	status_t		ReadFrames(char *out_buffer, int64 *out_frameCount,
+	status_t		ReadFrames(void *out_buffer, int64 *out_frameCount,
 							   media_header *mh = NULL);
 
-	status_t		ReplaceFrames(char *out_buffer, int64 *out_frameCount,
+	status_t		ReadFrames(void *out_buffer, int64 *out_frameCount,
+							   media_header *mh, media_decode_info *info);
+
+	status_t		ReplaceFrames(const void *in_buffer, int64 *io_frameCount,
 								  const media_header *mh);
 
 
@@ -116,12 +120,15 @@ public:
 	// the specified seek point.
 	//
 	// If you want to explicitly seek to the nearest keyframe _before_ this
-	// frame or _after_ this frame, pass B_MEDIA_SEEK_CLOSEST_BACKWARD or
+	// frame or _after_ this frame, pass B_MEDIA_SEEK_CLOSEST_FORWARD or
 	// B_MEDIA_SEEK_CLOSEST_BACKWARD as the flags field.
 	//
 
 	status_t		SeekToTime(bigtime_t *inout_time, int32 flags=0);
 	status_t		SeekToFrame(int64 *inout_frame, int32 flags=0);
+
+	status_t		FindKeyFrameForTime(bigtime_t *inout_time, int32 flags=0) const;
+	status_t		FindKeyFrameForFrame(int64 *inout_frame, int32 flags=0) const;
 
 	// ReadChunk returns, in out_buffer, the next out_size bytes of
 	// data from the track.  The data is not decoded -- it will be
@@ -149,6 +156,8 @@ public:
 	//
 	status_t		WriteFrames(const void *data, int32 num_frames,
 								int32 flags = 0);
+	status_t		WriteFrames(const void *data, int64 num_frames,
+								media_encode_info *info);
 
 	//
 	// Write a raw chunk of (presumably already encoded data) to
@@ -157,6 +166,8 @@ public:
 	//
 	status_t		WriteChunk(const void *data, size_t size,
 							   uint32 flags = 0);
+	status_t		WriteChunk(const void *data, size_t size,
+							   media_encode_info *info);
 
 	// Flush all buffered encoded datas to disk. You should call it after
 	// writing the last frame to be sure all datas are flushed at the right
@@ -174,12 +185,15 @@ public:
 	status_t		GetQuality(float *quality);
 	status_t		SetQuality(float quality);
 
+	status_t 		GetEncodeParameters(encode_parameters *parameters) const;
+	status_t 		SetEncodeParameters(encode_parameters *parameters);
+
 
 virtual	status_t Perform(int32 selector, void * data);
 
 private:
 					// for read-only access to a track
-					BMediaTrack(BPrivate::Extractor *extractor, int32 stream);
+					BMediaTrack(BPrivate::MediaExtractor *extractor, int32 stream);
 
 					// for write-only access to a BMediaTrack
 					BMediaTrack(BPrivate::MediaWriter *writer,
@@ -194,7 +208,7 @@ private:
 	status_t				fErr;
 	BPrivate::Decoder		*fDecoder;
 	int32					fDecoderID;
-	BPrivate::Extractor		*fExtractor;
+	BPrivate::MediaExtractor *fExtractor;
 
 	int32					fStream;
 	int64					fCurFrame;
@@ -206,22 +220,25 @@ private:
 	int32					fEncoderID;
 	BPrivate::MediaWriter	*fWriter;
 	media_format			fWriterFormat;
-
-friend class BMediaFile;
-friend class BPrivate::Decoder;
+	void					*fExtractorCookie;
 
 protected:
 	int32			EncoderID() { return fEncoderID; };
 
 private:
 
+friend class BMediaFile;
+friend class BPrivate::Decoder;
+
 	BMediaTrack();
 	BMediaTrack(const BMediaTrack&);
 	BMediaTrack& operator=(const BMediaTrack&);
 
+static	BPrivate::Decoder *	find_decoder(BMediaTrack *track, int32 *id);
+
 	/* fbc data and virtuals */
 
-	uint32 _reserved_BMediaTrack_[32];
+	uint32 _reserved_BMediaTrack_[31];
 
 virtual	status_t _Reserved_BMediaTrack_0(int32 arg, ...);
 virtual	status_t _Reserved_BMediaTrack_1(int32 arg, ...);

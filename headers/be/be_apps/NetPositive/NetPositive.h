@@ -24,7 +24,9 @@ enum {
 	B_NETPOSITIVE_FORWARD		= 'NPFW',
 	B_NETPOSITIVE_HOME			= 'NPHM',
 	B_NETPOSITIVE_RELOAD		= 'NPRL',
-	B_NETPOSITIVE_STOP		 	= 'NPST'
+	B_NETPOSITIVE_STOP		 	= 'NPST',
+	B_NETPOSITIVE_DOWN			= 'NPDN',
+	B_NETPOSITIVE_UP			= 'NPUP'
 };
 	
 /*----------------------------------------------------------------*/

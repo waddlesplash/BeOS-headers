@@ -14,6 +14,7 @@
 #include <BeBuild.h>
 #include <endian.h>
 #include <SupportDefs.h>
+#include <TypeConstants.h>	/* For convenience */
 
 #ifdef __cplusplus
 extern "C" {

@@ -101,6 +101,16 @@
 extern "C" {
 #endif
 
+_IMPEXP_ROOT time_t       parsedate_etc(const char *s, time_t now, int *flags);
+
+/*
+   The flags passed back from parsedate tell you about how it parsed
+   the string.  Other flags may be defined in the future that will
+   affect how parsedate() behaves.
+*/   
+#define PARSEDATE_RELATIVE_TIME    0x0001  /* the string was relative */
+
+
 _IMPEXP_ROOT time_t       parsedate(const char *s, time_t now);
 _IMPEXP_ROOT void         set_dateformats(const char *table[]);
 _IMPEXP_ROOT const char **get_dateformats();

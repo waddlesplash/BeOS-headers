@@ -39,6 +39,14 @@ public:
 				void (*PlayBuffer)(void *, void * buffer, size_t size, const media_raw_audio_format & format) = NULL,
 				void (*Notifier)(void *, sound_player_notification what, ...) = NULL,
 				void * cookie = NULL);
+		BSoundPlayer(
+				const media_node & toNode,
+				const media_multi_audio_format * format = NULL, 
+				const char * name = NULL,
+				const media_input * input = NULL,
+				void (*PlayBuffer)(void *, void * buffer, size_t size, const media_raw_audio_format & format) = NULL,
+				void (*Notifier)(void *, sound_player_notification what, ...) = NULL,
+				void * cookie = NULL);
 virtual	~BSoundPlayer();
 
 		status_t InitCheck();	//	new in R4.1
@@ -90,6 +98,16 @@ virtual	~BSoundPlayer();
 		float 		Volume();			/* 0 - 1.0 */
 		void 		SetVolume(			/* 0 - 1.0 */
 						float new_volume);
+		float		VolumeDB(			/* -xx - +xx (see GetVolumeInfo()) */
+						bool forcePoll = false);	/* if false, cached value will be used if new enough */
+		void		SetVolumeDB(
+						float volume_dB);
+		status_t	GetVolumeInfo(
+						media_node * out_node,
+						int32 * out_parameter,
+						float * out_min_dB,
+						float * out_max_dB);
+		bigtime_t	Latency();
 
 virtual	bool HasData();
 		void SetHasData(		//	this does more than just set a flag
@@ -147,9 +165,8 @@ virtual	status_t _Reserved_SoundPlayer_7(void *, ...);
 		status_t _m_init_err;		//	new in R4.1
 		bigtime_t _m_perfTime;
 		BContinuousParameter * _m_volumeSlider;
-		bool _m_gotVolume;
-		bool _m_reserved_bools[3];
-		uint32 _m_reserved[11];
+		bigtime_t _m_gotVolume;
+		uint32 _m_reserved[10];
 
 		void NotifySoundDone(
 				play_id sound,
@@ -157,8 +174,10 @@ virtual	status_t _Reserved_SoundPlayer_7(void *, ...);
 
 		void get_volume_slider();
 		void Init(
-				const media_raw_audio_format * format, 
+				const media_node * node,
+				const media_multi_audio_format * format, 
 				const char * name,
+				const media_input * input,
 				void (*PlayBuffer)(void *, void * buffer, size_t size, const media_raw_audio_format & format),
 				void (*Notifier)(void *, sound_player_notification what, ...),
 				void * cookie);

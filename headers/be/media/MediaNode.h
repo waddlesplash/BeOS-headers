@@ -15,6 +15,8 @@
 #define _MEDIA_NODE_H
 
 #include <MediaDefs.h>
+#include <Point.h>
+
 #include <new>
 
 class BMediaAddOn;

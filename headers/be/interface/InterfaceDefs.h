@@ -14,7 +14,8 @@
 #include <BeBuild.h>
 #include <GraphicsDefs.h>
 #include <OS.h>
-#include <Rect.h>
+
+class BRect;
 
 /*----------------------------------------------------------------*/
 
@@ -155,7 +156,7 @@ enum cap_mode {
 	B_SQUARE_CAP=B_SQUARE_JOIN
 };
 
-#define B_DEFAULT_MITER_LIMIT 10.0
+const float B_DEFAULT_MITER_LIMIT = 10.0F;
 
 /*----------------------------------------------------------------*/
 
@@ -227,7 +228,8 @@ enum bitmap_tiling {
 enum overlay_options {
 	B_OVERLAY_FILTER_HORIZONTAL	= 0x00010000,
 	B_OVERLAY_FILTER_VERTICAL	= 0x00020000,
-	B_OVERLAY_MIRROR			= 0x00040000
+	B_OVERLAY_MIRROR			= 0x00040000,
+	B_OVERLAY_TRANSFER_CHANNEL	= 0x00080000
 };
 
 /*----------------------------------------------------------------*/
@@ -250,6 +252,8 @@ _IMPEXP_BE status_t		get_click_speed(bigtime_t *speed);
 _IMPEXP_BE status_t		set_click_speed(bigtime_t speed);
 _IMPEXP_BE status_t		get_mouse_speed(int32 *speed);
 _IMPEXP_BE status_t		set_mouse_speed(int32 speed);
+_IMPEXP_BE status_t		get_mouse_acceleration(int32 *speed);
+_IMPEXP_BE status_t		set_mouse_acceleration(int32 speed);
 
 _IMPEXP_BE status_t		get_key_repeat_rate(int32 *rate);
 _IMPEXP_BE status_t		set_key_repeat_rate(int32 rate);
@@ -274,6 +278,7 @@ _IMPEXP_BE bigtime_t	idle_time();
 
 _IMPEXP_BE void			run_select_printer_panel();	
 _IMPEXP_BE void			run_add_printer_panel();	
+_IMPEXP_BE void			run_be_about();	
 
 _IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
 _IMPEXP_BE bool			focus_follows_mouse();	
@@ -290,27 +295,31 @@ _IMPEXP_BE mode_mouse	mouse_mode();
 
 enum color_which {
 	B_PANEL_BACKGROUND_COLOR = 1,
-	B_MENU_BACKGROUND_COLOR,
-	B_WINDOW_TAB_COLOR,
-	B_KEYBOARD_NAVIGATION_COLOR,
-	B_DESKTOP_COLOR
+	B_MENU_BACKGROUND_COLOR = 2,
+	B_MENU_SELECTION_BACKGROUND_COLOR = 6,
+	B_MENU_ITEM_TEXT_COLOR = 7,
+	B_MENU_SELECTED_ITEM_TEXT_COLOR = 8,
+	B_WINDOW_TAB_COLOR = 3,
+	B_KEYBOARD_NAVIGATION_COLOR = 4,
+	B_DESKTOP_COLOR = 5
 };
 
 _IMPEXP_BE rgb_color	ui_color(color_which which);
 _IMPEXP_BE rgb_color	tint_color(rgb_color color, float tint);
 
+extern "C" status_t	_init_interface_kit_();
 											/* effects on standard gray level */
-const float B_LIGHTEN_MAX_TINT	= 0.0;		/* 216 --> 255.0 (255) */
-const float B_LIGHTEN_2_TINT	= 0.385;	/* 216 --> 240.0 (240) */
-const float B_LIGHTEN_1_TINT	= 0.590;	/* 216 --> 232.0 (232) */
+const float B_LIGHTEN_MAX_TINT	= 0.0F;		/* 216 --> 255.0 (255) */
+const float B_LIGHTEN_2_TINT	= 0.385F;	/* 216 --> 240.0 (240) */
+const float B_LIGHTEN_1_TINT	= 0.590F;	/* 216 --> 232.0 (232) */
 
-const float B_NO_TINT			= 1.0;		/* 216 --> 216.0 (216) */
+const float B_NO_TINT			= 1.0F;		/* 216 --> 216.0 (216) */
 
-const float B_DARKEN_1_TINT		= 1.147;	/* 216 --> 184.2 (184) */
-const float B_DARKEN_2_TINT		= 1.295;	/* 216 --> 152.3 (152) */
-const float B_DARKEN_3_TINT		= 1.407;	/* 216 --> 128.1 (128) */
-const float B_DARKEN_4_TINT		= 1.555;	/* 216 -->  96.1  (96) */
-const float B_DARKEN_MAX_TINT	= 2.0;		/* 216 -->   0.0   (0) */
+const float B_DARKEN_1_TINT		= 1.147F;	/* 216 --> 184.2 (184) */
+const float B_DARKEN_2_TINT		= 1.295F;	/* 216 --> 152.3 (152) */
+const float B_DARKEN_3_TINT		= 1.407F;	/* 216 --> 128.1 (128) */
+const float B_DARKEN_4_TINT		= 1.555F;	/* 216 -->  96.1  (96) */
+const float B_DARKEN_MAX_TINT	= 2.0F;		/* 216 -->   0.0   (0) */
 
 const float B_DISABLED_LABEL_TINT		= B_DARKEN_3_TINT;
 const float B_HIGHLIGHT_BACKGROUND_TINT	= B_DARKEN_2_TINT;

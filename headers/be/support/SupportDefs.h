@@ -110,9 +110,9 @@ extern "C" {
 #endif
 
 /*----- Atomic functions; old value is returned -----------------*/
-extern _IMPEXP_ROOT int32	atomic_add(int32 *value, int32 addvalue);
-extern _IMPEXP_ROOT int32	atomic_and(int32 *value, int32 andvalue);
-extern _IMPEXP_ROOT int32	atomic_or(int32 *value, int32 orvalue);	
+extern _IMPEXP_ROOT int32	atomic_add(vint32 *value, int32 addvalue);
+extern _IMPEXP_ROOT int32	atomic_and(vint32 *value, int32 andvalue);
+extern _IMPEXP_ROOT int32	atomic_or(vint32 *value, int32 orvalue);	
 
 /*----- Other stuff ---------------------------------------------*/
 extern _IMPEXP_ROOT void *	get_stack_frame(void);
@@ -131,11 +131,6 @@ extern _IMPEXP_ROOT void *	get_stack_frame(void);
 #ifndef TRUE
 #define TRUE		1
 #endif
-
-/* function pointer types; unused in the Be API */
-typedef void	(*B_PFV)();
-typedef int		(*B_PFI)();
-typedef long	(*B_PFL)();
 
 
 /*-------------------------------------------------------------*/
