@@ -79,7 +79,8 @@ virtual int32				ValueForPoint(BPoint) const;
 virtual void				SetPosition(float);
 		float				Position() const;
 virtual void				SetEnabled(bool on); 
-	
+		void				GetLimits(int32 * minimum, int32 * maximum);	
+
 virtual	void 				Draw(BRect);
 virtual void 				DrawSlider();
 virtual void 				DrawBar();

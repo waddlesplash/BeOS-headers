@@ -22,6 +22,10 @@
 class BWindow;
 class BApplication;
 
+enum {
+	B_CLIPBOARD_CHANGED = 'CLCH'
+};
+
 /*------------------------------------------------------------------*/
 /*----- BClipboard class --------------------------------------------*/
 
@@ -31,6 +35,11 @@ public:
 virtual				~BClipboard();
 
 		const char	*Name() const;
+
+		uint32		LocalCount() const;
+		uint32		SystemCount() const;
+		status_t	StartWatching(BMessenger target);
+		status_t	StopWatching(BMessenger target);
 
 		bool		Lock();
 		void		Unlock();

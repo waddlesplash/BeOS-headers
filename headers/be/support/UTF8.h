@@ -37,7 +37,9 @@ enum {
 	B_UNICODE_CONVERSION,			/* Unicode 2.0 */
 	B_KOI8R_CONVERSION,				/* KOI8-R */
 	B_MS_WINDOWS_1251_CONVERSION,	/* MS-Windows Codepage 1251 */
-	B_MS_DOS_866_CONVERSION			/* MS-DOS Codepage 866 */
+	B_MS_DOS_866_CONVERSION,		/* MS-DOS Codepage 866 */
+	B_MS_DOS_CONVERSION,			/* MS-DOS Codepage 437 */
+	B_EUC_KR_CONVERSION				/* EUC Korean */
 };
 
 /*-------------------------------------------------------------*/

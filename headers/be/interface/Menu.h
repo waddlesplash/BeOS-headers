@@ -267,7 +267,8 @@ static	bool		sSwapped;
 		menu_layout	fLayout;
 		BRect		*fExtraRect;
 		float		fMaxContentWidth;
-		uint32		_reserved[4];
+		BPoint		*fInitMatrixSize;
+		uint32		_reserved[3];
 
 		char		fTrigger;
 		bool		fResizeToFit;

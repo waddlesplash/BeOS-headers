@@ -1,128 +1,81 @@
-/* Copyright (C) 1991, 1992, 1996, 1997 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+#ifndef _LIMITS_H_
+#define _LIMITS_H_
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
+#include <float.h>		/* for DBL_DIG, FLT_DIG, etc */
 
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
-
-/*
- *	ISO C Standard: 4.14/2.2.4.2 Limits of integral types	<limits.h>
- */
-
-#ifndef _LIBC_LIMITS_H_
-#define _LIBC_LIMITS_H_	1
-
-#include <features.h>
-
-#ifdef	__USE_POSIX
-/* POSIX adds things to <limits.h>.  */
-# include <bits/posix1_lim.h>
-#endif
-
-#ifdef	__USE_POSIX2
-# include <bits/posix2_lim.h>
-#endif
-
-#ifdef	__USE_XOPEN
-# include <bits/xopen_lim.h>
-#endif
-
-
-/* Maximum length of any multibyte character in any locale.
-   We define this value here since the gcc header does not define
-   the correct value.  */
-#define MB_LEN_MAX	6
-
-
-#if __GNUC__ >= 2
-
- /* Get the compiler's limits.h, which defines all the ANSI constants.  */
-# ifndef _GCC_LIMITS_H_		/* This is what GCC's file defines.  */
+#if __INTEL__
+# ifndef _GCC_LIMITS_H_ /* This is what GCC's file defines. */
 #  include_next <limits.h>
 # endif
+#else
 
-#else	/* Not GCC 2.  */
+#define CHAR_BIT		(8)
 
-/* We only protect from multiple inclusion here, because all the other
-   #include's protect themselves, and in GCC 2 we may #include_next through
-   multiple copies of this file before we get to GCC's.  */
-# ifndef _LIMITS_H
-#  define _LIMITS_H	1
+#define SCHAR_MIN		(-127-1)
+#define SCHAR_MAX		(127)
 
-/* We don't have #include_next.
-   Define ANSI <limits.h> for standard 32-bit words.  */
+#define	UCHAR_MAX		(255U)
 
-/* These assume 8-bit `char's, 16-bit `short int's,
-   and 32-bit `int's and `long int's.  */
+#define CHAR_MIN		SCHAR_MIN
+#define CHAR_MAX		SCHAR_MAX
 
-/* Number of bits in a `char'.	*/
-#  define CHAR_BIT	8
+#define MB_LEN_MAX		(1)
 
-/* Minimum and maximum values a `signed char' can hold.  */
-#  define SCHAR_MIN	(-128)
-#  define SCHAR_MAX	127
+#define SHRT_MIN		(-32767-1)
+#define SHRT_MAX		(32767)
 
-/* Maximum value an `unsigned char' can hold.  (Minimum is 0.)  */
-#  define UCHAR_MAX	255
+#define USHRT_MAX		(65535U)
 
-/* Minimum and maximum values a `char' can hold.  */
-#  ifdef __CHAR_UNSIGNED__
-#   define CHAR_MIN	0
-#   define CHAR_MAX	UCHAR_MAX
-#  else
-#   define CHAR_MIN	SCHAR_MIN
-#   define CHAR_MAX	SCHAR_MAX
-#  endif
+#define LONG_MIN		(-2147483647L-1)
+#define LONG_MAX	  	(2147483647L)
 
-/* Minimum and maximum values a `signed short int' can hold.  */
-#  define SHRT_MIN	(-32768)
-#  define SHRT_MAX	32767
+#define ULONG_MAX		(4294967295U)
 
-/* Maximum value an `unsigned short int' can hold.  (Minimum is 0.)  */
-#  define USHRT_MAX	65535
+#define	INT_MIN			LONG_MIN
+#define INT_MAX			LONG_MAX
+#define UINT_MAX		ULONG_MAX
 
-/* Minimum and maximum values a `signed int' can hold.  */
-#  define INT_MIN	(-INT_MAX - 1)
-#  define INT_MAX	2147483647
+#endif /* else not INTEL */
 
-/* Maximum value an `unsigned int' can hold.  (Minimum is 0.)  */
-#  ifdef __STDC__
-#   define UINT_MAX	4294967295U
-#  else
-#   define UINT_MAX	4294967295
-#  endif
+#define LONGLONG_MIN    (-9223372036854775807LL - 1)  /* these are Be specific */
+#define LONGLONG_MAX    (9223372036854775807LL)
+#define ULONGLONG_MAX   (0xffffffffffffffffULL)                            
 
-/* Minimum and maximum values a `signed long int' can hold.  */
-#  ifdef __alpha__
-#   define LONG_MAX	9223372036854775807L
-#  else
-#   define LONG_MAX	2147483647L
-#  endif
-#  define LONG_MIN	(-LONG_MAX - 1L)
+/* These are various BeOS implementation limits */
 
-/* Maximum value an `unsigned long int' can hold.  (Minimum is 0.)  */
-#  ifdef __alpha__
-#   define ULONG_MAX	18446744073709551615UL
-#  else
-#   ifdef __STDC__
-#    define ULONG_MAX	4294967295UL
-#   else
-#    define ULONG_MAX	4294967295L
-#   endif
-#  endif
+#define ARG_MAX			 		(32768)
+#define ATEXIT_MAX			 	(32)	 /* XXXdbg */
+#define CHILD_MAX				(1024)
+#define IOV_MAX					(256)	/* really there is no limit */
+#define FILESIZEBITS			(64)
+#define LINK_MAX				(1)
+#define LOGIN_NAME_MAX			(32)	 /* XXXdbg */
+#define MAX_CANON		   		(255)
+#define MAX_INPUT				(255)
+#define NAME_MAX				(256)
+#define NGROUPS_MAX		 		(32)
+#define OPEN_MAX				(128)
+#define PATH_MAX				(1024)
+#define PIPE_MAX				(512)
+#define SSIZE_MAX		  		(2147483647L)
+#define TTY_NAME_MAX			(256)
+#define TZNAME_MAX		  		(32)
+#define	SYMLINKS_MAX			(16)
 
-# endif	/* limits.h  */
-#endif	/* GCC 2.  */
+#define _POSIX_ARG_MAX	  		(32768)
+#define _POSIX_CHILD_MAX		(1024)
+#define _POSIX_LINK_MAX	 		(1)
+#define _POSIX_LOGIN_NAME_MAX	(9)		/* XXXdbg */
+#define _POSIX_MAX_CANON		(255)
+#define _POSIX_MAX_INPUT		(255)
+#define _POSIX_NAME_MAX	 		(255) 
+#define _POSIX_NGROUPS_MAX  	(0)  
+#define _POSIX_OPEN_MAX	 		(128)
+#define _POSIX_PATH_MAX	 		(1024)
+#define _POSIX_PIPE_BUF	 		(512) 
+#define _POSIX_SSIZE_MAX		(2147483647L)
+#define _POSIX_STREAM_MAX   	(8)
+#define _POSIX_TTY_NAME_MAX		(256)
+#define _POSIX_TZNAME_MAX   	(3)
 
-#endif	/* !_LIBC_LIMITS_H_ */
+#endif /* _LIMITS_H_ */

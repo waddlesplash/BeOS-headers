@@ -12,22 +12,30 @@
 #include <Locker.h>
 #endif
 
-#define GUID_SUPPORT 0
+
+struct media_codec_info {
+	char	pretty_name[96];   // eg: "SuperSqueeze Encoder by Foo Inc"
+	char	short_name[32];    // eg: "supersqueeze"
+	
+	int32	id;                // opaque id passed to BMediaFile::CreateTrack
+	
+	int32	pad[64];
+};
+
+//
+// Use this to iterate through the available encoders for a file format.
+//
+status_t get_next_encoder(int32 *cookie,
+						  const media_file_format *mfi,		// this comes from get_next_file_format()
+						  const media_format *input_format,	// this is the type of data given to the encoder
+						  media_format *output_format,		// this is the type of data encoder will output 
+						  media_codec_info *ei);			// information about the encoder
+ 
 
 
-#if GUID_SUPPORT
 typedef struct {
 	uint8 data[16];
 } GUID;
-#endif
-
-typedef enum {
-	B_ANY_FORMAT_FAMILY = 0,
-	B_BEOS_FORMAT_FAMILY = 1,
-	B_QUICKTIME_FORMAT_FAMILY = 2,	/* QuickTime is a registered trademark of Apple Computer */
-	B_AVI_FORMAT_FAMILY = 3,
-	B_ASF_FORMAT_FAMILY = 4
-} media_format_family;
 
 typedef struct {
 	int32 format;
@@ -42,11 +50,33 @@ typedef struct {
 	uint32 codec;
 } media_avi_description;
 
-#if GUID_SUPPORT
 typedef struct {
 	GUID guid;
 } media_asf_description;
-#endif
+
+enum mpeg_id {
+	B_MPEG_ANY = 0,
+	B_MPEG_1_AUDIO_LAYER_1 = 0x101,
+	B_MPEG_1_AUDIO_LAYER_2 = 0x102,
+	B_MPEG_1_AUDIO_LAYER_3 = 0x103,		//	"MP3"
+	B_MPEG_1_VIDEO = 0x111
+};
+typedef struct {
+	uint32 id;
+} media_mpeg_description;
+
+typedef struct {
+	uint32 codec;
+} media_wav_description;
+
+typedef struct {
+	uint32 codec;
+} media_aiff_description;
+
+typedef struct {
+	uint32 file_format;
+	uint32 codec;
+} media_misc_description;
 
 typedef struct _media_format_description {
 #if defined(__cplusplus)
@@ -61,9 +91,11 @@ typedef struct _media_format_description {
 		media_beos_description beos;
 		media_quicktime_description quicktime;
 		media_avi_description avi;
-#if GUID_SUPPORT
 		media_asf_description asf;
-#endif
+		media_mpeg_description mpeg;
+		media_wav_description wav;
+		media_aiff_description aiff;
+		media_misc_description misc;
 		uint32 _reserved_[12];
 	} u;
 } media_format_description;
@@ -110,14 +142,13 @@ private:
 _IMPEXP_MEDIA bool operator==(const media_format_description & a, const media_format_description & b);
 _IMPEXP_MEDIA bool operator<(const media_format_description & a, const media_format_description & b);
 
-#if GUID_SUPPORT
 _IMPEXP_MEDIA bool operator==(const GUID & a, const GUID & b);
 _IMPEXP_MEDIA bool operator<(const GUID & a, const GUID & b);
 _IMPEXP_MEDIA bool operator!=(const GUID & a, const GUID & b);
 #endif
-#endif
 
-#if GUID_SUPPORT
+#if 0
+GUID functionality pending
 #if defined(__cplusplus)
 extern "C" {
 #endif

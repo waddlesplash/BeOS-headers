@@ -119,6 +119,7 @@ class BShelf;
 struct _view_attr_;
 struct _array_data_;
 struct _array_hdr_;
+struct overlay_restrictions;
 
 /*----------------------------------------------------------------*/
 /*----- BView class ----------------------------------------------*/
@@ -240,6 +241,16 @@ virtual	void			SetViewColor(rgb_color c);
 										uint32 followFlags=B_FOLLOW_TOP|B_FOLLOW_LEFT,
 										uint32 options=B_TILE_BITMAP);
 		void			ClearViewBitmap();
+
+		status_t		SetViewOverlay(	const BBitmap *overlay,
+										BRect srcRect, BRect dstRect,
+										rgb_color *colorKey,
+										uint32 followFlags=B_FOLLOW_TOP|B_FOLLOW_LEFT,
+										uint32 options=0);
+		status_t		SetViewOverlay(	const BBitmap *overlay, rgb_color *colorKey,
+										uint32 followFlags=B_FOLLOW_TOP|B_FOLLOW_LEFT,
+										uint32 options=0);
+		void			ClearViewOverlay();
 
 virtual	void			SetHighColor(rgb_color a_color);
 		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 255);
@@ -418,6 +429,7 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 		void			GetFontHeight(font_height *height) const;
 	
 		void			Invalidate(BRect invalRect);
+		void			Invalidate(const BRegion *invalRegion);
 		void			Invalidate();
 
 		void			SetDiskMode(char *filename, long offset);
@@ -513,6 +525,7 @@ virtual	void			_ReservedView16();
 		void		InitData(BRect f, const char *name, uint32 rs, uint32 fl);
 		status_t	ArchiveChildren(BMessage *data, bool deep) const;
 		status_t	UnarchiveChildren(BMessage *data, BWindow *w = NULL);
+		status_t	SetViewImage(const BBitmap *bitmap,BRect srcRect, BRect dstRect, uint32 followFlags, uint32 options);
 		void		BeginPicture_pr(BPicture *a_picture, BRect r);
 		void		SetPattern(pattern pat);
 		void		DoBezier(int32 gr, BPoint *controlPoints, pattern p);

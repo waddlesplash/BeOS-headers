@@ -15,7 +15,7 @@
 #define _MEDIA_NODE_H
 
 #include <MediaDefs.h>
-
+#include <new>
 
 class BMediaAddOn;
 
@@ -74,6 +74,41 @@ private:
 };
 
 
+struct media_request_info
+{
+	enum what_code
+	{
+		B_SET_VIDEO_CLIPPING_FOR = 1, 
+		B_REQUEST_FORMAT_CHANGE, 
+		B_SET_OUTPUT_ENABLED,
+		B_SET_OUTPUT_BUFFERS_FOR,
+
+		B_FORMAT_CHANGED = 4097
+	};
+	what_code what;
+	int32 change_tag;
+	status_t status;
+	int32 cookie;
+	void * user_data;
+	media_source source;
+	media_destination destination;
+	media_format format;
+	uint32 _reserved_[32];
+};
+
+struct media_node_attribute
+{
+	enum {
+		B_R40_COMPILED = 1,		//	has this attribute if compiled using R4.0 headers
+		B_USER_ATTRIBUTE_NAME = 0x1000000,
+		B_FIRST_USER_ATTRIBUTE
+	};
+	uint32		what;
+	uint32		flags;			//	per attribute
+	int64		data;			//	per attribute
+};
+
+
 class BMediaNode
 {
 protected:
@@ -101,7 +136,7 @@ public:
 		BTimeSource * TimeSource() const;
 
 	/* this port is what a media node listens to for commands */
-virtual	port_id ControlPort() const = 0;
+virtual	port_id ControlPort() const;
 
 virtual	BMediaAddOn* AddOn(
 				int32 * internal_id) const = 0;	/* Who instantiated you -- or NULL for app class */
@@ -112,13 +147,15 @@ virtual	BMediaAddOn* AddOn(
 			/* Note that these belong with the notifications in MediaDefs.h! */
 			/* They are here to provide compiler type checking in ReportError(). */
 			B_NODE_FAILED_START = 'TRI0',
-			B_NODE_FAILED_STOP,
-			B_NODE_FAILED_SEEK,
-			B_NODE_FAILED_SET_RUN_MODE,
-			B_NODE_FAILED_TIME_WARP,
-			B_NODE_FAILED_PREROLL,
-			B_NODE_FAILED_SET_TIME_SOURCE_FOR,
-			B_NODE_IN_DISTRESS		/* display this node with a blinking exclamation mark or something */
+			B_NODE_FAILED_STOP,						// TRI1
+			B_NODE_FAILED_SEEK,						// TRI2
+			B_NODE_FAILED_SET_RUN_MODE,				// TRI3
+			B_NODE_FAILED_TIME_WARP,				// TRI4
+			B_NODE_FAILED_PREROLL,					// TRI5
+			B_NODE_FAILED_SET_TIME_SOURCE_FOR,		// TRI6
+			/* display this node with a blinking exclamation mark or something */
+			B_NODE_IN_DISTRESS						// TRI7
+			/* TRIA and up are used in MediaDefs.h */
 		};
 
 protected:
@@ -128,8 +165,23 @@ protected:
 				node_error what,
 				const BMessage * info = NULL);	/* String "message" for instance */
 
+		/* When you've handled a stop request, call this function. If anyone is */
+		/* listening for stop information from you, they will be notified. Especially */
+		/* important for offline capable Nodes. */
+		status_t NodeStopped(
+				bigtime_t whenPerformance);	//	performance time
+		void TimerExpired(
+				bigtime_t notifyPoint,		//	performance time
+				int32 cookie,
+				status_t error = B_OK);
+
 explicit 	BMediaNode(		/* constructor sets refcount to 1 */
 				const char * name);
+
+		status_t WaitForMessage(
+				bigtime_t waitUntil,
+				uint32 flags = 0,
+				void * _reserved_ = 0);
 
 		/* These don't return errors; instead, they use the global error condition reporter. */
 		/* A node is required to have a queue of at least one pending command (plus TimeWarp) */
@@ -153,11 +205,7 @@ virtual	void Preroll();
 virtual	void SetTimeSource(
 				BTimeSource * time_source);
 
-		int32 IncrementChangeTag();
-		int32 ChangeTag();
-		int32 MintChangeTag();
-		status_t ApplyChangeTag(
-				int32 previously_reserved);
+public:
 
 virtual	status_t HandleMessage(
 				int32 message,
@@ -172,15 +220,69 @@ virtual	status_t HandleMessage(
 		void AddNodeKind(
 				uint64 kind);
 
+		//	These were not in 4.0.
+		//	We added them in 4.1 for future use. They just call
+		//	the default global versions for now.
+		void * operator new(
+				size_t size);
+		void * operator new(
+				size_t size,
+				const nothrow_t &) throw();
+		void operator delete(
+				void * ptr);
+#if !__MWERKS__
+		//	there's a bug in MWCC under R4.1 and earlier
+		void operator delete(
+				void * ptr, 
+				const nothrow_t &) throw();
+#endif
+
+protected:
+
+		/* Called when requests have completed, or failed. */
+virtual	status_t RequestCompleted(	/* reserved 0 */
+				const media_request_info & info);
+
 private:
 	friend class BTimeSource;
 	friend class _BTimeSourceP;
+	friend class BMediaRoster;
+	friend class _BMediaRosterP;
+	friend class MNodeManager;
+	friend class BBufferProducer;	//	for getting _mNodeID
+
+		// Deprecated in 4.1
+		int32 IncrementChangeTag();
+		int32 ChangeTag();
+		int32 MintChangeTag();
+		status_t ApplyChangeTag(
+				int32 previously_reserved);
+
 		/* Mmmh, stuffing! */
-virtual		status_t _Reserved_MediaNode_0(void *);
-virtual		status_t _Reserved_MediaNode_1(void *);
-virtual		status_t _Reserved_MediaNode_2(void *);
-virtual		status_t _Reserved_MediaNode_3(void *);
-virtual		status_t _Reserved_MediaNode_4(void *);
+protected:
+
+virtual		status_t DeleteHook(BMediaNode * node);		/* reserved 1 */
+
+virtual		void NodeRegistered();	/* reserved 2 */
+
+public:
+
+		/* fill out your attributes in the provided array, returning however many you have. */
+virtual		status_t GetNodeAttributes(	/* reserved 3 */
+					media_node_attribute * outAttributes,
+					size_t inMaxCount);
+
+virtual		status_t AddTimer(
+					bigtime_t at_performance_time,
+					int32 cookie);
+
+private:
+
+			status_t _Reserved_MediaNode_0(void *);		/* DeleteHook() */
+			status_t _Reserved_MediaNode_1(void *);		/* RequestCompletionHook() */
+			status_t _Reserved_MediaNode_2(void *);		/* NodeRegistered() */
+			status_t _Reserved_MediaNode_3(void *);		/* GetNodeAttributes() */
+			status_t _Reserved_MediaNode_4(void *);		/* AddTimer() */
 virtual		status_t _Reserved_MediaNode_5(void *);
 virtual		status_t _Reserved_MediaNode_6(void *);
 virtual		status_t _Reserved_MediaNode_7(void *);
@@ -192,10 +294,6 @@ virtual		status_t _Reserved_MediaNode_12(void *);
 virtual		status_t _Reserved_MediaNode_13(void *);
 virtual		status_t _Reserved_MediaNode_14(void *);
 virtual		status_t _Reserved_MediaNode_15(void *);
-
-	friend class _BMediaRosterP;
-	friend class BMediaRoster;
-	friend class MNodeManager;
 
 		BMediaNode();	/* private unimplemented */
 		BMediaNode(
@@ -213,14 +311,23 @@ virtual		status_t _Reserved_MediaNode_15(void *);
 		int32 _mRefCount;
 		char _mName[B_MEDIA_NAME_LENGTH];
 		run_mode _mRunMode;
-		int32 _mChangeCount;
-		int32 _mChangeCountReserved;
+		int32 _mChangeCount;			//	deprecated
+		int32 _mChangeCountReserved;	//	deprecated
 		uint64 _mKinds;
 		media_node_id _mTimeSourceID;
 		bool _mUnregisterWhenDone;
 		bool _mReservedBool[3];
 
-		uint32 _reserved_media_node_[14];
+mutable	port_id _m_controlPort;
+
+		void _inspect_classes();
+		BBufferProducer * _m_producerThis;
+		BBufferConsumer * _m_consumerThis;
+		BFileInterface * _m_fileInterfaceThis;
+		BControllable * _m_controllableThis;
+		BTimeSource * _m_timeSourceThis;
+
+		uint32 _reserved_media_node_[8];
 
 
 		void PStart(
@@ -232,13 +339,22 @@ virtual		status_t _Reserved_MediaNode_15(void *);
 				bigtime_t media_time,
 				bigtime_t performance_time);
 		void PSetRunMode(
-				run_mode mode);
+				run_mode mode,
+				bigtime_t recordDelay);
 		void PTimeWarp(
 				bigtime_t at_real_time,
 				bigtime_t to_performance_time);
 		void PPreroll();
 		void PSetTimeSource(
 				BTimeSource * time_source);
+
+protected:
+
+static	int32 NewChangeTag();	//	for use by BBufferConsumer, mostly
+
+private:
+
+static	int32 _m_changeTag;		//	not to be confused with _mChangeCount
 };
 
 

@@ -168,6 +168,13 @@ enum {
 #define ENOBUFS			(B_POSIX_ERROR_BASE + 35)
 #define EINPROGRESS		(B_POSIX_ERROR_BASE + 36)
 #define EALREADY		(B_POSIX_ERROR_BASE + 37)
+#define EILSEQ          (B_POSIX_ERROR_BASE + 38)
+#define ENOMSG          (B_POSIX_ERROR_BASE + 39)
+#define ESTALE          (B_POSIX_ERROR_BASE + 40)
+#define EOVERFLOW       (B_POSIX_ERROR_BASE + 41)
+#define EMSGSIZE        (B_POSIX_ERROR_BASE + 42)
+#define EOPNOTSUPP      (B_POSIX_ERROR_BASE + 43)                       
+#define ENOTSOCK		(B_POSIX_ERROR_BASE + 44)
 
 #define ENOMEM			B_NO_MEMORY
 #define EACCES			B_PERMISSION_DENIED
@@ -247,7 +254,11 @@ enum
 	B_DEV_WRITE_ERROR,
 	B_DEV_NOT_READY,
 	B_DEV_MEDIA_CHANGED,
-	B_DEV_MEDIA_CHANGE_REQUESTED
+	B_DEV_MEDIA_CHANGE_REQUESTED,
+	B_DEV_RESOURCE_CONFLICT,
+	B_DEV_CONFIGURATION_ERROR,
+	B_DEV_DISABLED_BY_USER,
+	B_DEV_DOOR_OPEN
 };
 
 /*-------------------------------------------------------------*/

@@ -115,7 +115,7 @@ extern _IMPEXP_ROOT int32	atomic_and(int32 *value, int32 andvalue);
 extern _IMPEXP_ROOT int32	atomic_or(int32 *value, int32 orvalue);	
 
 /*----- Other stuff ---------------------------------------------*/
-extern _IMPEXP_ROOT uint32	get_stack_frame();
+extern _IMPEXP_ROOT void *	get_stack_frame(void);
 
 #ifdef __cplusplus
 }

@@ -60,6 +60,7 @@ class _BWidthBuffer_;
 class _BUndoBuffer_;
 class _BInlineInput_;
 
+extern "C" status_t	_init_interface_kit_();
 
 /*----------------------------------------------------------------*/
 /*----- BTextView class ------------------------------------------*/
@@ -70,7 +71,7 @@ public:
 								  const char	*name,
 								  BRect			textRect,
 								  uint32		resizeMask,
-								  uint32		flags);
+								  uint32		flags = B_WILL_DRAW | B_PULSE_NEEDED);
 						BTextView(BRect				frame, 
 								  const char		*name, 
 								  BRect				textRect,
@@ -370,7 +371,7 @@ static	void			UnlockWidthBuffer();
 		int32					fClickCount;
 		bigtime_t				fClickTime;
 		int32					fDragOffset;
-		bool					fDragOwner;
+		bool					unused;
 		bool					fActive;
 		bool					fStylable;
 		float					fTabWidth;
@@ -388,7 +389,10 @@ static	void			UnlockWidthBuffer();
 		float					fLastWidth;
 		_BUndoBuffer_*			fUndo;			/* was _reserved[0] */
 		_BInlineInput_*			fInline;		/* was _reserved[1] */
-		uint32					_reserved[6];	/* was 8 */
+		BMessageRunner *		fDragRunner;	/* was _reserved[2] */
+		BMessageRunner *		fClickRunner;	/* was _reserved[3] */
+		BPoint					fWhere;
+		uint32					_reserved[2];	/* was 8 */
 #if !_PR3_COMPATIBLE_
 		uint32					_more_reserved[8];
 #endif

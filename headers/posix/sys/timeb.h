@@ -1,46 +1,24 @@
-/* Copyright (C) 1994, 1995, 1996 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
-
 #ifndef _SYS_TIMEB_H
-#define _SYS_TIMEB_H	1
+#define _SYS_TIMEB_H
 
-#include <features.h>
-
-#define __need_time_t
+#include <be_setup.h>
 #include <time.h>
 
 
-__BEGIN_DECLS
+struct timeb {
+    time_t			time;
+    unsigned short	millitm;
+    short			timezone;
+    short			dstflag;
+};
 
-/* Structure returned by the `ftime' function.  */
 
-struct timeb
-  {
-    time_t time;		/* Seconds since epoch, as from `time'.  */
-    unsigned short int millitm;	/* Additional milliseconds.  */
-    short int timezone;		/* Minutes west of GMT.  */
-    short int dstflag;		/* Nonzero if Daylight Savings Time used.  */
-  };
+__extern_c_start
 
-/* Fill in TIMEBUF with information about the current time.  */
+int ftime(struct timeb *tp);
 
-extern int ftime __P ((struct timeb *__timebuf));
+__extern_c_end
 
-__END_DECLS
 
-#endif	/* sys/timeb.h */
+#endif /* _SYS_TIMEB_H */
+

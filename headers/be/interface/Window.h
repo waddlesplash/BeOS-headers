@@ -293,7 +293,8 @@ virtual	void			_ReservedWindow8();
 					BWindow(BWindow &);
 		BWindow		&operator=(BWindow &);
 					
-					BWindow(BRect frame, color_space depth);
+					BWindow(BRect frame, color_space depth,
+							uint32 bitmapFlags, int32 rowBytes);
 		void		InitData(BRect frame,
 							const char *title, 
 							window_look look,
@@ -405,8 +406,9 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		int32			fLastViewToken;
 		_CEventPort_ *	fEventPort;
 		BMessageRunner	*fPulseRunner;
+		BRect			fCurrentFrame;
 
-		uint32			_reserved[6];	/* was 8 */
+		uint32			_reserved[2];	/* was 8 */
 #if !_PR3_COMPATIBLE_
 		uint32			_more_reserved[4];
 #endif

@@ -8,6 +8,10 @@
 
 class BSoundFile;
 
+namespace BPrivate {
+	class BTrackReader;
+}
+
 class BSound {
 public:
 		BSound(
@@ -59,21 +63,31 @@ static	status_t load_entry(void * arg);
 		void loader_thread();
 		bool check_stop();
 
-virtual	status_t _Reserved_Sound_0(void *);
-virtual	status_t _Reserved_Sound_1(void *);
+public:
+
+virtual	status_t BindTo(
+				BSoundPlayer * player,
+				const media_raw_audio_format & format);
+virtual	status_t UnbindFrom(
+				BSoundPlayer * player);
+
+private:
+		status_t _Reserved_Sound_0(void *);	//	BindTo
+		status_t _Reserved_Sound_1(void *);	//	UnbindFrom
 virtual	status_t _Reserved_Sound_2(void *);
 virtual	status_t _Reserved_Sound_3(void *);
 virtual	status_t _Reserved_Sound_4(void *);
 virtual	status_t _Reserved_Sound_5(void *);
 
 		void * _m_data;
-		BSoundFile * _m_file;
+		BMediaFile * _m_file;
 		int32 _m_ref_count;
 		status_t _m_error;
 		size_t _m_size;
 		media_raw_audio_format _m_format;
 		bool _m_free_when_done;
-		bool _m_reserved[3];
+		bool _m_checkStopped;
+		bool _m_reserved[2];
 		area_id _m_area;
 		sem_id _m_avail_sem;
 		sem_id _m_free_sem;
@@ -82,7 +96,11 @@ virtual	status_t _Reserved_Sound_5(void *);
 		sem_id _m_check_token;
 		int32 _m_prev_sem_count;
 
-		uint32 _reserved_[12];
+		BSoundPlayer * _m_bound_player;
+		int32 _m_bind_flags;
+
+		BPrivate::BTrackReader * _m_trackReader;
+		uint32 _reserved_[9];
 
 };
 

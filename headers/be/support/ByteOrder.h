@@ -12,11 +12,7 @@
 #define _BYTEORDER_H
 
 #include <BeBuild.h>
-#if __POWERPC__
-# include <ansi_parms.h>
-#elif __INTEL__
-# include <endian.h>
-#endif
+#include <endian.h>
 #include <SupportDefs.h>
 
 #ifdef __cplusplus
@@ -55,7 +51,7 @@ extern _IMPEXP_ROOT uint16 __swap_int16(uint16 uarg);
 /*-------------------------------------------------------------*/
 /*--------- Host is Little  --------------------------------------*/
 
-#if __LITTLE_ENDIAN
+#if BYTE_ORDER == __LITTLE_ENDIAN
 #define B_HOST_IS_LENDIAN 1
 #define B_HOST_IS_BENDIAN 0
 

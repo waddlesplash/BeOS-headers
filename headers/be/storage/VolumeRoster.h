@@ -1,6 +1,6 @@
 /*****************************************************************************
 //
-//	File:		Volume.h
+//	File:		VolumeRoster.h
 //
 //	Description:	BVolumeRoster class.  Iterate over mounted volumes,
 //					and watch volumes as they're mounted and unmounted.

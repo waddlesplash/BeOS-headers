@@ -78,6 +78,7 @@ virtual	void			DetachedFromWindow();
 virtual void			AllAttached();
 virtual void			AllDetached();
 virtual status_t		GetSupportedSuites(BMessage *data);
+virtual void			SetFlags(uint32 flags);
 
 
 /*----- Private or reserved -----------------------------------------*/
@@ -111,6 +112,9 @@ virtual	void			_ReservedTextControl4();
 #endif
 
 		bool			fClean;
+		bool			fSkipSetFlags;
+		bool			fUnusedBool1;
+		bool			fUnusedBool2;
 };
 
 /*-------------------------------------------------------------*/

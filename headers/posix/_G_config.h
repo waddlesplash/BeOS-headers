@@ -6,7 +6,7 @@
 
 /* Define types for libio in terms of the standard internal type names.  */
 
-#include <bits/types.h>
+#include <sys/types.h>
 #define __need_size_t
 #define __need_wchar_t
 #define __need_wint_t
@@ -21,13 +21,13 @@
 typedef unsigned int wint_t;
 #endif
 #define _G_size_t	size_t
-#define _G_fpos_t	__off_t
-#define _G_fpos64_t	__off_t
-#define _G_ssize_t	__ssize_t
-#define _G_off_t	__off_t
-#define _G_off64_t	__off_t
-#define	_G_pid_t	__pid_t
-#define	_G_uid_t	__uid_t
+#define _G_fpos_t	off_t
+#define _G_fpos64_t	off_t
+#define _G_ssize_t	ssize_t
+#define _G_off_t	off_t
+#define _G_off64_t	off_t
+#define	_G_pid_t	pid_t
+#define	_G_uid_t	uid_t
 #define _G_wchar_t	wchar_t
 #define _G_wint_t	wint_t
 #define _G_stat64	stat
@@ -42,7 +42,6 @@ typedef unsigned int _G_uint32_t __attribute__ ((__mode__ (__SI__)));
 
 /* These library features are always available in the GNU C library.  */
 #define _G_HAVE_ATEXIT 1
-#define _G_HAVE_SYS_CDEFS 1
 #define _G_HAVE_SYS_WAIT 1
 #define _G_NEED_STDARG_H 1
 #define _G_va_list __gnuc_va_list

@@ -6,7 +6,7 @@
 /
 /	Copyright 1998, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _INPUTSERVERDEVICE_H
 #define _INPUTSERVERDEVICE_H
@@ -24,7 +24,7 @@ struct input_device_ref {
 
 
 enum {
-	// B_KEYBOARD_DIVICE notifications
+	// B_KEYBOARD_DEVICE notifications
 	B_KEY_MAP_CHANGED = 1,
 	B_KEY_LOCKS_CHANGED,
 	B_KEY_REPEAT_DELAY_CHANGED,	
@@ -57,7 +57,12 @@ public:
 								BMessage	*message);
 
 	status_t			RegisterDevices(input_device_ref **devices);
-	status_t			EnqueueMessage(BMessage *message);	
+	status_t			UnregisterDevices(input_device_ref **devices);
+
+	status_t			EnqueueMessage(BMessage *message);
+
+	status_t			StartMonitoringDevice(const char *device);
+	status_t			StopMonitoringDevice(const char *device);	
 
 private:
 	_BDeviceAddOn_*		fOwner;

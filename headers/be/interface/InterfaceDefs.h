@@ -224,6 +224,12 @@ enum bitmap_tiling {
 	B_TILE_BITMAP		= 0x00000003
 };
 
+enum overlay_options {
+	B_OVERLAY_FILTER_HORIZONTAL	= 0x00010000,
+	B_OVERLAY_FILTER_VERTICAL	= 0x00020000,
+	B_OVERLAY_MIRROR			= 0x00040000
+};
+
 /*----------------------------------------------------------------*/
 
 _IMPEXP_BE status_t		get_deskbar_frame(BRect *frame);
@@ -271,6 +277,16 @@ _IMPEXP_BE void			run_add_printer_panel();
 
 _IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
 _IMPEXP_BE bool			focus_follows_mouse();	
+
+enum mode_mouse {
+	B_NORMAL_MOUSE 			= 0,
+	B_FOCUS_FOLLOWS_MOUSE	= 1,
+	B_WARP_MOUSE			= 3,
+	B_INSTANT_WARP_MOUSE	= 7
+};
+
+_IMPEXP_BE void			set_mouse_mode(mode_mouse mode);	
+_IMPEXP_BE mode_mouse	mouse_mode();	
 
 enum color_which {
 	B_PANEL_BACKGROUND_COLOR = 1,

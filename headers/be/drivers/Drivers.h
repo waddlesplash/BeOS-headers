@@ -126,6 +126,9 @@ enum {
 									/* B_DEV_NOT_READY: device not ready */
 									/* B_DEV_MEDIA_CHANGED: media changed */
 									/*  since open or last B_GET_MEDIA_STATUS */
+									/* B_DEV_MEDIA_CHANGE_REQUESTED: user */
+									/*  pressed button on drive */
+									/* B_DEV_DOOR_OPEN: door open */
 	
 	B_LOAD_MEDIA,					/* load the media if supported */
 	
@@ -133,6 +136,12 @@ enum {
 
 	B_SET_UNINTERRUPTABLE_IO,		/* prevent cntl-C from interrupting i/o */
 	B_SET_INTERRUPTABLE_IO,			/* allow cntl-C to interrupt i/o */
+
+	B_FLUSH_DRIVE_CACHE,			/* flush drive cache */
+
+	B_GET_NEXT_OPEN_DEVICE = 1000,	/* iterate through open devices */
+	B_ADD_FIXED_DRIVER,				/* private */
+	B_REMOVE_FIXED_DRIVER,			/* private */
 
 	B_AUDIO_DRIVER_BASE = 8000,		/* base for codes in audio_driver.h */
 	B_MIDI_DRIVER_BASE = 8100,		/* base for codes in midi_driver.h */
@@ -195,6 +204,16 @@ typedef struct {
 --- */
 
 typedef char	driver_path[256];
+
+
+/* ---
+	open_device_iterator structure used by the B_GET_NEXT_OPEN_DEVICE opcode
+--- */
+
+typedef struct {
+	uint32		cookie;			/* must be set to 0 before iterating */
+	char		device[256];	/* device path */	
+} open_device_iterator;
 
 
 /* ---

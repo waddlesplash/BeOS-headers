@@ -75,12 +75,6 @@ struct device_info {
 #define B_DEVICE_INFO_CONFIGURED		2
 #define B_DEVICE_INFO_CAN_BE_DISABLED	4
 
-enum {
-	B_DEV_RESOURCE_CONFLICT	= B_DEV_MEDIA_CHANGE_REQUESTED + 1,
-	B_DEV_CONFIGURATION_ERROR,
-	B_DEV_DISABLED_BY_USER
-};
-
 typedef struct config_manager_for_driver_module_info {
 	module_info	minfo;
 

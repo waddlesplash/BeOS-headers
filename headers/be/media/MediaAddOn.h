@@ -15,11 +15,13 @@
 #include <image.h>
 
 #include <MediaDefs.h>
+#include <Flattenable.h>
 
 
 struct dormant_node_info {
 	dormant_node_info();
 	~dormant_node_info();
+
 	media_addon_id addon;
 	int32 flavor_id;
 	char name[B_MEDIA_NAME_LENGTH];
@@ -28,6 +30,13 @@ private:
 };
 
 
+
+enum
+{	//	flavor_flags
+	B_FLAVOR_IS_GLOBAL = 0x100000L,	//	force in media_addon_server, only one instance
+	B_FLAVOR_IS_LOCAL = 0x200000L	//	force in loading app, many instances
+									//	if none is set, could go either way
+};
 
 struct flavor_info {
 	char *				name;
@@ -49,6 +58,31 @@ struct flavor_info {
 
 private:
 	flavor_info & operator=(const flavor_info & other);
+};
+
+struct dormant_flavor_info : public flavor_info, public BFlattenable {
+
+		dormant_flavor_info();
+virtual	~dormant_flavor_info();
+		dormant_flavor_info(const dormant_flavor_info &);
+		dormant_flavor_info& operator=(const dormant_flavor_info &);
+		dormant_flavor_info& operator=(const flavor_info &);
+
+		dormant_node_info	node_info;
+
+		void set_name(const char * in_name);
+		void set_info(const char * in_info);
+		void add_in_format(const media_format & in_format);
+		void add_out_format(const media_format & out_format);
+
+virtual	bool		IsFixedSize() const;
+virtual	type_code	TypeCode() const;
+virtual	ssize_t		FlattenedSize() const;
+virtual	status_t	Flatten(void *buffer, ssize_t size) const;
+virtual	status_t	Unflatten(type_code c, const void *buf, ssize_t size);
+
+private:
+		void assign_atoms(const flavor_info & that);
 };
 
 
@@ -86,10 +120,25 @@ virtual	status_t SniffRef(
 				BMimeType * io_mime_type,
 				float * out_quality,
 				int32 * out_internal_id);
-virtual	status_t SniffType(
+virtual	status_t SniffType(					//	This is broken if you deal with producers 
+				const BMimeType & type,		//	and consumers both. Use SniffTypeKind instead.
+				float * out_quality,		//	If you implement SniffTypeKind, this doesn't
+				int32 * out_internal_id);	//	get called.
+virtual	status_t GetFileFormatList(
+				int32 flavor_id,			//	for this node flavor (if it matters)
+				media_file_format * out_writable_formats, 	//	don't write here if NULL
+				int32 in_write_items,		//	this many slots in out_writable_formats
+				int32 * out_write_items,	//	set this to actual # available, even if bigger than in count
+				media_file_format * out_readable_formats, 	//	don't write here if NULL
+				int32 in_read_items,		//	this many slots in out_readable_formats
+				int32 * out_read_items,		//	set this to actual # available, even if bigger than in count
+				void * _reserved);			//	ignore until further notice
+virtual	status_t SniffTypeKind(				//	Like SniffType, but for the specific kind(s)
 				const BMimeType & type,
+				uint64 in_kinds,
 				float * out_quality,
-				int32 * out_internal_id);
+				int32 * out_internal_id,
+				void * _reserved);
 
 		image_id ImageID();
 		media_addon_id AddonID();
@@ -105,8 +154,8 @@ private:
 				const BMediaAddOn & clone);
 
 		/* Mmmh, stuffing! */
-virtual		status_t _Reserved_MediaAddOn_0(void *);
-virtual		status_t _Reserved_MediaAddOn_1(void *);
+		status_t _Reserved_MediaAddOn_0(void *); 	/* now used for GetFileFormatList */
+		status_t _Reserved_MediaAddOn_1(void *);	/* now used for SniffTypeKind */
 virtual		status_t _Reserved_MediaAddOn_2(void *);
 virtual		status_t _Reserved_MediaAddOn_3(void *);
 virtual		status_t _Reserved_MediaAddOn_4(void *);

@@ -62,6 +62,7 @@ extern _IMPEXP_MEDIA const char * const B_SHUTTLE_MODE;	/* -1 == backwards, 0 ==
 extern _IMPEXP_MEDIA const char * const B_RESOLUTION;
 extern _IMPEXP_MEDIA const char * const B_COLOR_SPACE;		/* "value" should be color_space */
 extern _IMPEXP_MEDIA const char * const B_FRAME_RATE;
+extern _IMPEXP_MEDIA const char * const B_VIDEO_FORMAT;	/* 1 == NTSC-M, 2 == NTSC-J, 3 == PAL-BDGHI, 4 == PAL-M, 5 == PAL-N, 6 == SECAM, 7 == MPEG-1, 8 == MPEG-2 */
 	/* kinds used for junctions */
 	//	the prefix of "WEB" is to avoid collission with an enum in Defs.h
 extern _IMPEXP_MEDIA const char * const B_WEB_PHYSICAL_INPUT;		/* a jack on the back of the card */

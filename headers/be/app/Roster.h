@@ -21,6 +21,7 @@
 #include <List.h>
 #include <Locker.h>
 #include <Mime.h>
+#include <Clipboard.h>
 
 class BApplication;
 class BWindow;
@@ -131,17 +132,19 @@ friend status_t _send_to_roster_(BMessage *, BMessage *, bool);
 friend bool _is_valid_roster_mess_(bool);
 friend status_t BMimeType::StartWatching(BMessenger);
 friend status_t BMimeType::StopWatching(BMessenger);
+friend status_t BClipboard::StartWatching(BMessenger);
+friend status_t BClipboard::StopWatching(BMessenger);
 
 		enum mtarget {
 			MAIN_MESSENGER,
-			MIME_MESSENGER
+			MIME_MESSENGER,
+			USE_GIVEN
 		};
 
-		status_t	_StartWatching(mtarget t, uint32 what, BMessenger target,
-									uint32 event_mask) const;
-		status_t	_StopWatching(mtarget t,
-									uint32 what,
-									BMessenger target) const;
+		status_t	_StartWatching(mtarget t, BMessenger *roster_mess, uint32 what,
+									BMessenger notify, uint32 event_mask) const;
+		status_t	_StopWatching(mtarget t, BMessenger *roster_mess, uint32 what,
+									BMessenger notify) const;
 		uint32		AddApplication(	const char *mime_sig,
 									entry_ref *ref,
 									uint32 flags,

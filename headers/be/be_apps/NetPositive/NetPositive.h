@@ -4,7 +4,7 @@
 /
 /   Description:    Defines all public APIs for communicating with NetPositive
 /
-/	Copyright 1998, Be Incorporated, All Rights Reserved
+/	Copyright 1998-1999, Be Incorporated, All Rights Reserved
 /
 *******************************************************************************/
 
@@ -27,6 +27,22 @@ enum {
 	B_NETPOSITIVE_STOP		 	= 'NPST'
 };
 	
+/*----------------------------------------------------------------*/
+/*-----  NetPositive-related MIME types --------------------------*/
+
+	/* The MIME types for the NetPositive application and its bookmark files */
+#define B_NETPOSITIVE_APP_SIGNATURE  		"application/x-vnd.Be-NPOS"
+#define B_NETPOSITIVE_BOOKMARK_SIGNATURE 	"application/x-vnd.Be-bookmark"
+
+	/* To set up your application to receive notification when the user		 */
+	/* clicks on a specific type of URL (telnet URL's, for example), see the */
+	/* details in TypeConstants.h.  NetPositive will use external handlers	 */
+	/* for all URL types except for http, https, file, netpositive, and		 */
+	/* javascript, which it always handles internally.  To maintain			 */
+	/* compatibility with its previous behavior, if NetPositive does not	 */
+	/* find a handler for mailto URL's,	it will instead launch the handler	 */
+	/* for "text/x-email".				 									 */
+
 /*----------------------------------------------------------------*/
 /*----------------------------------------------------------------*/
 

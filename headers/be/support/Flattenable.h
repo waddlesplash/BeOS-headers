@@ -28,10 +28,12 @@ virtual	status_t	Flatten(void *buffer, ssize_t size) const = 0;
 virtual	bool		AllowsTypeCode(type_code code) const;
 virtual	status_t	Unflatten(type_code c, const void *buf, ssize_t size) = 0;
 
-/*----- Private or reserved ---------------*/
-private:
+virtual				~BFlattenable();	//	was a reserved virtual in R4.0
 
-virtual	void		_ReservedFlattenable1();
+/*----- Private or reserved ---------------*/
+
+private:
+		void		_ReservedFlattenable1();
 virtual	void		_ReservedFlattenable2();
 virtual	void		_ReservedFlattenable3();
 };

@@ -66,6 +66,10 @@ virtual void		AllDetached();
 		status_t	SetPopUp(BPopUpMenu *context_menu);
 		BPopUpMenu	*PopUp() const;
 
+		bool		InShelf() const;
+		BView		*Target() const;
+
+virtual	BBitmap		*DragBitmap(BPoint *offset, drawing_mode *mode);
 
 protected:
 		bool		IsVisibilityChanging() const;
@@ -78,7 +82,7 @@ friend class _rep_data_;
 friend class BShelf;
 friend void _toggle_handles_(bool);
 
-virtual	void		_ReservedDragger1();
+//+virtual	void		_ReservedDragger1();
 virtual	void		_ReservedDragger2();
 virtual	void		_ReservedDragger3();
 virtual	void		_ReservedDragger4();

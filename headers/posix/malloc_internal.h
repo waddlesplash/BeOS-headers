@@ -155,6 +155,7 @@ typedef struct malloc_funcs
 	void *(*old_malloc_hook)  (size_t size, malloc_state *ms, struct malloc_funcs *mf);
 	void  (*old_free_hook)    (void *ptr,   malloc_state *ms, struct malloc_funcs *mf);
 	void *(*old_realloc_hook) (void *ptr,   size_t size,  malloc_state *ms, struct malloc_funcs *mf);
+	void *(*old_memalign_hook)(size_t size, size_t align, malloc_state *ms, struct malloc_funcs *mf);
 
 	/* a function called by mcheck() when something awful happens.  */
 	void (*abortfunc) (enum mcheck_status);

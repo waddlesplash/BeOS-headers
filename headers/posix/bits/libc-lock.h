@@ -5,7 +5,7 @@
 #ifndef _BITS_LIBC_LOCK_H
 #define _BITS_LIBC_LOCK_H 1
 
-#include <bits/Errors.h>
+#include <Errors.h>
 
 /* These value better should match with the definitions in <OS.h>.  */
 typedef int __libc_thread_id;
@@ -60,7 +60,7 @@ typedef struct __libc_lock_t {
 	int					owner_count;
 } __libc_lock_t;
 
-#define __LIBC_LOCK_INITIALIZER { 0, 0, 0, 0, 0 }
+#define __LIBC_LOCK_INITIALIZER { 0, 0, 0, 0 }
 
 /* Type for object to ensure once-only execution.  */
 typedef struct {

@@ -51,16 +51,15 @@ virtual	status_t FormatProposal(
 				const media_source & output,
 				media_format * format) = 0;
 	/* If the format isn't good, put a good format into *io_format and return error */
-	/* If format has wildcard, specialize to what you can do. */
-	/* If you can change the format, return OK and put the change count from which */
-	/* it will be implemented into *out_change_count. */
+	/* If format has wildcard, specialize to what you can do (and change). */
+	/* If you can change the format, return OK. */
 	/* The request comes from your destination sychronously, so you cannot ask it */
 	/* whether it likes it -- you should assume it will since it asked. */
 virtual	status_t FormatChangeRequested(
 				const media_source & source,
 				const media_destination & destination,
 				media_format * io_format,
-				int32 * out_change_count) = 0;
+				int32 * _deprecated_) = 0;
 virtual	status_t GetNextOutput(	/* cookie starts as 0 */
 				int32 * cookie,
 				media_output * out_output) = 0;
@@ -87,7 +86,7 @@ virtual	status_t VideoClippingChanged(
 				int16 num_shorts,
 				int16 * clip_data,
 				const media_video_display_info & display,
-				int32 * out_from_change_count) = 0;
+				int32 * _deprecated_);
 	/* Iterates over all outputs and maxes the latency found */
 virtual	status_t GetLatency(
 				bigtime_t * out_lantency);
@@ -113,7 +112,7 @@ virtual	void LateNoticeReceived(
 virtual	void EnableOutput(
 				const media_source & what,
 				bool enabled,
-				int32 * change_tag) = 0;
+				int32 * _deprecated_) = 0;
 virtual	status_t SetPlayRate(
 				int32 numer,
 				int32 denom);
@@ -122,6 +121,18 @@ virtual	status_t HandleMessage(	/* call this from the thread that listens to the
 				int32 message,
 				const void * data,
 				size_t size);
+
+virtual	void AdditionalBufferRequested(			//	used to be Reserved 0
+				const media_source & source,
+				media_buffer_id prev_buffer,
+				bigtime_t prev_time,
+				const media_seek_tag * prev_tag);	//	may be NULL
+
+virtual	void LatencyChanged(					//	used to be Reserved 1
+				const media_source & source,
+				const media_destination & destination,
+				bigtime_t new_latency,
+				uint32 flags);
 
 	/* Use this function in BBufferProducer to pass on the buffer. */
 		status_t SendBuffer(
@@ -150,7 +161,30 @@ virtual	status_t HandleMessage(	/* call this from the thread that listens to the
 				bigtime_t * out_latency,
 				media_node_id * out_timesource);
 
+	/* Find the tag of a previously seen buffer to expedite seeking */
+		status_t FindSeekTag(
+				const media_destination & for_destination,
+				bigtime_t in_target_time,
+				media_seek_tag * out_tag,
+				bigtime_t * out_tagged_time,
+				uint32 * out_flags = 0,
+				uint32 in_flags = 0);
+
+	/* Set the initial latency, which is the maximum additional latency */
+	/* that will be imposed while starting/syncing to a signal (such as */
+	/* starting a TV capture card in the middle of a field). Most nodes */
+	/* have this at 0 (the default); only TV input Nodes need it currently */
+	/* because they slave to a low-resolution (59.94 Hz) clock that arrives */
+	/* from the outside world. Call this from the constructor if you need it. */
+		void SetInitialLatency(
+				bigtime_t inInitialLatency,
+				uint32 flags = 0);
+
 private:
+
+	friend class BMediaRoster;
+	friend class BBufferConsumer;
+	friend class BMediaNode;
 
 		BBufferProducer();	/* private unimplemented */
 		BBufferProducer(
@@ -159,8 +193,8 @@ private:
 				const BBufferProducer & clone);
 		
 		/* Mmmh, stuffing! */
-virtual		status_t _Reserved_BufferProducer_0(void *);
-virtual		status_t _Reserved_BufferProducer_1(void *);
+			status_t _Reserved_BufferProducer_0(void *);	/* AdditionalBufferRequested() */
+			status_t _Reserved_BufferProducer_1(void *);	/* LatencyChanged() */
 virtual		status_t _Reserved_BufferProducer_2(void *);
 virtual		status_t _Reserved_BufferProducer_3(void *);
 virtual		status_t _Reserved_BufferProducer_4(void *);
@@ -176,11 +210,12 @@ virtual		status_t _Reserved_BufferProducer_13(void *);
 virtual		status_t _Reserved_BufferProducer_14(void *);
 virtual		status_t _Reserved_BufferProducer_15(void *);
 
-	friend class BMediaRoster;
-	friend class BBufferConsumer;
 
 volatile	int32 _m_change;
 		media_type _m_producer_type;
+		bigtime_t	_m_recordDelay;
+		bigtime_t	_m_initialLatency;
+		uint32		_m_initialFlags;
 
 static	status_t clip_shorts_to_region(
 				int16 * data,
@@ -191,8 +226,15 @@ static	status_t clip_region_to_shorts(
 				int16 * data,
 				int max_count,
 				int * out_count);
-		uint32 _reserved_buffer_producer_[16];
 
+		uint32 _reserved_buffer_producer_[11];
+
+static	status_t SendRequestResult(
+				const media_request_info & result,
+				port_id port, bool sync=false);
+
+		void PSetRecordDelay(
+				bigtime_t inDelay);
 };
 
 #endif /* _BUFFER_PRODUCER_H */

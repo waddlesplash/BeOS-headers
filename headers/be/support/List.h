@@ -9,8 +9,8 @@
 /
 ******************************************************************************/
 
-#ifndef	_LIST_H
-#define	_LIST_H
+#ifndef	_BE_LIST_H
+#define	_BE_LIST_H
 
 #include <BeBuild.h>
 #include <SupportDefs.h>
@@ -78,4 +78,4 @@ virtual	void			_ReservedList2();
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 
-#endif /* _LIST_H */
+#endif /* _BE_LIST_H */

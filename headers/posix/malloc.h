@@ -27,10 +27,6 @@ Cambridge, MA 02139, USA.
 #ifndef _MALLOC_H
 #define _MALLOC_H	1
 
-#if __POWERPC__
-# include <ansi_parms.h>
-#endif
-
 #include <unistd.h>
 
 #ifdef _MALLOC_INTERNAL
@@ -40,6 +36,9 @@ Cambridge, MA 02139, USA.
 
 #endif	/* _MALLOC_INTERNAL.  */
 
+#if __POWERPC__
+# include <BeBuild.h>
+#endif
 
 #ifdef	__cplusplus
 extern "C"

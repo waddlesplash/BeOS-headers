@@ -1,3 +1,5 @@
+#if __INTEL__
+
 /* obstack.h - object stack macros
    Copyright (C) 1988,89,90,91,92,93,94,96,97,98 Free Software Foundation, Inc.
 
@@ -140,16 +142,8 @@ extern "C" {
 # endif
 #endif
 
-#if defined _LIBC || defined HAVE_STRING_H
-# include <string.h>
-# define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
-#else
-# ifdef memcpy
-#  define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
-# else
-#  define _obstack_memcpy(To, From, N) bcopy ((From), (To), (N))
-# endif
-#endif
+#include <string.h>
+#define _obstack_memcpy(To, From, N) memcpy ((To), (From), (N))
 
 struct _obstack_chunk		/* Lives at front of each chunk. */
 {
@@ -590,3 +584,5 @@ __extension__								\
 #endif
 
 #endif /* obstack.h */
+
+#endif /* __INTEL__ */

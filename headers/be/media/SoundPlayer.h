@@ -41,6 +41,9 @@ public:
 				void * cookie = NULL);
 virtual	~BSoundPlayer();
 
+		status_t InitCheck();	//	new in R4.1
+		media_raw_audio_format Format() const;	//	new in R4.1
+
 		status_t Start();
 		void Stop(
 				bool block = true, 
@@ -64,24 +67,38 @@ virtual	~BSoundPlayer();
 
 		typedef int32 play_id;
 
-		bigtime_t CurrentTime();
-		play_id StartPlaying(
-				BSound * sound,
-				bigtime_t at_time = 0);
-		bool IsPlaying(
-				play_id id);
-		status_t StopPlaying(
-				play_id id);
-		status_t WaitForSound(
-				play_id id);
+		bigtime_t	CurrentTime();
+		bigtime_t	PerformanceTime();
+		status_t	Preroll();
+		play_id		StartPlaying(
+						BSound * sound,
+						bigtime_t at_time = 0);
+		play_id 	StartPlaying(
+						BSound * sound,
+						bigtime_t at_time,
+						float with_volume);
+		status_t 	SetSoundVolume(
+						play_id sound,		//	update only non-NULL values
+						float new_volume);
+		bool 		IsPlaying(
+						play_id id);
+		status_t 	StopPlaying(
+						play_id id);
+		status_t 	WaitForSound(
+						play_id id);
 
-		float Volume();			/* 0 - 1.0 */
-		void SetVolume(			/* 0 - 1.0 */
-				float new_volume);
+		float 		Volume();			/* 0 - 1.0 */
+		void 		SetVolume(			/* 0 - 1.0 */
+						float new_volume);
 
 virtual	bool HasData();
 		void SetHasData(		//	this does more than just set a flag
 				bool has_data);
+
+protected:
+
+		void SetInitError(		//	new in R4.1
+				status_t in_error);
 
 private:
 
@@ -102,6 +119,7 @@ virtual	status_t _Reserved_SoundPlayer_7(void *, ...);
 			play_id id;
 			int32 delta;
 			int32 rate;
+			float volume;
 		};
 		_playing_sound * _m_sounds;
 		struct _waiting_sound {
@@ -110,6 +128,7 @@ virtual	status_t _Reserved_SoundPlayer_7(void *, ...);
 			BSound * sound;
 			play_id id;
 			int32 rate;
+			float volume;
 		};
 		_waiting_sound * _m_waiting;
 		void (*_PlayBuffer)(void * cookie, void * buffer, size_t size, const media_raw_audio_format & format);
@@ -125,12 +144,18 @@ virtual	status_t _Reserved_SoundPlayer_7(void *, ...);
 		size_t _m_bufsize;
 		int32 _m_has_data;
 
-		uint32 _m_reserved[16];
+		status_t _m_init_err;		//	new in R4.1
+		bigtime_t _m_perfTime;
+		BContinuousParameter * _m_volumeSlider;
+		bool _m_gotVolume;
+		bool _m_reserved_bools[3];
+		uint32 _m_reserved[11];
 
 		void NotifySoundDone(
 				play_id sound,
 				bool got_to_play);
 
+		void get_volume_slider();
 		void Init(
 				const media_raw_audio_format * format, 
 				const char * name,

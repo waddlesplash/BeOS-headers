@@ -30,6 +30,7 @@ extern "C" {
 #define SO_DEBUG 1
 #define SO_REUSEADDR 2
 #define SO_NONBLOCK 3
+#define SO_REUSEPORT 4
 
 #define MSG_OOB 0x1
 

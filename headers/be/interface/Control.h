@@ -86,6 +86,7 @@ protected:
 		bool		IsTracking() const;
 		void		SetTracking(bool state);
 
+		void		SetValueNoUpdate(int32 value);
 /*----- Private or reserved -----------------------------------------*/
 private:
 
@@ -103,7 +104,7 @@ virtual	void		_ReservedControl4();
 		bool		fEnabled;
 		bool		fFocusChanging;
 		bool		fTracking;
-		bool		_fUnusedBool;
+		bool		fWantsNav;
 		uint32		_reserved[4];
 };
 

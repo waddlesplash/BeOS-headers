@@ -134,6 +134,8 @@ extern _IMPEXP_ROOT ssize_t	port_buffer_size_etc(port_id port,
 extern _IMPEXP_ROOT ssize_t	port_count(port_id port);
 extern _IMPEXP_ROOT status_t	set_port_owner(port_id port, team_id team);
 
+extern _IMPEXP_ROOT status_t	close_port(port_id port);
+
 extern _IMPEXP_ROOT status_t	delete_port(port_id port);
 
 extern _IMPEXP_ROOT status_t	_get_port_info(port_id port, port_info *info,
@@ -190,8 +192,23 @@ enum {
 	B_CAN_INTERRUPT     = 1, 	/* semaphore can be interrupted by a signal */
 	B_DO_NOT_RESCHEDULE = 2,	/* release() without rescheduling */
 	B_CHECK_PERMISSION  = 4,	/* disallow users changing kernel semaphores */
-	B_TIMEOUT           = 8     /* honor the timeout parameter */
+	B_TIMEOUT           = 8,    /* honor the (relative) timeout parameter */
+	B_RELATIVE_TIMEOUT	= 8,
+	B_ABSOLUTE_TIMEOUT	= 16	/* honor the (absolute) timeout parameter */
 };
+
+/*--------------------------------------------------------------------------*/
+
+/* alarms */
+
+enum {
+	B_ONE_SHOT_ABSOLUTE_ALARM = 1,	/* alarm is one-shot and time is specified absolutely */
+	B_ONE_SHOT_RELATIVE_ALARM = 2,	/* alarm is one-shot and time is specified relatively */
+	B_PERIODIC_ALARM = 3			/* alarm is periodic and time is the period */
+};
+
+extern _IMPEXP_ROOT bigtime_t	set_alarm(bigtime_t when, uint32 flags);
+
 
 /*--------------------------------------------------------------------------*/
 
@@ -227,6 +244,11 @@ typedef struct  {
 	void			*stack_end;
 } thread_info;
 
+typedef struct {
+	bigtime_t		user_time;
+	bigtime_t		kernel_time;
+} team_usage_info;
+
 typedef int32 (*thread_func) (void *);
 
 /* thread_entry is obsolete ("entry" is reserved by the file system)
@@ -253,12 +275,16 @@ extern _IMPEXP_ROOT status_t	wait_for_thread (thread_id thread,
 
 extern _IMPEXP_ROOT status_t	_get_thread_info(thread_id thread, thread_info *info, size_t size);
 extern _IMPEXP_ROOT status_t	_get_next_thread_info(team_id tmid, int32 *cookie, thread_info *info, size_t size);
+extern status_t 	_get_team_usage_info(team_id tmid, int32 who, team_usage_info *ti, size_t size);
 
 #define get_thread_info(thread, info)              \
             _get_thread_info((thread), (info), sizeof(*(info)))
 	
 #define get_next_thread_info(tmid, cookie, info)   \
 	        _get_next_thread_info((tmid), (cookie), (info), sizeof(*(info)))
+
+#define get_team_usage_info(tmid, who, info)  \
+			_get_team_usage_info((tmid), (who), (info), sizeof(*(info)))
 
 
 extern _IMPEXP_ROOT status_t	send_data(thread_id thread, 
@@ -367,6 +393,7 @@ typedef enum cpu_types {
 	B_CPU_INTEL_PENTIUM_II_MODEL_3 = 0x1063,
 	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,
 	B_CPU_INTEL_CELERON = 0x1066,
+	B_CPU_INTEL_PENTIUM_III = 0x1067,
 	
 	B_CPU_AMD_X86 = 0x1100,
 	B_CPU_AMD_K5_MODEL0 = 0x1150,
@@ -375,13 +402,24 @@ typedef enum cpu_types {
 	B_CPU_AMD_K5_MODEL3,
 
 	B_CPU_AMD_K6_MODEL6 = 0x1156,
-	B_CPU_AMD_K6_MODEL7,
-	B_CPU_AMD_K6_MODEL8,
-	B_CPU_AMD_K6_MODEL9,
+	B_CPU_AMD_K6_MODEL7 = 0x1157,
+
+	B_CPU_AMD_K6_MODEL8 = 0x1158,
+	B_CPU_AMD_K6_2 = 0x1158,
+
+	B_CPU_AMD_K6_MODEL9 = 0x1159,
+	B_CPU_AMD_K6_III = 0x1159,
 
 	B_CPU_CYRIX_X86 = 0x1200,
 	B_CPU_CYRIX_GXm = 0x1254,
-	B_CPU_CYRIX_6x86MX = 0x1260
+	B_CPU_CYRIX_6x86MX = 0x1260,
+
+	B_CPU_IDT_X86 = 0x1300,
+	B_CPU_IDT_WINCHIP_C6 = 0x1354,
+	B_CPU_IDT_WINCHIP_2 = 0x1358,
+	
+	B_CPU_RISE_X86 = 0x1400,
+	B_CPU_RISE_mP6 = 0x1450
 
 } cpu_type;
 

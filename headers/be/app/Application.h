@@ -40,12 +40,15 @@ class BApplication : public BLooper {
 
 public:
 						BApplication(const char *signature);
+						BApplication(const char *signature, status_t *error);
 virtual					~BApplication();
 
 /* Archiving */
 						BApplication(BMessage *data);
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
+
+		status_t		InitCheck() const;
 
 /* App control and System Message handling */
 virtual	thread_id		Run();
@@ -66,7 +69,7 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 
-/* Cursor control, window list, and app info */
+/* Cursor control, window/looper list, and app info */
 		void			ShowCursor();
 		void			HideCursor();
 		void			ObscureCursor();
@@ -74,6 +77,8 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 		void			SetCursor(const void *cursor);
 		int32			CountWindows() const;
 		BWindow			*WindowAt(int32 index) const;
+		int32			CountLoopers() const;
+		BLooper			*LooperAt(int32 index) const;
 		bool			IsLaunching() const;
 		status_t		GetAppInfo(app_info *info) const;
 static		BResources		*AppResources();
@@ -120,10 +125,9 @@ virtual	bool			ScriptReceived(BMessage *msg,
 										int32 form,
 										const char *property);
 		void			run_task();
-		void			InitData(const char *signature);
+		void			InitData(const char *signature, status_t *error);
 		void			BeginRectTracking(BRect r, bool trackWhole);
 		void			EndRectTracking();
-//+		void			pulse_task();
 		void			get_scs();
 		void			setup_server_heaps();
 		void *			rw_offs_to_ptr(uint32 offset);
@@ -163,7 +167,8 @@ static	BLocker			_app_resources_lock;
 		uint32			fInitialWorkspace;
 		_drag_data_	*	fDraggedMessage;
 		BMessageRunner	*fPulseRunner;
-		uint32			_reserved[12];
+		status_t		fInitError;
+		uint32			_reserved[11];
 
 		bool			fReadyToRunCalled;
 };

@@ -22,6 +22,7 @@
 #define B_MAIL_ATTR_STATUS		"MAIL:status"		/* indexed string*/
 #define B_MAIL_ATTR_PRIORITY	"MAIL:priority"		/* indexed string*/
 #define B_MAIL_ATTR_TO			"MAIL:to"			/* indexed string*/
+#define B_MAIL_ATTR_CC			"MAIL:cc"			/* indexed string*/
 #define B_MAIL_ATTR_FROM		"MAIL:from"			/* indexed string*/
 #define B_MAIL_ATTR_SUBJECT		"MAIL:subject"		/* indexed string*/
 #define B_MAIL_ATTR_REPLY		"MAIL:reply"		/* indexed string*/

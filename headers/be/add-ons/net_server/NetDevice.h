@@ -18,7 +18,7 @@
 #define _NET_DEVICE_H
 
 #include <BeBuild.h>
-#include <NetPacket.h>
+#include <add-ons/net_server/NetPacket.h>
 #include <net_settings.h>
 #include <stdio.h>
 

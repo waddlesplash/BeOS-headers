@@ -13,7 +13,7 @@
 #define _IP_DEVICE_H
 
 #include <BeBuild.h>
-#include <NetProtocol.h>
+#include <add-ons/net_server/NetProtocol.h>
 
 class BIpHandler;
 

@@ -11,8 +11,9 @@
 #ifndef _BE_BUILD_H
 #define _BE_BUILD_H
 
-#define B_BEOS_VERSION		0x0400
-#define B_BEOS_VERSION_4	B_BEOS_VERSION
+#define B_BEOS_VERSION_4	0x0400
+#define B_BEOS_VERSION_4_5	0x0450
+#define B_BEOS_VERSION		B_BEOS_VERSION_4_5
 
 #if defined(__powerc) || defined(powerc)
 	#define _PR2_COMPATIBLE_ 1
@@ -50,6 +51,7 @@
 #define	_IMPEXP_MEDIA
 #define	_IMPEXP_MIDI
 #define _IMPEXP_GAME
+#define _IMPEXP_GSOUND
 #define _IMPEXP_TRANSLATION
 #define _IMPEXP_TEXTENCODING
 #define _IMPEXP_INPUT
@@ -139,6 +141,12 @@
 #define	_IMPEXP_GAME	__declspec(dllimport)
 #endif
 
+#if _BUILDING_gsound
+#define	_IMPEXP_GSOUND	__declspec(dllexport)
+#else
+#define	_IMPEXP_GSOUND	__declspec(dllimport)
+#endif
+
 #if _BUILDING_translation
 #define _IMPEXP_TRANSLATION	__declspec(dllexport)
 #else
@@ -177,6 +185,7 @@
 #define	_IMPEXP_MEDIA
 #define	_IMPEXP_MIDI
 #define	_IMPEXP_GAME
+#define _IMPEXP_GSOUND
 #define _IMPEXP_TRANSLATION
 #define _IMPEXP_TEXTENCODING
 #define _IMPEXP_INPUT
@@ -201,6 +210,7 @@
 #define	_IMPEXP_MEDIA
 #define	_IMPEXP_MIDI
 #define	_IMPEXP_GAME
+#define	_IMPEXP_GSOUND
 #define _IMPEXP_TRANSLATION
 #define _IMPEXP_TEXTENCODING
 #define _IMPEXP_INPUT
@@ -307,6 +317,7 @@ class _IMPEXP_BE BButton;
 class _IMPEXP_BE BCheckBox;
 class _IMPEXP_BE BColorControl;
 class _IMPEXP_BE BControl;
+class _IMPEXP_BE BDeskbar;
 class _IMPEXP_BE BDragger;
 class _IMPEXP_BE BFont;
 class _IMPEXP_BE BInputDevice;
@@ -423,6 +434,11 @@ class _IMPEXP_MEDIA BSound;
 class _IMPEXP_MEDIA BSoundCard;
 class _IMPEXP_MEDIA BSoundPlayer;
 class _IMPEXP_MEDIA BMediaFormats;
+class _IMPEXP_MEDIA BTimedEventQueue;
+//class _IMPEXP_MEDIA BEventIterator;
+class _IMPEXP_MEDIA BMediaEventLooper;
+class _IMPEXP_MEDIA BMediaFile;
+class _IMPEXP_MEDIA BMediaTrack;
 
 struct _IMPEXP_MEDIA media_node;
 struct _IMPEXP_MEDIA media_input;
@@ -436,10 +452,11 @@ struct _IMPEXP_MEDIA media_raw_video_format;
 struct _IMPEXP_MEDIA media_video_display_info;
 struct _IMPEXP_MEDIA flavor_info;
 struct _IMPEXP_MEDIA dormant_node_info;
+struct _IMPEXP_MEDIA dormant_flavor_info;
 struct _IMPEXP_MEDIA media_source;
 struct _IMPEXP_MEDIA media_destination;
 struct _IMPEXP_MEDIA _media_format_description;
-
+struct _IMPEXP_MEDIA media_timed_event;
 
 /* midi kit */
 class _IMPEXP_MIDI 		BMidi;
@@ -455,10 +472,18 @@ class _IMPEXP_MIDI		BSynth;
 class _IMPEXP_GAME		BWindowScreen;
 class _IMPEXP_GAME		BDirectWindow;
 
+/* gamesound kit */
+class _IMPEXP_GSOUND	BGameSound;
+class _IMPEXP_GSOUND	BSimpleGameSound;
+class _IMPEXP_GSOUND	BStreamingGameSound;
+class _IMPEXP_GSOUND	BFileGameSound;
+class _IMPEXP_GSOUND	BPushGameSound;
+
 /* translation kit */
 class _IMPEXP_TRANSLATION	BTranslatorRoster;
 class _IMPEXP_TRANSLATION	BTranslationUtils;
 class _IMPEXP_TRANSLATION	BBitmapStream;
+class _IMPEXP_TRANSLATION	BTranslator;
 struct _IMPEXP_TRANSLATION	translation_format;
 struct _IMPEXP_TRANSLATION	translator_info;
 

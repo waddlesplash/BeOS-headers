@@ -79,6 +79,8 @@ enum {
 	B_LONG_DESCRIPTION_CHANGED		= 0x00000020,
 	B_ICON_FOR_TYPE_CHANGED			= 0x00000040,
 	B_APP_HINT_CHANGED				= 0x00000080,
+	B_MIME_TYPE_CREATED				= 0x00000100,
+	B_MIME_TYPE_DELETED				= 0x00000200,
 
 	B_EVERYTHING_CHANGED			= (int)0xFFFFFFFF
 };
@@ -170,7 +172,7 @@ virtual	void		_ReservedMimeType3();
 		status_t	GetSupportedTypes(BMessage *types);
 		status_t	SetSupportedTypes(const BMessage *types);
 		void		MimeChanged(int32 w, const char *type = NULL,
-						bool large = true);
+						bool large = true) const;
 
 		char		*fType;
 		BFile		*fMeta;

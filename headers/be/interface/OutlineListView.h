@@ -142,6 +142,8 @@ static	void 		TrackOutLatchItem(void *);
 		bool		OutlineMoveItem(int32 from, int32 to);
 		bool		OutlineReplaceItem(int32 index, BListItem *item);
 		void		CommonMoveItems(int32 from, int32 count, int32 to);
+		BListItem	*SuperitemForIndex(int32 fullListIndex, int32 level);
+		int32		FindPreviousVisibleIndex(int32 fullListIndex);
 
 		BList		fullList;
 		uint32		_reserved[2];

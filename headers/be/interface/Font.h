@@ -161,10 +161,11 @@ public:
 							BFont(const BFont &font);	
 							BFont(const BFont *font);			
 
-		void				SetFamilyAndStyle(const font_family family, 
+		status_t			SetFamilyAndStyle(const font_family family, 
 											  const font_style style);
 		void				SetFamilyAndStyle(uint32 code);
-		void				SetFamilyAndFace(const font_family family, uint16 face);
+		status_t			SetFamilyAndFace(const font_family family, uint16 face);
+		
 		void				SetSize(float size);
 		void				SetShear(float shear);
 		void				SetRotation(float rotation);

@@ -104,6 +104,10 @@ virtual	void			SetCommonFilterList(BList *filters);
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
+protected:
+/* called from overridden task_looper */
+		BMessage		*MessageFromPort(bigtime_t = B_INFINITE_TIMEOUT);
+
 private:
 typedef BHandler _inherited;
 friend class BWindow;
@@ -159,6 +163,7 @@ virtual	void			task_looper();
 										BHandler *target);
 		void			check_lock();
 		BHandler		*resolve_specifier(BHandler *target, BMessage *msg);
+		void			UnlockFully();
 
 static	uint32			sLooperID;
 static	uint32			sLooperListSize;

@@ -57,6 +57,8 @@ virtual	status_t GetRef(
 
 private:
 
+	friend class BMediaNode;
+
 		BFileInterface(	/* private unimplemented */
 				const BFileInterface & clone);
 		BFileInterface & operator=(

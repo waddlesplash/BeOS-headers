@@ -11,15 +11,24 @@
 #if !defined(_MEDIA_ROSTER_H)
 #define _MEDIA_ROSTER_H
 
+#include <map>
 #include <MediaDefs.h>
 #include <MediaNode.h>
-
+#include <config_manager.h>
 
 class BMimeType;
+struct dormant_flavor_info;
+struct BMediaAddOn;
 
+#define MEDIA_ROSTER_IS_LOOPER 1
 
 class BMediaRoster :
+//	public BHandler
+#if MEDIA_ROSTER_IS_LOOPER
 	public BLooper
+#else
+	public BHandler
+#endif
 {
 public:
 
@@ -38,12 +47,20 @@ public:
 
 		status_t SetVideoInput(
 				const media_node & producer);
+		status_t SetVideoInput(
+				const dormant_node_info & producer);
 		status_t SetAudioInput(
 				const media_node & producer);
+		status_t SetAudioInput(
+				const dormant_node_info & producer);
 		status_t SetVideoOutput(
 				const media_node & consumer);
+		status_t SetVideoOutput(
+				const dormant_node_info & consumer);
 		status_t SetAudioOutput(
 				const media_node & consumer);
+		status_t SetAudioOutput(
+				const dormant_node_info & consumer);
 
 		/* Get a media_node from a node ID -- this is how you reference your own nodes! */
 		status_t GetNodeFor(
@@ -54,7 +71,7 @@ public:
 		status_t ReleaseNode(	/* might shut down Node if you're last */
 				const media_node & node);
 
-		BTimeSource * MakeTimeSourceFor(	/* delete the object when done */
+		BTimeSource * MakeTimeSourceFor(	/* Release() the object when done */
 				const media_node & for_node);
 
 		/* note that the media_source and media_destination found in */
@@ -67,6 +84,17 @@ public:
 				media_format * io_format,
 				media_output * out_output,
 				media_input * out_input);
+		enum connect_flags {
+			B_CONNECT_MUTED = 0x1
+		};
+		status_t Connect(
+				const media_source & from,
+				const media_destination & to,
+				media_format * io_format,
+				media_output * out_output,
+				media_input * out_input,
+				uint32 in_flags,
+				void * _reserved = 0);
 		status_t Disconnect(
 				media_node_id source_node,
 				const media_source & source,
@@ -75,21 +103,48 @@ public:
 
 		status_t StartNode(
 				const media_node & node,
-				bigtime_t at_time);
+				bigtime_t at_performance_time);
 		status_t StopNode(
 				const media_node & node,
-				bigtime_t at_time,
+				bigtime_t at_performance_time,
 				bool immediate = false);	/* immediate -> at_time is insignificant */
 		status_t SeekNode(
 				const media_node & node,
-				bigtime_t to_time,
-				bigtime_t at_time = 0 /* if running */ );
+				bigtime_t to_media_time,
+				bigtime_t at_performance_time = 0 /* if running */ );
+
+		status_t StartTimeSource(
+				const media_node & node,
+				bigtime_t at_real_time);
+		status_t StopTimeSource(
+				const media_node & node,
+				bigtime_t at_real_time,
+				bool immediate = false);
+		status_t SeekTimeSource(
+				const media_node & node,
+				bigtime_t to_performance_time,
+				bigtime_t at_real_time);
+
+		status_t SyncToNode(
+				const media_node & node,
+				bigtime_t at_time,
+				bigtime_t timeout = B_INFINITE_TIMEOUT);
 		status_t SetRunModeNode(
 				const media_node & node,
 				BMediaNode::run_mode mode);
 		status_t PrerollNode(	/* synchronous */
 				const media_node & node);
 
+		status_t RollNode(
+				const media_node & node, 
+				bigtime_t startPerformance,
+				bigtime_t stopPerformance,
+				bigtime_t atMediaTime = -B_INFINITE_TIMEOUT);
+
+		status_t SetProducerRunModeDelay(	/* should only be used with B_RECORDING */
+				const media_node & node,
+				bigtime_t delay,
+				BMediaNode::run_mode mode = BMediaNode::B_RECORDING);
 		status_t SetProducerRate(	/* not necessarily supported by node */
 				const media_node & producer,
 				int32 numer,
@@ -134,21 +189,32 @@ public:
 
 		status_t StartWatching(
 				const BMessenger & where);
+		status_t StartWatching(
+				const BMessenger & where,
+				int32 notificationType);
+		status_t StartWatching(
+				const BMessenger & where,
+				const media_node & node,
+				int32 notificationType);
 		status_t StopWatching(
 				const BMessenger & where);
+		status_t StopWatching(
+				const BMessenger & where,
+				int32 notificationType);
+		status_t StopWatching(
+				const BMessenger & where,
+				const media_node & node,
+				int32 notificationType);
 
 		status_t RegisterNode(
 				BMediaNode * node);
 		status_t UnregisterNode(
 				BMediaNode * node);
 
-static	BMediaRoster * Roster(
-				status_t * out_error = NULL);
-
-		status_t SetOutputBuffersFor(
-				const media_source & output,
-				BBufferGroup * group,
-				bool will_reclaim = false);
+static	BMediaRoster * Roster(					//	will create if there isn't one
+				status_t * out_error = NULL);	//	thread safe for multiple calls to Roster()
+static	BMediaRoster * CurrentRoster();			//	won't create it if there isn't one
+												//	not thread safe if you call Roster() at the same time
 		status_t SetTimeSourceFor(
 				media_node_id node,
 				media_node_id time_source);
@@ -170,15 +236,25 @@ static	BMediaRoster * Roster(
 				uint64 deny_kinds = 0);
 		status_t InstantiateDormantNode(
 				const dormant_node_info & in_info,
+				media_node * out_node,
+				uint32 flags /* currently B_FLAVOR_IS_GLOBAL or B_FLAVOR_IS_LOCAL */ );
+		status_t InstantiateDormantNode(
+				const dormant_node_info & in_info,
 				media_node * out_node);
 		status_t GetDormantNodeFor(
 				const media_node & node,
 				dormant_node_info * out_info);
+		status_t GetDormantFlavorInfoFor(
+				const dormant_node_info & in_dormant,
+				dormant_flavor_info * out_flavor);
 
 		status_t GetLatencyFor(
 				const media_node & producer,
 				bigtime_t * out_latency);
-
+		status_t GetInitialLatencyFor(
+				const media_node & producer,
+				bigtime_t * out_latency,
+				uint32 * out_flags = 0);
 		status_t GetStartLatencyFor(
 				const media_node & time_source,
 				bigtime_t * out_latency);
@@ -211,6 +287,31 @@ static	BMediaRoster * Roster(
 				const BMimeType & type,
 				uint64 require_node_kinds,
 				dormant_node_info * out_node);
+		status_t GetReadFileFormatsFor(
+				const dormant_node_info & in_node,
+				media_file_format * out_read_formats,
+				int32 in_read_count,
+				int32 * out_read_count);
+		status_t GetWriteFileFormatsFor(
+				const dormant_node_info & in_node,
+				media_file_format * out_write_formats,
+				int32 in_write_count,
+				int32 * out_write_count);
+
+		ssize_t GetNodeAttributesFor(
+				const media_node & node,
+				media_node_attribute * outArray,
+				size_t inMaxCount);
+
+		status_t SetRealtimeFlags(
+				uint32 in_enabled);
+		status_t GetRealtimeFlags(
+				uint32 * out_enabled);
+		ssize_t AudioBufferSizeFor(
+				int32 channel_count,
+				uint32 sample_format,
+				float frame_rate,
+				bus_type bus_kind);
 
 		/* Use MediaFlags to inquire about specific features of the Media Kit. */
 		/* Returns < 0 for "not present", positive size for output data size. */
@@ -223,7 +324,11 @@ static	ssize_t MediaFlags(
 		/* BLooper overrides */
 virtual		void MessageReceived(
 				BMessage * message);
+
+#if MEDIA_ROSTER_IS_LOOPER
 virtual		bool QuitRequested();
+#endif
+
 virtual		BHandler * ResolveSpecifier(
 				BMessage *msg,
 				int32 index,
@@ -233,7 +338,16 @@ virtual		BHandler * ResolveSpecifier(
 virtual		status_t GetSupportedSuites(
 				BMessage *data);
 
+			~BMediaRoster();
+
 private:
+
+		//	deprecated call
+		status_t SetOutputBuffersFor(
+				const media_source & output,
+				BBufferGroup * group,
+				bool will_reclaim = false);
+
 		/* FBC stuffing (Mmmh, Stuffing!) */
 virtual		status_t _Reserved_MediaRoster_0(void *);
 virtual		status_t _Reserved_MediaRoster_1(void *);
@@ -247,6 +361,7 @@ virtual		status_t _Reserved_MediaRoster_7(void *);
 friend class _DefaultDeleter;
 friend class _BMediaRosterP;
 friend class _HostApp;
+friend class MLatentManager;
 friend class BBufferProducer;
 friend class media_node;
 friend class BBuffer;
@@ -254,13 +369,13 @@ friend class BBuffer;
 static	bool _isMediaServer;
 
 		BMediaRoster();
-		~BMediaRoster();	/* called by Quit() on looper */
 
 		port_id _mReplyPort;
 		int32 _mReplyPortRes;
 		int32 _mReplyPortUnavailCount;
 
 		uint32 _reserved_media_roster_[64];
+
 
 static	BMediaRoster * _sDefault;
 
@@ -273,8 +388,11 @@ static	status_t ParseCommand(
 		status_t SetRunningDefault(
 				media_node_id for_default,
 				const media_node & node);
+		
+		void RegisterNode(media_node_id, BMediaNode*);
 
-		port_id checkout_reply_port();
+		port_id checkout_reply_port(
+				const char * name = NULL);
 		void checkin_reply_port(
 				port_id port);
 

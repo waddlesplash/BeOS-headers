@@ -199,6 +199,20 @@ typedef void GLvoid;
 #define GL_3_BYTES                        0x1408
 #define GL_4_BYTES                        0x1409
 #define GL_DOUBLE                         0x140A
+/* 1.2 defs */
+#define GL_UNSIGNED_BYTE_3_3_2            0x140B
+#define GL_UNSIGNED_BYTE_2_3_3_REV        0x140C
+#define GL_UNSIGNED_SHORT_5_6_5           0x140D
+#define GL_UNSIGNED_SHORT_5_6_5_REV       0x140E
+#define GL_UNSIGNED_SHORT_4_4_4_4         0x140F
+#define GL_UNSIGNED_SHORT_4_4_4_4_REV     0x1410
+#define GL_UNSIGNED_SHORT_5_5_5_1         0x1411
+#define GL_UNSIGNED_SHORT_1_5_5_5_REV     0x1412
+#define GL_UNSIGNED_INT_8_8_8_8           0x1413
+#define GL_UNSIGNED_INT_8_8_8_8_REV       0x1414
+#define GL_UNSIGNED_INT_10_10_10_2        0x1415
+#define GL_UNSIGNED_INT_2_10_10_10_REV    0x1416
+
 
 /* DepthFunction */
 /*      GL_NEVER */
@@ -784,6 +798,10 @@ typedef void GLvoid;
 #define GL_RGBA                           0x1908
 #define GL_LUMINANCE                      0x1909
 #define GL_LUMINANCE_ALPHA                0x190A
+/* 1.2 defs */
+#define GL_BGR                            0x190B
+#define GL_BGRA                           0x190C
+
 /*      GL_ABGR_EXT */
 
 /* PixelInternalFormat */
@@ -1124,6 +1142,11 @@ typedef void GLvoid;
 /* EXT_blend_subtract */
 #define GL_FUNC_SUBTRACT_EXT              0x800A
 #define GL_FUNC_REVERSE_SUBTRACT_EXT      0x800B
+
+#define GL_TEXTURE0_ARB						0x8100
+#define GL_TEXTURE1_ARB						0x8101
+#define GL_TEXTURE2_ARB						0x8102
+#define GL_TEXTURE3_ARB						0x8103
 
 /* For compatibility with OpenGL v1.0 */
 #define GL_LOGIC_OP GL_INDEX_LOGIC_OP
@@ -1470,20 +1493,40 @@ _IMPEXP_GL void glVertex4sv (const GLshort *v);
 _IMPEXP_GL void glVertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 _IMPEXP_GL void glViewport (GLint x, GLint y, GLsizei width, GLsizei height);
 
-_IMPEXP_GL void BeGLSwapBuffers();
-
-#define BGL_RGB			0
-#define BGL_INDEX		1 
-#define BGL_SINGLE		0
-#define BGL_DOUBLE		2
-#define BGL_DIRECT		0
-#define BGL_INDIRECT	4
-#define BGL_ACCUM		8
-#define BGL_ALPHA		16
-#define BGL_DEPTH		32
-#define BGL_OVERLAY		64
-#define BGL_UNDERLAY	128
-#define BGL_STENCIL		512
+/* Multitexture exts */
+_IMPEXP_GL void glMultiTexCoord1dARB (GLenum tmu, GLdouble s);
+_IMPEXP_GL void glMultiTexCoord1dvARB (GLenum tmu, const GLdouble *v);
+_IMPEXP_GL void glMultiTexCoord1fARB (GLenum tmu, GLfloat s);
+_IMPEXP_GL void glMultiTexCoord1fvARB (GLenum tmu, const GLfloat *v);
+_IMPEXP_GL void glMultiTexCoord1iARB (GLenum tmu, GLint s);
+_IMPEXP_GL void glMultiTexCoord1ivARB (GLenum tmu, const GLint *v);
+_IMPEXP_GL void glMultiTexCoord1sARB (GLenum tmu, GLshort s);
+_IMPEXP_GL void glMultiTexCoord1svARB (GLenum tmu, const GLshort *v);
+_IMPEXP_GL void glMultiTexCoord2dARB (GLenum tmu, GLdouble s, GLdouble t);
+_IMPEXP_GL void glMultiTexCoord2dvARB (GLenum tmu, const GLdouble *v);
+_IMPEXP_GL void glMultiTexCoord2fARB (GLenum tmu, GLfloat s, GLfloat t);
+_IMPEXP_GL void glMultiTexCoord2fvARB (GLenum tmu, const GLfloat *v);
+_IMPEXP_GL void glMultiTexCoord2iARB (GLenum tmu, GLint s, GLint t);
+_IMPEXP_GL void glMultiTexCoord2ivARB (GLenum tmu, const GLint *v);
+_IMPEXP_GL void glMultiTexCoord2sARB (GLenum tmu, GLshort s, GLshort t);
+_IMPEXP_GL void glMultiTexCoord2svARB (GLenum tmu, const GLshort *v);
+_IMPEXP_GL void glMultiTexCoord3dARB (GLenum tmu, GLdouble s, GLdouble t, GLdouble r);
+_IMPEXP_GL void glMultiTexCoord3dvARB (GLenum tmu, const GLdouble *v);
+_IMPEXP_GL void glMultiTexCoord3fARB (GLenum tmu, GLfloat s, GLfloat t, GLfloat r);
+_IMPEXP_GL void glMultiTexCoord3fvARB (GLenum tmu, const GLfloat *v);
+_IMPEXP_GL void glMultiTexCoord3iARB (GLenum tmu, GLint s, GLint t, GLint r);
+_IMPEXP_GL void glMultiTexCoord3ivARB (GLenum tmu, const GLint *v);
+_IMPEXP_GL void glMultiTexCoord3sARB (GLenum tmu, GLshort s, GLshort t, GLshort r);
+_IMPEXP_GL void glMultiTexCoord3svARB (GLenum tmu, const GLshort *v);
+_IMPEXP_GL void glMultiTexCoord4dARB (GLenum tmu, GLdouble s, GLdouble t, GLdouble r, GLdouble q);
+_IMPEXP_GL void glMultiTexCoord4dvARB (GLenum tmu, const GLdouble *v);
+_IMPEXP_GL void glMultiTexCoord4fARB (GLenum tmu, GLfloat s, GLfloat t, GLfloat r, GLfloat q);
+_IMPEXP_GL void glMultiTexCoord4fvARB (GLenum tmu, const GLfloat *v);
+_IMPEXP_GL void glMultiTexCoord4iARB (GLenum tmu, GLint s, GLint t, GLint r, GLint q);
+_IMPEXP_GL void glMultiTexCoord4ivARB (GLenum tmu, const GLint *v);
+_IMPEXP_GL void glMultiTexCoord4sARB (GLenum tmu, GLshort s, GLshort t, GLshort r, GLshort q);
+_IMPEXP_GL void glMultiTexCoord4svARB (GLenum tmu, const GLshort *v);
+_IMPEXP_GL void glActiveTextureARB(GLenum tmu);
 
 #ifdef __cplusplus
 }

@@ -12,6 +12,7 @@
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
 #include <TranslatorRoster.h>
+#include <Translator.h>
 
 /* we do not include TranslatorAddOn.h because it's only used when building an add-on */
 

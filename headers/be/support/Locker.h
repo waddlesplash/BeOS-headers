@@ -22,6 +22,7 @@ class BLocker {
 public:
 					BLocker(bool benaphore_style);
 					BLocker(const char *name, bool benaphore_style);
+					BLocker(const char *name, bool benaphore_style, bool for_IPC);
 
 					BLocker();
 					BLocker(const char *name);
@@ -40,7 +41,7 @@ virtual				~BLocker();
 
 /*----- Private or reserved ---------------*/
 private:
-		void		InitData(const char *name, bool benaphore);
+		void		InitData(const char *name, bool benaphore, bool ipc);
 		bool		_Lock(bigtime_t timeout, status_t *error);
 
 		int32		fCount;
@@ -48,8 +49,9 @@ private:
 		int32		fOwner;
 		int32		fOwnerCount;
 #if !_PR3_COMPATIBLE_
-		mutable uint32	fOwnerStack;
-		int32		fReserved[3];
+mutable uint32		fOwnerStack;
+		int32		fCanUseStack;
+		int32		fReserved[2];
 #endif /* not _PR3_COMPATIBLE_ */
 };
 

@@ -12,6 +12,7 @@
 #define __BSTRING__
 
 #include <BeBuild.h>
+#include <SupportDefs.h>
 #include <string.h>
 
 class BString {
@@ -239,7 +240,7 @@ public:
 /*---- Simple sprintf replacement calls ------------------------------------*/
 /*---- Slower than sprintf but type and overflow safe ----------------------*/
 	BString &operator<<(const char *);
-	BString &operator<<(BString &);
+	BString &operator<<(const BString &);
 	BString &operator<<(char);
 	BString &operator<<(uint32);
 	BString &operator<<(int32);
@@ -275,6 +276,10 @@ private:
 
 protected:
 	char *_privateData;
+
+public:
+	/* deprecated */
+	BString &operator<<(BString &);
 };
 
 /*----- Comutative compare operators --------------------------------------*/
@@ -288,6 +293,8 @@ bool 				operator!=(const char *, const BString &);
 /*----- Non-member compare for sorting, etc. ------------------------------*/
 int 				Compare(const BString &, const BString &);
 int 				ICompare(const BString &, const BString &);
+int 				Compare(const BString *, const BString *);
+int 				ICompare(const BString *, const BString *);
 
 
 

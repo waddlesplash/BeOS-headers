@@ -41,6 +41,7 @@ extern "C" {
 /*-------------------------------------------------------------*/
 /*----- Debug macros ------------------------------------------*/
 
+
 #if DEBUG
 	#define SET_DEBUG_ENABLED(FLAG)	_setDebugFlag(FLAG)
 	#define	IS_DEBUG_ENABLED()		_debugFlag()
@@ -85,6 +86,22 @@ extern "C" {
 									(void)0
 	#define TRESPASS()				(void)0
 	#define DEBUG_ONLY(x)
+#endif
+
+
+#if !__MWERKS__
+	// STATIC_ASSERT is a compile-time check that can be used to
+	// verify static expressions such as: STATIC_ASSERT(sizeof(int64) == 8);
+	#define STATIC_ASSERT(x)								\
+		do {												\
+			struct __staticAssertStruct__ {					\
+				char __static_assert_failed__[2*(x) - 1];	\
+			};												\
+		} while (false)
+#else
+	#define STATIC_ASSERT(x) 
+	// the STATIC_ASSERT above doesn't work too well with mwcc because
+	// of scoping bugs; for now make it do nothing
 #endif
 
 /*-------------------------------------------------------------*/

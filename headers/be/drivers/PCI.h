@@ -161,8 +161,8 @@ struct pci_module_info {
 --- */
 
 #define PCI_cardbus_cis			0x28		/* (4 bytes) CardBus CIS (Card Information Structure) pointer (see PCMCIA v2.10 Spec) */
-#define PCI_subsystem_id		0x2c		/* (2 bytes) subsystem (add-in card) id */
-#define PCI_subsystem_vendor_id	0x2e		/* (2 bytes) subsystem (add-in card) vendor id */
+#define PCI_subsystem_vendor_id	0x2c		/* (2 bytes) subsystem (add-in card) vendor id */
+#define PCI_subsystem_id		0x2e		/* (2 bytes) subsystem (add-in card) id */
 #define PCI_rom_base			0x30		/* (4 bytes) expansion rom base address */
 #define PCI_min_grant			0x3e		/* (1 byte) burst period @ 33 Mhz */
 #define PCI_max_latency			0x3f		/* (1 byte) how often PCI access needed */
@@ -407,6 +407,15 @@ struct pci_module_info {
 #define PCI_ssa					0x02	/* SSA */
 #define PCI_usb					0x03	/* Universal Serial Bus */
 #define PCI_fibre_channel		0x04	/* Fibre channel */
+
+/* ---
+	values of the class_api field for
+		class_base	= 0x0c ( serial bus controller )
+		class_sub	= 0x03 ( Universal Serial Bus  )
+--- */
+
+#define PCI_usb_uhci			0x00	/* Universal Host Controller Interface */
+#define PCI_usb_ohci			0x10	/* Open Host Controller Interface */
 
 
 /* ---

@@ -65,6 +65,8 @@ virtual void		MakeFocus(bool state = true);
 virtual void		AllAttached();
 virtual void		AllDetached();
 
+		void		SetAsyncAutoDestruct(bool state);
+		bool		AsyncAutoDestruct() const;
 
 protected:
 virtual	BPoint		ScreenLocation();
@@ -90,6 +92,9 @@ static	int32		entry(void *);
 
 		BPoint		fWhere;
 		bool		fUseWhere;
+		bool		fAutoDestruct;
+		bool		_fUnusedBool1;
+		bool		_fUnusedBool2;
 		thread_id	fTrackThread;
 		uint32		_reserved[3];
 };

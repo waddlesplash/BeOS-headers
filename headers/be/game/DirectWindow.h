@@ -43,12 +43,7 @@ enum direct_driver_state {
 };
 
 /* Integer rect used to define a cliping rectangle. All bounds are included */
-typedef struct {
-	int32		left;
-	int32		top;
-	int32		right;
-	int32		bottom;
-} clipping_rect;
+/* Moved to Region.h */
 
 /* Frame buffer access descriptor */
 typedef struct {
@@ -164,7 +159,8 @@ virtual void        	_ReservedDirectWindow4();
 		thread_id			direct_deamon_id;
 		direct_buffer_info	*buffer_desc;
 		BDirectDriver		*direct_driver;
-		uint32				_reserved_[16];
+		struct priv_ext		*extension;
+		uint32				_reserved_[15];
 
 static	int32				DirectDeamonFunc(void *arg);
 		bool				LockDirect() const;

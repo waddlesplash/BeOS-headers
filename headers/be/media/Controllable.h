@@ -29,7 +29,7 @@ public:
 		/* BControllable might seem somewhat spartan. */
 
 		/* That is because control change requests and notifications */
-		/* typically come in/go out in B_MEDIA_CONTROLS type buffers */
+		/* typically come in/go out in B_MEDIA_PARAMETERS type buffers */
 		/* (and a BControllable thus also needs to be a BBufferConsumer */
 		/* and/or a BBufferProducer) */
 		/* The format of these buffers is: */
@@ -37,6 +37,8 @@ public:
 		/* repeat(count) { int64(when), int32(control_id), int32(value_size), <value> } */
 
 		BParameterWeb * Web();
+		bool LockParameterWeb();
+		void UnlockParameterWeb();
 
 protected:
 
@@ -54,6 +56,16 @@ virtual	status_t HandleMessage(
 		status_t BroadcastChangedParameter(
 				int32 id);
 
+		/* Call this function when a value change takes effect, and */
+		/* you want people who are interested to stay in sync with you. */
+		/* Don't call this too densely, though, or you will flood the system */
+		/* with messages. */
+		status_t BroadcastNewParameterValue(
+				bigtime_t when, 				//	performance time
+				int32 id,						//	parameter ID
+				void * newValue,
+				size_t valueSize);
+
 		/* These are alternate methods of accomplishing the same thing as */
 		/* connecting to control information source/destinations would. */
 virtual	status_t GetParameterValue(
@@ -66,9 +78,13 @@ virtual	void SetParameterValue(
 				bigtime_t when,
 				const void * value,
 				size_t size) = 0;
+
 		/* The default implementation of StartControlPanel launches the add-on */
 		/* as an application (if the Node lives in an add-on). Thus, you can write your */
 		/* control panel as a "main()" in your add-on, and it'll automagically work! */
+		/* Your add-on needs to have multi-launch app flags for this to work right. */
+		/* The first argv argument to main() will be a string of the format "node=%d" */
+		/* with the node ID in question as "%d". */
 virtual	status_t StartControlPanel(
 				BMessenger * out_messenger);
 
@@ -84,7 +100,10 @@ virtual	status_t StartControlPanel(
 				int32 count,
 				void * buf,
 				size_t * ioSize);
+
 private:
+
+	friend class BMediaNode;
 
 		BControllable(		/* private unimplemented */
 				const BControllable & clone);
@@ -110,7 +129,9 @@ virtual		status_t _Reserved_Controllable_14(void *);
 virtual		status_t _Reserved_Controllable_15(void *);
 
 		BParameterWeb * _mWeb;
-		uint32 _reserved_controllable_[16];
+		sem_id _m_webSem;
+		int32 _m_webBen;
+		uint32 _reserved_controllable_[14];
 };
 
 

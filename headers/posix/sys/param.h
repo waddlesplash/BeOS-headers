@@ -1,16 +1,13 @@
-/* This file should contain various parameter macros appropriate for the
-   machine and operating system.  There is no standard set of macros; this
-   file is just for compatibility with programs written for Unix that
-   expect it to define things.  On Unix systems that do not have their own
-   sysdep version of this file, it is generated at build time by examining
-   the installed headers on the system.  */
+#ifndef _SYS_PARAM_H
+#define _SYS_PARAM_H
 
 #include <limits.h>
+#include <sys/types.h>
 
-#ifndef MAXPATHLEN
-# define MAXPATHLEN 	256
-#endif
+#define MAXPATHLEN      PATH_MAX
+#define NOFILE          OPEN_MAX
 
-/* Macros for min/max.  */
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
+
+#endif

@@ -1,50 +1,28 @@
-/* Copyright (C) 1991, 92, 93, 95, 96, 97 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+#ifndef _CTYPE_H_
+#define _CTYPE_H_
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
+#include <be_setup.h>
 
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+__extern_c_start
 
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+int isalnum (int);
+int isalpha (int);
+int iscntrl (int);
+int isdigit (int);
+int isgraph (int);
+int islower (int);
+int isprint (int);
+int ispunct (int);
+int isspace (int);
+int isupper (int);
+int isxdigit(int);
+int tolower (int);
+int toupper (int);
 
-/*
- *	ISO C Standard 4.3: CHARACTER HANDLING	<ctype.h>
- */
+#if __INTEL__
 
-#ifndef	_CTYPE_H
-#define	_CTYPE_H	1
-
-#include <features.h>
-#include <bits/types.h>
-
-__BEGIN_DECLS
-
-#ifndef _ISbit
-/* These are all the characteristics of characters.
-   If there get to be more than 16 distinct characteristics,
-   many things must be changed that use `unsigned short int's.
-
-   The characteristics are stored always in network byte order (big
-   endian).  We define the bit value interpretations here dependent on the
-   machine's byte order.  */
-
-# include <endian.h>
-# if __BYTE_ORDER == __BIG_ENDIAN
-#  define _ISbit(bit)	(1 << bit)
-# else /* __BYTE_ORDER == __LITTLE_ENDIAN */
-#  define _ISbit(bit)	(bit < 8 ? ((1 << bit) << 8) : ((1 << bit) >> 8))
-# endif
-
-enum
+# define _ISbit(bit)	(bit < 8 ? ((1 << bit) << 8) : ((1 << bit) >> 8))
+enum 
 {
   _ISupper = _ISbit (0),	/* UPPERCASE.  */
   _ISlower = _ISbit (1),	/* lowercase.  */
@@ -59,81 +37,20 @@ enum
   _ISpunct = _ISbit (10),	/* Punctuation.  */
   _ISalnum = _ISbit (11)	/* Alphanumeric.  */
 };
-#endif /* ! _ISbit  */
 
-/* These are defined in ctype-info.c.
-   The declarations here must match those in localeinfo.h.
+extern const unsigned short int *__ctype_b;	/* Characteristics.  */
+extern const int *__ctype_tolower; /* Case conversions.  */
+extern const int *__ctype_toupper; /* Case conversions.  */
 
-   These point into arrays of 384, so they can be indexed by any `unsigned
-   char' value [0,255]; by EOF (-1); or by any `signed char' value
-   [-128,-1).  ISO C requires that the ctype functions work for `unsigned
-   char' values and for EOF; we also support negative `signed char' values
-   for broken old programs.  The case conversion arrays are of `int's
-   rather than `unsigned char's because tolower (EOF) must be EOF, which
-   doesn't fit into an `unsigned char'.  But today more important is that
-   the arrays are also used for multi-byte character sets.  */
-extern __const unsigned short int *__ctype_b;	/* Characteristics.  */
-extern __const __int32_t *__ctype_tolower; /* Case conversions.  */
-extern __const __int32_t *__ctype_toupper; /* Case conversions.  */
-
-#define	__isctype(c, type) \
+# define __isctype(c, type) \
   (__ctype_b[(int) (c)] & (unsigned short int) type)
 
-#define	__isascii(c)	(((c) & ~0x7f) == 0)	/* If C is a 7 bit value.  */
-#define	__toascii(c)	((c) & 0x7f)		/* Mask off high bits.  */
+# define	isascii(c)	(((c) & ~0x7f) == 0)	/* If C is a 7 bit value.  */
+# define	toascii(c)	((c) & 0x7f)		/* Mask off high bits.  */
 
-#define	__tolower(c)	((int) __ctype_tolower[(int) (c)])
-#define	__toupper(c)	((int) __ctype_toupper[(int) (c)])
+# define	tolower(c)	((int) __ctype_tolower[(int) (c)])
+# define	toupper(c)	((int) __ctype_toupper[(int) (c)])
 
-#define	__exctype(name)	extern int name __P ((int))
-
-/* The following names are all functions:
-     int isCHARACTERISTIC(int c);
-   which return nonzero iff C has CHARACTERISTIC.
-   For the meaning of the characteristic names, see the `enum' above.  */
-__exctype (isalnum);
-__exctype (isalpha);
-__exctype (iscntrl);
-__exctype (isdigit);
-__exctype (islower);
-__exctype (isgraph);
-__exctype (isprint);
-__exctype (ispunct);
-__exctype (isspace);
-__exctype (isupper);
-__exctype (isxdigit);
-
-#ifdef	__USE_GNU
-__exctype (isblank);
-#endif
-
-
-/* Return the lowercase version of C.  */
-extern int tolower __P ((int __c));
-
-/* Return the uppercase version of C.  */
-extern int toupper __P ((int __c));
-
-
-#if defined __USE_SVID || defined __USE_MISC || defined __USE_XOPEN
-
-/* Return nonzero iff C is in the ASCII set
-   (i.e., is no more than 7 bits wide).  */
-extern int isascii __P ((int __c));
-
-/* Return the part of C that is in the ASCII set
-   (i.e., the low-order 7 bits of C).  */
-extern int toascii __P ((int __c));
-
-#endif /* Use SVID or use misc.  */
-
-#if defined __USE_SVID || defined __USE_MISC || defined __USE_XOPEN
-/* These are the same as `toupper' and `tolower'.  */
-__exctype (_toupper);
-__exctype (_tolower);
-#endif
-
-#ifndef	__NO_CTYPE
 # define isalnum(c)	__isctype((c), _ISalnum)
 # define isalpha(c)	__isctype((c), _ISalpha)
 # define iscntrl(c)	__isctype((c), _IScntrl)
@@ -146,20 +63,69 @@ __exctype (_tolower);
 # define isupper(c)	__isctype((c), _ISupper)
 # define isxdigit(c)	__isctype((c), _ISxdigit)
 
-#ifdef	__USE_GNU
-# define isblank(c)	__isctype((c), _ISblank)
-#endif
+#elif __POWERPC__
 
-#define	tolower(c)	__tolower(c)
-#define	toupper(c)	__toupper(c)
+extern unsigned char	__ctype_map[];
+extern unsigned char	__lower_map[];
+extern unsigned char	__upper_map[];
 
-#if defined __USE_SVID || defined __USE_MISC || defined __USE_XOPEN
-# define isascii(c)	__isascii(c)
-# define toascii(c)	__toascii(c)
-#endif
+#define __control_char	0x01
+#define __motion_char	0x02
+#define __space_char	0x04
+#define __punctuation	0x08
+#define __digit			0x10
+#define __hex_digit		0x20
+#define __lower_case	0x40
+#define __upper_case	0x80
 
-#endif /* Not __NO_CTYPE.  */
+#define __letter		(__lower_case   | __upper_case  )
+#define __alphanumeric	(__letter       | __digit       )
+#define __graphic		(__alphanumeric | __punctuation )
+#define __printable		(__graphic      | __space_char  )
+#define __whitespace	(__motion_char  | __space_char  )
+#define __control       (__motion_char  | __control_char)
 
-__END_DECLS
+#define __zero_fill(c)	((int) (unsigned char) (c))
 
-#endif /* ctype.h  */
+#ifdef	__cplusplus
+
+inline int isalnum(int c)		{ return __ctype_map[__zero_fill(c)] & __alphanumeric; }
+inline int isalpha(int c)		{ return __ctype_map[__zero_fill(c)] & __letter      ; }
+inline int iscntrl(int c)		{ return __ctype_map[__zero_fill(c)] & __control     ; }
+inline int isdigit(int c)		{ return __ctype_map[__zero_fill(c)] & __digit       ; }
+inline int isgraph(int c)		{ return __ctype_map[__zero_fill(c)] & __graphic     ; }
+inline int islower(int c)		{ return __ctype_map[__zero_fill(c)] & __lower_case  ; }
+inline int isprint(int c)		{ return __ctype_map[__zero_fill(c)] & __printable   ; }
+inline int ispunct(int c)		{ return __ctype_map[__zero_fill(c)] & __punctuation ; }
+inline int isspace(int c)		{ return __ctype_map[__zero_fill(c)] & __whitespace  ; }
+inline int isupper(int c)		{ return __ctype_map[__zero_fill(c)] & __upper_case  ; }
+inline int isxdigit(int c)		{ return __ctype_map[__zero_fill(c)] & __hex_digit   ; }
+/*
+ * -1 case added for EOF handling
+ */
+inline int tolower(int c)	{ return ((c == -1) ? -1:((int)  __lower_map[__zero_fill(c)])); }
+inline int toupper(int c)	{ return ((c == -1) ? -1:((int)  __upper_map[__zero_fill(c)])); }
+inline int toascii(int c) 	{ return (c & 0x7f); }
+
+#else /* __cplusplus */
+
+#define isalnum(c)	((int) (__ctype_map[__zero_fill(c)] & __alphanumeric))
+#define isalpha(c)	((int) (__ctype_map[__zero_fill(c)] & __letter      ))
+#define iscntrl(c)	((int) (__ctype_map[__zero_fill(c)] & __control     ))
+#define isdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __digit       ))
+#define isgraph(c)	((int) (__ctype_map[__zero_fill(c)] & __graphic     ))
+#define islower(c)	((int) (__ctype_map[__zero_fill(c)] & __lower_case  ))
+#define isprint(c)	((int) (__ctype_map[__zero_fill(c)] & __printable   ))
+#define ispunct(c)	((int) (__ctype_map[__zero_fill(c)] & __punctuation ))
+#define isspace(c)	((int) (__ctype_map[__zero_fill(c)] & __whitespace  ))
+#define isupper(c)	((int) (__ctype_map[__zero_fill(c)] & __upper_case  ))
+#define isxdigit(c)	((int) (__ctype_map[__zero_fill(c)] & __hex_digit   ))
+#define toascii(c) 	((int) (c & 0x7f))
+
+#endif /* __cplusplus */
+
+#endif  /* __POWERPC__ */
+
+__extern_c_end
+
+#endif /*  _CTYPE_H_ */

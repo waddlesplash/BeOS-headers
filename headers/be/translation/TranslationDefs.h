@@ -25,7 +25,7 @@ typedef unsigned long translator_id;
 
 
 /*	These are defines, because they reflect the state at which the app was compiled	*/
-#define B_TRANSLATION_CURRENT_VERSION	170
+#define B_TRANSLATION_CURRENT_VERSION	B_BEOS_VERSION
 #define B_TRANSLATION_MIN_VERSION		161
 
 extern const char * B_TRANSLATOR_MIME_TYPE;

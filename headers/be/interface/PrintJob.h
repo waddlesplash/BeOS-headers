@@ -40,20 +40,27 @@ public:
 					BPrintJob(const char *job_name);
 virtual				~BPrintJob();
 
-		int32		ConfigPage();
-		int32		ConfigJob();
-virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
+		void		BeginJob();	
 		void		CommitJob();	
-		int32		FirstPage();
-		int32		LastPage();
+		int32		ConfigJob();
+		void		CancelJob();
+
+		int32		ConfigPage();
+		void		SpoolPage();
+
+		bool		CanContinue();
+
+virtual	void		DrawView(BView *a_view, BRect a_rect, BPoint where);
+
+		BMessage	*Settings();	/* const */	
+		void		SetSettings(BMessage *a_msg);	
+
 		BRect		PaperRect();
 		BRect		PrintableRect();
-		bool		CanContinue();
-		void		BeginJob();	
-		void		SpoolPage();
-		BMessage	*Settings();	
-		void		SetSettings(BMessage *a_msg);	
-		void		CancelJob();
+		void		GetResolution(int32 *xdpi, int32 *ydpi);
+
+		int32		FirstPage();	/* const */
+		int32		LastPage();		/* const */
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -66,10 +73,10 @@ virtual void		_ReservedPrintJob4();
 					BPrintJob(const BPrintJob &);
 		BPrintJob	&operator=(const BPrintJob &);
 
-		void				RecurseView(BView *v, BPoint origin, BPicture *p, BRect r);
+		void				RecurseView(BView *v, BPoint origin, BPicture *p, BRect r, int32 stage);
 		void				MangleName(char *filename);
 		void				HandlePageSetup(BMessage *setup);
-		void				HandlePrintSetup(BMessage *setup);
+		bool				HandlePrintSetup(BMessage *setup);
 		void				CreateSpoolDir(const char *printer_name);
 
 		void				NewPage();
@@ -78,7 +85,8 @@ virtual void		_ReservedPrintJob4();
 		void				AddSetupSpec();
 		void				AddPicture(BPicture *picture, BRect *rect, BPoint where);
 
-		void				GetXYDPI(long *xdpi, long *ydpi);
+		char*				GetCurrentPrinterName();
+		void				LoadDefaultSettings();
 
 		char *				print_job_name;
 		int32				page_number;
@@ -89,7 +97,7 @@ virtual void		_ReservedPrintJob4();
 		int					pr_error;
 		char				spool_file_name[256];	
 		BMessage			*setup_msg;
-		BMessage			*job_msg;
+		BMessage			*default_setup_msg;
 		char				stop_the_show;
 		int32				first_page;
 		int32				last_page;

@@ -75,7 +75,31 @@ virtual	status_t HandleMessage(
 virtual	void SetRunMode(
 				run_mode mode);		/* or, instead, SendRunMode() */
 
+		enum time_source_op {
+			B_TIMESOURCE_START = 1,
+			B_TIMESOURCE_STOP,
+			B_TIMESOURCE_STOP_IMMEDIATELY,
+			B_TIMESOURCE_SEEK
+		};
+		struct time_source_op_info {
+			time_source_op op;
+			int32 _reserved1;
+			bigtime_t real_time;
+			bigtime_t performance_time;
+			int32 _reserved2[6];
+		};
+virtual	status_t TimeSourceOp(
+				const time_source_op_info & op,
+				void * _reserved) = 0;
+
 private:
+
+	friend class _BMediaRosterP;
+	friend class _BTimeSourceP;
+	friend class _SysTimeSource;
+	friend class BMediaNode;
+	friend class BMediaRoster;
+	friend class _ServerApp;
 
 		BTimeSource(		/* private unimplemented */
 				const BTimeSource & clone);
@@ -83,18 +107,12 @@ private:
 				const BTimeSource & clone);
 
 		/* Mmmh, stuffing! */
-virtual		status_t _Reserved_TimeSource_0(void *);
+			status_t _Reserved_TimeSource_0(void *); // TimeSourceOp()
 virtual		status_t _Reserved_TimeSource_1(void *);
 virtual		status_t _Reserved_TimeSource_2(void *);
 virtual		status_t _Reserved_TimeSource_3(void *);
 virtual		status_t _Reserved_TimeSource_4(void *);
 virtual		status_t _Reserved_TimeSource_5(void *);
-
-	friend class _BMediaRosterP;
-	friend class _BTimeSourceP;
-	friend class BMediaNode;
-	friend class BMediaRoster;
-	friend class _ServerApp; /* what's this? :-) */
 
 		bool _mStopped;
 
@@ -102,17 +120,20 @@ virtual		status_t _Reserved_TimeSource_5(void *);
 volatile	_time_transmit_buf * _mBuf;
 		_BSlaveNodeStorageP * _mSlaveNodes;
 
-		uint32 _reserved_time_source_[12];
+		area_id _mOrigArea;
+		uint32 _reserved_time_source_[11];
 
 explicit	BTimeSource(
 				media_node_id id);
 		void FinishCreate(); /* called by roster and/or server */
 
-virtual	status_t RemoveMe(
-				BMediaNode * node);
-virtual	status_t AddMe(
-				BMediaNode * node);
+virtual	status_t RemoveMe(BMediaNode * node);
+virtual	status_t AddMe(BMediaNode * node);
 
+		void	DirectStart(bigtime_t at);
+		void	DirectStop(bigtime_t at, bool immediate);
+		void	DirectSeek(bigtime_t to, bigtime_t at);
+		void	DirectSetRunMode(run_mode mode);
 };
 
 

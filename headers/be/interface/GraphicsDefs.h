@@ -49,11 +49,39 @@ extern _IMPEXP_BE const rgb_color	B_TRANSPARENT_32_BIT;
 /*----------------------------------------------------------------*/
 
 typedef struct color_map {
-		int32		id;
-		rgb_color	color_list[256];
-		uint8		inversion_map[256];
-		uint8		index_map[32768];
+	int32				id;
+	rgb_color			color_list[256];
+	uint8				inversion_map[256];
+	uint8				index_map[32768];
 } color_map;
+
+typedef struct overlay_rect_limits {
+	uint16				horizontal_alignment;
+	uint16				vertical_alignment;
+	uint16				width_alignment;
+	uint16				height_alignment;
+	uint16				min_width;
+	uint16				max_width;
+	uint16				min_height;
+	uint16				max_height;
+	uint32				reserved[8];
+} overlay_rect_limits;
+
+typedef struct overlay_restrictions {
+	overlay_rect_limits	source;
+	overlay_rect_limits	destination;
+	float				min_width_scale;
+	float				max_width_scale;
+	float				min_height_scale;
+	float				max_height_scale;
+	uint32				reserved[8];
+} overlay_restrictions;
+
+/*----------------------------------------------------------------*/
+
+struct screen_id { int32 id; };
+
+extern _IMPEXP_BE const struct screen_id B_MAIN_SCREEN_ID;
 
 /*----------------------------------------------------------------*/
 
@@ -165,7 +193,7 @@ _IMPEXP_BE bool bitmaps_support_space(color_space space, uint32 * support_flags)
 /* "pixel_chunk" is the native increment from one pixel starting on an integral byte */
 /* to the next. "row_alignment" is the native alignment for pixel scanline starts. */
 /* "pixels_per_chunk" is the number of pixels in a pixel_chunk. For instance, B_GRAY1 */
-/* sets pixel_chunk to 1, row_alignment to 8 and pixels_per_chunk to 8, whereas */
+/* sets pixel_chunk to 1, row_alignment to 4 and pixels_per_chunk to 8, whereas */
 /* B_RGB24 sets pixel_chunk to 3, row_alignment to 4 and pixels_per_chunk to 1. */
 
 _IMPEXP_BE status_t get_pixel_size_for(color_space space, size_t * pixel_chunk, 

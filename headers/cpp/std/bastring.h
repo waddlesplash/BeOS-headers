@@ -79,8 +79,9 @@ private:
     void release ()
       {
 	size_t val;
-	asm ("xaddl %0, %2" : "=r" (val) : "0" (-1), "m" (ref) : "memory");
-	if (val == 0)
+	__asm__ ("lock; xaddl %0, %2"
+		 : "=r" (val) : "0" (-1), "m" (ref) : "memory");
+	if (val == 1)
 	  delete this;
       }
 #endif

@@ -17,7 +17,7 @@
 #define _NET_PROTOCOL_H
 
 #include <BeBuild.h>
-#include <NetDevice.h>
+#include <add-ons/net_server/NetDevice.h>
 
 /*---------- BPacketHandler Class ---------------------------*/
 

@@ -14,8 +14,7 @@
 
 #include <MediaDefs.h>
 
-
-class _area_cluster;
+class _shared_buffer_list;
 class _buffer_id_cache;
 
 class BBufferGroup
@@ -46,8 +45,7 @@ explicit	BBufferGroup();
 		status_t RequestBuffer(
 				BBuffer * buffer,
 				bigtime_t timeout = B_INFINITE_TIMEOUT);
-
-		status_t ReclaimAllBuffers();
+		status_t RequestError();	/* return last RequestBuffer error, useful if NULL is returned */
 
 		status_t CountBuffers(
 				int32 * out_count);
@@ -55,48 +53,44 @@ explicit	BBufferGroup();
 				int32 buf_count,
 				BBuffer ** out_buffers);
 
-		status_t SetRecyclePriority(
-				int32 prio);
+		status_t WaitForBuffers();
+		status_t ReclaimAllBuffers();
 
 private:
 
 static	status_t _entry_reclaim(void *);
 
-	friend class _BMediaRosterP;
-	friend class BMediaRoster;
+		friend class _BMediaRosterP;
+		friend class BMediaRoster;
+		friend class BBufferProducer;
+		friend class BBufferConsumer;	//	for SetOwnerPort()
 
 		BBufferGroup(const BBufferGroup &);	/* not implemented */
 		BBufferGroup& operator=(const BBufferGroup&); /* not implemented */
 
-		status_t _m_init_error;
-		int32 _mGroupID;
+		status_t 				IBufferGroup();
+		status_t 				AddToList(BBuffer *buffer);
+		status_t 				AddBuffersTo(BMessage * message, const char * name, bool needLock=true);
+		status_t 				_RequestBuffer(	size_t size, media_buffer_id wantID,
+												BBuffer **buffer, bigtime_t timeout);
 
-		_area_cluster * _mCluster;
-		port_id _mRecycle;	/* For recycling buffers */
-		thread_id _mRecycleThread;
+		void					SetOwnerPort(
+									port_id owner);
 
-		bool _mCanReclaim;	/* Not really related to _mRecycle and _mRecycleThread */
-/*
-		media_node_id _mReclaimNode;
-		media_source _mReclaimFrom;
-*/
-		sem_id _mBufferAvailSem;
-		int32 _mBufferCount;
-		_buffer_id_cache * _mBufferCache;
-		uint32 _reserved_buffer_group_[7];
+		bool					CanReclaim();
+		void 					WillReclaim();
 
-		status_t IBufferGroup();
-		void ReclaimThread();
-		void MakeAvailable(
-				BBuffer * buffer);
+		status_t				Lock();
+		status_t				Unlock();
 
-		status_t AddBuffersTo(
-				BMessage * message,
-				const char * name);
-		status_t WaitForBuffers();
-
-		void WillReclaim();
-
+		status_t 				_m_init_error;
+		uint32 					_mFlags;
+		int32					_mBufferCount;
+		area_id 				_mBufferListArea;
+		_shared_buffer_list *	_mBufferList;
+		_buffer_id_cache * 		_mBufferCache;
+		status_t				_m_local_err;
+		uint32 					_reserved_buffer_group_[7];
 };
 
 #endif /* _BUFFER_GROUP_H */

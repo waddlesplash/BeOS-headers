@@ -55,7 +55,8 @@ typedef enum {
 	B_INSTRUCTION_ACCESS_EXCEPTION,
 	B_ALIGNMENT_EXCEPTION,
 	B_PROGRAM_EXCEPTION,
-	B_GET_PROFILING_INFO
+	B_GET_PROFILING_INFO,
+	B_WATCHPOINT_HIT
 } db_why_stopped;
 #endif
 
@@ -77,7 +78,8 @@ typedef enum {
 		B_STACK_FAULT,
 		B_GENERAL_PROTECTION_FAULT,
 		B_FLOATING_POINT_EXCEPTION,
-		B_GET_PROFILING_INFO
+		B_GET_PROFILING_INFO,
+		B_WATCHPOINT_HIT
 } db_why_stopped;
 #endif
 
@@ -192,11 +194,15 @@ typedef struct {
  */
 
 typedef struct {
-	fp_state fpu;
-	ulong	gs;
-	ulong	fs;
-	ulong	es;
-	ulong	ds;
+	extended_regs	xregs;			/* fpu/mmx/xmm registers */
+	uint16	gs;
+	uint16  reserved0;
+	uint16	fs;
+	uint16  reserved1;
+	uint16	es;
+	uint16  reserved2;
+	uint16	ds;
+	uint16  reserved3;
 	ulong	edi;
 	ulong	esi;
 	ulong	ebp;
@@ -208,10 +214,12 @@ typedef struct {
 	ulong	trap_no;		/* trap or int number */
 	ulong	error_code;		/* trap error code */
 	ulong	eip;			/* user eip */
-	ulong	cs;				/* user cs */
+	uint16	cs;				/* user cs */
+	uint16  reserved4;
 	ulong	eflags;			/* user elfags */
 	ulong	uesp;			/* user esp */
-	ulong	ss;				/* user ss */
+	uint16	ss;				/* user ss */
+	uint16  reserved5;
 } cpu_state;
 #endif
 
@@ -433,6 +441,7 @@ typedef struct {
 	db_why_stopped	why;		/* reason for contacting debugger */
 	port_id			nub_port;	/* port to nub for this team */
 	cpu_state		cpu;		/* cpu state */
+	void			*data;		/* additional data */
 } db_thread_stopped_msg;
 	
 typedef struct {
@@ -468,7 +477,6 @@ typedef struct {
 typedef struct {
 	thread_id	thread;
 } db_get_profile_info_msg;
-
 
 /* -----
 	union of all structures passed to external debugger

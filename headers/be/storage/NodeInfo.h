@@ -48,7 +48,7 @@ virtual	status_t	SetIcon(const BBitmap *icon, icon_size k = B_LARGE_ICON);
 
 		status_t	GetTrackerIcon(BBitmap *icon,
 									icon_size k = B_LARGE_ICON) const;
-static	status_t	GetTrackerIcon(entry_ref	*ref,
+static	status_t	GetTrackerIcon(const entry_ref *ref,
 									BBitmap *icon,
 									icon_size k = B_LARGE_ICON);
 
@@ -66,6 +66,11 @@ virtual	void		_ReservedNodeInfo3();
 		BNode		*fNode;
 		uint32		_reserved[2];
 		status_t	fCStatus;
+
+public:
+	/* deprecated */
+static	status_t	GetTrackerIcon(entry_ref *,
+					BBitmap *, icon_size k = B_LARGE_ICON);
 };
 
 #endif

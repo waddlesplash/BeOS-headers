@@ -57,19 +57,21 @@
 # endif /* __GNUC_VA_LIST */
 #endif
 
-#ifndef __P
-# if _G_HAVE_SYS_CDEFS
-#  include <sys/cdefs.h>
-# else
-#  ifdef __STDC__
+#if _G_HAVE_SYS_CDEFS
+# include <sys/cdefs.h>
+#else
+# ifdef __STDC__
+#  ifndef __P
 #   define __P(p) p
+#  endif 
+#  ifndef __PMT
 #   define __PMT(p) p
-#  else
-#   define __P(p) ()
-#   define __PMT(p) ()
 #  endif
+# else
+#  define __P(p) ()
+#  define __PMT(p) ()
 # endif
-#endif /*!__P*/
+#endif /* _G_HAVE_SYS_CDEFS */
 
 /* For backward compatibility */
 #ifndef _PARAMS

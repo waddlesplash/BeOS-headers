@@ -38,25 +38,56 @@ protected:
 explicit	BBufferConsumer(
 				media_type consumer_type = B_MEDIA_UNKNOWN_TYPE);
 
-static	status_t SetVideoClippingFor(
-				const media_source & output,
-				const int16 * shorts,
-				int32 short_count,
-				const media_video_display_info & display,
-				int32 * out_from_change_count);
 static	void NotifyLateProducer(
 				const media_source & what_source,
 				bigtime_t how_much,
 				bigtime_t performance_time);
-static	status_t RequestFormatChange(
+		status_t SetVideoClippingFor(
+				const media_source & output,
+				const media_destination & destination, 
+				const int16 * shorts,
+				int32 short_count,
+				const media_video_display_info & display,
+				void * user_data,
+				int32 * change_tag,
+				void * _reserved_ = 0);		//	change_tag value will be passed to RequestCompleted()
+		status_t SetOutputEnabled(
 				const media_source & source,
 				const media_destination & destination,
-				media_format * io_to_format,
-				int32 * out_from_change_count);
-static	status_t SetOutputEnabled(
+				bool enabled,
+				void * user_data, 
+				int32 * change_tag,
+				void * _reserved_ = 0);		//	change_tag value will be passed to RequestCompleted()
+		status_t RequestFormatChange(
 				const media_source & source,
-				bool enabled, 
-				int32 * out_from_change_count);
+				const media_destination & destination,
+				const media_format & to_format,
+				void * user_data, 
+				int32 * change_tag,
+				void * _reserved_ = 0);		//	change_tag value will be passed to RequestCompleted()
+		status_t RequestAdditionalBuffer(	//	new in 4.1
+				const media_source & source,
+				BBuffer * prev_buffer,
+				void * _reserved = NULL);
+		status_t RequestAdditionalBuffer(	//	new in 4.1
+				const media_source & source,
+				bigtime_t start_time,
+				void * _reserved = NULL);
+		status_t SetOutputBuffersFor(		//	new in 4.1
+				const media_source & source,
+				const media_destination & destination,
+				BBufferGroup * group,
+				void * user_data,
+				int32 * change_tag, 		//	passed to RequestCompleted()
+				bool will_reclaim = false,
+				void * _reserved_ = 0);
+		status_t SendLatencyChange(
+				const media_source & source,
+				const media_destination & destination,
+				bigtime_t my_new_latency,
+				uint32 flags = 0);
+
+protected:
 
 virtual	status_t HandleMessage(
 				int32 message,
@@ -80,7 +111,7 @@ virtual	void BufferReceived(
 virtual	void ProducerDataStatus(
 				const media_destination & for_whom,
 				int32 status,
-				bigtime_t at_media_time) = 0;
+				bigtime_t at_performance_time) = 0;
 virtual	status_t GetLatencyFor(
 				const media_destination & for_whom,
 				bigtime_t * out_latency,
@@ -98,10 +129,24 @@ virtual	void Disconnected(
 virtual	status_t FormatChanged(
 				const media_source & producer,
 				const media_destination & consumer, 
-				int32 from_change_count,
+				int32 change_tag,
 				const media_format & format) = 0;
 
+	/* Given a performance time of some previous buffer, retrieve the remembered tag */
+	/* of the closest (previous or exact) performance time. Set *out_flags to 0; the */
+	/* idea being that flags can be added later, and the understood flags returned in */
+	/* *out_flags. */
+virtual	status_t SeekTagRequested(
+				const media_destination & destination,
+				bigtime_t in_target_time,
+				uint32 in_flags, 
+				media_seek_tag * out_seek_tag,
+				bigtime_t * out_tagged_time,
+				uint32 * out_flags);
+
 private:
+
+	friend class BMediaNode;
 
 		BBufferConsumer();	/* private unimplemented */
 		BBufferConsumer(
@@ -109,8 +154,25 @@ private:
 		BBufferConsumer & operator=(
 				const BBufferConsumer & clone);
 
+		//	these functions are deprecated from the 4.0 API
+static	status_t SetVideoClippingFor(
+				const media_source & output,
+				const int16 * shorts,
+				int32 short_count,
+				const media_video_display_info & display,
+				int32 * change_tag);		//	change_tag value will be passed to RequestCompleted()
+static	status_t RequestFormatChange(
+				const media_source & source,
+				const media_destination & destination,
+				media_format * io_to_format,	//	the "o" part is unused from 4.1
+				int32 * change_tag);		//	change_tag value will be passed to RequestCompleted()
+static	status_t SetOutputEnabled(
+				const media_source & source,
+				bool enabled, 
+				int32 * change_tag);		//	change_tag value will be passed to RequestCompleted()
+
 		/* Mmmh, stuffing! */
-virtual		status_t _Reserved_BufferConsumer_0(void *);
+			status_t _Reserved_BufferConsumer_0(void *);	/* SeekTagRequested */
 virtual		status_t _Reserved_BufferConsumer_1(void *);
 virtual		status_t _Reserved_BufferConsumer_2(void *);
 virtual		status_t _Reserved_BufferConsumer_3(void *);

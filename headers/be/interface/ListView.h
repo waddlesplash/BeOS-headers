@@ -24,7 +24,7 @@ enum list_view_type {
 	B_MULTIPLE_SELECTION_LIST
 };
 
-class BMessageRunner;
+struct track_data;
 
 /*----------------------------------------------------------------*/
 /*----- BListView class ------------------------------------------*/
@@ -177,17 +177,6 @@ virtual void			DrawItem(BListItem *item, BRect itemRect,
 		void			RescanSelection(int32 from, int32 to);
 		void			DoMouseUp(BPoint where);
 		void			DoMouseMoved(BPoint where);
-
-		struct track_data {
-			bool			changed;
-			bool			extend;
-			bool			disjoint;
-			bool			turn_on;
-			bigtime_t		snooze_time;
-			BMessageRunner	*runner;
-			bigtime_t		last_mm_time;
-			BPoint			last_mm_pt;
-		};
 
 		BList			fList;
 		list_view_type	fListType;

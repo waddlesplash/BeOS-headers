@@ -58,7 +58,7 @@
 #  define __RESTRICT
 #endif
 
-#if defined (__GLIBC__) && !defined (__BEOS__)
+#if defined __GLIBC__ && !defined __BEOS__
 /* The malloc implementation in glibc is very fast in multi-threaded
    programs.  */
 #  define __USE_MALLOC
@@ -320,7 +320,7 @@ private:
   // instead of enum { x = N }, but few compilers accept the former.
 # ifndef __SUNPRO_CC
     enum {_ALIGN = 8};
-#if defined (__BEOS__)
+#if defined __BEOS__
     enum {_MAX_BYTES = 0};
 #else
     enum {_MAX_BYTES = 128};
@@ -694,7 +694,7 @@ __default_alloc_template<__threads, __inst> ::_S_free_list[
 # else
     __default_alloc_template<__threads, __inst>::_NFREELISTS
 # endif
-#if defined (__BEOS__)
+#if defined __BEOS__
 ] = { };
 #else
 ] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };

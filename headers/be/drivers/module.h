@@ -30,7 +30,7 @@ typedef struct module_info module_info;
 struct module_info {
 	const char	*name;
 	uint32		flags;
-	status_t	(*std_ops)(int32);
+	status_t	(*std_ops)(int32, ...);
 };
 
 #define	B_MODULE_INIT	1
@@ -38,6 +38,11 @@ struct module_info {
 
 _IMPEXP_KERNEL status_t	get_module(const char *path, module_info **vec);
 _IMPEXP_KERNEL status_t	put_module(const char *path);
+
+_IMPEXP_KERNEL status_t get_next_loaded_module_name(uint32 *cookie, char *buf, size_t *bufsize);
+_IMPEXP_KERNEL void *	open_module_list(const char *prefix);
+_IMPEXP_KERNEL status_t	read_next_module_name(void *cookie, char *buf, size_t *bufsize);
+_IMPEXP_KERNEL status_t	close_module_list(void *cookie);
 
 #ifdef __cplusplus
 }

@@ -21,10 +21,6 @@
 /*----------------------------------------------------------------*/
 /*----- BScreen structures and declarations ----------------------*/
 
-struct screen_id { int32 id; };
-
-extern _IMPEXP_BE const screen_id B_MAIN_SCREEN_ID;
-
 class BWindow;
 class BPrivateScreen;
 
@@ -62,9 +58,11 @@ const   color_map*		ColorMap();
 									BRect		*bound = NULL); 
         
         rgb_color		DesktopColor();
+        rgb_color		DesktopColor(uint32 index);
         void			SetDesktopColor( rgb_color rgb, bool stick=true );
+        void			SetDesktopColor( rgb_color rgb, uint32 index, bool stick=true );
 
-
+		status_t		ProposeDisplayMode(display_mode *target, const display_mode *low, const display_mode *high);
 		status_t		GetModeList(display_mode **mode_list, uint32 *count);
 		status_t		GetMode(display_mode *mode);
 		status_t		SetMode(display_mode *mode, bool makeDefault = false);

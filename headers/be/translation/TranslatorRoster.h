@@ -74,6 +74,10 @@ static	BTranslatorRoster *Default();	/*	you shouldn't delete this object	*/
 		status_t AddTranslators(		/*	establish connection	*/
 				const char * load_path = NULL);	/*	NULL means default translators	*/
 
+			/* You can add a BTranslator object you create yourself, too. */
+		status_t AddTranslator(
+				BTranslator * translator);
+
 			/*	these functions call through to the translators	*/
 			/*	when wantType is not 0, will only take into consideration 	*/
 			/*	translators that can read input data and produce output data	*/

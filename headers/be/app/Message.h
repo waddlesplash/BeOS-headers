@@ -88,6 +88,8 @@ virtual				~BMessage();
 		bool		IsReply() const;
 		void		PrintToStream() const;
 
+		status_t	Rename(const char *old_entry, const char *new_entry);
+
 /* Delivery info */
 		bool		WasDelivered() const;
 		bool		IsSourceWaiting() const;

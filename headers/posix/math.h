@@ -1,153 +1,179 @@
-/* Declarations for math functions.
-   Copyright (C) 1991, 92, 93, 95, 96, 97, 98 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+#ifndef _MATH_H_
+#define _MATH_H_
 
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
+#include <be_setup.h>
 
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+__extern_c_start
 
-   You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+double acos(double);
+double asin(double);
+double atan(double);
+double atan2(double, double);
+double ceil(double);
+double cos(double);
+double cosh(double);
+double exp(double);
+double fabs(double);
+double floor(double);
+double fmod(double, double);
+double frexp(double, int *);
+double ldexp(double, int);
+double log(double);
+double log10(double);
+double modf(double, double *);
+double pow(double, double);
+double sin(double);
+double sinh(double);
+double sqrt(double);
+double tan(double);
+double tanh(double);
+
+/* the Berkeley standard math functions */
+extern double erf(double);
+extern double erfc(double);
+extern double gamma(double);
+extern double hypot(double, double);
+extern double j0(double);
+extern double j1(double);
+extern double jn(int, double);
+extern double lgamma(double);
+extern double y0(double);
+extern double y1(double);
+extern double yn(int, double);
+
+
+#if __INTEL__
+
+extern double gamma_r(double , int *);
+extern double lgamma_r(double , int *);
+
+#endif /* __INTEL__ */
+
+extern double acosh(double);
+extern double asinh(double);
+extern double atanh(double);
+extern double cbrt(double);
+extern double expm1(double);
+extern double logb(double);
+extern int    ilogb(double);
+extern double log1p(double);
+extern double nextafter(double, double);
+extern double remainder(double, double);
+extern double rint(double);
+extern double scalb (double, double);
+
+extern int signgam;
+
+#ifdef __cplusplus
+struct __exception;
+extern int matherr(struct __exception *);
+struct __exception  {
+#else
+struct exception;
+extern int matherr(struct exception *);
+struct exception {
+#endif
+    int type;
+    char *name;
+    double arg1;
+    double arg2;
+    double retval;
+};
+
+#define DOMAIN		1
+#define SING		2
+#define OVERFLOW	3
+#define UNDERFLOW	4
+#define TLOSS		5
+#define PLOSS		6
 
 /*
- *	ISO C Standard: 4.5 MATHEMATICS	<math.h>
+ * other stuff...
  */
+extern double significand(double);
+extern double copysign(double, double);
+extern double scalbn(double, int);
+extern double drem(double, double);
+extern int isnan(double);
+extern int isfinite(double);
+extern int finite(double);
+extern float modff(float, float*);
 
-#ifndef	_MATH_H
-#define	_MATH_H	1
+#if __INTEL__
 
-#include <features.h>
+extern float acosf(float x);
+extern float asinf(float x);
+extern float atanf(float x);
+extern float atan2f(float y, float x);
+extern float cosf(float x);
+extern float sinf(float x);
+extern float tanf(float x);
+extern float coshf(float x);
+extern float sinhf(float x);
+extern float tanhf(float x);
+extern float acoshf(float x);
+extern float asinhf(float x);
+extern float atanhf(float x);
+extern float expf(float x);
+extern float frexpf(float x, int *exponent);
+extern float ldexpf(float x, int exponent);
+extern float logf(float x);
+extern float log10f(float x);
+extern float modff(float x, float *iptr);
+extern float expm1f(float x);
+extern float log1pf(float x);
+extern float logbf(float x);
+extern float powf(float x, float y);
+extern float sqrtf(float x);
+extern float hypotf(float x, float y);
+extern float cbrtf(float x);
+extern float ceilf(float x);
+extern float fabsf(float x);
+extern float floorf(float x);
+extern float fmodf(float x, float y);
+extern int isinff(float value);
+extern int finitef(float value);
+extern float infnanf(int error);
+extern float dremf(float x, float y);
+extern float significandf(float x);
+extern float copysignf(float x, float y);
+extern int isnanf(float value);
+extern float j0f(float);
+extern float j1f(float);
+extern float jnf(int, float);
+extern float y0f(float);
+extern float y1f(float);
+extern float ynf(int, float);
+extern float erff(float);
+extern float erfcf(float);
+extern float gammaf(float);
+extern float lgammaf(float);
+extern float gammaf_r(float, int *);
+extern float lgammaf_r(float, int *);
+extern float rintf(float x);
+extern float nextafterf(float x, float y);
+extern float remainderf(float x, float y);
+extern float scalbf(float x, float n);
+extern float scalbnf(float x, int n);
+extern int ilogbf(float x);
 
-__BEGIN_DECLS
+#define	__HUGE_VAL_bytes	{ 0, 0, 0, 0, 0, 0, 0xf0, 0x7f }
+#define __huge_val_t	union { unsigned char __c[8]; double __d; }
+#define HUGE_VAL	(((__huge_val_t) { __c: __HUGE_VAL_bytes }).__d)
 
-/* Get machine-dependent HUGE_VAL value (returned on overflow).
-   On all IEEE754 machines, this is +Infinity.  */
-#include <bits/huge_val.h>
+#define __HUGE_VALF_bytes	{ 0, 0, 0x80, 0x7f }
+#define __huge_valf_t	union { unsigned char __c[4]; float __f; }
+#define HUGE_VALF	(((__huge_valf_t) { __c: __HUGE_VALF_bytes }).__f)
 
-/* Get machine-dependent NAN value (returned for some domain errors).  */
-#ifdef	 __USE_ISOC9X
-# include <bits/nan.h>
-#endif
+#define __HUGE_VALL_bytes	{ 0, 0, 0, 0, 0, 0, 0, 0x80, 0xff, 0x7f, 0, 0 }
+#define __huge_vall_t	union { unsigned char __c[12]; long double __ld; }
+#define HUGE_VALL	(((__huge_vall_t) { __c: __HUGE_VALL_bytes }).__ld)
 
+#define NAN \
+  (((union { unsigned __l __attribute__((__mode__(__SI__))); float __d; })  \
+    { __l: 0x7fc00000UL }).__d)
 
-/* The file <bits/mathcalls.h> contains the prototypes for all the
-   actual math functions.  These macros are used for those prototypes,
-   so we can easily declare each function as both `name' and `__name',
-   and can declare the float versions `namef' and `__namef'.  */
-
-#define __MATHCALL(function,suffix, args)	\
-  __MATHDECL (_Mdouble_,function,suffix, args)
-#define __MATHDECL(type, function,suffix, args) \
-  __MATHDECL_1(type, function,suffix, args); \
-  __MATHDECL_1(type, __CONCAT(__,function),suffix, args)
-#define __MATHCALLX(function,suffix, args, attrib)	\
-  __MATHDECLX (_Mdouble_,function,suffix, args, attrib)
-#define __MATHDECLX(type, function,suffix, args, attrib) \
-  __MATHDECL_1(type, function,suffix, args) __attribute__ (attrib); \
-  __MATHDECL_1(type, __CONCAT(__,function),suffix, args) __attribute__ (attrib)
-#define __MATHDECL_1(type, function,suffix, args) \
-  extern type __MATH_PRECNAME(function,suffix) args
-
-#define _Mdouble_ 		double
-#define __MATH_PRECNAME(name,r)	__CONCAT(name,r)
-#include <bits/mathcalls.h>
-#undef	_Mdouble_
-#undef	__MATH_PRECNAME
-
-#if defined __USE_MISC || defined __USE_ISOC9X
-
-
-/* Include the file of declarations again, this time using `float'
-   instead of `double' and appending f to each function name.  */
-
-# ifndef _Mfloat_
-#  define _Mfloat_		float
-# endif
-# define _Mdouble_ 		_Mfloat_
-# ifdef __STDC__
-#  define __MATH_PRECNAME(name,r) name##f##r
-# else
-#  define __MATH_PRECNAME(name,r) name/**/f/**/r
-# endif
-# include <bits/mathcalls.h>
-# undef	_Mdouble_
-# undef	__MATH_PRECNAME
-
-# if __STDC__ - 0 || __GNUC__ - 0
-/* Include the file of declarations again, this time using `long double'
-   instead of `double' and appending l to each function name.  */
-
-#  ifndef _Mlong_double_
-#   define _Mlong_double_	long double
-#  endif
-#  define _Mdouble_ 		_Mlong_double_
-#  ifdef __STDC__
-#   define __MATH_PRECNAME(name,r) name##l##r
-#  else
-#   define __MATH_PRECNAME(name,r) name/**/l/**/r
-#  endif
-#  include <bits/mathcalls.h>
-#  undef _Mdouble_
-#  undef __MATH_PRECNAME
-
-# endif /* __STDC__ || __GNUC__ */
-
-#endif	/* Use misc or ISO C 9X.  */
-#undef	__MATHDECL_1
-#undef	__MATHDECL
-#undef	__MATHCALL
-
-
-#if defined __USE_MISC || defined __USE_XOPEN || defined __USE_ISOC9X
-/* This variable is used by `gamma' and `lgamma'.  */
-extern int signgam;
-#endif
-
-
-/* ISO C 9X defines some generic macros which work on any data type.  */
-#if __USE_ISOC9X
-
-/* Get the architecture specific values describing the floating-point
-   evaluation.  The following symbols will get defined:
-
-    float_t	floating-point type at least as wide as `float' used
-		to evaluate `float' expressions
-    double_t	floating-point type at least as wide as `double' used
-		to evaluate `double' expressions
-
-    FLT_EVAL_METHOD
-		Defined to
-		  0	if `float_t' is `float' and `double_t' is `double'
-		  1	if `float_t' and `double_t' are `double'
-		  2	if `float_t' and `double_t' are `long double'
-		  else	`float_t' and `double_t' are unspecified
-
-    INFINITY	representation of the infinity value of type `float'
-
-    FP_FAST_FMA
-    FP_FAST_FMAF
-    FP_FAST_FMAL
-		If defined it indicates that the `fma' function
-		generally executes about as fast as a multiply and an add.
-		This macro is defined only iff the `fma' function is
-		implemented directly with a hardware multiply-add instructions.
-
-    FP_ILOGB0	Expands to a value returned by `ilogb (0.0)'.
-    FP_ILOGBNAN	Expands to a value returned by `ilogb (NAN)'.
-
-    DECIMAL_DIG	Number of decimal digits supported by conversion between
-		decimal and all internal floating-point formats.
-
-*/
-# include <bits/mathdef.h>
+#define INFINITY	HUGE_VALF
 
 /* All floating-point numbers can be put in one of these categories.  */
 enum
@@ -164,25 +190,46 @@ enum
 # define FP_NORMAL FP_NORMAL
   };
 
+/*
+ * prototypes for funcs used in macros
+ */
+extern int __fpclassifyf(float);
+extern int __signbitf(float);
+extern int __finitef(float);
+extern int __isnanf(float);
+extern int __isinff(float);
+
+extern int __fpclassifyl(double);
+extern int __signbitl(double);
+extern int __finitel(double);
+extern int __isnanl(double);
+extern int __isinfl(double);
+
+extern int __fpclassify(double);
+extern int __signbit(double);
+extern int __finite(double);
+extern int __isnan(double);
+extern int __isinf(double);
+
 /* Return number of classification appropriate for X.  */
 # define fpclassify(x) \
-     (sizeof (x) == sizeof (float) ?					      \
-        __fpclassifyf (x)						      \
-      : sizeof (x) == sizeof (double) ?					      \
+     (sizeof (x) == sizeof (float) ?                                          \
+        __fpclassifyf (x)                                                     \
+      : sizeof (x) == sizeof (double) ?                                       \
         __fpclassify (x) : __fpclassifyl (x))
 
 /* Return nonzero value if sign of X is negative.  */
 # define signbit(x) \
-     (sizeof (x) == sizeof (float) ?					      \
-        __signbitf (x)							      \
-      : sizeof (x) == sizeof (double) ?					      \
+     (sizeof (x) == sizeof (float) ?                                          \
+        __signbitf (x)                                                        \
+      : sizeof (x) == sizeof (double) ?                                       \
         __signbit (x) : __signbitl (x))
 
 /* Return nonzero value if X is not +-Inf or NaN.  */
 # define isfinite(x) \
-     (sizeof (x) == sizeof (float) ?					      \
-        __finitef (x)							      \
-      : sizeof (x) == sizeof (double) ?					      \
+     (sizeof (x) == sizeof (float) ?                                          \
+        __finitef (x)                                                         \
+      : sizeof (x) == sizeof (double) ?                                       \
         __finite (x) : __finitel (x))
 
 /* Return nonzero value if X is neither zero, subnormal, Inf, nor NaN.  */
@@ -191,198 +238,430 @@ enum
 /* Return nonzero value if X is a NaN.  We could use `fpclassify' but
    we already have this functions `__isnan' and it is faster.  */
 # define isnan(x) \
-     (sizeof (x) == sizeof (float) ?					      \
-        __isnanf (x)							      \
-      : sizeof (x) == sizeof (double) ?					      \
+     (sizeof (x) == sizeof (float) ?                                          \
+        __isnanf (x)                                                          \
+      : sizeof (x) == sizeof (double) ?                                       \
         __isnan (x) : __isnanl (x))
 
 /* Return nonzero value is X is positive or negative infinity.  */
 # define isinf(x) \
-     (sizeof (x) == sizeof (float) ?					      \
-        __isinff (x)							      \
-      : sizeof (x) == sizeof (double) ?					      \
+     (sizeof (x) == sizeof (float) ?                                          \
+        __isinff (x)                                                          \
+      : sizeof (x) == sizeof (double) ?                                       \
         __isinf (x) : __isinfl (x))
 
-#endif /* Use ISO C 9X.  */
 
-#ifdef	__USE_MISC
-/* Support for various different standard error handling behaviors.  */
-typedef enum
+#elif __POWERPC__
+/* float versions of the standard functions */
+double exp2(double x);
+double log2(double x);
+double scalbn(double x, int n); 
+
+double nearbyint(double x);
+long rinttol(double x);
+double round(double x);
+long roundtol(double x);
+double trunc(double x);
+double remquo(double x, double y, int *quo);
+double fdim(double x, double y);
+double fmax(double x, double y);
+double fmin(double x, double y);
+double scalbln(double x, long n);
+long int lrint(double x);
+long long llrint(double x);
+long int lround(double x);
+long long llround(double x);
+
+extern const double *__huge_val;
+extern const float 	*__huge_val_float;
+extern const double	*__huge_val_extended;
+extern const double	*__nan_val;
+extern const float  *__nan_val_float;
+
+
+#define HUGE_VAL 	(*__huge_val)
+#define HUGE_VALF	(*__huge_val_float)
+#define HUGE_VALL	(*__huge_val_extended)
+#define INFINITY	(*(double *) __huge_val)
+#define NAN			(*(double *) __nan_val)
+
+#define FP_NAN       1  /*   quiet NaN (signaling Nan supported on MAC but nowhere else. */
+#define FP_INFINITE  2  /*   + or - infinity      */
+#define FP_ZERO      3  /*   + or - zero          */
+#define FP_NORMAL    4  /*   all normal numbers   */
+#define FP_SUBNORMAL 5  /*   denormal numbers     */
+
+#ifdef __HI
+# undef __HI
+#endif
+
+# define __LO(x) (*(1+(int*)&x) )
+# define __HI(x) (*(int*)&x)
+
+/* start out w/ definitions of inlines/macros which are neither extern "C" nor in namespace std */
+#pragma cplusplus on
+/* fpclassify for floats */
+
+inline int __fpclassifyf(float x)
 {
-  _IEEE_ = -1,	/* According to IEEE 754/IEEE 854.  */
-  _SVID_,	/* According to System V, release 4.  */
-  _XOPEN_,	/* Nowadays also Unix98.  */
-  _POSIX_,
-  _ISOC_	/* Actually this is ISO C 9X.  */
-} _LIB_VERSION_TYPE;
-
-/* This variable can be changed at run-time to any of the values above to
-   affect floating point error handling behavior (it may also be necessary
-   to change the hardware FPU exception settings).  */
-extern _LIB_VERSION_TYPE _LIB_VERSION;
-#endif
-
-
-#ifdef __USE_SVID
-/* In SVID error handling, `matherr' is called with this description
-   of the exceptional condition.
-
-   We have a problem when using C++ since `exception' is a reserved
-   name in C++.  */
-# ifdef __cplusplus
-struct __exception
-# else
-struct exception
-# endif
+ switch( (*(int*)&x)&0x7f800000 )
   {
-    int type;
-    char *name;
-    double arg1;
-    double arg2;
-    double retval;
-  };
+  case 0x7f800000:
+   {
+    if((*(int*)&x)&0x007fffff) return FP_NAN;
+    else return FP_INFINITE;
+    break;
+   }
+  case 0:
+   {
+    if((*(int*)&x)&0x007fffff) return FP_SUBNORMAL;
+    else return FP_ZERO; 
+    break; 
+   }
+  }
+  return FP_NORMAL;
+}  
 
-# ifdef __cplusplus
-extern int __matherr __P ((struct __exception *__exc));
-extern int matherr __P ((struct __exception *__exc));
-# else
-extern int __matherr __P ((struct exception *__exc));
-extern int matherr __P ((struct exception *__exc));
-# endif
+/* fpclassify for doubles or integral types */
 
-# define X_TLOSS	1.41484755040568800000e+16
+inline int __fpclassifyd(double x) 
+{
+ switch(__HI(x)&0x7ff00000 )
+  {
+   case 0x7ff00000:
+   {
+    if((__HI(x)&0x000fffff) || (__LO(x)&0xffffffff)) return FP_NAN;
+    else return FP_INFINITE;
+    break;
+   }
+  case 0:
+  {
+    if((__HI(x)&0x000fffff) || (__LO(x)&0xffffffff)) return FP_SUBNORMAL;
+    else return FP_ZERO; 
+    break; 
+  }
+  
+  }
+  return FP_NORMAL;
+} 
+ 
+inline int __signbitf(float x) {return (int)((int)(*(int*)&x)&0x80000000);}
+inline int __signbitd(double x){return  (int)(     __HI(x)&0x80000000);}
 
-/* Types of exceptions in the `type' field.  */
-# define DOMAIN		1
-# define SING		2
-# define OVERFLOW	3
-# define UNDERFLOW	4
-# define TLOSS		5
-# define PLOSS		6
+/*  7.7.3  Classification macros */
 
-/* SVID mode specifies returning this large value instead of infinity.  */
-# define HUGE		FLT_MAX
-# include <float.h>		/* Defines FLT_MAX.  */
+#define fpclassify(x)  \
+	 ((sizeof(x) == sizeof(float))  ? __fpclassifyf((float)(x)) \
+     :  __fpclassifyd((double)(x)) )
+	
 
-#else	/* !SVID */
+#define isnormal(x) (fpclassify(x) == FP_NORMAL)
+#define isnan(x)    (fpclassify(x) == FP_NAN)
+#define isinf(x)    (fpclassify(x) == FP_INFINITE)
+#define isfinite(x) ((fpclassify(x) > FP_INFINITE))
+  
+#define signbit(x)  \
+		 ((sizeof(x) == 4)  ? __signbitf((float)(x)) \
+		:  __signbitd((double)(x)) )
 
-# ifdef __USE_XOPEN
-/* X/Open wants another strange constant.  */
-#  define MAXFLOAT	FLT_MAX
-#  include <float.h>
-# endif
+__extern_c_end
 
-#endif	/* SVID */
+/* inlines work for both C and C++, there is no
+ambiguity since we have exactly one overload */
+                         
+                         
+/* C9X foof's-- only the 22 K&R math functions have actual foof
+   implementations(prototypes), keep the
+   others as inlines until they are actually written.
+*/   
 
+    inline float acosf(float x)
+		{return (float)acos((double)x);}
+	inline float asinf(float x)
+		{return (float)asin((double)x);}
+	inline float atanf(float x)
+		{return (float)atan((double)x);}
+	inline float atan2f(float y, float x)
+		{return (float)atan2((double)y, (double)x);}
+	inline float cosf(float x)
+		{return (float)cos((double)x);}
+	inline float sinf(float x)
+		{return (float)sin((double)x);}
+	inline float tanf(float x)
+		{return (float)tan((double)x);}
+	inline float coshf(float x)
+		{return (float)cosh((double)x);}
+	inline float sinhf(float x)
+		{return (float)sinh((double)x);}
+	inline float tanhf(float x)
+		{return (float)tanh((double)x);}
+	inline float expf(float x)
+		{return (float)exp((double)x);}
+	inline float frexpf(float x, int* exp)
+		{return (float)frexp((double)x, exp);}
+	inline float ldexpf(float x, int exp)
+		{return (float)ldexp((double)x, exp);}
+	inline float logf(float x)
+		{return (float)log((double)x);}
+	inline float log10f(float x)
+		{return (float)log10((double)x);}
+    inline float fabsf(float x)
+		{return (float)fabs((double)x);}
+		
+	inline float powf(float x, float y)
+		{return (float)pow((double)x, (double)y);}
+	inline float sqrtf(float x)
+		{return (float)sqrt((double)x);}
+	inline float ceilf(float x)
+		{return (float)ceil((double)x);}
+	inline float floorf(float x)
+		{return (float)floor((double)x);}
+	inline float fmodf(float x, float y)
+		{return (float)fmod((double)x, (double)y);}
 
-/* Some useful constants.  */
-#if defined __USE_BSD || defined __USE_XOPEN
-# define M_E		2.7182818284590452354	/* e */
-# define M_LOG2E	1.4426950408889634074	/* log_2 e */
-# define M_LOG10E	0.43429448190325182765	/* log_10 e */
-# define M_LN2		0.69314718055994530942	/* log_e 2 */
-# define M_LN10		2.30258509299404568402	/* log_e 10 */
-# define M_PI		3.14159265358979323846	/* pi */
-# define M_PI_2		1.57079632679489661923	/* pi/2 */
-# define M_PI_4		0.78539816339744830962	/* pi/4 */
-# define M_1_PI		0.31830988618379067154	/* 1/pi */
-# define M_2_PI		0.63661977236758134308	/* 2/pi */
-# define M_2_SQRTPI	1.12837916709551257390	/* 2/sqrt(pi) */
-# define M_SQRT2	1.41421356237309504880	/* sqrt(2) */
-# define M_SQRT1_2	0.70710678118654752440	/* 1/sqrt(2) */
+    inline float acoshf(float x)
+		{return (float)acosh((double)x);}
+	inline float asinhf(float x)
+		{return (float)asinh((double)x);}
+	inline float atanhf(float x)
+		{return (float)atanh((double)x);}
+	inline float exp2f(float x)
+		{return (float)exp2((double)x);}
+	inline float expm1f(float x)
+		{return (float)expm1((double)x);}
+	inline float log1pf(float x)
+		{return (float)log1p((double)x);}
+	inline float log2f(float x)
+		{return (float)log2((double)x);}
+	inline float logbf(float x)
+		{return (float)logb((double)x);}
+	inline float scalbnf(float x, int n)
+		{return (float)scalbn((double)x, n);}
+	inline float scalblnf(float x, long int n)
+		{return (float)scalbn((double)x, n);}
+	inline float hypotf(float x, float y)
+		{return (float)hypot((double)x, (double)y);}
+
+    inline float erff(float x)
+		{return (float)erf((double)x);}
+	inline float erfcf(float x)
+		{return (float)erfc((double)x);}
+	inline float gammaf(float x)
+		{return (float)gamma((double)x);}
+	inline float lgammaf(float x)
+		{return (float)lgamma((double)x);}
+	inline float nextafterf(float x, float y)
+		{return (float)nextafter((double)x, (double)y);}
+	inline float nearbyintf(float x)
+		{return (float)nearbyint((double)x);}
+	inline float rintf(float x)
+		{return (float)rint((double)x);}
+	inline long int lrintf(float x)
+		{return lrint((double)x);}
+	inline long long llrintf(float x)
+		{return llrint((double)x);}
+	inline float roundf(float x)
+		{return (float)round((double)x);}
+	inline long int lroundf(float x)
+		{return lround((double)x);}
+	inline long long llroundf(float x)
+		{return llround((double)x);}
+	inline float truncf(float x)
+		{return (float)trunc((double)x);}
+	inline float remainderf(float x, float y)
+		{return (float)remainder((double)x, (double)y);}
+	inline float copysignf(float x, float y)
+		{return (float)copysign((double)x, (double)y);}
+	inline float remquof(float x, float y, int *quo)
+		{return (float)remquo((double)x, (double)y, quo);}
+	inline float fdimf(float x, float y)
+		{return (float)fdim((double)x, (double)y);}
+	inline float fmaxf(float x, float y)
+		{return (float)fmax((double)x, (double)y);}
+	inline float fminf(float x, float y)
+		{return (float)fmin((double)x, (double)y);}
+	
+    inline double scalbln(double x, long n)
+		{return (double)scalbn(x, (long)n);}
+    inline long int lrint(double x)
+		{return rinttol(x);}
+	inline long long llrint(double x)
+		{return (long long)rint(x);}
+    inline long int lround(double x)
+		{return roundtol(x);}
+	inline long long llround(double x)
+		{return (long long)round(x);}
+			
+// long double math functions(fool's), we do not support true long double outside of macos 68K
+			
+	inline long double acosl(long double x)
+		{return acos((double)x);}
+	inline long double asinl(long double x)
+		{return asin((double)x);}
+	inline long double atanl(long double x)
+		{return atan((double)x);}
+	inline long double atan2l(long double y, long double x)
+		{return atan2((double)y, (double)x);}
+	inline long double cosl(long double x)
+		{return cos((double)x);}
+	inline long double sinl(long double x)
+		{return sin((double)x);}
+	inline long double tanl(long double x)
+		{return tan((double)x);}
+	inline long double coshl(long double x)
+		{return cosh((double)x);}
+	inline long double sinhl(long double x)
+		{return sinh((double)x);}
+	inline long double tanhl(long double x)
+		{return tanh((double)x);}
+	inline long double acoshl(long double x)
+		{return acosh((double)x);}
+	inline long double asinhl(long double x)
+		{return asinh((double)x);}
+	inline long double atanhl(long double x)
+		{return atanh((double)x);}
+	inline long double expl(long double x)
+		{return exp((double)x);}
+	inline long double frexpl(long double x, int* exp)
+		{return frexp((double)x, exp);}
+	inline long double ldexpl(long double x, int exp)
+		{return ldexp((double)x, exp);}
+	inline long double logl(long double x)
+		{return log((double)x);}
+	inline long double log10l(long double x)
+		{return log10((double)x);}
+	inline long double modfl(long double x, long double* iptr)
+		{
+			double iptrd;
+			long double result = modf((double)x, &iptrd);
+			*iptr = iptrd;
+			return result;
+		}
+	
+	inline long double exp2l(long double x)
+		{return exp2((double)x);}
+	inline long double expm1l(long double x)
+		{return expm1((double)x);}
+	inline long double log1pl(long double x)
+		{return log1p((double)x);}
+	inline long double log2l(long double x)
+		{return log2((double)x);}
+	inline long double logbl(long double x)
+		{return logb((double)x);}
+	inline long double scalbnl(long double x, int n)
+		{return scalbn((double)x, n);}
+	inline long double scalblnl(long double x, long int n)
+		{return scalbn((double)x, n);}
+	inline long double fabsl(long double x)
+		{return fabs((double)x);}
+	inline long double powl(long double x, long double y)
+		{return pow((double)x, (double)y);}
+	inline long double sqrtl(long double x)
+		{return sqrt((double)x);}
+	inline long double hypotl(long double x, long double y)
+		{return hypot((double)x, (double)y);}
+		
+	inline long double erfl(long double x)
+		{return erf((double)x);}
+	inline long double erfcl(long double x)
+		{return erfc((double)x);}
+	inline long double gammal(long double x)
+		{return gamma((double)x);}
+	inline long double lgammal(long double x)
+		{return lgamma((double)x);}
+	inline long double nextafterl(long double x, long double y)
+		{return nextafter((double)x, (double)y);}
+	
+	inline long double ceill(long double x)
+		{return ceil((double)x);}
+	inline long double floorl(long double x)
+		{return floor((double)x);}
+	inline long double nearbyintl(long double x)
+		{return nearbyint((double)x);}
+	inline long double rintl(long double x)
+		{return rint((double)x);}
+	inline long int lrintl(long double x)
+		{return lrint((double)x);}
+	inline long long llrintl(long double x)
+		{return llrint((double)x);}
+	inline long double roundl(long double x)
+		{return round((double)x);}
+	inline long int lroundl(long double x)
+		{return lround((double)x);}
+	inline long long llroundl(long double x)
+		{return llround((double)x);}
+	inline long double truncl(long double x)
+		{return trunc((double)x);}
+	inline long double fmodl(long double x, long double y)
+		{return fmod((double)x, (double)y);}
+	inline long double remainderl(long double x, long double y)
+		{return remainder((double)x, (double)y);}
+	inline long double copysignl(long double x, long double y)
+		{return copysign((double)x, (double)y);}
+	inline long double remquol(long double x, long double y, int *quo)
+		{return remquo((double)x, (double)y, quo);}
+	
+	inline long double fdiml(long double x, long double y)
+		{return fdim((double)x, (double)y);}
+	inline long double fmaxl(long double x, long double y)
+		{return fmax((double)x, (double)y);}
+	inline long double fminl(long double x, long double y)
+		{return fmin((double)x, (double)y);}
+
+#pragma cplusplus reset
+
+__extern_c_start
+
+#endif /* __POWERPC__ */
+
+__extern_c_end
+
+#ifndef M_E
+#define M_E         2.7182818284590452354   /* e */
+#endif
+#ifndef M_LOG2E
+#define M_LOG2E     1.4426950408889634074   /* log 2e */
+#endif
+#ifndef M_LOG10E
+#define M_LOG10E    0.43429448190325182765  /* log 10e */
+#endif
+#ifndef M_LN2
+#define M_LN2       0.69314718055994530942  /* log e2 */
+#endif
+#ifndef M_LN10
+#define M_LN10      2.30258509299404568402  /* log e10 */
+#endif
+#ifndef M_PI
+#define M_PI        3.14159265358979323846  /* pi */
+#endif
+#ifndef M_PI_2
+#define M_PI_2      1.57079632679489661923  /* pi/2 */
+#endif
+#ifndef M_1_PI
+#define M_1_PI      0.31830988618379067154  /* 1/pi */
+#endif
+#ifndef M_PI_4
+#define M_PI_4      0.78539816339744830962  /* pi/4 */
+#endif
+#ifndef M_2_PI
+#define M_2_PI      0.63661977236758134308  /* 2/pi */
+#endif
+#ifndef M_2_SQRTPI
+#define M_2_SQRTPI  1.12837916709551257390  /* 2/sqrt(pi) */
+#endif
+#ifndef M_SQRT2
+#define M_SQRT2     1.41421356237309504880  /* sqrt(2) */
+#endif
+#ifndef M_SQRT1_2
+#define M_SQRT1_2   0.70710678118654752440  /* 1/sqrt(2) */
 #endif
 
-/* The above constants are not adequate for computation using `long double's.
-   Therefore we provide as an extension constants with similar names as a
-   GNU extension.  Provide enough digits for the 128-bit IEEE quad.  */
-#ifdef __USE_GNU
-# define M_El		2.7182818284590452353602874713526625L  /* e */
-# define M_LOG2El	1.4426950408889634073599246810018922L  /* log_2 e */
-# define M_LOG10El	0.4342944819032518276511289189166051L  /* log_10 e */
-# define M_LN2l		0.6931471805599453094172321214581766L  /* log_e 2 */
-# define M_LN10l	2.3025850929940456840179914546843642L  /* log_e 10 */
-# define M_PIl		3.1415926535897932384626433832795029L  /* pi */
-# define M_PI_2l	1.5707963267948966192313216916397514L  /* pi/2 */
-# define M_PI_4l	0.7853981633974483096156608458198757L  /* pi/4 */
-# define M_1_PIl	0.3183098861837906715377675267450287L  /* 1/pi */
-# define M_2_PIl	0.6366197723675813430755350534900574L  /* 2/pi */
-# define M_2_SQRTPIl	1.1283791670955125738961589031215452L  /* 2/sqrt(pi) */
-# define M_SQRT2l	1.4142135623730950488016887242096981L  /* sqrt(2) */
-# define M_SQRT1_2l	0.7071067811865475244008443621048490L  /* 1/sqrt(2) */
+#ifndef PI                      /* as in stroustrup */
+#define PI  M_PI
+#endif
+#ifndef PI2
+#define PI2  M_PI_2
 #endif
 
 
-/* When compiling in strict ISO C compatible mode we must not use the
-   inline functions since they, among other things, do not set the
-   `errno' variable correctly.  */
-#if defined __STRICT_ANSI__ && !defined __NO_MATH_INLINES
-# define __NO_MATH_INLINES	1
-#endif
-
-/* Get machine-dependent inline versions (if there are any).  */
-#ifdef __USE_EXTERN_INLINES
-# include <bits/mathinline.h>
-#endif
-
-
-#if __USE_ISOC9X
-/* ISO C 9X defines some macros to compare number while taking care
-   for unordered numbers.  Since many FPUs provide special
-   instructions to support these operations and these tests are
-   defined in <bits/mathinline.h>, we define the generic macros at
-   this late point and only if they are not defined yet.  */
-
-/* Return nonzero value if X is greater than Y.  */
-# ifndef isgreater
-#  define isgreater(x, y) \
-  (__extension__							      \
-   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
-      !isunordered (__x, __y) && __x > __y; }))
-# endif
-
-/* Return nonzero value if X is greater than or equal to Y.  */
-# ifndef isgreaterequal
-#  define isgreaterequal(x, y) \
-  (__extension__							      \
-   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
-      !isunordered (__x, __y) && __x >= __y; }))
-# endif
-
-/* Return nonzero value if X is less than Y.  */
-# ifndef isless
-#  define isless(x, y) \
-  (__extension__							      \
-   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
-      !isunordered (__x, __y) && __x < __y; }))
-# endif
-
-/* Return nonzero value if X is less than or equal to Y.  */
-# ifndef islessequal
-#  define islessequal(x, y) \
-  (__extension__							      \
-   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
-      !isunordered (__x, __y) && __x <= __y; }))
-# endif
-
-/* Return nonzero value if either X is less than Y or Y is less than X.  */
-# ifndef islessgreater
-#  define islessgreater(x, y) \
-  (__extension__							      \
-   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
-      !isunordered (__x, __y) && (__x < __y || __y < __x); }))
-# endif
-
-/* Return nonzero value if arguments are unordered.  */
-# ifndef isunordered
-#  define isunordered(u, v) \
-  (__extension__							      \
-   ({ __typeof__(u) __u = (u); __typeof__(v) __v = (v);			      \
-      fpclassify (__u) == FP_NAN || fpclassify (__v) == FP_NAN; }))
-# endif
-
-#endif
-
-__END_DECLS
-
-
-#endif /* math.h  */
+#endif /* _MATH_H_ */
