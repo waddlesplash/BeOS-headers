@@ -7,7 +7,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _TYPE_CONSTANTS_H
 #define _TYPE_CONSTANTS_H
@@ -49,7 +49,10 @@ enum {
 	B_UINT64_TYPE				= 'ULLG',
 	B_UINT32_TYPE				= 'ULNG',
 	B_UINT16_TYPE 				= 'USHT',
-	B_UINT8_TYPE 				= 'UBYT'
+	B_UINT8_TYPE 				= 'UBYT',
+	B_MEDIA_PARAMETER_TYPE		= 'BMCT',
+	B_MEDIA_PARAMETER_WEB_TYPE	= 'BMCW',
+	B_MEDIA_PARAMETER_GROUP_TYPE= 'BMCG'
 };
 
 /*-------------------------------------------------------------*/

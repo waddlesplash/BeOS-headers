@@ -4,9 +4,9 @@
 //
 //	Description:	MIME string functions
 //
-//	Copyright 1997, Be Incorporated, All Rights Reserved.
+//	Copyright 1998, Be Incorporated, All Rights Reserved.
 //
-//****************************************************************************/
+*****************************************************************************/
 
 #ifndef _MIME_H
 #define _MIME_H
@@ -57,10 +57,31 @@ enum app_verb {
 	B_OPEN
 };
 
-extern _IMPEXP_BE const char *B_APP_MIME_TYPE;		// platform dependent
-extern _IMPEXP_BE const char *B_PEF_APP_MIME_TYPE;	// "application/x-be-executable"
-extern _IMPEXP_BE const char *B_PE_APP_MIME_TYPE;	// "application/x-vnd.be-peexecutable"
-extern _IMPEXP_BE const char *B_RESOURCE_MIME_TYPE;	// "application/x-be-resource"
+extern _IMPEXP_BE const char *B_APP_MIME_TYPE;		/* platform dependent*/
+extern _IMPEXP_BE const char *B_PEF_APP_MIME_TYPE;	/* "application/x-be-executable"*/
+extern _IMPEXP_BE const char *B_PE_APP_MIME_TYPE;	/* "application/x-vnd.be-peexecutable"*/
+extern _IMPEXP_BE const char *B_ELF_APP_MIME_TYPE;	/* "application/x-vnd.be-elfexecutable"*/
+extern _IMPEXP_BE const char *B_RESOURCE_MIME_TYPE;	/* "application/x-be-resource"*/
+extern _IMPEXP_BE const char *B_FILE_MIME_TYPE;		/* "application/octet-stream"*/
+
+/* ------------------------------------------------------------- */
+
+enum {
+	B_META_MIME_CHANGED = 'MMCH'
+};
+
+enum {
+	B_ICON_CHANGED					= 0x00000001,
+	B_PREFERRED_APP_CHANGED			= 0x00000002,
+	B_ATTR_INFO_CHANGED				= 0x00000004,
+	B_FILE_EXTENSIONS_CHANGED		= 0x00000008,
+	B_SHORT_DESCRIPTION_CHANGED		= 0x00000010,
+	B_LONG_DESCRIPTION_CHANGED		= 0x00000020,
+	B_ICON_FOR_TYPE_CHANGED			= 0x00000040,
+	B_APP_HINT_CHANGED				= 0x00000080,
+
+	B_EVERYTHING_CHANGED			= (int)0xFFFFFFFF
+};
 
 /* ------------------------------------------------------------- */
 
@@ -75,16 +96,17 @@ virtual				~BMimeType();
 		void		Unset();
 		status_t 	InitCheck() const;
 
-		// these functions simply perform string manipulations
+		/* these functions simply perform string manipulations*/
 		const char	*Type() const;
 		bool		IsValid() const;
 		bool		IsSupertypeOnly() const;
 		bool		IsInstalled() const;
 		status_t	GetSupertype(BMimeType *super_type) const;
 		bool		operator==(const BMimeType &type) const;
+		bool		operator==(const char *type) const;
 		bool		Contains(const BMimeType *type) const;
 
-		// These functions are for managing data in the meta mime file
+		/* These functions are for managing data in the meta mime file*/
 		status_t	Install();
 		status_t	Delete();
 		status_t	GetIcon(BBitmap *icon, icon_size) const;
@@ -111,16 +133,19 @@ static	status_t	GetInstalledTypes(const char *super_type,
 static	status_t	GetWildcardApps(BMessage *wild_ones);
 static	bool		IsValid(const char *string);
 
-		// for application signatures only.
+		status_t	GetAppHint(entry_ref *ref) const;
+		status_t	SetAppHint(const entry_ref *ref);
+
+		/* for application signatures only.*/
 		status_t	GetIconForType(const char *type,
 								BBitmap *icon,
 								icon_size which) const;
 		status_t	SetIconForType(const char *type,
 								const BBitmap *icon,
 								icon_size which);
-		status_t	GetAppHint(entry_ref *ref) const;
-		status_t	SetAppHint(const entry_ref *ref);
 
+static	status_t	StartWatching(BMessenger target);
+static	status_t	StopWatching(BMessenger target);
 
 		/* Misnomer.  Use SetTo instead. */
 		status_t	SetType(const char *MIME_type);
@@ -128,7 +153,7 @@ static	bool		IsValid(const char *string);
 private:
 friend	class BAppFileInfo;
 friend	class BRoster;
-friend	status_t	_update_mime_info_(const char *, bool);
+friend	status_t	_update_mime_info_(const char *, int32);
 friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
 
 virtual	void		_ReservedMimeType1();
@@ -144,6 +169,8 @@ virtual	void		_ReservedMimeType3();
 		status_t	CloseFile() const;
 		status_t	GetSupportedTypes(BMessage *types);
 		status_t	SetSupportedTypes(const BMessage *types);
+		void		MimeChanged(int32 w, const char *type = NULL,
+						bool large = true);
 
 		char		*fType;
 		BFile		*fMeta;

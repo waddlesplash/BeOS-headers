@@ -7,7 +7,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _HANDLER_H
 #define _HANDLER_H
@@ -50,6 +50,10 @@ virtual	bool		RemoveFilter(BMessageFilter *filter);
 virtual	void		SetFilterList(BList *filters);
 		BList		*FilterList();
 
+		bool		LockLooper();
+		status_t	LockLooperWithTimeout(bigtime_t timeout);
+		void		UnlockLooper();
+
 /* Scripting  */
 virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 index,
@@ -62,6 +66,7 @@ virtual status_t	GetSupportedSuites(BMessage *data);
 virtual status_t	Perform(perform_code d, void *arg);
 
 private:
+typedef BArchivable _inherited;
 friend inline int32 _get_object_token_(const BHandler *);
 friend class BLooper;
 friend class BMessageFilter;
@@ -75,6 +80,7 @@ virtual	void		_ReservedHandler4();
 
 					BHandler(const BHandler &);
 		BHandler	&operator=(const BHandler &);
+		void		SetLooper(BLooper *loop);
 
 		int32		fToken;
 		char		*fName;

@@ -6,7 +6,7 @@
 /
 /	Copyright 1994-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _MENU_BAR_H
 #define _MENU_BAR_H
@@ -68,6 +68,13 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
+
+virtual void			ResizeToPreferred();
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			MakeFocus(bool state = true);
+virtual void			AllAttached();
+virtual void			AllDetached();
+
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);

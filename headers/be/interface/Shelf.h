@@ -6,7 +6,7 @@
 /
 /	Copyright 1996-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _SHELF_H
 #define _SHELF_H
@@ -102,6 +102,11 @@ virtual	void			_ReservedShelf3();
 virtual	void			_ReservedShelf4();
 virtual	void			_ReservedShelf5();
 
+#if !_PR3_COMPATIBLE_
+virtual	void			_ReservedShelf6();
+virtual	void			_ReservedShelf7();
+virtual	void			_ReservedShelf8();
+#endif
 						BShelf(const BShelf&);
 		BShelf			&operator=(const BShelf &);
 
@@ -128,6 +133,9 @@ virtual	void			_ReservedShelf5();
 		bool			fTypeEnforced;
 
 		uint32			_reserved[3];	/* was 5 */
+#if !_PR3_COMPATIBLE_
+		uint32			_more_reserved[5];
+#endif
 };
 
 /*-------------------------------------------------------------*/

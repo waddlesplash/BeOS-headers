@@ -1,10 +1,12 @@
-/* ++++++++++
-	File:			debugger.h
-	Description:	kernel interface for a debugger.
-
-	Copyright (c) 1995-97 by Be Incorporated.  All Rights Reserved.
-+++++ */
-
+/*******************************************************************************
+/
+/	File:		debugger.h
+/
+/	Description:	kernel interface for a debugger.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _DEBUGGER_H
 #define _DEBUGGER_H
@@ -52,7 +54,8 @@ typedef enum {
 	B_DATA_ACCESS_EXCEPTION,
 	B_INSTRUCTION_ACCESS_EXCEPTION,
 	B_ALIGNMENT_EXCEPTION,
-	B_PROGRAM_EXCEPTION
+	B_PROGRAM_EXCEPTION,
+	B_GET_PROFILING_INFO
 } db_why_stopped;
 #endif
 
@@ -74,6 +77,7 @@ typedef enum {
 		B_STACK_FAULT,
 		B_GENERAL_PROTECTION_FAULT,
 		B_FLOATING_POINT_EXCEPTION,
+		B_GET_PROFILING_INFO
 } db_why_stopped;
 #endif
 
@@ -87,7 +91,8 @@ typedef enum {
 		B_DATA_ACCESS_EXCEPTION,
 		B_INSTRUCTION_ACCESS_EXCEPTION,
 		B_ALIGNMENT_EXCEPTION,
-		B_PROGRAM_EXCEPTION
+		B_PROGRAM_EXCEPTION,
+		B_GET_PROFILING_INFO
 } db_why_stopped;
 #endif
 
@@ -243,7 +248,11 @@ enum debug_nub_message {
 	B_GET_THREAD_DEBUG_INFO,	/* get debugging info */
 	B_ACKNOWLEGE_IMAGE_CREATED,	/* acknowlege image created */
 	B_START_PROFILER,			/* start profiler */
-	B_STOP_PROFILER				/* stop profiler */
+	B_STOP_PROFILER,			/* stop profiler */
+	B_SET_WATCHPOINT,			/* set a watchpoint */
+	B_CLEAR_WATCHPOINT,			/* clear a watchpoint */
+	B_STOP_ON_DEBUG,            /* stop all threads in team when one enters db*/
+	B_GET_THREAD_STACK_TOP      /* get top of ustack of a thread in the kernel*/
 };
 
 /* -----
@@ -336,6 +345,33 @@ typedef struct {
 	int32		slots[1];
 } nub_stop_profiler_reply;
 
+typedef struct {
+	port_id		reply_port;				/* port for reply from kernel */
+	char		*addr;					/* watchpoint address */
+	int			type;					/* watchpoint type */
+} nub_set_watchpoint_msg;
+
+typedef struct {
+	port_id		reply_port;				/* port for reply from kernel */
+	char		*addr;					/* watchpoint address */
+} nub_clear_watchpoint_msg;
+
+typedef struct {
+	port_id		reply_port;				/* port for reply from kernel */
+	thread_id	thread;                 /* thid of thread to set this for */
+	bool		enabled;
+} nub_stop_on_debug_msg;
+
+typedef struct {
+	port_id		reply_port;
+	thread_id	thread;
+} nub_get_thread_stack_top_msg;
+
+typedef struct {
+	void		*stack_top; 			/* stack ptr at entry to the kernel */
+	void        *pc;                	/* program ctr at entry to the kernel */
+} nub_get_thread_stack_top_reply;
+
 /* -----
 	union of all stuctures passed to the nub
 ----- */
@@ -354,6 +390,10 @@ typedef union {
 	nub_acknowlege_image_created_msg	nub_acknowlege_image_created;
 	nub_start_profiler_msg				nub_start_profiler;
 	nub_stop_profiler_msg				nub_stop_profiler;
+	nub_set_watchpoint_msg				nub_set_watchpoint;
+	nub_clear_watchpoint_msg			nub_clear_watchpoint;
+	nub_stop_on_debug_msg				nub_stop_on_debug;
+	nub_get_thread_stack_top_msg		nub_get_thread_stack_top;
 } to_nub_msg;
 
 
@@ -425,6 +465,10 @@ typedef struct {
 	team_id		team;			/* team id */
 } db_thread_deleted_msg;
 
+typedef struct {
+	thread_id	thread;
+} db_get_profile_info_msg;
+
 
 /* -----
 	union of all structures passed to external debugger
@@ -438,6 +482,7 @@ typedef union {
 	db_pef_image_deleted_msg	pef_image_deleted;
 	db_thread_created_msg		thread_created;
 	db_thread_deleted_msg		thread_deleted;
+	db_get_profile_info_msg		get_profile_info;
 } to_debugger_msg;
 
 #ifdef __cplusplus

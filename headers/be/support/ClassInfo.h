@@ -6,12 +6,15 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _CLASS_INFO_H
 #define _CLASS_INFO_H
 
-#include <typeinfo.h>
+#include <typeinfo>
+
+// deprecated, use standard RTTI calls instead 
+
 
 /*-------------------------------------------------------------*/
 /*--------- Class Info Macros ---------------------------------*/

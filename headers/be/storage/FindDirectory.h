@@ -2,9 +2,9 @@
 //
 //	File:			FindDirectory.h
 //
-//	Copyright 1997, Be Incorporated, All Rights Reserved.
+//	Copyright 1998, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _FIND_DIRECTORY_H
@@ -19,7 +19,7 @@ extern "C" {
 
 typedef enum {
 	/* ---
-		first are the per-volume directories.  When asking for these
+		Per volume directories.  When asking for these
 		directories, a volume must be specified, or the call will assume
 		the boot volume.
 	--- */
@@ -28,8 +28,7 @@ typedef enum {
 	B_TRASH_DIRECTORY,
 
 	/* ---
-		here are the beos directories of interest.  These are mostly accessed
-		as read-only.
+		BeOS directories.  These are mostly accessed read-only.
 	--- */
 
 	B_BEOS_DIRECTORY				= 1000,
@@ -44,9 +43,12 @@ typedef enum {
 	B_BEOS_ETC_DIRECTORY,
 	B_BEOS_DOCUMENTATION_DIRECTORY,
 	B_BEOS_PREFERENCES_DIRECTORY,
+	B_BEOS_TRANSLATORS_DIRECTORY,
+	B_BEOS_MEDIA_NODES_DIRECTORY,
+	B_BEOS_SOUNDS_DIRECTORY,
 
 	/* ---
-		Here are the common directories, shared among all users
+		Common directories, shared among all users.
 	--- */
 
 	B_COMMON_DIRECTORY				= 2000,
@@ -65,10 +67,13 @@ typedef enum {
 	B_COMMON_SPOOL_DIRECTORY,
 	B_COMMON_TEMP_DIRECTORY,
 	B_COMMON_VAR_DIRECTORY,
+	B_COMMON_TRANSLATORS_DIRECTORY,
+	B_COMMON_MEDIA_NODES_DIRECTORY,
+	B_COMMON_SOUNDS_DIRECTORY,
 
 
 	/* ---
-		Here are user directories.  These are interpreted in the context
+		User directories.  These are interpreted in the context
 		of the user making the find_directory call.
 	--- */
 
@@ -80,18 +85,23 @@ typedef enum {
 	B_USER_LIB_DIRECTORY,
 	B_USER_SETTINGS_DIRECTORY,
 	B_USER_DESKBAR_DIRECTORY,
+	B_USER_PRINTERS_DIRECTORY,
+	B_USER_TRANSLATORS_DIRECTORY,
+	B_USER_MEDIA_NODES_DIRECTORY,
+	B_USER_SOUNDS_DIRECTORY,
 
 	/* ---
-		Here are global directories
+		Global directories.
 	--- */
 
 	B_APPS_DIRECTORY				= 4000,
-	B_PREFERENCES_DIRECTORY
+	B_PREFERENCES_DIRECTORY,
+	B_UTILITIES_DIRECTORY
 
 } directory_which;
 
 /* ---
-	the C interface
+	The C interface
 --- */
 
 extern _IMPEXP_ROOT status_t find_directory (

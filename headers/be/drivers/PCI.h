@@ -1,12 +1,14 @@
-/* ++++++++++
-	PCI.h
-	Copyright (c) 1996-97 by Be Incorporated.  All Rights Reserved.
-
-	Interface to the PCI bus.
-
-	For more information, see "PCI Local Bus Specification, Revision 2.1",
-	PCI Special Interest Group, 1995.
-+++++ */
+/*******************************************************************************
+/
+/	File:		PCI.h
+/
+/	Description:	Interface to the PCI bus.
+/	For more information, see "PCI Local Bus Specification, Revision 2.1",
+/	PCI Special Interest Group, 1995.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 
 #ifndef _PCI_H
@@ -14,34 +16,11 @@
 
 #include <BeBuild.h>
 #include <SupportDefs.h>
+#include <bus_manager.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-
-/* ---
-	PCI configuration space access
---- */
-
-extern _IMPEXP_ROOT long
-read_pci_config (
-	uchar	bus,				/* bus number */
-	uchar	device,				/* device # on bus */
-	uchar	function,			/* function # in device */
-	long	offset,				/* offset in configuration space */
-	long	size				/* # bytes to read (1, 2 or 4) */
-);
-
-extern _IMPEXP_ROOT void
-write_pci_config (
-	uchar	bus,				/* bus number */
-	uchar	device,				/* device # on bus */
-	uchar	function,			/* function # in device */
-	long	offset,				/* offset in configuration space */
-	long	size,				/* # bytes to write (1, 2 or 4) */
-	long	value				/* value to write */
-);
 
 
 /* -----
@@ -109,13 +88,43 @@ typedef struct pci_info {
 	} u;
 } pci_info;
 
-extern _IMPEXP_ROOT long
-get_nth_pci_info (
-	long		index,					/* index into pci device table */
-	pci_info 	*info					/* caller-supplied buffer for info */
-);
 
+typedef struct pci_module_info pci_module_info;
 
+struct pci_module_info {
+	bus_manager_info	binfo;
+
+	uint8			(*read_io_8) (int mapped_io_addr);
+	void			(*write_io_8) (int mapped_io_addr, uint8 value);
+	uint16			(*read_io_16) (int mapped_io_addr);
+	void			(*write_io_16) (int mapped_io_addr, uint16 value);
+	uint32			(*read_io_32) (int mapped_io_addr);
+	void			(*write_io_32) (int mapped_io_addr, uint32 value);
+
+	long			(*get_nth_pci_info) (
+						long		index,	/* index into pci device table */
+						pci_info 	*info	/* caller-supplied buffer for info */
+					);
+	uint32			(*read_pci_config) (
+						uchar	bus,		/* bus number */
+						uchar	device,		/* device # on bus */
+						uchar	function,	/* function # in device */
+						uchar	offset,		/* offset in configuration space */
+						uchar	size		/* # bytes to read (1, 2 or 4) */
+					);
+	void			(*write_pci_config) (
+						uchar	bus,		/* bus number */
+						uchar	device,		/* device # on bus */
+						uchar	function,	/* function # in device */
+						uchar	offset,		/* offset in configuration space */
+						uchar	size,		/* # bytes to write (1, 2 or 4) */
+						uint32	value		/* value to write */
+					);
+
+	void *			(*ram_address) (const void *physical_address_in_system_memory);
+};
+
+#define	B_PCI_MODULE_NAME		"bus_managers/pci/v1"
 
 /* ---
 	offsets in PCI configuration space to the elements of the predefined
@@ -482,8 +491,8 @@ get_nth_pci_info (
 #define PCI_address_prefetchable	0x08	/* 1 if prefetchable (see PCI spec) */
 
 #define PCI_address_type_32			0x00	/* locate anywhere in 32 bit space */
-#define PCI_address_type_32_low		0x01	/* locate below 1 Meg */
-#define PCI_address_type_64			0x02	/* locate anywhere in 64 bit space */
+#define PCI_address_type_32_low		0x02	/* locate below 1 Meg */
+#define PCI_address_type_64			0x04	/* locate anywhere in 64 bit space */
 
 #define PCI_address_memory_32_mask	0xFFFFFFF0	/* mask to get 32bit memory space base address */
 

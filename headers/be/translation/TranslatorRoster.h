@@ -1,37 +1,25 @@
-//******************************************************************************
-//
-//      File:           TranslatorRoster.h
-//
-//      Description:    The core class of the Translation Kit.
-//
-//      Copyright 1998, Be Incorporated, All Rights Reserved.
-//      Copyright 1995-1997, Jon Watte
-//
-//******************************************************************************
+/********************************************************************************
+/
+/      File:           TranslatorRoster.h
+/
+/      Description:    The core class of the Translation Kit.
+/
+/      Copyright 1998, Be Incorporated, All Rights Reserved.
+/      Copyright 1995-1997, Jon Watte
+/
+********************************************************************************/
 
-#pragma once
+
 
 #ifndef _TRANSLATOR_ROSTER_H
 #define _TRANSLATOR_ROSTER_H
 
-#if !defined(_TRANSLATION_DEFS_H)
 #include <TranslationDefs.h>
-#endif /* _TRANSLATION_DEFS_H */
-#if !defined(_OS_H)
 #include <OS.h>
-#endif /* _OS_H */
-#if !defined(_STORAGE_DEFS_H)
 #include <StorageDefs.h>
-#endif /* _STORAGE_DEFS_H */
-#if !defined(_INTERFACE_DEFS_H)
 #include <InterfaceDefs.h>
-#endif /* _INTERFACE_DEFS_H */
-#if !defined(_ARCHIVABLE_H)
 #include <Archivable.h>
-#endif /* _ARCHIVABLE_H */
-#if !defined(_TRANSLATOR_FORMATS_H)
 #include <TranslatorFormats.h>
-#endif /* _TRANSLATOR_FORMATS_H */
 
 
 struct translation_format;
@@ -43,11 +31,6 @@ class BPositionIO;
 class BQuery;
 class BMessage;
 
-
-
-#if __POWERPC__
-#pragma export on
-#endif
 
 
 class BTranslatorRoster :
@@ -180,6 +163,10 @@ virtual	status_t GetConfigurationMessage(
 				translator_id forTranslator,
 				BMessage * ioExtension);
 
+		status_t GetRefFor(
+				translator_id translator,
+				entry_ref * out_ref);
+
 private:
 
 		status_t LoadTranslator(
@@ -196,7 +183,7 @@ private:
 
 
 static	BTranslatorRoster * _defaultTranslators;
-		friend class _TrnDel;
+		friend class _AutoRosterDeleter;
 		struct PrivateData;
 		PrivateData * _private;
 
@@ -212,12 +199,6 @@ virtual	void ReservedTranslatorRoster5();
 virtual	void ReservedTranslatorRoster6();
 
 };
-
-
-#if __POWERPC__
-#pragma export reset
-#endif
-
 
 #endif	/* _TRANSLATOR_ROSTER_H */
 

@@ -5,9 +5,9 @@
 //	Description:	The BSymLink class; a tiny bit of eye shadow
 //					on the POSIX readlink() func.
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _SYM_LINK_H

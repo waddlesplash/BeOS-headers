@@ -6,7 +6,7 @@
 /
 /	Copyright 1997-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _OUTLINE_LIST_VIEW_H
 #define _OUTLINE_LIST_VIEW_H
@@ -79,6 +79,14 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 virtual status_t	GetSupportedSuites(BMessage *data);
 virtual status_t	Perform(perform_code d, void *arg);
 
+virtual void		ResizeToPreferred();
+virtual void		GetPreferredSize(float *width, float *height);
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
+virtual void		DetachedFromWindow();
+
+
 
 		void		FullListSortItems(int (*compareFunc)(const BListItem *,
 									const BListItem *));
@@ -98,6 +106,7 @@ virtual status_t	Perform(perform_code d, void *arg);
 protected:
 
 virtual	bool		DoMiscellaneous(MiscCode code, MiscData * data);
+virtual void		MessageReceived(BMessage *);
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -106,10 +115,17 @@ virtual	void		_ReservedOutlineListView2();
 virtual	void		_ReservedOutlineListView3();
 virtual	void		_ReservedOutlineListView4();
 
+typedef BListView	_inherited;
+
 		int32		FullListIndex(int32 index) const;
 		int32		ListViewIndex(int32 index) const;
 
+#if !_PR3_COMPATIBLE_
+protected:
+#endif
 virtual	void 		ExpandOrCollapse(BListItem *underItem, bool expand);
+
+private:
 
 virtual BRect		LatchRect(BRect itemRect, int32 level) const;
 virtual void		DrawLatch(BRect itemRect, int32 level, bool collapsed, 

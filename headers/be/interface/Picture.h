@@ -7,7 +7,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_PICTURE_H
 #define	_PICTURE_H
@@ -37,10 +37,14 @@ virtual	status_t			Perform(perform_code d, void *arg);
 								int32 tableEntries,
 								void *userData);
 
+		status_t			Flatten(BDataIO *stream);
+		status_t			Unflatten(BDataIO *stream);
+
 /*----- Private or reserved -----------------------------------------*/
 private:
 
 friend class BView;
+friend class BPrintJob;
 
 virtual	void				_ReservedPicture1();
 virtual	void				_ReservedPicture2();
@@ -49,7 +53,7 @@ virtual	void				_ReservedPicture3();
 		BPicture			&operator=(const BPicture &);
 
 		void				init_data();
-		void				import_data(const void *data, int32 size);
+		void				import_data(const void *data, int32 size, BPicture **subs, int32 subCount);
 		void				import_old_data(const void *data, int32 size);
 		void				set_token(int32 token);
 		bool				assert_local_copy();
@@ -60,8 +64,6 @@ virtual	void				_ReservedPicture3();
 							BPicture(const void *data, int32 size);
 		const void			*Data() const;
 		int32				DataSize() const;
-		/******************/
-
 
 		void				usurp(BPicture *lameDuck);
 		BPicture			*step_down();

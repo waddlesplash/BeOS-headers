@@ -6,7 +6,7 @@
 //
 //	Copyright 1998, Be Incorporated, All Rights Reserved.
 //
-//*****************************************************************************/
+*******************************************************************************/
 
 
 #ifndef	_DIRECT_WINDOW_H
@@ -130,6 +130,9 @@ static	bool			SupportsWindowMode(screen_id = B_MAIN_SCREEN_ID);
 
 /* private */
 private:
+
+		typedef BWindow	inherited;
+
 virtual void        	_ReservedDirectWindow1();
 virtual void        	_ReservedDirectWindow2();
 virtual void        	_ReservedDirectWindow3();

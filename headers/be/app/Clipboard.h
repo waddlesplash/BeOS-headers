@@ -7,7 +7,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _CLIPBOARD_H
 #define	_CLIPBOARD_H
@@ -34,9 +34,11 @@ virtual				~BClipboard();
 
 		bool		Lock();
 		void		Unlock();
+		bool		IsLocked() const;
 		
 		status_t	Clear();
 		status_t	Commit();
+		status_t	Revert();
 
 		BMessenger	DataSource() const;
 		BMessage	*Data() const;
@@ -51,9 +53,8 @@ virtual	void		_ReservedClipboard2();
 virtual	void		_ReservedClipboard3();
 
 		bool		AssertLocked() const;
-		status_t	DownloadFromSystem();
+		status_t	DownloadFromSystem(bool force = false);
 		status_t	UploadToSystem();
-		bool		IsLocked() const;
 
 		uint32		fCount;
 		BMessage	*fData;

@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _GRAPHICS_CARD_H
 #define _GRAPHICS_CARD_H
@@ -45,7 +45,8 @@ enum {
 	B_CRT_CONTROL = 0x0001,
 	B_GAMMA_CONTROL = 0x0002,
 	B_FRAME_BUFFER_CONTROL = 0x0004,
-	B_PARALLEL_BUFFER_ACCESS = 0x0008
+	B_PARALLEL_BUFFER_ACCESS = 0x0008,
+	B_LAME_ASS_CARD = 0x0010
 };
 
 /*-------------------------------------------------------------*/
@@ -146,15 +147,7 @@ typedef void (*graphics_card_hook) ();
 extern "C" {
 #endif
 
-#if __POWERPC__ && _BUILDING_graphics
-#pragma export on
-#endif
-
-_IMPEXP_GRAPHICS	int32	control_graphics_card(uint32, void*);	
-
-#if __POWERPC__ && _BUILDING_graphics
-#pragma export reset
-#endif
+_EXPORT		int32	control_graphics_card(uint32, void*);	
 
 #ifdef __cplusplus
 }

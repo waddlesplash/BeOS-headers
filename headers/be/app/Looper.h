@@ -6,7 +6,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _LOOPER_H
 #define _LOOPER_H
@@ -105,6 +105,7 @@ virtual	void			SetCommonFilterList(BList *filters);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
+typedef BHandler _inherited;
 friend class BWindow;
 friend class BApplication;
 friend class BMessenger;
@@ -112,6 +113,7 @@ friend class BView;
 friend class BHandler;
 friend port_id _get_looper_port_(const BLooper *);
 friend status_t _safe_get_server_token_(const BLooper *, int32 *);
+friend team_id	_find_cur_team_id_();
 
 virtual	void			_ReservedLooper1();
 virtual	void			_ReservedLooper2();
@@ -140,6 +142,7 @@ static	status_t		_LockComplete(BLooper *loop,
 		void			InitData();
 		void			InitData(const char *name, int32 prio, int32 capacity);
 		void			AddMessage(BMessage *msg);
+		void			_AddMessagePriv(BMessage *msg);
 static	status_t		_task0_(void *arg);
 
 		void			*ReadRawFromPort(int32 *code,
@@ -162,6 +165,7 @@ static	uint32			sLooperListSize;
 static	uint32			sLooperCount;
 static	_loop_data_		*sLooperList;
 static	BLocker			sLooperListLock;
+static	team_id			sTeamID;
 
 static	void			AddLooper(BLooper *l);
 static	bool			IsLooperValid(const BLooper *l);
@@ -179,7 +183,7 @@ static	BLooper			*LooperForPort(port_id port);
 		long			fOwnerCount;
 		thread_id		fOwner;
 		thread_id		fTaskID;
-		team_id			fTeamID;
+		uint32			_unused1;
 		int32			fInitPriority;
 		BHandler		*fPreferred;
 		BList			fHandlers;

@@ -1,33 +1,27 @@
-//******************************************************************************
-//
-//      File:           TranslatorAddOn.h
-//
-//      Description:    This header file defines the interface that should be 
-//                      implemented and exported by a Tanslation Kit add-on.
-//                      You will only need to include this header when building 
-//                      an actual add-on, not when just using the kit.
-//
-//      Copyright 1998, Be Incorporated, All Rights Reserved.
-//      Copyright 1995-1997, Jon Watte
-//
-//******************************************************************************
+/********************************************************************************
+/
+/      File:           TranslatorAddOn.h
+/
+/      Description:    This header file defines the interface that should be 
+/                      implemented and exported by a Tanslation Kit add-on.
+/                      You will only need to include this header when building 
+/                      an actual add-on, not when just using the kit.
+/
+/      Copyright 1998, Be Incorporated, All Rights Reserved.
+/      Copyright 1995-1997, Jon Watte
+/
+********************************************************************************/
 
 #ifndef _TRANSLATOR_ADD_ON_H
 #define _TRANSLATOR_ADD_ON_H
 
-#if !defined(_TRANSLATION_DEFS_H)
 #include <TranslationDefs.h>
-#endif /* _TRANSLATION_DEFS_H */
 
 
 class BView;
 struct BRect;
 class BPositionIO;
 
-
-#if __POWERPC__
-#pragma export on
-#endif
 
 /*	These variables and functions should be exported by a translator add-on	*/
 
@@ -88,9 +82,6 @@ _EXPORT	extern	status_t GetConfigMessage(	/*	optional	*/
 
 }
 
-#if __POWERPC__
-#pragma export reset
-#endif
 
 
 #endif /* _TRANSLATOR_ADD_ON_H	*/

@@ -6,7 +6,7 @@
 /
 /	Copyright 1996-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef _COLOR_CONTROL_H
@@ -80,6 +80,11 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
 
+virtual void			MakeFocus(bool state = true);
+virtual void			AllAttached();
+virtual void			AllDetached();
+
+
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
@@ -112,10 +117,23 @@ static	BRect			CalcFrame(	BPoint start,
 									float size,
 									bool use_offscreen,
 									BMessage *data = NULL);
+		void			DoMouseMoved(BPoint pt);
+		void			DoMouseUp(BPoint pt);
 
 		float			fCellSize;
 		int32			fRows;
 		int32			fColumns;
+
+		struct track_state {
+			int32		orig_color;
+			int32		cur_color;
+			int32		prev_color;
+			int32		bar_index;
+			BRect		active_area;
+			BRect		r;
+			rgb_color	rgb;
+			color_space	cspace;
+		};
 
 		BTextControl	*fRedText;
 		BTextControl	*fGreenText;
@@ -126,8 +144,9 @@ static	BRect			CalcFrame(	BPoint start,
 		float			fRound;
 		int32			fFocusedComponent;
 		int32			fCachedIndex;
-		uint32			_reserved[4];
-		bool			fTracking;
+		uint32			_reserved[3];
+		track_state		*fTState;
+		bool			fUnused;	// fTracking;
 		bool			fFocused;
 		bool			fRetainCache;
 		bool			fFastSet;

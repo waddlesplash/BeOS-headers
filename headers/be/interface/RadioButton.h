@@ -8,7 +8,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_RADIO_BUTTON_H
 #define	_RADIO_BUTTON_H
@@ -59,15 +59,23 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 
+virtual void			MakeFocus(bool state = true);
+virtual void			AllAttached();
+virtual void			AllDetached();
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
+friend	int32			_init_interface_kit_();
 
 virtual	void			_ReservedRadioButton1();
 virtual	void			_ReservedRadioButton2();
 
 		BRadioButton	&operator=(const BRadioButton &);
+static	BBitmap			*sBitmaps[2][3];
 
 		bool			fOutlined;
 		uint32			_reserved[2];

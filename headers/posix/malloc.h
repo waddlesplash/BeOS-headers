@@ -27,13 +27,16 @@ Cambridge, MA 02139, USA.
 #ifndef _MALLOC_H
 #define _MALLOC_H	1
 
-#include <ansi_parms.h>
+#if __POWERPC__
+# include <ansi_parms.h>
+#endif
+
+#include <unistd.h>
 
 #ifdef _MALLOC_INTERNAL
 
 #include <string.h>
 #include <limits.h>
-#include <unistd.h>
 
 #endif	/* _MALLOC_INTERNAL.  */
 
@@ -109,7 +112,8 @@ enum mcheck_status
   {
     MCHECK_DISABLED = -1,	/* Consistency checking is not turned on.  */
     MCHECK_OK,			/* Block is fine.  */
-    MCHECK_FREE,		/* Block freed twice.  */
+    MCHECK_FREEDTWICE,	/* Block freed twice.  */
+	MCHECK_FREE,		/* Block used after being freed. */
     MCHECK_HEAD,		/* Memory before the block was clobbered.  */
     MCHECK_TAIL			/* Memory after the block was clobbered.  */
   };

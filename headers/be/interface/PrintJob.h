@@ -6,7 +6,7 @@
 /
 /	Copyright 1996-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_PRINTSESSION_H
 #define	_PRINTSESSION_H
@@ -23,12 +23,13 @@
 struct	print_file_header {
 	int32	version;
 	int32	page_count;
-	int32	_reserved_1_;
-	int32	_reserved_2_;
+	off_t	first_page;
 	int32	_reserved_3_;
 	int32	_reserved_4_;
 	int32	_reserved_5_;
 };
+
+struct _page_header_;
 
 /*----------------------------------------------------------------*/
 /*----- BPrintJob class ------------------------------------------*/
@@ -65,16 +66,19 @@ virtual void		_ReservedPrintJob4();
 					BPrintJob(const BPrintJob &);
 		BPrintJob	&operator=(const BPrintJob &);
 
-		void		RecurseView(BView *v, BPoint origin, BPicture *p, BRect r);
-		int			AddToSpoolQueue(BPicture *a_picture, BRect *a_rect,
-						BPoint where);
-		void		mangle_name(char *filename);
-		void		add_setup_spec();
-		void		HandlePageSetup(BMessage *setup);
-		void		HandlePrintSetup(BMessage *setup);
-		void		seek_to_end();
-		int32		current_position();
-		int			end_of_page();
+		void				RecurseView(BView *v, BPoint origin, BPicture *p, BRect r);
+		void				MangleName(char *filename);
+		void				HandlePageSetup(BMessage *setup);
+		void				HandlePrintSetup(BMessage *setup);
+		void				CreateSpoolDir(const char *printer_name);
+
+		void				NewPage();
+		void				EndLastPage();
+
+		void				AddSetupSpec();
+		void				AddPicture(BPicture *picture, BRect *rect, BPoint where);
+
+		void				GetXYDPI(long *xdpi, long *ydpi);
 
 		char *				print_job_name;
 		int32				page_number;
@@ -87,11 +91,13 @@ virtual void		_ReservedPrintJob4();
 		BMessage			*setup_msg;
 		BMessage			*job_msg;
 		char				stop_the_show;
-		int32				cur_page_desc_offset;
-		int32				num_pict_in_page;
 		int32				first_page;
 		int32				last_page;
-		uint32				_reserved[4];
+		short				v_xres;
+		short				v_yres;
+		_page_header_ *		m_curPageHeader;
+		off_t				m_curPageHeaderOffset;
+		uint32				_reserved[2];
 };
  
 /*-------------------------------------------------------------*/

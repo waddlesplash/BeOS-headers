@@ -7,7 +7,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_SCROLL_VIEW_H
 #define	_SCROLL_VIEW_H
@@ -45,6 +45,9 @@ virtual	void			SetBorder(border_style border);
 virtual	status_t		SetBorderHighlighted(bool state);
 		bool			IsBorderHighlighted() const;
 
+		void			SetTarget(BView *new_target);
+		BView			*Target() const;
+
 virtual void			MessageReceived(BMessage *msg);
 virtual	void			MouseDown(BPoint pt);
 virtual void			WindowActivated(bool state);
@@ -61,6 +64,11 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										BMessage *specifier,
 										int32 form,
 										const char *property);
+
+virtual void			ResizeToPreferred();
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			MakeFocus(bool state = true);
+virtual status_t		GetSupportedSuites(BMessage *data);
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);

@@ -1,13 +1,13 @@
-//****************************************************************************
-//
-//	File:			FilePanel.h
-//
-//  Description:    BFilePanel and BRefFilter classes, and 
-//					run_open_panel()/run_save_panel functions.
-//
-//	Copyright 1997, Be Incorporated, All Rights Reserved.
-//
-//****************************************************************************
+/*******************************************************************************
+/
+/	File:		FilePanel.h
+/
+/	Description:	BFilePanel and BRefFilter classes, and
+/					run_open_panel()/run_save_panel functions.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef	_FILE_PANEL_H
 #define _FILE_PANEL_H
@@ -19,8 +19,6 @@
 #include	<Entry.h>
 #include	<Directory.h>
 #include	<Node.h>
-
-#pragma export on
 
 
 /*- Old fashioned, one-shot, heavily-defaulted panel functions. -*/ 
@@ -122,9 +120,22 @@ virtual	void			SendMessage(const BMessenger*, BMessage*);
 
 private:
 
-		BWindow		*fWindow;
-};
+#if !_PR3_COMPATIBLE_
+virtual	void			_ReservedFilePanel1();
+virtual	void			_ReservedFilePanel2();
+virtual	void			_ReservedFilePanel3();
+virtual	void			_ReservedFilePanel4();
+virtual	void			_ReservedFilePanel5();
+virtual	void			_ReservedFilePanel6();
+virtual	void			_ReservedFilePanel7();
+virtual	void			_ReservedFilePanel8();
+#endif
 
-#pragma export reset
+		BWindow		*fWindow;
+
+#if !_PR3_COMPATIBLE_
+		uint32			_reserved[10];
+#endif
+};
 
 #endif

@@ -1,12 +1,12 @@
 /*******************************************************************************
-//
-//	File:		WindowScreen.h
-//
-//	Description:	Client window class for direct screen access.
-//
-//	Copyright 1996-97, Be Incorporated, All Rights Reserved.
-//
-//*****************************************************************************/
+/
+/	File:		WindowScreen.h
+/
+/	Description:	Client window class for direct screen access.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 
 #ifndef	_WINDOW_SCREEN_H
@@ -16,8 +16,9 @@
 #include <Window.h>
 #include <SupportDefs.h>
 #include <OS.h>
-#include <image.h>
+#include <kernel/image.h>
 #include <GraphicsCard.h>
+#include <Accelerant.h>
 
 /* private struct */
 typedef struct {
@@ -142,6 +143,9 @@ virtual	void        SuspensionHook(bool active);
 virtual status_t	Perform(perform_code d, void *arg);
 
  private:
+
+		typedef BWindow	inherited;
+
 virtual void        _ReservedWindowScreen1();
 virtual void        _ReservedWindowScreen2();
 virtual void        _ReservedWindowScreen3();
@@ -161,14 +165,14 @@ virtual void        _ReservedWindowScreen4();
         int32                 lock_state;
 		int32                 screen_index;
 		int32                 memory_area, io_area;
-		uint32                old_space;
-		uint32                new_space;
+		display_mode          *old_space;
+		display_mode          *new_space;
 		uint32                space0;
 		sem_id                activate_sem;
 		sem_id                debug_sem;
 		image_id              addon_image;
 		rgb_color             colorList[256];
-		_add_on_control_      addon_ctrl_jmp;
+		GetAccelerantHook     m_gah;
         graphics_card_info    card_info;
 		graphics_card_hook    hooks[B_HOOK_COUNT]; 
 		_direct_screen_info_  info;
@@ -182,10 +186,18 @@ virtual void        _ReservedWindowScreen4();
 	    thread_id             *debug_list;
 
 		uint32				  _attributes;
+		uint32                mode_count;
+		display_mode          *mode_list;
+		engine_token          *et;
+		wait_engine_idle      m_wei;
+		acquire_engine        m_ae;
+		release_engine        m_re;
+		fill_rectangle        fill_rect;
+		screen_to_screen_blit blit_rect;
 
-		uint32                _reserved_[31];
+		uint32                _reserved_[23];
 		
-static	BRect		CalcFrame(int32 index, int32 space, uint32 *old_space);
+static	BRect		CalcFrame(int32 index, int32 space, display_mode *dmode);
 		int32		SetFullscreen(int32 enable);
 		status_t	InitData(uint32 space, uint32 attributes);
         void        SetActiveState(int32 state);
@@ -194,6 +206,9 @@ static	BRect		CalcFrame(int32 index, int32 space, uint32 *old_space);
 		void        GetCardInfo();
 		void        Suspend();
 		void    	Resume();
+		status_t	GetModeFromSpace(uint32 space, display_mode *dmode);
+		status_t	InitClone();
+		status_t	AssertDisplayMode(display_mode *dmode);
 };
 
 #endif

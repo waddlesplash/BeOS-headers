@@ -19,7 +19,7 @@
 #include <Entry.h>
 #include <File.h>
 
-enum  // sound_format
+enum  /* sound_format*/
 { B_UNKNOWN_FILE, 
   B_AIFF_FILE, 
   B_WAVE_FILE, 
@@ -98,4 +98,4 @@ virtual	void		_ReservedSoundFile3();
 };
 
 
-#endif			// #ifndef _SOUND_FILE_H
+#endif			/* #ifndef _SOUND_FILE_H*/

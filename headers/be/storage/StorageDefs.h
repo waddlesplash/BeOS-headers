@@ -1,13 +1,12 @@
-/******************************************************************************
-
-	File:			StorageDefs.h
-
-	Description:	Storage Kit miscellany
-
-	Copyright 1993-97, Be Incorporated
-
-******************************************************************************/
-
+/*******************************************************************************
+/
+/	File:		StorageDefs.h
+/
+/	Description:	Storage Kit miscellany.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _STORAGE_DEFS_H
 #define	_STORAGE_DEFS_H

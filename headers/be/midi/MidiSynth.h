@@ -1,13 +1,12 @@
-//****************************************************************************
-//
-//	File:			MidiSynth.h
-//
-//	Description:	Midi object that talks to the General MIDI synthesizer
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
-
+/*******************************************************************************
+/
+/	File:		MidiSynth.h
+/
+/	Description:	Midi object that talks to the General MIDI synthesizer.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _MIDI_SYNTH_H
 #define _MIDI_SYNTH_H
@@ -30,34 +29,34 @@ public:
 	status_t	EnableInput(bool enable, bool loadInstruments);
 	bool 		IsInputEnabled(void) const;
 		
-	// set volume. You can overdrive by passing values larger than 1.0
+	/* set volume. You can overdrive by passing values larger than 1.0*/
 	void		SetVolume(double volume);
 	double		Volume(void) const;
 
-	// set note offset in semi tones	
-	// (12 is down an octave, -12 is up an octave)
+	/* set note offset in semi tones	*/
+	/* (12 is down an octave, -12 is up an octave)*/
 	void 		SetTransposition(int16 offset);
 	int16		Transposition(void) const;
 
-	// Mute and unmute channels (0 to 15)
+	/* Mute and unmute channels (0 to 15)*/
 	void		MuteChannel(int16 channel, bool do_mute);
 	void		GetMuteMap(char *pChannels) const;
 
 	void		SoloChannel(int16 channel, bool do_solo);
 	void		GetSoloMap(char *pChannels) const;
 
-	// Use these functions to drive the synth engine directly
+	/* Use these functions to drive the synth engine directly*/
 	status_t		LoadInstrument(int16 instrument);
 	status_t		UnloadInstrument(int16 instrument);
 	status_t		RemapInstrument(int16 from, int16 to);
 
 	void		FlushInstrumentCache(bool startStopCache);
 
-	// get current midi tick in microseconds
+	/* get current midi tick in microseconds*/
 	uint32	Tick(void) const;
 
-	// The channel variable is 1 to 16. Channel 10 is percussion for example.
-	// The programNumber variable is a number from 0-127
+	/* The channel variable is 1 to 16. Channel 10 is percussion for example.*/
+	/* The programNumber variable is a number from 0-127*/
 
 virtual	void	NoteOff(uchar channel, 
 						uchar note, 

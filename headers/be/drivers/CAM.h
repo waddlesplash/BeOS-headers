@@ -1,6 +1,6 @@
 /* ++++++++++
 	CAM.h
-	Copyright (c) 1996-97 by Be Incorporated.  All Rights Reserved.
+	Copyright (c) 1996-98 by Be Incorporated.  All Rights Reserved.
 
 	Definitions for the SCSI Common Access Method as implemented in the Be OS.
 
@@ -16,6 +16,8 @@
 
 #ifndef _CAM_H
 #define _CAM_H
+
+#include <bus_manager.h>
 
 /* ---
    Be-provided additions to the standard include file.
@@ -38,6 +40,17 @@ typedef long I32;
 #ifndef U16
 typedef unsigned short U16;
 #endif
+
+typedef struct {
+	uint32 serial;  /* operation serial number                    */
+	uint32 micros;  /* operation time in microseconds (4294s max) */
+	uint32 bytes;   /* number of bytes to transfer                */
+	uchar path;     /* target SIM ID                              */
+	uchar target;   /* target device ID                           */
+	uchar sgcount;  /* # of sg segments (0 if non-sg operation)   */
+	uchar scsi_op;  /* scsi operation byte                        */	
+} cam_iostat;
+
 
 /* -----
    The rest of this file contains the definitions and data structures for
@@ -86,8 +99,24 @@ typedef unsigned short U16;
 #define VUHBA		14	/* Vendor Unique HBA length */
 #define SIM_ID		16	/* ASCII string len for SIM ID */
 #define HBA_ID		16	/* ASCII string len for HBA ID */
-#define SIM_PRIV	4248 /*56*/	/* Length of SIM private data area */
-						/* Be's sim is a pig.  This will change... */
+
+#define BE_SIM_CCB_SIZE 1536    /* we want to allocate 1.5k chunks */
+#define BE_SIM_SCSIIO_SIZE 88   /* sizeof(CAM_CCB_SCSIIO) - SIM_PRIV */  
+#define SIM_PRIV	(BE_SIM_CCB_SIZE - BE_SIM_SCSIIO_SIZE) /* Length of SIM private data area */
+
+/* SIM_PRIV (sim private data area)  Terms and Conditions:
+
+ - the size of SIM_PRIV shall be such that sizeof(CCB_SIZE_UNION) = 1.5k
+ - all CCB's shall be allocated from locked, contiguous memory
+ - CCB's shall be aligned on 512 byte boundaries
+ - SIM_PRIV will be >= 1408 bytes 
+ - this provides 128  8byte sg entries (512mb worth of pages, worstcase fragmentation)
+ - and 256 bytes for sense data and 128 bytes for whatever else the SIM needs
+
+ - These conditions are NULL and (void) where prohibited by law.
+ - All sales are final.
+ - Do not use near open flame.
+*/
 
 /* Structure definitions for the CAM control blocks, CCB's for the
 subsystem. */
@@ -343,17 +372,24 @@ typedef struct ccb_eng_exec	/* NOTE: must match SCSIIO size */
 	u_char		cam_sim_priv[ SIM_PRIV ]; /* SIM private data area */
 } CCB_ENG_EXEC;
 
-/* The CAM_SIM_ENTRY definition is used to define the entry points for
+/* The sim_module_info definition is used to define the entry points for
 the SIMs contained in the SCSI CAM subsystem.	Each SIM file will
 contain a declaration for it's entry.	The address for this entry will
 be stored in the cam_conftbl[] array along will all the other SIM
 entries. */
 
-typedef struct cam_sim_entry
-{
-	I32		(*sim_init)();				/* Pointer to the SIM init routine */
-	I32		(*sim_action)();			/* Pointer to the SIM CCB go routine */
-} CAM_SIM_ENTRY;
+typedef struct sim_module_info sim_module_info;
+
+struct sim_module_info {
+	module_info		minfo;
+};
+
+typedef struct CAM_SIM_ENTRY CAM_SIM_ENTRY;
+
+struct CAM_SIM_ENTRY {
+	status_t		(*sim_init)();
+	I32				(*sim_action)();
+};
 
 /* ---------------------------------------------------------------------- */
 
@@ -611,23 +647,34 @@ enum {
 
 
 /* ---
-	XPT interface exported from the Be OS kernel.
+	XPT interface used by SCSI drivers
 --- */
 
-extern _IMPEXP_KERNEL CCB_HEADER	*xpt_ccb_alloc (void);
-extern _IMPEXP_KERNEL void			xpt_ccb_free (void *ccb);
-extern _IMPEXP_KERNEL long			xpt_action (CCB_HEADER *ccbh);
-extern _IMPEXP_KERNEL long			xpt_bus_register (CAM_SIM_ENTRY *entrypoints);
-extern _IMPEXP_KERNEL long			xpt_bus_deregister (long pathid);	
+typedef struct cam_for_driver_module_info cam_for_driver_module_info;
 
+struct cam_for_driver_module_info {
+	bus_manager_info	minfo;	
+	CCB_HEADER *		(*xpt_ccb_alloc)(void);
+	void				(*xpt_ccb_free)(void *ccb);
+	long				(*xpt_action)(CCB_HEADER *ccbh);
+};
+
+#define	B_CAM_FOR_DRIVER_MODULE_NAME	"bus_managers/scsi/driver/v1"
 
 /* ---
-	SIM add-ons must define this entry point to be recognized by the kernel.
-	They return B_NO_ERROR if they find hardware thay can support and
-	successfully install themselves (using xpt_bus_register).
+	XPT interface used by SCSI SIMs
 --- */
 
-extern _IMPEXP_DRIVER long	sim_install(void);
+typedef struct cam_for_sim_module_info cam_for_sim_module_info;
+
+struct cam_for_sim_module_info {
+	bus_manager_info	minfo;	
+	long				(*xpt_bus_register) (CAM_SIM_ENTRY *sim);
+	long				(*xpt_bus_deregister) (long path);
+};
+
+#define	B_CAM_FOR_SIM_MODULE_NAME		"bus_managers/scsi/sim/v1"
+
 
 /* General Union for Kernel Space allocation.	Contains all the possible CCB
 structures.	This union should never be used for manipulating CCB's its only

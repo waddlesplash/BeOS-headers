@@ -12,7 +12,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _NET_DEVICE_H
 #define _NET_DEVICE_H
@@ -34,7 +34,8 @@ typedef enum {
 } net_device_type;
  
 enum {
- 	B_FLAGS_POINT_TO_POINT = 0x01
+ 	B_FLAGS_POINT_TO_POINT = 0x01,
+ 	B_FLAGS_LINK_DOWN      = 0x02
 };
 
 
@@ -90,6 +91,19 @@ _IMPEXP_NETDEV void deliver_packet(BNetPacket *buf, BNetDevice *dev);
 
 extern "C" _EXPORT BNetDevice *open_device(const char *device);
 extern "C" _EXPORT BNetConfig *open_config(const char *device);
+
+/* network interface card info */
+
+typedef struct netcard_info {
+	net_device_type netcard_type;      /* card type, e.g. B_ETHER_NET_DEVICE */
+	char  			netcard_addr[255]; /* type-specific format; for example,
+                                        * for ethernet, the first 6 bytes will
+                                        * be the card HW address.  See the BeBook
+                                        * entry for BNetDevice::Address()
+                                        */
+} netcard_info_t;
+
+_IMPEXP_NETDEV status_t get_nth_netcard_info(int16 n, netcard_info_t *ni);
 
 /*-------------------------------------------------------------*/
 

@@ -7,7 +7,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_VIEW_H
 #define	_VIEW_H
@@ -31,9 +31,21 @@ enum {
 };
 
 enum {
-	B_ENTERED_VIEW,
+	B_ENTERED_VIEW = 0,
 	B_INSIDE_VIEW,
-	B_EXITED_VIEW
+	B_EXITED_VIEW,
+	B_OUTSIDE_VIEW
+};
+
+enum {
+	B_POINTER_EVENTS		= 0x00000001,
+	B_KEYBOARD_EVENTS		= 0x00000002
+};
+
+enum {
+	B_LOCK_WINDOW_FOCUS		= 0x00000001,
+	B_SUSPEND_VIEW_FOCUS	= 0x00000002,
+	B_NO_POINTER_HISTORY	= 0x00000004
 };
 
 enum {
@@ -61,13 +73,13 @@ enum { B_FULL_UPDATE_ON_RESIZE =  (int) 0x80000000	/* 31 */,
        B_FRAME_EVENTS =					0x04000000	/* 26 */,
        B_NAVIGABLE =					0x02000000	/* 25 */,
        B_SUBPIXEL_PRECISE =				0x01000000	/* 24 */,
-       _B_RESERVED5_ =					0x00800000	/* 23 */,
-       _B_RESERVED6_ =					0x00400000	/* 23 */,
+       B_DRAW_ON_CHILDREN =				0x00800000	/* 23 */,
+       B_INPUT_METHOD_AWARE =			0x00400000	/* 23 */,
        _B_RESERVED7_ =					0x00200000	/* 22 */};
 
 #define _RESIZE_MASK_ ~(B_FULL_UPDATE_ON_RESIZE|_B_RESERVED1_|B_WILL_DRAW|\
 		 	B_PULSE_NEEDED|B_NAVIGABLE_JUMP|B_FRAME_EVENTS|B_NAVIGABLE|\
-			B_SUBPIXEL_PRECISE|_B_RESERVED5_|_B_RESERVED6_|_B_RESERVED7_)
+			B_SUBPIXEL_PRECISE|B_DRAW_ON_CHILDREN|B_INPUT_METHOD_AWARE|_B_RESERVED7_)
 
 enum {
 	_VIEW_TOP_ = 1L,
@@ -100,12 +112,14 @@ class BBitmap;
 class BRegion;
 class BPoint;
 class BPolygon;
+class BShape;
 class BScrollBar;
 class BScrollView;
 class BShelf;
 struct _view_attr_;
 struct _array_data_;
 struct _array_hdr_;
+
 /*----------------------------------------------------------------*/
 /*----- BView class ----------------------------------------------*/
 
@@ -168,6 +182,11 @@ virtual	void			TargetedByScrollView(BScrollView *scroll_view);
 									BBitmap *anImage,
 									BPoint offset,
 									BHandler *reply_to = NULL);
+		void			DragMessage(BMessage *aMessage,
+									BBitmap *anImage,
+									drawing_mode dragMode,
+									BPoint offset,
+									BHandler *reply_to = NULL);
 
 		BView			*FindView(const char *name) const;
 		BView			*Parent() const;
@@ -190,11 +209,21 @@ virtual	void			TargetedByScrollView(BScrollView *scroll_view);
 		void			ConvertFromParent(BRect *r) const;
 		BRect			ConvertFromParent(BRect r) const;
 		BPoint			LeftTop() const;
+
 		void			GetClippingRegion(BRegion *region) const;
 virtual	void			ConstrainClippingRegion(BRegion *region);
+		void			ClipToPicture(	BPicture *picture,
+										BPoint where = B_ORIGIN,
+										bool sync = true);
+		void			ClipToInversePicture(	BPicture *picture,
+												BPoint where = B_ORIGIN,
+												bool sync = true);
 
 virtual	void			SetDrawingMode(drawing_mode mode);
 		drawing_mode 	DrawingMode() const;
+
+		void			SetBlendingMode(source_alpha srcAlpha, alpha_function alphaFunc);
+		void	 		GetBlendingMode(source_alpha *srcAlpha, alpha_function *alphaFunc) const;
 
 virtual	void			SetPenSize(float size);
 		float			PenSize() const;
@@ -202,6 +231,15 @@ virtual	void			SetPenSize(float size);
 virtual	void			SetViewColor(rgb_color c);
 		void			SetViewColor(uchar r, uchar g, uchar b, uchar a = 255);
 		rgb_color		ViewColor() const;
+
+		void			SetViewBitmap(	const BBitmap *bitmap,
+										BRect srcRect, BRect dstRect,
+										uint32 followFlags=B_FOLLOW_TOP|B_FOLLOW_LEFT,
+										uint32 options=B_TILE_BITMAP);
+		void			SetViewBitmap(	const BBitmap *bitmap,
+										uint32 followFlags=B_FOLLOW_TOP|B_FOLLOW_LEFT,
+										uint32 options=B_TILE_BITMAP);
+		void			ClearViewBitmap();
 
 virtual	void			SetHighColor(rgb_color a_color);
 		void			SetHighColor(uchar r, uchar g, uchar b, uchar a = 255);
@@ -212,8 +250,8 @@ virtual	void			SetLowColor(rgb_color a_color);
 		rgb_color		LowColor() const;
 
 		void			SetLineMode(	cap_mode lineCap,
-								join_mode lineJoin,
-								float miterLimit=B_DEFAULT_MITER_LIMIT);
+										join_mode lineJoin,
+										float miterLimit=B_DEFAULT_MITER_LIMIT);
 		join_mode		LineJoinMode() const;
 		cap_mode		LineCapMode() const;
 		float			LineMiterLimit() const;
@@ -326,9 +364,14 @@ virtual	void			SetLowColor(rgb_color a_color);
 								pattern p = B_SOLID_HIGH);
 
 		void			StrokeBezier(	BPoint *controlPoints,
-								pattern p = B_SOLID_HIGH);
-		void			FillBezier(	BPoint *controlPoints,
-								pattern p = B_SOLID_HIGH);
+										pattern p = B_SOLID_HIGH);
+		void			FillBezier(		BPoint *controlPoints,
+										pattern p = B_SOLID_HIGH);
+
+		void			StrokeShape(	BShape *shape,
+										pattern p = B_SOLID_HIGH);
+		void			FillShape(		BShape *shape,
+										pattern p = B_SOLID_HIGH);
 			
 		void			CopyBits(BRect src, BRect dst);
 		void			DrawBitmapAsync(const BBitmap *aBitmap,
@@ -356,8 +399,14 @@ virtual	void			SetLowColor(rgb_color a_color);
 								   int32 length,
 								   BPoint location,
 								   escapement_delta *delta = 0L);
+
 virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
-		void            GetFont(BFont *font) /* const */;
+
+#if !_PR3_COMPATIBLE_
+		void            GetFont(BFont *font) const;
+#else
+		void            GetFont(BFont *font);
+#endif
 		float			StringWidth(const char *string) const;
 		float			StringWidth(const char *string, int32 length) const;
 		void			GetStringWidths(char *stringArray[], 
@@ -365,16 +414,28 @@ virtual void            SetFont(const BFont *font, uint32 mask = B_FONT_ALL);
 										int32 numStrings,
 										float widthArray[]) const;	
 		void			SetFontSize(float size);
+		void			ForceFontAliasing(bool enable);
 		void			GetFontHeight(font_height *height) const;
 	
 		void			Invalidate(BRect invalRect);
 		void			Invalidate();
 
+		void			SetDiskMode(char *filename, long offset);
+
 		void			BeginPicture(BPicture *a_picture);
 		void			AppendToPicture(BPicture *a_picture);
 		BPicture		*EndPicture();
+
 		void			DrawPicture(const BPicture *a_picture);
 		void			DrawPicture(const BPicture *a_picture, BPoint where);
+		void			DrawPicture(const char *filename, long offset, BPoint where);
+		void			DrawPictureAsync(const BPicture *a_picture);
+		void			DrawPictureAsync(const BPicture *a_picture, BPoint where);
+		void			DrawPictureAsync(char *filename, long offset, BPoint where);
+
+		status_t		SetEventMask(uint32 mask, uint32 options=0);
+		uint32			EventMask();
+		status_t		SetMouseEventMask(uint32 mask, uint32 options=0);
 
 virtual	void			SetFlags(uint32 flags);
 		uint32			Flags() const;
@@ -416,6 +477,8 @@ virtual status_t		GetSupportedSuites(BMessage *data);
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
+virtual	void			DrawAfterChildren(BRect r);
+
 private:
 
 friend class BScrollBar;
@@ -423,8 +486,8 @@ friend class BWindow;
 friend class BBitmap;
 friend class BPrintJob;
 friend class BShelf;
+friend class BTabView;
 
-virtual	void			_ReservedView1();
 virtual	void			_ReservedView2();
 virtual	void			_ReservedView3();
 virtual	void			_ReservedView4();
@@ -433,6 +496,17 @@ virtual	void			_ReservedView6();
 virtual	void			_ReservedView7();
 virtual	void			_ReservedView8();
 
+#if !_PR3_COMPATIBLE_
+virtual	void			_ReservedView9();
+virtual	void			_ReservedView10();
+virtual	void			_ReservedView11();
+virtual	void			_ReservedView12();
+virtual	void			_ReservedView13();
+virtual	void			_ReservedView14();
+virtual	void			_ReservedView15();
+virtual	void			_ReservedView16();
+#endif
+
 					BView(const BView &);
 		BView		&operator=(const BView &);
 
@@ -440,17 +514,17 @@ virtual	void			_ReservedView8();
 		status_t	ArchiveChildren(BMessage *data, bool deep) const;
 		status_t	UnarchiveChildren(BMessage *data, BWindow *w = NULL);
 		void		BeginPicture_pr(BPicture *a_picture, BRect r);
-		void		StrokeLineToNoPat(BPoint pt);
-		void		StrokeRectNoPat(BRect r);
-		void		DoBezier(	int32 gr, int32 numPoints,
-						BPoint *controlPoints,
-						pattern p);
+		void		SetPattern(pattern pat);
+		void		DoBezier(int32 gr, BPoint *controlPoints, pattern p);
+		void		DoShape(int32 gr, BShape *shape, pattern p);
+		void		DoPictureClip(BPicture *picture, BPoint where, bool invert, bool sync);
 		bool		remove_from_list(BView *a_view);
 		bool		remove_self();
 		bool		do_owner_check() const;
 		void		set_owner(BWindow *the_owner);
 		void		do_activate(int32 state);
 		void		check_lock() const;
+		void		check_lock_no_pick() const;
 		void		movesize(uint32 code, int32 h, int32 v);
 		void		handle_tick();
 		char		*test_area(int32 length);
@@ -464,6 +538,7 @@ virtual	void			_ReservedView8();
 		void		set_cached_state();
 		void		update_cached_state();
 		void        set_font_state(const BFont *font, uint32 mask);
+		void		fetch_font();
 		uchar		font_encoding() const;
 		BShelf		*shelf() const;
 		void		set_shelf(BShelf *);
@@ -480,6 +555,7 @@ virtual	void			_ReservedView8();
 
 		int16 			fShowLevel;
 		bool			top_level_view;
+		bool			fNoISInteraction;
 		BPicture		*cpicture;
 		_array_data_	*comm;
 
@@ -487,12 +563,19 @@ virtual	void			_ReservedView8();
 		BScrollBar		*fHorScroller;
 		bool			f_is_printing;
 		bool			attached;
+		bool			_unused_bool1;
+		bool			_unused_bool2;
 		_view_attr_		*fPermanentState;
 		_view_attr_		*fState;
 		BRect			fCachedBounds;
 		BShelf			*fShelf;
 		void			*pr_state;
-		uint32			_reserved[6];	/* was 8 */	/* was 7 */
+		uint32			fEventMask;
+		uint32			fEventOptions;
+		uint32			_reserved[4];
+#if !_PR3_COMPATIBLE_
+		uint32			_more_reserved[3];
+#endif
 };
 
 

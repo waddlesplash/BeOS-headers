@@ -4,9 +4,9 @@
 //
 //	Description:	node_ref struct and BNode class descriptions
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 #ifndef _NODE_H
 #define _NODE_H
@@ -78,6 +78,8 @@ public:
 			BNode &			operator=(const BNode &node);
 			bool			operator==(const BNode &node) const;
 			bool			operator!=(const BNode &node) const;
+
+			int Dup();		/* don't forget to close() fd later */
 
 private:
 friend class BEntry;

@@ -1,13 +1,12 @@
-//****************************************************************************
-//
-//	File:			Midi.h
-//
-//	Description:	Abstract MIDI object class.
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
-
+/*******************************************************************************
+/
+/	File:		Midi.h
+/
+/	Description:	Abstract MIDI object class.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _MIDI_H
 #define _MIDI_H
@@ -137,6 +136,9 @@ protected:
 
 private:
 
+friend class BMidiPort;	/* for debugging */
+friend class BMidiStore;	/* for debugging */
+
 virtual	void		_ReservedMidi1();
 virtual	void		_ReservedMidi2();
 virtual	void		_ReservedMidi3();
@@ -156,10 +158,10 @@ virtual	void	Run();
 		bool	InflowIsAlive();
 
 		BList*		fConnectionList;
-		thread_id	fRunTask;
-		bool		fIsRunning;
-		thread_id	fInflowTask;
-		bool		fInflowAlive;
+volatile	thread_id	fRunTask;
+volatile	bool		fIsRunning;
+volatile	thread_id	fInflowTask;
+volatile	bool		fInflowAlive;
 		port_id		fInflowPort;
 		uint32		_reserved[4];
 };

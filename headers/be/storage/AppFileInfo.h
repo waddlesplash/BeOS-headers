@@ -4,9 +4,9 @@
 //
 //	Description:	File type information
 //
-//	Copyright 1997, Be Incorporated, All Rights Reserved.
+//	Copyright 1998, Be Incorporated, All Rights Reserved.
 //
-/*****************************************************************************/
+****************************************************************************/
 
 #ifndef _APP_FILE_INFO_H
 #define _APP_FILE_INFO_H
@@ -85,9 +85,10 @@ virtual	status_t	SetType(const char *type);
 		bool		Supports(BMimeType *mt) const;
 
 private:
-friend	status_t	_update_mime_info_(const char *, bool);
+typedef BNodeInfo inherited;
+friend	status_t	_update_mime_info_(const char *, int32);
 friend	status_t	_real_update_app_(BAppFileInfo *, const char *, bool);
-friend status_t		_query_for_app_(BMimeType *, const char *,
+friend	status_t	_query_for_app_(BMimeType *, const char *,
 						entry_ref *, version_info *);
 friend	class		BRoster;
 
@@ -103,7 +104,8 @@ static	status_t	SetSupTypesForAll(BMimeType *, const BMessage *);
 		status_t	_SetSupportedTypes(const BMessage *types);
 		status_t	UpdateFromRsrc();
 		status_t	RealUpdateRsrcToAttr();
-		status_t	UpdateMetaMime(const char *path, bool force) const;
+		status_t	UpdateMetaMime(const char *path, bool force,
+						uint32 *changes_mask) const;
 		bool		IsApp();
 		status_t	GetMetaMime(BMimeType *meta) const;
 

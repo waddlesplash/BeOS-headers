@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_INTERFACE_DEFS_H
 #define	_INTERFACE_DEFS_H
@@ -42,6 +42,7 @@ enum {	B_BACKSPACE			= 0x08,
 		B_SPACE				= 0x20,
 		B_TAB				= 0x09,
 		B_ESCAPE			= 0x1b,
+		B_SUBSTITUTE		= 0x1a,
 
 		B_LEFT_ARROW		= 0x1c,
 		B_RIGHT_ARROW		= 0x1d,
@@ -173,6 +174,13 @@ enum alignment {
     B_ALIGN_CENTER
 };
 
+enum vertical_alignment {
+	B_ALIGN_TOP = 0x10L,
+	B_ALIGN_MIDDLE = 0x20,
+	B_ALIGN_BOTTOM = 0x30,
+	B_ALIGN_NO_VERTICAL = -1L
+};
+
 /*----------------------------------------------------------------*/
 
 enum {
@@ -210,6 +218,15 @@ enum {
 
 /*----------------------------------------------------------------*/
 
+enum bitmap_tiling {
+	B_TILE_BITMAP_X		= 0x00000001,
+	B_TILE_BITMAP_Y		= 0x00000002,
+	B_TILE_BITMAP		= 0x00000003
+};
+
+/*----------------------------------------------------------------*/
+
+_IMPEXP_BE status_t		get_deskbar_frame(BRect *frame);
 
 _IMPEXP_BE const color_map *system_colors();
 
@@ -254,6 +271,34 @@ _IMPEXP_BE void			run_add_printer_panel();
 
 _IMPEXP_BE void			set_focus_follows_mouse(bool follow);	
 _IMPEXP_BE bool			focus_follows_mouse();	
+
+enum color_which {
+	B_PANEL_BACKGROUND_COLOR = 1,
+	B_MENU_BACKGROUND_COLOR,
+	B_WINDOW_TAB_COLOR,
+	B_KEYBOARD_NAVIGATION_COLOR,
+	B_DESKTOP_COLOR
+};
+
+_IMPEXP_BE rgb_color	ui_color(color_which which);
+_IMPEXP_BE rgb_color	tint_color(rgb_color color, float tint);
+
+											/* effects on standard gray level */
+const float B_LIGHTEN_MAX_TINT	= 0.0;		/* 216 --> 255.0 (255) */
+const float B_LIGHTEN_2_TINT	= 0.385;	/* 216 --> 240.0 (240) */
+const float B_LIGHTEN_1_TINT	= 0.590;	/* 216 --> 232.0 (232) */
+
+const float B_NO_TINT			= 1.0;		/* 216 --> 216.0 (216) */
+
+const float B_DARKEN_1_TINT		= 1.147;	/* 216 --> 184.2 (184) */
+const float B_DARKEN_2_TINT		= 1.295;	/* 216 --> 152.3 (152) */
+const float B_DARKEN_3_TINT		= 1.407;	/* 216 --> 128.1 (128) */
+const float B_DARKEN_4_TINT		= 1.555;	/* 216 -->  96.1  (96) */
+const float B_DARKEN_MAX_TINT	= 2.0;		/* 216 -->   0.0   (0) */
+
+const float B_DISABLED_LABEL_TINT		= B_DARKEN_3_TINT;
+const float B_HIGHLIGHT_BACKGROUND_TINT	= B_DARKEN_2_TINT;
+const float B_DISABLED_MARK_TINT		= B_LIGHTEN_2_TINT;
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

@@ -1,12 +1,12 @@
-//******************************************************************************
-//
-//	File:		SerialPort.h
-//
-//	Description:	Serial Port class header.
-//	
-//	Copyright 1995-97, Be Incorporated, All Rights Reserved.
-//
-//******************************************************************************
+/********************************************************************************
+/
+/	File:		SerialPort.h
+/
+/	Description:	Serial Port class header.
+/
+/	Copyright 1995-98, Be Incorporated, All Rights Reserved.
+/
+********************************************************************************/
 
 
 #ifndef	_SERIAL_PORT_H
@@ -35,7 +35,7 @@ enum parity_mode { B_NO_PARITY, B_ODD_PARITY, B_EVEN_PARITY };
 enum { B_NOFLOW_CONTROL = 0, B_HARDWARE_CONTROL = 0x00000001, 
 								B_SOFTWARE_CONTROL = 0x00000002 };
 
-// -----------------------------------------------------------------------
+/* -----------------------------------------------------------------------*/
 class BSerialPort {
 
 public:
@@ -76,7 +76,7 @@ virtual				~BSerialPort();
 		bool		IsRI(void);
 		bool		IsDCD(void);
 		ssize_t		WaitForInput(void);
-// -----------------------------------------------------------------------
+/* -----------------------------------------------------------------------*/
 
 		int32		CountDevices();
 		status_t	GetDeviceName(int32 n, char * name, 

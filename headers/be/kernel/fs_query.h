@@ -1,12 +1,12 @@
-/*
-   This header file defines the C interface to file system
-   query API on the BeOS.  The API is a simple derivative
-   form of the Posix opendir()/readdir()/closedir() functions
-   (and in fact we return dirent structures just like readdir).
-
-   Copyright 1997 Be Inc.
-*/
-
+/*******************************************************************************
+/
+/	File:		fs_query.h
+/
+/	Description:	C interface to the BeOS file system query mechanism.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _FS_QUERY_H
 #define _FS_QUERY_H
@@ -31,6 +31,9 @@ _IMPEXP_ROOT DIR           *fs_open_live_query(dev_t device, const char *query,
 								  uint32 flags, port_id port, int32 token);
 _IMPEXP_ROOT int            fs_close_query(DIR *d);
 _IMPEXP_ROOT struct dirent *fs_read_query(DIR *d);
+
+_IMPEXP_ROOT status_t		get_path_for_dirent(struct dirent *dent, char *buf,
+												size_t len);
 
 
 #ifdef  __cplusplus

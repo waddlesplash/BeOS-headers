@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_BUTTON_H
 #define	_BUTTON_H
@@ -53,6 +53,11 @@ virtual void		ResizeToPreferred();
 virtual	status_t	Invoke(BMessage *msg = NULL);
 virtual	void		FrameMoved(BPoint new_position);
 virtual	void		FrameResized(float new_width, float new_height);
+
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
+
 
 virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 index,

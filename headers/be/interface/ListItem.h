@@ -6,7 +6,7 @@
 /
 /	Copyright 1996-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _LIST_ITEM_H
 #define _LIST_ITEM_H
@@ -65,7 +65,7 @@ virtual	void		_ReservedListItem2();
 					BListItem(const BListItem &);
 		BListItem	&operator=(const BListItem &);
 
-		// calls used by BOutlineListView
+		/* calls used by BOutlineListView*/
 		bool 		IsItemVisible() const;
 		void 		SetItemVisible(bool);
 

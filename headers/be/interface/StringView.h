@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _STRING_VIEW_H
 #define _STRING_VIEW_H
@@ -54,6 +54,14 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									BMessage *specifier,
 									int32 form,
 									const char *property);
+
+virtual void		ResizeToPreferred();
+virtual void		GetPreferredSize(float *width, float *height);
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
+virtual status_t	GetSupportedSuites(BMessage *data);
+
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t	Perform(perform_code d, void *arg);

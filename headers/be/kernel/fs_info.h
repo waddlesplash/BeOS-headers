@@ -1,8 +1,12 @@
-/* 
-	fs_info.h
-
-	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
-*/
+/*******************************************************************************
+/
+/	File:		fs_info.h
+/
+/	Description:	File system information.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 
 #ifndef _FS_INFO_H

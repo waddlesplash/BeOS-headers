@@ -7,7 +7,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _INVOKER_H
 #define	_INVOKER_H
@@ -45,6 +45,9 @@ virtual status_t	SetHandlerForReply(BHandler *handler);
 
 virtual	status_t	Invoke(BMessage *msg = NULL);
 
+		status_t	SetTimeout(bigtime_t timeout);
+		bigtime_t	Timeout() const;
+
 /*----- Private or reserved -----------------------------------------*/
 private:
 
@@ -58,7 +61,8 @@ virtual	void		_ReservedInvoker3();
 		BMessage	*fMessage;
 		BMessenger	fMessenger;
 		BHandler	*fReplyTo;
-		uint32		_reserved[4];
+		uint32		fTimeout;
+		uint32		_reserved[3];
 };
 
 /*-------------------------------------------------------------*/

@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 
 #ifndef _ERRORS_H
@@ -21,7 +21,8 @@
 #define B_OS_ERROR_BASE				B_GENERAL_ERROR_BASE + 0x1000
 #define B_APP_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x2000
 #define B_INTERFACE_ERROR_BASE		B_GENERAL_ERROR_BASE + 0x3000
-#define B_MEDIA_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x4000
+#define B_MEDIA_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x4000 /* - 0x41ff */
+#define B_TRANSLATION_ERROR_BASE	B_GENERAL_ERROR_BASE + 0x4800 /* - 0x48ff */
 #define B_MIDI_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x5000
 #define B_STORAGE_ERROR_BASE		B_GENERAL_ERROR_BASE + 0x6000
 #define B_POSIX_ERROR_BASE			B_GENERAL_ERROR_BASE + 0x7000
@@ -77,6 +78,8 @@ enum {
 	B_BAD_IMAGE_ID = B_OS_ERROR_BASE + 0x300,
 	B_BAD_ADDRESS,				
 	B_NOT_AN_EXECUTABLE,
+	B_MISSING_LIBRARY,
+	B_MISSING_SYMBOL,
 
 	B_DEBUGGER_ALREADY_INSTALLED = B_OS_ERROR_BASE + 0x400
 };
@@ -108,7 +111,7 @@ enum
 /*----- Storage Kit/File System Errors ------------------------*/
 enum {
 	B_FILE_ERROR =B_STORAGE_ERROR_BASE,
-	B_FILE_NOT_FOUND,			/* obsolete; use B_ENTRY_NOT_FOUND */
+	B_FILE_NOT_FOUND,	/* discouraged; use B_ENTRY_NOT_FOUND in new code*/
 	B_FILE_EXISTS,				
 	B_ENTRY_NOT_FOUND,			
 	B_NAME_TOO_LONG,			
@@ -121,7 +124,8 @@ enum {
 	B_CROSS_DEVICE_LINK,		
 	B_LINK_LIMIT,			    
 	B_BUSTED_PIPE,				
-	B_UNSUPPORTED				
+	B_UNSUPPORTED,
+	B_PARTITION_TOO_SMALL
 };
 
 
@@ -242,7 +246,8 @@ enum
 	B_DEV_READ_ERROR,
 	B_DEV_WRITE_ERROR,
 	B_DEV_NOT_READY,
-	B_DEV_MEDIA_CHANGED
+	B_DEV_MEDIA_CHANGED,
+	B_DEV_MEDIA_CHANGE_REQUESTED
 };
 
 /*-------------------------------------------------------------*/

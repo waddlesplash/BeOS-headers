@@ -1,11 +1,11 @@
 /******************************************************************************
-//
-//	File:		Be.h
-//
-//	Description:	All-in-one include for the entire system.
-//
-//	Copyright 1992-97, Be Incorporated
-//
+/
+/	File:		Be.h
+/
+/	Description:	All-in-one include for the entire system.
+/
+/	Copyright 1992-98, Be Incorporated
+/
 *******************************************************************************/
 
 #include <AppKit.h>

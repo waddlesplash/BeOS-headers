@@ -1,7 +1,11 @@
-/*
- * <netinet/in.h>
- * Copyright (c) 1997 Be, Inc.	All Rights Reserved
- *
- * To aid in porting Unix code
- */
+/*******************************************************************************
+/
+/	File:		netinet/in.h
+/
+/	Description:	To aid in porting Unix code.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
+
 #include <socket.h>

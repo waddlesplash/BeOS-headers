@@ -10,9 +10,9 @@
 //					pathname that you use to search for or create
 //					a file (as two examples).
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _PATH_H
@@ -27,6 +27,7 @@
 #include <Message.h>
 
 class BDirectory;
+class BEntry;
 
 class BPath : public BFlattenable {
 public:
@@ -36,6 +37,7 @@ public:
 						BPath(const BDirectory *dir, const char *leaf,
 							bool normalize = false);
 						BPath(const BPath &path);
+						BPath(const BEntry *entry);
 
 virtual					~BPath();
 
@@ -45,6 +47,7 @@ virtual					~BPath();
 							bool normalize = false);
 			status_t	SetTo(const BDirectory *dir, const char *path,
 							bool normalize = false);
+			status_t	SetTo(const BEntry *entry);
 			status_t	Append(const char *path, bool normalize = false);
 			void		Unset();
 

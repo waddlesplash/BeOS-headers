@@ -6,7 +6,7 @@
 /
 /	Copyright 1996-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_TEXT_CONTROL_H
 #define	_TEXT_CONTROL_H
@@ -75,6 +75,11 @@ virtual	void			MouseUp(BPoint pt);
 virtual	void			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void			DetachedFromWindow();
 
+virtual void			AllAttached();
+virtual void			AllDetached();
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
@@ -101,6 +106,9 @@ virtual	void			_ReservedTextControl4();
 		uint16			fPrevWidth;
 		uint16			fPrevHeight;
 		uint32			_reserved[3];	/* was 4 */
+#if !_PR3_COMPATIBLE_
+		uint32			_more_reserved[4];
+#endif
 
 		bool			fClean;
 };

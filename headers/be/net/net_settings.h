@@ -1,9 +1,13 @@
-/* This is a -*- C++ -*- header file */
-/*
- * net_settings.h
- * Copyright (c) 1995-1997 Be, Inc.	All Rights Reserved 
- *
- */
+/*******************************************************************************
+/
+/	File:		net_settings.h
+/
+/	Description:	Network preferences settings.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
+
 #ifndef _NET_SETTINGS_H
 #define _NET_SETTINGS_H
 

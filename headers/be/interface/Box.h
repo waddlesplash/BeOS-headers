@@ -7,7 +7,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _BOX_H
 #define _BOX_H
@@ -28,6 +28,7 @@ public:
 											B_NAVIGABLE_JUMP,
 							border_style border = B_FANCY_BORDER);
 
+
 virtual 				~BBox(void);
 
 /* Archiving */
@@ -39,8 +40,12 @@ virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 virtual	void			SetBorder(border_style style);
 		border_style	Border() const;
 
-		const char		*Label() const;
 		void			SetLabel(const char *label);
+		status_t		SetLabel(BView *view_label);
+
+		const char		*Label() const;
+		BView			*LabelView() const;
+
 virtual	void			Draw(BRect bounds);
 virtual	void			AttachedToWindow();
 virtual	void			DetachedFromWindow();
@@ -60,6 +65,12 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 form,
 										const char *property);
 
+virtual void			ResizeToPreferred();
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			MakeFocus(bool state = true);
+virtual status_t		GetSupportedSuites(BMessage *data);
+
+
 /*----- Private or reserved -----------------------------------------*/
 
 virtual status_t		Perform(perform_code d, void *arg);
@@ -74,11 +85,13 @@ virtual	void			_ReservedBox2();
 		void			InitObject(BMessage *data = NULL);
 		void			DrawPlain();
 		void			DrawFancy();
+		void			ClearAnyLabel();
 
 		char			*fLabel;
 		BRect			fBounds;
 		border_style	fStyle;
-		uint32			_reserved[2];
+		BView			*fLabelView;
+		uint32			_reserved[1];
 };
 
 /*-------------------------------------------------------------*/

@@ -1,31 +1,22 @@
-//******************************************************************************
-//
-//      File:           BitmapStream.h
-//
-//      Description:    BPositionIO subclass to read/write bitmap format to/from 
-//                      BBitmap instance.
-//
-//      Copyright 1998, Be Incorporated, All Rights Reserved.
-//      Copyright 1995-1997, Jon Watte
-//
-//******************************************************************************
+/********************************************************************************
+/
+/      File:           BitmapStream.h
+/
+/      Description:    BPositionIO subclass to read/write bitmap format to/from 
+/                      BBitmap instance.
+/
+/      Copyright 1998, Be Incorporated, All Rights Reserved.
+/      Copyright 1995-1997, Jon Watte
+/
+********************************************************************************/
 
 #if !defined(_BITMAP_STREAM_H)
 #define _BITMAP_STREAM_H
 
-#if !defined(_BE_BUILD_H)
-	#include <BeBuild.h>
-#endif	/* _BE_BUILD_H */
-#if !defined(_TRANSLATION_DEFS_H)
-	#include <TranslationDefs.h>
-#endif /* _TRANSLATION_DEFS_H */
-#if !defined(_DATA_IO_H)
-	#include <DataIO.h>
-#endif /* _DATA_IO_H */
-
-#if !defined(_TRANSLATOR_FORMATS_H)
+#include <BeBuild.h>
+#include <TranslationDefs.h>
+#include <DataIO.h>
 #include <TranslatorFormats.h>
-#endif /* _TRANSLATOR_FORMATS_H */
 
 
 class BBitmap;

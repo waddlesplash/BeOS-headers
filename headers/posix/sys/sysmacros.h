@@ -1,5 +1,5 @@
-#ifndef _SYS_SYSMACROS_H_
-#define _SYS_SYSMACROS_H_
+#ifndef _SYS_SYSMACROS_H
+#define _SYS_SYSMACROS_H
 
 /* major part of a device */
 #define major(x)    (int)((unsigned)((x)>>8)&0x7F)
@@ -11,4 +11,4 @@
 /* make a device number */
 #define makedev(x,y)    (dev_t)(((x)<<8) | (y))
 
-#endif /* _SYS_SYSMACROS_H_ */
+#endif /* _SYS_SYSMACROS_H */

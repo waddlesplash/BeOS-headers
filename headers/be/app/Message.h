@@ -9,7 +9,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _MESSAGE_H
 #define _MESSAGE_H
@@ -101,6 +101,8 @@ virtual				~BMessage();
 		status_t	SendReply(uint32 command, BHandler *reply_to = NULL);
 		status_t	SendReply(BMessage *the_reply, BHandler *reply_to = NULL,
 							bigtime_t timeout = B_INFINITE_TIMEOUT);
+		status_t	SendReply(BMessage *the_reply, BMessenger reply_to,
+							bigtime_t timeout = B_INFINITE_TIMEOUT);
 	
 		status_t	SendReply(uint32 command, BMessage *reply_to_reply);
 		status_t	SendReply(BMessage *the_reply, BMessage *reply_to_reply,
@@ -115,7 +117,7 @@ virtual				~BMessage();
 		status_t	Unflatten(BDataIO *stream);
 
 
-/* Specifiers (archiving) */
+/* Specifiers (scripting) */
 		status_t	AddSpecifier(const char *property);
 		status_t	AddSpecifier(const char *property, int32 index);
 		status_t	AddSpecifier(const char *property, int32 index, int32 range);
@@ -261,7 +263,7 @@ friend class	BMessenger;
 friend class	BApplication;
 
 friend			void		_msg_cache_cleanup_();
-friend			BMessage 	*_reconstruct_msg_(BMessage *);
+friend			BMessage 	*_reconstruct_msg_(uint32,uint32,uint32);
 friend inline	void		_set_message_target_(BMessage *, int32, bool);
 friend inline	void		_set_message_reply_(BMessage *, BMessenger);
 friend inline	int32		_get_message_target_(BMessage *);
@@ -375,8 +377,8 @@ static	BBlockCache	*sMsgCache;
 						{ return ((char *) da) + (sizeof(dyn_array) +
 											da->fEntryHdrSize); }
 		bool		da_is_mini_data(dyn_array *da) const
-						{ return ((da->fLogicalBytes <= UCHAR_MAX) &&
-											(da->fCount <= UCHAR_MAX)); }
+						{ return ((da->fLogicalBytes <= (int32) UCHAR_MAX) &&
+											(da->fCount <= (int32) UCHAR_MAX));}
 		void		da_swap_var_sized(dyn_array *da);
 		void		da_swap_fixed_sized(dyn_array *da);
 
@@ -385,7 +387,8 @@ static	BBlockCache	*sMsgCache;
 		BMessage			*fOriginal;
 		uint32				fChangeCount;
 		int32				fCurSpecifier;
-		uint32				_reserved[4];
+		uint32				fPtrOffset;
+		uint32				_reserved[3];
 
 		BMessage::entry_hdr	*fEntries;
 

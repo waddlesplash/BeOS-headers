@@ -1,12 +1,12 @@
-//****************************************************************************
-//
-//	File:			Midi.h
-//
-//	Description:	Abstract MIDI object class.
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
+/*******************************************************************************
+/
+/	File:		MidiPort.h
+/
+/	Description:	Interface to MIDI hardware ports.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _MIDI_PORT_H
 #define _MIDI_PORT_H
@@ -24,6 +24,8 @@ public:
 		status_t	InitCheck() const; 
 		status_t	Open(const char *name);
 		void	Close();
+
+		const char * PortName() const;
 
 virtual	void	NoteOff(uchar channel, 
 						uchar note, 
@@ -78,6 +80,7 @@ virtual	void	Stop();
 
 
 private:
+typedef BMidi _inherited;
 
 virtual	void		_ReservedMidiPort1();
 virtual	void		_ReservedMidiPort2();
@@ -85,6 +88,7 @@ virtual	void		_ReservedMidiPort3();
 
 virtual	void	Run();
 
+		void Dispatch(const unsigned char * buffer, size_t size, bigtime_t when);
 		ssize_t	Read(void *buffer, size_t numBytes) const;
 		ssize_t	Write(void *buffer, size_t numBytes, uint32 time) const;
 
@@ -96,7 +100,10 @@ virtual	void	Run();
 		char*	fName;
 		status_t fCStatus;
 		BList *	_fDevices;
-		uint32		_reserved[3];
+		uint8 _m_prev_cmd;
+		bool _m_enhanced;
+		uint8 _m_reserved[2];
+		uint32		_reserved[2];
 };
 
 /*------------------------------------------------------------*/

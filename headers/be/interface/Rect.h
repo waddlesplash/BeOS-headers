@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_RECT_H
 #define	_RECT_H
@@ -56,6 +56,20 @@ public:
 		void		OffsetBy(float dx, float dy);
 		void		OffsetTo(BPoint);
 		void		OffsetTo(float x, float y);
+
+/* expression transformations */
+		BRect &		InsetBySelf(BPoint);
+		BRect &		InsetBySelf(float dx, float dy);
+		BRect		InsetByCopy(BPoint);
+		BRect		InsetByCopy(float dx, float dy);
+		BRect &		OffsetBySelf(BPoint);
+		BRect &		OffsetBySelf(float dx, float dy);
+		BRect		OffsetByCopy(BPoint);
+		BRect		OffsetByCopy(float dx, float dy);
+		BRect &		OffsetToSelf(BPoint);
+		BRect &		OffsetToSelf(float dx, float dy);
+		BRect		OffsetToCopy(BPoint);
+		BRect		OffsetToCopy(float dx, float dy);
 
 /* comparison */
 		bool		operator==(BRect) const;
@@ -156,7 +170,7 @@ inline bool BRect::IsValid() const
 
 inline int32 BRect::IntegerWidth() const
 {
-	return(ceil(right - left));
+	return((int32)ceil(right - left));
 }
 
 inline float BRect::Width() const
@@ -166,7 +180,7 @@ inline float BRect::Width() const
 
 inline int32 BRect::IntegerHeight() const
 {
-	return(ceil(bottom - top));
+	return((int32)ceil(bottom - top));
 }
 
 inline float BRect::Height() const
@@ -178,3 +192,4 @@ inline float BRect::Height() const
 /*-------------------------------------------------------------*/
 
 #endif /* _RECT_H */
+

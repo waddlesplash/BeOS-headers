@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef _LIST_VIEW_H
@@ -23,6 +23,8 @@ enum list_view_type {
 	B_SINGLE_SELECTION_LIST,
 	B_MULTIPLE_SELECTION_LIST
 };
+
+class BMessageRunner;
 
 /*----------------------------------------------------------------*/
 /*----- BListView class ------------------------------------------*/
@@ -126,6 +128,11 @@ virtual	void			DetachedFromWindow();
 virtual bool			InitiateDrag(BPoint pt, int32 itemIndex, 
 										bool initialySelected);
 			
+virtual void		ResizeToPreferred();
+virtual void		GetPreferredSize(float *width, float *height);
+virtual void		AllAttached();
+virtual void		AllDetached();
+
 protected:
 
 		enum MiscCode { B_NO_OP, B_REPLACE_OP, B_MOVE_OP, B_SWAP_OP };
@@ -168,6 +175,19 @@ virtual void			DrawItem(BListItem *item, BRect itemRect,
 		bool			DoMoveItem(int32 from, int32 to);
 		bool			DoReplaceItem(int32 index, BListItem * item);
 		void			RescanSelection(int32 from, int32 to);
+		void			DoMouseUp(BPoint where);
+		void			DoMouseMoved(BPoint where);
+
+		struct track_data {
+			bool			changed;
+			bool			extend;
+			bool			disjoint;
+			bool			turn_on;
+			bigtime_t		snooze_time;
+			BMessageRunner	*runner;
+			bigtime_t		last_mm_time;
+			BPoint			last_mm_pt;
+		};
 
 		BList			fList;
 		list_view_type	fListType;
@@ -177,7 +197,8 @@ virtual void			DrawItem(BListItem *item, BRect itemRect,
 		float			fWidth;
 		BMessage		*fSelectMessage;
 		BScrollView		*fScrollView;
-		uint32			_reserved[4];
+		track_data		*fTrack;
+		uint32			_reserved[3];
 };
 
 inline void	BListView::ScrollTo(float x, float y)

@@ -5,9 +5,9 @@
 //	Description:	BVolumeRoster class.  Iterate over mounted volumes,
 //					and watch volumes as they're mounted and unmounted.
 //
-//	Copyright 1992-97, Be Incorporated
+//	Copyright 1992-98, Be Incorporated
 //
-//****************************************************************************/
+*****************************************************************************/
 
 #ifndef _VOLUME_ROSTER_H
 #define _VOLUME_ROSTER_H
@@ -46,6 +46,9 @@ virtual	void		_SeveredVRoster2();
 		int32			fPos;
 		BMessenger		*fTarget;
 
+#if !_PR3_COMPATIBLE_
+		uint32			_reserved[3];
+#endif
 
 };
 

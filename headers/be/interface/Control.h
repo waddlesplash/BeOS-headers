@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_CONTROL_H
 #define	_CONTROL_H
@@ -75,11 +75,16 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
 
+virtual void		AllAttached();
+virtual void		AllDetached();
+
 virtual status_t	Perform(perform_code d, void *arg);
 
 protected:
 
 		bool		IsFocusChanging() const;
+		bool		IsTracking() const;
+		void		SetTracking(bool state);
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -97,6 +102,8 @@ virtual	void		_ReservedControl4();
 		int32		fValue;
 		bool		fEnabled;
 		bool		fFocusChanging;
+		bool		fTracking;
+		bool		_fUnusedBool;
 		uint32		_reserved[4];
 };
 

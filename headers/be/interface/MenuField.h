@@ -6,7 +6,7 @@
 /
 /	Copyright 1994-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef _MENU_FIELD_H
@@ -26,6 +26,13 @@ public:
 									const char *name,
 									const char *label,
 									BMenu *menu,
+									uint32 resize = B_FOLLOW_LEFT|B_FOLLOW_TOP,
+									uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
+						BMenuField(	BRect frame,
+									const char *name,
+									const char *label,
+									BMenu *menu,
+									bool fixed_size,
 									uint32 resize = B_FOLLOW_LEFT|B_FOLLOW_TOP,
 									uint32 flags = B_WILL_DRAW | B_NAVIGABLE); 
 						BMenuField(BMessage *data);
@@ -50,6 +57,7 @@ virtual	void			FrameResized(float new_width, float new_height);
 
 		BMenu			*Menu() const;
 		BMenuBar		*MenuBar() const;
+		BMenuItem		*MenuItem() const;
 
 virtual	void			SetLabel(const char *label);
 		const char		*Label() const;
@@ -62,12 +70,19 @@ virtual	void			SetAlignment(alignment label);
 virtual	void			SetDivider(float dividing_line);
 		float			Divider() const;
 
+		void			ShowPopUpMarker();
+		void			HidePopUpMarker();
+
 virtual BHandler		*ResolveSpecifier(BMessage *msg,
 										int32 index,
 										BMessage *specifier,
 										int32 form,
 										const char *property);
 virtual status_t		GetSupportedSuites(BMessage *data);
+
+virtual void			ResizeToPreferred();
+virtual void			GetPreferredSize(float *width, float *height);
+
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
@@ -97,6 +112,7 @@ static	long			MenuTask(void *arg);
 		bool			fEnabled;
 		bool			fSelected;
 		bool			fTransition;
+		bool			fFixedSizeMB;
 		thread_id		fMenuTaskID;
 		uint32			_reserved[3];
 };

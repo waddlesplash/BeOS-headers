@@ -4,9 +4,9 @@
 //
 //	Description:	BEntry class and entry_ref struct
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _ENTRY_H
@@ -27,6 +27,8 @@ class	BPath;
 struct	entry_ref;
 
 _IMPEXP_BE status_t	get_ref_for_path(const char *path, entry_ref *ref);
+_IMPEXP_BE bool operator<(const entry_ref & a, const entry_ref & b);
+
 
 struct entry_ref {
 						entry_ref();

@@ -6,7 +6,7 @@
 /
 /	Copyright 1994-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _MENU_H
 #define _MENU_H
@@ -68,9 +68,13 @@ virtual void			DetachedFromWindow();
 		bool			AddItem(BMenu *menu);
 		bool			AddItem(BMenu *menu, int32 index);
 		bool			AddItem(BMenu *menu, BRect frame);
+		bool			AddList(BList *list, int32 index);
 		bool			AddSeparatorItem();
 		bool			RemoveItem(BMenuItem *item);
 		BMenuItem		*RemoveItem(int32 index);
+		bool			RemoveItems(int32 index,
+									int32 count,
+									bool del = false);
 		bool			RemoveItem(BMenu *menu);
 
 		BMenuItem		*ItemAt(int32 index) const;
@@ -93,6 +97,7 @@ virtual void			SetMaxContentWidth(float max);
 		bool			IsEnabled() const;	
 		bool			IsRadioMode() const;
 		bool			AreTriggersEnabled() const;
+		bool			IsRedrawAfterSticky() const;
 		float			MaxContentWidth() const;
 
 		BMenuItem		*FindMarked();
@@ -117,6 +122,10 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 virtual status_t		GetSupportedSuites(BMessage *data);
 
 virtual status_t		Perform(perform_code d, void *arg);
+
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
 
 protected:
 				
@@ -145,6 +154,15 @@ virtual	void		Show();
 		void		Hide();
 		BMenuItem	*Track(	bool start_opened = false,
 							BRect *special_rect = NULL);
+	
+public:
+		enum add_state {
+			B_INITIAL_ADD,
+			B_PROCESSING,
+			B_ABORT
+		};
+virtual	bool		AddDynamicItem(add_state s);
+virtual void		DrawBackground(BRect update);
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -155,8 +173,6 @@ friend status_t _init_interface_kit_();
 friend status_t	set_menu_info(menu_info *);
 friend status_t	get_menu_info(menu_info *);
 
-virtual	void			_ReservedMenu1();
-virtual	void			_ReservedMenu2();
 virtual	void			_ReservedMenu3();
 virtual	void			_ReservedMenu4();
 virtual	void			_ReservedMenu5();
@@ -165,10 +181,14 @@ virtual	void			_ReservedMenu6();
 		BMenu			&operator=(const BMenu &);
 
 		void		InitData(BMessage *data = NULL);
-		void		_show(bool selectFirstItem = false);
+		bool		_show(bool selectFirstItem = false);
 		void		_hide();
 		BMenuItem	*_track(int *action, long start = -1);
-		void		RemoveItem(int32 index, BMenuItem *item);
+		bool		_AddItem(BMenuItem *item, int32 index);
+		bool		RemoveItems(int32 index,
+								int32 count,
+								BMenuItem *item,
+								bool del = false);
 		void		LayoutItems(int32 index);
 		BRect		Bump(BRect current, BPoint extent, int32 index) const;
 		BPoint		ItemLocInRect(BRect frame) const;
@@ -206,6 +226,7 @@ virtual	void			_ReservedMenu6();
 		void		UpdateWindowViewSize(bool upWind = true);
 		bool		IsStickyPrefOn();
 		void		RedrawAfterSticky(BRect bounds);
+		bool		OkToProceed(BMenuItem *);
 
 		status_t	ParseMsg(BMessage *msg, int32 *sindex, BMessage *spec,
 						int32 *form, const char **prop,
@@ -229,6 +250,7 @@ virtual	void			_ReservedMenu6();
 						BMessage *r) const;
 
 static	menu_info	sMenuInfo;
+static	bool		sSwapped;
 
 		BMenuItem	*fChosenItem;
 		BList		fItems;
@@ -258,6 +280,7 @@ static	menu_info	sMenuInfo;
 		bool		fIgnoreHidden;
 		bool		fTriggerEnabled;
 		bool		fRedrawAfterSticky;
+		bool		fAttachAborted;
 };
 
 /*-------------------------------------------------------------*/

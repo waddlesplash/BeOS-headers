@@ -8,7 +8,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _APPLICATION_H
 #define _APPLICATION_H
@@ -29,6 +29,10 @@ class BDirectory;
 class BView;
 class BList;
 class _BSession_;
+class BResources;
+class BMessageRunner;
+struct _server_heap_;
+struct _drag_data_;
 
 /*----- BApplication class --------------------------------------------*/
 
@@ -72,6 +76,7 @@ virtual BHandler		*ResolveSpecifier(BMessage *msg,
 		BWindow			*WindowAt(int32 index) const;
 		bool			IsLaunching() const;
 		status_t		GetAppInfo(app_info *info) const;
+static		BResources		*AppResources();
 
 virtual	void			DispatchMessage(BMessage *an_event,
 										BHandler *handler);
@@ -86,10 +91,14 @@ virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 
+typedef BLooper _inherited;
+
 friend class BWindow;
 friend class BView;
+friend class BBitmap;
 friend class BScrollBar;
-friend long _pulse_task_(void *arg);
+friend class BPrivateScreen;
+friend class _BAppServerLink_;
 friend void _toggle_handles_(bool);
 						
 						BApplication(uint32 signature);
@@ -114,8 +123,13 @@ virtual	bool			ScriptReceived(BMessage *msg,
 		void			InitData(const char *signature);
 		void			BeginRectTracking(BRect r, bool trackWhole);
 		void			EndRectTracking();
-		void			pulse_task();
+//+		void			pulse_task();
 		void			get_scs();
+		void			setup_server_heaps();
+		void *			rw_offs_to_ptr(uint32 offset);
+		void *			ro_offs_to_ptr(uint32 offset);
+		void *			global_ro_offs_to_ptr(uint32 offset);
+		void			connect_to_app_server();
 		void			send_drag(	BMessage *msg,
 									int32 vs_token,
 									BPoint offset,
@@ -125,29 +139,30 @@ virtual	bool			ScriptReceived(BMessage *msg,
 									int32 vs_token,
 									BPoint offset,
 									int32 bitmap_token,
+									drawing_mode dragMode,
 									BHandler *reply_to);
 		void			write_drag(_BSession_ *session, BMessage *a_message);
 		bool			quit_all_windows(bool force);
 		bool			window_quit_loop(bool, bool);
 		void			do_argv(BMessage *msg);
 		void			SetAppCursor();
-		void			enable_pulsing(bool enable);
 		uint32			InitialWorkspace();
 		int32			count_windows(bool incl_menus) const;
 		BWindow			*window_at(uint32 index, bool incl_menus) const;
 		status_t		get_window_list(BList *list, bool incl_menus) const;
 static	int32			async_quit_entry(void *);
-static	int32			sPulseEnabledCount;
+static	BResources		* _app_resources;
+static	BLocker			_app_resources_lock;
 
 		const char		*fAppName;
 		int32			fServerFrom;
 		int32			fServerTo;
 		void			*fCursorData;
-		thread_id		fPulseTaskID;
-		int32			_unused;
+		_server_heap_ *	fServerHeap;
 		bigtime_t		fPulseRate;
-		int32			fPulsePhase;
 		uint32			fInitialWorkspace;
+		_drag_data_	*	fDraggedMessage;
+		BMessageRunner	*fPulseRunner;
 		uint32			_reserved[12];
 
 		bool			fReadyToRunCalled;

@@ -7,7 +7,7 @@
 /
 /	Copyright 1994-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _POP_UP_MENU_H
 #define _POP_UP_MENU_H
@@ -58,6 +58,13 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 virtual status_t	GetSupportedSuites(BMessage *data);
 
 virtual status_t	Perform(perform_code d, void *arg);
+
+virtual void		ResizeToPreferred();
+virtual void		GetPreferredSize(float *width, float *height);
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
+
 
 protected:
 virtual	BPoint		ScreenLocation();

@@ -1,14 +1,13 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	string
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
-  
-  #include <bstring.h>
+// Main header for the -*- C++ -*- string classes.
 
+#ifndef __STRING__
+#define __STRING__
 
+#include <std/bastring.h>
 
-/*     Change record
-*/
+extern "C++" {
+typedef basic_string <char> string;
+// typedef basic_string <wchar_t> wstring;
+} // extern "C++"
+
+#endif

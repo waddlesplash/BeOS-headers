@@ -1,13 +1,12 @@
-/*****************************************************************************
-
-	File:		OS.h
-
-	Description:	Operating System functions.
-
-	Copyright 1992-97, Be Incorporated, All Rights Reserved.
-
-*****************************************************************************/
-
+/*******************************************************************************
+/
+/	File:		OS.h
+/
+/	Description:	Operating System functions.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _OS_H
 #define _OS_H
@@ -335,7 +334,7 @@ extern _IMPEXP_ROOT status_t	_get_next_team_info(int32 *cookie, team_info *info,
 #define		B_MAX_CPU_COUNT		1
 #endif
 
-typedef enum {
+typedef enum cpu_types {
 	B_CPU_PPC_601	= 1,
 	B_CPU_PPC_603	= 2,
 	B_CPU_PPC_603e	= 3,
@@ -360,12 +359,15 @@ typedef enum {
 	B_CPU_INTEL_PENTIUM75,
 	B_CPU_INTEL_PENTIUM_486_OVERDRIVE,
 	B_CPU_INTEL_PENTIUM_MMX,
+	B_CPU_INTEL_PENTIUM_MMX_MODEL_4 = B_CPU_INTEL_PENTIUM_MMX,
+	B_CPU_INTEL_PENTIUM_MMX_MODEL_8 = 0x1058,
 	B_CPU_INTEL_PENTIUM75_486_OVERDRIVE,
 	B_CPU_INTEL_PENTIUM_PRO = 0x1061,
 	B_CPU_INTEL_PENTIUM_II = 0x1063,
 	B_CPU_INTEL_PENTIUM_II_MODEL_3 = 0x1063,
 	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,
-
+	B_CPU_INTEL_CELERON = 0x1066,
+	
 	B_CPU_AMD_X86 = 0x1100,
 	B_CPU_AMD_K5_MODEL0 = 0x1150,
 	B_CPU_AMD_K5_MODEL1,
@@ -383,7 +385,41 @@ typedef enum {
 
 } cpu_type;
 
-typedef enum {
+#define B_CPU_X86_VENDOR_MASK	0x1F00
+
+
+#ifdef __INTEL__
+typedef union {
+	struct {
+		uint32	max_eax;
+		char	vendorid[12];
+	} eax_0;
+	
+	struct {
+		uint32	stepping	: 4;
+		uint32	model		: 4;
+		uint32	family		: 4;
+		uint32	type		: 2;
+		uint32	reserved_0	: 18;
+		
+		uint32	reserved_1;
+		uint32	features; 
+		uint32	reserved_2;
+	} eax_1;
+	
+	struct {
+		uint32	eax;
+		uint32	ebx;
+		uint32	edx;
+		uint32	ecx;
+	} regs; 
+} cpuid_info;
+
+extern _IMPEXP_ROOT status_t get_cpuid(cpuid_info* info, uint32 eax_register);
+#endif
+
+
+typedef enum platform_types {
 	B_BEBOX_PLATFORM = 0,
 	B_MAC_PLATFORM,
 	B_AT_CLONE_PLATFORM,
@@ -396,7 +432,8 @@ typedef enum {
 	B_ORAC_1_PLATFORM,
 	B_HAL_PLATFORM,
 	B_BESM_6_PLATFORM,
-	B_MK_61_PLATFORM
+	B_MK_61_PLATFORM,
+	B_NINTENDO_64_PLATFORM
 } platform_type;
 
 
@@ -407,16 +444,16 @@ typedef struct {
 typedef int32 machine_id[2];		/* unique machine ID */
 
 typedef struct {
-	machine_id	  id;							/* unique machine ID */
-	bigtime_t	  boot_time;					/* time of boot (# usec since 1/1/70) */
+	machine_id	   id;							/* unique machine ID */
+	bigtime_t	   boot_time;					/* time of boot (# usec since 1/1/70) */
 
-	int32		  cpu_count;					/* # of cpus */
-	cpu_type	  cpu_type;						/* type of cpu */
-	int32		  cpu_revision;					/* revision # of cpu */
-	cpu_info	  cpu_infos[B_MAX_CPU_COUNT];	/* info about individual cpus */
-	int64         cpu_clock_speed;	 			/* processor clock speed (Hz) */
-	int64         bus_clock_speed;				/* bus clock speed (Hz) */
-	platform_type platform_type;              	/* type of machine we're on */
+	int32		   cpu_count;					/* # of cpus */
+	enum cpu_types cpu_type;					/* type of cpu */
+	int32		   cpu_revision;				/* revision # of cpu */
+	cpu_info	   cpu_infos[B_MAX_CPU_COUNT];	/* info about individual cpus */
+	int64          cpu_clock_speed;	 			/* processor clock speed (Hz) */
+	int64          bus_clock_speed;				/* bus clock speed (Hz) */
+	enum platform_types platform_type;          /* type of machine we're on */
 
 	int32		  max_pages;					/* total # physical pages */
 	int32		  used_pages;					/* # physical pages in use */

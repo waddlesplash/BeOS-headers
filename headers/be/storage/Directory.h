@@ -4,9 +4,9 @@
 //
 //	Description:	BDirectory class
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _DIRECTORY_H

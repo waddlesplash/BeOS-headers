@@ -11,7 +11,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _NET_PACKET_H
 #define _NET_PACKET_H
@@ -49,7 +49,7 @@ public:
 	}
 /* ...down to here */
 
-private:
+protected:
 	BNetPacket(void);
 
 };

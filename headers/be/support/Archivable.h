@@ -7,13 +7,14 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _ARCHIVABLE_H
 #define _ARCHIVABLE_H
 
 #include <BeBuild.h>
 #include <SupportDefs.h>
+#include <image.h>
 
 class BMessage;
 
@@ -46,9 +47,13 @@ virtual	void		_ReservedArchivable3();
 
 typedef BArchivable *(*instantiation_func) (BMessage *); 
 
+_IMPEXP_BE BArchivable		*instantiate_object(BMessage *from, image_id *id);
 _IMPEXP_BE BArchivable		*instantiate_object(BMessage *from);
-_IMPEXP_BE bool		validate_instantiation(	BMessage *from, 
+_IMPEXP_BE bool				validate_instantiation(	BMessage *from, 
 											const char *class_name);
+
+_IMPEXP_BE instantiation_func	find_instantiation_func(const char *class_name,
+														const char *sig);
 _IMPEXP_BE instantiation_func	find_instantiation_func(const char *class_name);
 _IMPEXP_BE instantiation_func	find_instantiation_func(BMessage *archive_data);
 

@@ -1,286 +1,114 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*                                                                              *
-*      File fenv.h - PowerPC, 68K, X86                                         *
-*                                                                              *
-*      A collection of functions designed to provide access to the floating    *
-*      point environment for numerical programming. It is modeled after the    *
-*      Numerical C Extensions Group’s requirements ( NCEG / X3J11.1 ).      *
-*                                                                              *
-*      The file <fenv.h> declares many functions in support of numerical       *
-*      programming.  It provides a set of environmental controls similar to    *
-*      the ones found in <SANE.h>.  Programs that test flags or run under      *
-*      non-default modes must do so under the effect of an enabling            *
-*      "fenv_access" pragma.                                                   *
-*                                                                              *
-*      Copyright © 1992-1995 Apple Computer, Inc.  All rights reserved.     *
-*                                                                              *
-*      Written by Ali Sazegari, started on October 1992.                       *
-*                                                                              *
-*      CHANGE LOG (most recent changes first)                                  *
-*
-*      15 July 97  --Matt Fassiotto-- added support for X86
-*                    moved header to common\Public Includes
-*                                                                              *
-*      17 Jan 95      ngk      Use ConditionalMacros for processor info        *
-*      13 May 94      PAF      Added fegetprec and fesetprec and               *
-*                              corresponding macros for 68K                    *
-*      22 Feb 94      PAF      Modified for 68K compatability                  *
-*      23 Aug 93      ali      included C++ extern "C" wrappers to make        *
-*                              them C++ friendly.                              *
-*      08 Apr 93      ali      changed "enums" to "macros" to be more          *
-*                              compatible with the FPCE of NCEG.               *
-*      05 Feb 93      JPO      Changed function types of feclearexcept,        *
-*                              fegetexcept, feraiseexcept, and fesetexcept     *
-*                              from int to void to reflect changes in NCEG     *
-*                              specification.  Changed definition of           *
-*                              FE_DFL_ENV from typedef to #define.  Modified   *
-*                              comments describing functionality.              *
-*                                                                              *
-*******************************************************************************/
+/* Copyright (C) 1997 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
-#ifndef __FENV__
-#define __FENV__
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
-#ifndef	__INTEL__
-#ifndef __CONDITIONALMACROS__
-#include <ConditionalMacros.h>
-#endif
-#endif
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-#if	GENERATINGPOWERPC
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If not,
+   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
-/*    The typedef fenv_t is a type for representing the entire floating-point
-      environment in a single object.                                         */
+/*
+ * ISO C 9X 7.6: Floating-point environment	<fenv.h>
+ */
 
-typedef      long int      fenv_t;
+#ifndef _FENV_H
+#define _FENV_H	1
 
-/*    The typedef fexcept_t is a type for representing the floating-point
-      exception flag state collectively.                                      */
+#include <features.h>
 
-typedef      long int      fexcept_t;
+/* Get the architecture dependend definitions.  The following definitions
+   are expected to be done:
 
-/*    Definitions of floating-point exception macros                          */
+   fenv_t	type for object representing an entire floating-point
+		environment
 
-#define      FE_INEXACT         0x02000000
-#define      FE_DIVBYZERO       0x04000000
-#define      FE_UNDERFLOW       0x08000000
-#define      FE_OVERFLOW        0x10000000
-#define      FE_INVALID         0x20000000
+   FE_DFL_ENV	macro of type pointer to fenv_t to be used as the argument
+		to functions taking an argument of type fenv_t; in this
+		case the default environment will be used
 
-/*    Definitions of rounding direction macros                                */
+   fexcept_t	type for object representing the floating-point exception
+		flags including status associated with the flags
 
-#define      FE_TONEAREST       0x00000000 
-#define      FE_TOWARDZERO      0x00000001 
-#define      FE_UPWARD          0x00000002 
-#define      FE_DOWNWARD        0x00000003
+   The following macros are defined iff the implementation supports this
+   kind of exception.
+   FE_INEXACT		inexact result
+   FE_DIVBYZERO		devision by zero
+   FE_UNDERFLOW		result not representable due to underflow
+   FE_OVERFLOW		result not representable due to overflow
+   FE_INVALID		invalid operation
 
-#endif	/* GENERATINGPOWERPC	*/
+   FE_ALL_EXCEPT	bitwise OR of all supported exceptions
 
-#if GENERATING68K
+   The next macros are defined iff the appropriate rounding mode is
+   supported by the implementation.
+   FE_TONEAREST		round to nearest
+   FE_UPWARD		round toward +Inf
+   FE_DOWNWARD		round toward -Inf
+   FE_TOWARDZERO	round toward 0
+*/
+#include <bits/fenv.h>
 
-#if GENERATING68881
+__BEGIN_DECLS
 
-typedef  long fexcept_t;
-typedef struct {
-    long FPCR;
-    long FPSR;
-} fenv_t;
+/* Floating-point exception handling.  */
 
-#define      FE_INEXACT        ((long)(8))
-#define      FE_DIVBYZERO      ((long)(16))
-#define      FE_UNDERFLOW      ((long)(32))
-#define      FE_OVERFLOW       ((long)(64))
-#define      FE_INVALID        ((long)(128))
+/* Clear the supported exceptions represented by EXCEPTS.  */
+extern void feclearexcept __P ((int __excepts));
 
-#else 	
+/* Store implementation-defined representation of the exception flags
+   indicated by EXCEPTS in the object pointed to by FLAGP.  */
+extern void fegetexceptflag __P ((fexcept_t *__flagp, int __excepts));
 
-typedef  short fexcept_t;
-typedef  short fenv_t;
+/* Raise the supported exceptions represented by EXCEPTS.  */
+extern void feraiseexcept __P ((int __excepts));
 
-#define      FE_INVALID        ((short)(1))
-#define      FE_UNDERFLOW      ((short)(2))
-#define      FE_OVERFLOW       ((short)(4))
-#define      FE_DIVBYZERO      ((short)(8))
-#define      FE_INEXACT        ((short)(16))
+/* Set complete status for exceptions indicated by EXCEPTS according to
+   the representation in the object pointed to by FLAGP.  */
+extern void fesetexceptflag __P ((__const fexcept_t *__flagp, int __excepts));
 
-#endif	/* GENERATING68881	*/
-
-#define FE_TONEAREST           ((short)(0))
-#define FE_UPWARD              ((short)(1))
-#define FE_DOWNWARD            ((short)(2))
-#define FE_TOWARDZERO          ((short)(3))
-
-/*    Definitions of rounding precision macros  (68K only)                    */
-
-#define FE_LDBLPREC            ((short)(0))
-#define FE_DBLPREC             ((short)(1))
-#define FE_FLTPREC             ((short)(2))
-
-#endif	/* GENERATING68K	*/
-
-#if __INTEL__
-typedef 	 short		   fexcept_t;
-typedef  	 long 		   fenv_t;  /* control word/status word  */
-
-#define      FE_INVALID         0x0001
-#define      FE_DIVBYZERO       0x0004
-#define      FE_OVERFLOW        0x0008
-#define      FE_UNDERFLOW       0x0010
-#define      FE_INEXACT         0x0020
-
-#define      FE_TONEAREST       0x00000000 
-#define      FE_TOWARDZERO      0x00000C00 
-#define      FE_UPWARD          0x00000800 
-#define      FE_DOWNWARD        0x00000400
-
-#define FE_LDBLPREC             0x00000300
-#define FE_DBLPREC              0x00000200
-#define FE_FLTPREC              0x00000000
-
-#endif /*  __INTEL__    */
-
-/*    The bitwise OR of all exception macros                                  */
-#define      FE_ALL_EXCEPT     ( FE_INEXACT | FE_DIVBYZERO | FE_UNDERFLOW | FE_OVERFLOW | FE_INVALID )
-/*    Definition of pointer to IEEE default environment object                */
-#if __INTEL__
-long const _FE_DFL_ENV =  0x0000037f;
-#else
-extern fenv_t _FE_DFL_ENV;               /* default environment object        */
-#endif /* __INTEL__ */
-
-#define FE_DFL_ENV &_FE_DFL_ENV          /* pointer to default environment    */
+/* Determine which of subset of the exceptions specified by EXCEPTS are
+   currently set.  */
+extern int fetestexcept __P ((int __excepts));
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* Rounding control.  */
 
-/*******************************************************************************
-*     The following functions provide access to the exception flags.  The      *
-*     "int" input argument can be constructed by bitwise ORs of the exception  *
-*     macros: for example: FE_OVERFLOW | FE_INEXACT.                           *
-*******************************************************************************/
+/* Get current rounding direction.  */
+extern int fegetround __P ((void));
 
-/*******************************************************************************
-*     The function "feclearexcept" clears the supported exceptions represented *
-*     by its argument.                                                         *
-*******************************************************************************/
+/* Establish the rounding direction represented by ROUND.  */
+extern int fesetround __P ((int __rounding_direction));
 
-void feclearexcept ( int excepts );
 
-/*******************************************************************************
-*    The function "fegetexcept" stores a representation of the exception       *
-*     flags indicated by the argument "excepts" through the pointer argument   *
-*     "flagp".                                                                 *
-*******************************************************************************/
+/* Floating-point environment.  */
 
-void fegetexcept ( fexcept_t *flagp, int excepts );
+/* Store the current floating-point environment in the object pointed
+   to by ENVP.  */
+extern void fegetenv __P ((fenv_t *__envp));
 
-/*******************************************************************************
-*     The function "feraiseexcept" raises the supported exceptions             *
-*     represented by its argument.                                             *
-*******************************************************************************/
+/* Save the current environment in the object pointed to by ENVP, clear
+   exception flags and install a non-stop mode (if available) for all
+   exceptions.  */
+extern int feholdexcept __P ((fenv_t *__envp));
 
-void feraiseexcept ( int excepts );
+/* Establish the floating-point environment represented by the object
+   pointed to by ENVP.  */
+extern void fesetenv __P ((__const fenv_t *__envp));
 
-/*******************************************************************************
-*     The function "fesetexcept" sets or clears the exception flags indicated  *
-*     by the int argument "excepts" according to the representation in the     *
-*     object pointed to by the pointer argument "flagp".  The value of         *
-*     "*flagp" must have been set by a previous call to "fegetexcept".         *
-*     This function does not raise exceptions; it just sets the state of       *
-*     the flags.                                                               *
-*******************************************************************************/
+/* Save current exceptions in temporary storage, install environment
+   represented by object pointed to by ENVP and raise exceptions
+   according to saved exceptions.  */
+extern void feupdateenv __P ((__const fenv_t *__envp));
 
-void fesetexcept ( const fexcept_t *flagp, int excepts );
+__END_DECLS
 
-/*******************************************************************************
-*     The function "fetestexcept" determines which of the specified subset of  *
-*     the exception flags are currently set.  The argument "excepts" specifies *
-*     the exception flags to be queried as a bitwise OR of the exception       *
-*     macros.  This function returns the bitwise OR of the exception macros    *
-*     corresponding to the currently set exceptions included in "excepts".     *
-*******************************************************************************/
-
-int fetestexcept ( int excepts );
-/*******************************************************************************
-*     The following functions provide control of rounding direction modes.     *
-*******************************************************************************/
-
-/*******************************************************************************
-*     The function "fegetround" returns the value of the rounding direction    *
-*     macro which represents the current rounding direction.                   *
-*******************************************************************************/
-
-int fegetround ( void );
-
-/*******************************************************************************
-*     The function "fesetround" establishes the rounding direction represented *
-*     by its argument.  It returns nonzero if and only if the argument matches *
-*     a rounding direction macro.  If not, the rounding direction is not       *
-*     changed.                                                                 *
-*******************************************************************************/
-
-int fesetround ( int round );
-
-/*******************************************************************************
-*    The following functions manage the floating-point environment, exception  *
-*    flags and dynamic modes, as one entity.                                   *
-*******************************************************************************/
-
-/*******************************************************************************
-*     The function "fegetenv" stores the current floating-point environment    *
-*     in the object pointed to by its pointer argument "envp".                 *
-*******************************************************************************/
-
-void fegetenv ( fenv_t *envp );
-
-/*******************************************************************************
-*     The function "feholdexcept" saves the current environment in the object  *
-*     pointed to by its pointer argument "envp", clears the exception flags,   *
-*     and clears floating-point exception enables.  This function supersedes   *
-*     the SANE function "procentry", but it does not change the current        *
-*     rounding direction mode.                                                 *
-*******************************************************************************/
-
-int feholdexcept ( fenv_t *envp );
-
-/*******************************************************************************
-*     The function "fesetenv" installs the floating-point environment          *
-*     environment represented by the object pointed to by its argument         *
-*     "envp".  The value of "*envp" must be set by a call to "fegetenv" or     *
-*     "feholdexcept", by an implementation-defined macro of type "fenv_t",     *
-*     or by the use of the pointer macro FE_DFL_ENV as the argument.           *
-*******************************************************************************/
-void fesetenv ( const fenv_t *envp );
-
-/*******************************************************************************
-*     The function "feupdateenv" saves the current exceptions into its         *
-*     automatic storage, installs the environment represented through its      *
-*     pointer argument "envp", and then re-raises the saved exceptions.        *
-*     This function, which supersedes the SANE function "procexit", can be     *
-*     used in conjunction with "feholdexcept" to write routines which hide     *
-*     spurious exceptions from their callers.                                  *
-*******************************************************************************/
-      
-void feupdateenv ( const fenv_t * envp );
-
-#if GENERATING68K  
-
-/*******************************************************************************
-*     The following functions provide control of rounding precision.           *
-*     Because the PowerPC does not provide this capability, these functions    *  
-*     are available only for the 68K Macintosh.  Rounding precision values     *
-*     are defined by the rounding precision macros.  These functions are       *
-*     equivalent to the SANE functions getprecision and setprecision.          *
-*     These are not part of the C9X draft standard--m.f. 7/15/97               *
-*******************************************************************************/
-
-int fegetprec ( void );
-int fesetprec ( int precision );
-
-#endif  /* GENERATING68K */
-#ifdef __cplusplus
-}
-#endif
-#endif	/*  __FENV__ */
+#endif /* fenv.h */

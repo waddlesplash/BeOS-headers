@@ -6,7 +6,7 @@
 /
 /	Copyright 1997-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _SLIDER_H
 #define _SLIDER_H
@@ -183,8 +183,9 @@ virtual	void				_ReservedSlider12();
 		thumb_style			fStyle;
 		
 		BPoint 				fLocation;
+		BPoint				fInitialLocation;
 		
-		uint32				_reserved[12];
+		uint32				_reserved[10];
 };
 
 /*-------------------------------------------------------------*/

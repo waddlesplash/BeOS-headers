@@ -7,7 +7,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef	_WINDOW_H
 #define	_WINDOW_H
@@ -41,6 +41,7 @@ enum window_type {
 
 enum window_look {
 	B_BORDERED_WINDOW_LOOK	= 20,
+	B_NO_BORDER_WINDOW_LOOK	= 19,
 	B_TITLED_WINDOW_LOOK	= 1,	
 	B_DOCUMENT_WINDOW_LOOK	= 11,
 	B_MODAL_WINDOW_LOOK		= 3,
@@ -81,7 +82,8 @@ enum {
 	B_WILL_ACCEPT_FIRST_CLICK	= 0x00000010,
 	B_OUTLINE_RESIZE			= 0x00001000,
 	B_NO_WORKSPACE_ACTIVATION	= 0x00000100,
-	B_NOT_ANCHORED_ON_ACTIVATE	= 0x00020000
+	B_NOT_ANCHORED_ON_ACTIVATE	= 0x00020000,
+	B_ASYNCHRONOUS_CONTROLS		= 0x00080000
 };
 
 #define B_CURRENT_WORKSPACE	0
@@ -94,6 +96,7 @@ class _BSession_;
 class BMenuItem;
 class BMenuBar;
 class BButton;
+class BMessageRunner;
 struct _cmd_key_;
 struct _view_attr_;
 
@@ -121,7 +124,7 @@ static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
 virtual	void			Quit();
-		void			Close();
+		void			Close(); /* Synonym of Quit() */
 
 		void			AddChild(BView *child, BView *before = NULL);
 		bool			RemoveChild(BView *child);
@@ -178,6 +181,7 @@ virtual	void			WindowActivated(bool state);
 virtual	void			Show();
 virtual	void			Hide();
 		bool			IsHidden() const;
+		bool			IsMinimized() const;
 
 		void			Flush() const;
 		void			Sync() const;
@@ -186,6 +190,10 @@ virtual	void			Hide();
 
 		void			DisableUpdates();
 		void			EnableUpdates();
+
+		void			BeginViewTransaction();
+		void			EndViewTransaction();
+
 		BRect			Bounds() const;
 		BRect			Frame() const;
 		const char		*Title() const;
@@ -252,8 +260,13 @@ virtual status_t		Perform(perform_code d, void *arg);
 											int32 *height = NULL,
 											int32 *heightOffset = NULL) const;
 
+virtual	bool			QuitRequested();
+virtual thread_id		Run();
+
 /*----- Private or reserved -----------------------------------------*/
 private:
+
+typedef BLooper inherited;
 
 friend class BApplication;
 friend class BBitmap;
@@ -263,6 +276,7 @@ friend class BMenuItem;
 friend class BWindowScreen;
 friend class BDirectWindow;
 friend class BFilePanel;
+friend class _CEventPort_;
 friend void _set_menu_sem_(BWindow *w, sem_id sem);
 friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 
@@ -299,6 +313,7 @@ virtual	void		task_looper();
 								int32 token,
 								BPoint offset,
 								int32 bitmap_token,
+								drawing_mode dragMode,
 								BHandler *reply_to);
 		void		view_builder(BView *a_view);
 		void		attach_builder(BView *a_view);
@@ -307,6 +322,9 @@ virtual	void		task_looper();
 		BMessage	*extract_drop(BMessage *an_event, BHandler **target);
 		void		movesize(uint32 opcode, float h, float v);
 		
+		BMessage *	ReadMessageFromPort(bigtime_t tout = B_INFINITE_TIMEOUT);
+		int32		MessagesWaiting();
+
 		void		handle_activate(BMessage *an_event);
 		void		do_view_frame(BMessage *an_event);
 		void		do_value_change(BMessage *an_event, BHandler *handler);
@@ -315,7 +333,7 @@ virtual	void		task_looper();
 		void		do_key_down(BMessage *an_event, BHandler *handler);
 		void		do_key_up(BMessage *an_event, BHandler *handler);
 		void		do_menu_event(BMessage *an_event);
-		void		do_draw_views(message *a_message);
+		void		do_draw_views();
 virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		_cmd_key_	*allocShortcut(uint32 key, uint32 modifiers);
 		_cmd_key_	*FindShortcut(uint32 key, uint32 modifiers);
@@ -325,13 +343,13 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		void		post_message(BMessage *message);
 		void		SetLocalTitle(const char *new_title);
 		void		enable_pulsing(bool enable);
-		BHandler	*determine_target(BMessage *msg, BHandler *target);
+		BHandler	*determine_target(BMessage *msg, BHandler *target, bool pref);
 		void		kb_navigate();
 		void		navigate_to_next(int32 direction, bool group = false);
-		void		set_focus(BView *focus);
+		void		set_focus(BView *focus, bool notify_input_server);
 		bool		InUpdate();
 		void		DequeueAll();
-		void		find_token_and_handler(BMessage *msg,
+		bool		find_token_and_handler(BMessage *msg,
 											int32 *token,
 											BHandler **handler);
 		window_type	compose_type(window_look look, 
@@ -367,10 +385,9 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		BList			accelList;
 		int32			top_view_token;
 		bool			pulse_enabled;
+		bool			fViewsNeedPulse;
 		bool			fIsFilePanel;
-		int16			fUnused1;
-		int32			pulse_phase;
-		int32			pulse_queued;
+		bool			fUnused1;
 		bigtime_t		pulse_rate;
 		bool			fWaitingForMenu;
 		bool			fOffscreen;
@@ -385,8 +402,14 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		window_look		fLook;
 		_view_attr_		*fCurDrawViewState;
 		window_feel		fFeel;
+		int32			fLastViewToken;
+		_CEventPort_ *	fEventPort;
+		BMessageRunner	*fPulseRunner;
 
-		uint32			_reserved[7];	/* was 8 */
+		uint32			_reserved[6];	/* was 8 */
+#if !_PR3_COMPATIBLE_
+		uint32			_more_reserved[4];
+#endif
 };
 
 /*----------------------------------------------------------------*/

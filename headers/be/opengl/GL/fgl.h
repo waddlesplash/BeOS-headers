@@ -2527,9 +2527,9 @@ C ***********************************************************
 
 
        character*8   FGL_NULL
-       parameter ( FGL_NULL = char(0)//char(0)//char(0)//
-     *                        char(0)//char(0)//char(0)//
-     *                        char(0)//char(0) )
+       parameter ( FGL_NULL = char(0)/*char(0)//char(0)//*/
+     *                        char(0)/*char(0)//char(0)//*/
+     *                        char(0)/*char(0) )*/
 
 
        character*128       fglGetString

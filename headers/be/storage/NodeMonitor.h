@@ -4,9 +4,9 @@
 //
 //	Description:	The Node Monitor
 //
-//	Copyright 1992-97, Be Incorporated, All Rights Reserved.
+//	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 //
-//*************************************************************************/
+***************************************************************************/
 
 
 #ifndef _NODE_MONITOR_H
@@ -47,8 +47,7 @@ _IMPEXP_BE status_t stop_watching(const BHandler *handler,
  * BVolumeRoster provides a handy cover for
  * volume watching.
  */
-enum
-{
+enum {
     B_STOP_WATCHING = 0x0000,
 	B_WATCH_NAME =	0x0001,
 	B_WATCH_STAT =	0x0002,

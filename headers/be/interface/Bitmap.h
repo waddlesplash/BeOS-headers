@@ -7,7 +7,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef	_BITMAP_H
@@ -54,6 +54,7 @@ virtual	bool		RemoveChild(BView *view);
 		BView		*FindView(BPoint point) const;
 		bool		Lock();
 		void		Unlock();
+		bool		IsLocked() const;
 
 /*----- Private or reserved -----------------------------------------*/
 	
@@ -61,6 +62,7 @@ virtual status_t	Perform(perform_code d, void *arg);
 
 private:
 friend class BView;
+friend class BApplication;
 friend void  _IMPEXP_BE _get_screen_bitmap_(BBitmap *,BRect,bool);
 
 virtual	void		_ReservedBitmap1();

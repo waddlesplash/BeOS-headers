@@ -1,11 +1,11 @@
 /******************************************************************************
-//
-//	File:		scsiprobe_driver.h
-//
-//	Description:	interface for scsiprobe driver
-//
-//	Copyright 1992-97, Be Incorporated
-//
+/
+/	File:		scsiprobe_driver.h
+/
+/	Description:	interface for scsiprobe driver
+/
+/	Copyright 1992-98, Be Incorporated
+/
 *******************************************************************************/
 
 
@@ -14,6 +14,8 @@
 
 #include <Drivers.h>
 #include <CAM.h>
+
+#define B_SCSIPROBE_DRIVER	"/dev/bus/scsi/probe"
 
 /* -----
 	ioctl opcodes

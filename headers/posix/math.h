@@ -1,954 +1,388 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
+/* Declarations for math functions.
+   Copyright (C) 1991, 92, 93, 95, 96, 97, 98 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If not,
+   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /*
- *	math.h
- *	
- *		Copyright © 1995-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
- 
-#ifndef __cmath__
-#define __cmath__
-
-#include <ansi_parms.h>
-
-#if __dest_os == __be_os
-# include <math.be.h>       /* useful constants like M_PI, etc */ /* Be-mani 980107 */
-#endif
-
-/* #pragma options align=native */
-#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
-	#pragma import on
-#endif
-#pragma direct_destruction off
-
-__namespace(__stdc_space(math))
-
-
-/* 
- *	common function prototype declarations 
+ *	ISO C Standard: 4.5 MATHEMATICS	<math.h>
  */
 
-/* 	float declarations */
-/* 	970413 bkoz
-	have been depreciated
+#ifndef	_MATH_H
+#define	_MATH_H	1
+
+#include <features.h>
+
+__BEGIN_DECLS
+
+/* Get machine-dependent HUGE_VAL value (returned on overflow).
+   On all IEEE754 machines, this is +Infinity.  */
+#include <bits/huge_val.h>
+
+/* Get machine-dependent NAN value (returned for some domain errors).  */
+#ifdef	 __USE_ISOC9X
+# include <bits/nan.h>
+#endif
+
+
+/* The file <bits/mathcalls.h> contains the prototypes for all the
+   actual math functions.  These macros are used for those prototypes,
+   so we can easily declare each function as both `name' and `__name',
+   and can declare the float versions `namef' and `__namef'.  */
+
+#define __MATHCALL(function,suffix, args)	\
+  __MATHDECL (_Mdouble_,function,suffix, args)
+#define __MATHDECL(type, function,suffix, args) \
+  __MATHDECL_1(type, function,suffix, args); \
+  __MATHDECL_1(type, __CONCAT(__,function),suffix, args)
+#define __MATHCALLX(function,suffix, args, attrib)	\
+  __MATHDECLX (_Mdouble_,function,suffix, args, attrib)
+#define __MATHDECLX(type, function,suffix, args, attrib) \
+  __MATHDECL_1(type, function,suffix, args) __attribute__ (attrib); \
+  __MATHDECL_1(type, __CONCAT(__,function),suffix, args) __attribute__ (attrib)
+#define __MATHDECL_1(type, function,suffix, args) \
+  extern type __MATH_PRECNAME(function,suffix) args
+
+#define _Mdouble_ 		double
+#define __MATH_PRECNAME(name,r)	__CONCAT(name,r)
+#include <bits/mathcalls.h>
+#undef	_Mdouble_
+#undef	__MATH_PRECNAME
+
+#if defined __USE_MISC || defined __USE_ISOC9X
+
+
+/* Include the file of declarations again, this time using `float'
+   instead of `double' and appending f to each function name.  */
+
+# ifndef _Mfloat_
+#  define _Mfloat_		float
+# endif
+# define _Mdouble_ 		_Mfloat_
+# ifdef __STDC__
+#  define __MATH_PRECNAME(name,r) name##f##r
+# else
+#  define __MATH_PRECNAME(name,r) name/**/f/**/r
+# endif
+# include <bits/mathcalls.h>
+# undef	_Mdouble_
+# undef	__MATH_PRECNAME
+
+# if __STDC__ - 0 || __GNUC__ - 0
+/* Include the file of declarations again, this time using `long double'
+   instead of `double' and appending l to each function name.  */
+
+#  ifndef _Mlong_double_
+#   define _Mlong_double_	long double
+#  endif
+#  define _Mdouble_ 		_Mlong_double_
+#  ifdef __STDC__
+#   define __MATH_PRECNAME(name,r) name##l##r
+#  else
+#   define __MATH_PRECNAME(name,r) name/**/l/**/r
+#  endif
+#  include <bits/mathcalls.h>
+#  undef _Mdouble_
+#  undef __MATH_PRECNAME
+
+# endif /* __STDC__ || __GNUC__ */
+
+#endif	/* Use misc or ISO C 9X.  */
+#undef	__MATHDECL_1
+#undef	__MATHDECL
+#undef	__MATHCALL
+
+
+#if defined __USE_MISC || defined __USE_XOPEN || defined __USE_ISOC9X
+/* This variable is used by `gamma' and `lgamma'.  */
+extern int signgam;
+#endif
+
+
+/* ISO C 9X defines some generic macros which work on any data type.  */
+#if __USE_ISOC9X
+
+/* Get the architecture specific values describing the floating-point
+   evaluation.  The following symbols will get defined:
+
+    float_t	floating-point type at least as wide as `float' used
+		to evaluate `float' expressions
+    double_t	floating-point type at least as wide as `double' used
+		to evaluate `double' expressions
+
+    FLT_EVAL_METHOD
+		Defined to
+		  0	if `float_t' is `float' and `double_t' is `double'
+		  1	if `float_t' and `double_t' are `double'
+		  2	if `float_t' and `double_t' are `long double'
+		  else	`float_t' and `double_t' are unspecified
+
+    INFINITY	representation of the infinity value of type `float'
+
+    FP_FAST_FMA
+    FP_FAST_FMAF
+    FP_FAST_FMAL
+		If defined it indicates that the `fma' function
+		generally executes about as fast as a multiply and an add.
+		This macro is defined only iff the `fma' function is
+		implemented directly with a hardware multiply-add instructions.
+
+    FP_ILOGB0	Expands to a value returned by `ilogb (0.0)'.
+    FP_ILOGBNAN	Expands to a value returned by `ilogb (NAN)'.
+
+    DECIMAL_DIG	Number of decimal digits supported by conversion between
+		decimal and all internal floating-point formats.
+
 */
-__extern_c
-#if 1
-#define  cosf(x)       cos(x)
-#define  sinf(f)       sin(f)
-#define  tanf(f)       tan(f)
-#define  acosf(f)      acos(f)
-#define  asinf(f)      asin(f)
-#define  atanf(f)      atan(f)
-#define  atan2f(f,g)   atan2(f,g)
-#define  coshf(f)      cosh(f)
-#define  sinhf(f)      sinh(f)
-#define  tanhf(f)      tanh(f)
-#define  expf(f)       exp(f)
-#define  frexpf(f, i)  frexp(f,i)
-#define  ldexpf(f, i)  ldexp(f,i)
-#define  logf(f)       log(f)
-#define  log10f(f)     log10(f)
-#define  fabsf(f)      fabs(f)
-#define  powf(f, g)    pow(f,g)
-#define  sqrtf(f)      sqrt(f)
-#define  ceilf(f)      ceil(f)
-#define  floorf(f)     floor(f)
-#define  fmodf(f,g)    fmod(f,g)
-#else
-# if __dest_os != __be_os /* Be-mani 980325 */
-_IMPEXP_ROOT float cosf(float);
-_IMPEXP_ROOT float sinf(float);
-_IMPEXP_ROOT float tanf(float);
-_IMPEXP_ROOT float acosf(float);
-_IMPEXP_ROOT float asinf(float);
-_IMPEXP_ROOT float atanf(float);
-_IMPEXP_ROOT float atan2f(float, float);
-_IMPEXP_ROOT float coshf(float);
-_IMPEXP_ROOT float sinhf(float);
-_IMPEXP_ROOT float tanhf(float);
-_IMPEXP_ROOT float expf(float);
-_IMPEXP_ROOT float frexpf(float, int *);
-_IMPEXP_ROOT float ldexpf(float, int);
-_IMPEXP_ROOT float logf(float);
-_IMPEXP_ROOT float log10f(float);
-_IMPEXP_ROOT float fabsf(float);
-_IMPEXP_ROOT float powf(float, float);
-_IMPEXP_ROOT float sqrtf(float);
-_IMPEXP_ROOT float ceilf(float);
-_IMPEXP_ROOT float floorf(float);
-_IMPEXP_ROOT float fmodf(float, float);
-# endif /* __dest_os != __be_os */ /* Be-mani 980325 */
-#endif 
-/* these are needed for performance reasons on PPC*/
-/* modff  needs to be written separately 
-since casting a float* to a double* isn't portable with our compilers */
+# include <bits/mathdef.h>
 
-#if __dest_os != __be_os /* Be-mani 980325 */
-_IMPEXP_ROOT float modff(float, float*);
-#endif /* Be-mani 980325 */
+/* All floating-point numbers can be put in one of these categories.  */
+enum
+  {
+    FP_NAN,
+# define FP_NAN FP_NAN
+    FP_INFINITE,
+# define FP_INFINITE FP_INFINITE
+    FP_ZERO,
+# define FP_ZERO FP_ZERO
+    FP_SUBNORMAL,
+# define FP_SUBNORMAL FP_SUBNORMAL
+    FP_NORMAL
+# define FP_NORMAL FP_NORMAL
+  };
 
-/* double declarations */
-_IMPEXP_ROOT double cos(double);
-_IMPEXP_ROOT double sin(double);
-_IMPEXP_ROOT double tan(double);
-_IMPEXP_ROOT double acos(double);
-_IMPEXP_ROOT double asin(double);
-_IMPEXP_ROOT double atan(double);
-_IMPEXP_ROOT double atan2(double, double);
-_IMPEXP_ROOT double cosh(double);
-_IMPEXP_ROOT double sinh(double);
-_IMPEXP_ROOT double tanh(double);
-_IMPEXP_ROOT double exp(double);
-_IMPEXP_ROOT double fabs(double);
-_IMPEXP_ROOT double frexp(double, int *);
-_IMPEXP_ROOT double ldexp(double, int);
-_IMPEXP_ROOT double log(double);
-_IMPEXP_ROOT double log10(double);
-_IMPEXP_ROOT double modf(double, double *);
-_IMPEXP_ROOT double pow(double, double);
-_IMPEXP_ROOT double sqrt(double);
-_IMPEXP_ROOT double ceil(double);
-_IMPEXP_ROOT double floor(double);
-_IMPEXP_ROOT double fmod(double, double);
-__end_extern_c
+/* Return number of classification appropriate for X.  */
+# define fpclassify(x) \
+     (sizeof (x) == sizeof (float) ?					      \
+        __fpclassifyf (x)						      \
+      : sizeof (x) == sizeof (double) ?					      \
+        __fpclassify (x) : __fpclassifyl (x))
 
+/* Return nonzero value if sign of X is negative.  */
+# define signbit(x) \
+     (sizeof (x) == sizeof (float) ?					      \
+        __signbitf (x)							      \
+      : sizeof (x) == sizeof (double) ?					      \
+        __signbit (x) : __signbitl (x))
 
-/* long double declarations */
+/* Return nonzero value if X is not +-Inf or NaN.  */
+# define isfinite(x) \
+     (sizeof (x) == sizeof (float) ?					      \
+        __finitef (x)							      \
+      : sizeof (x) == sizeof (double) ?					      \
+        __finite (x) : __finitel (x))
 
+/* Return nonzero value if X is neither zero, subnormal, Inf, nor NaN.  */
+# define isnormal(x) (fpclassify (x) == FP_NORMAL)
 
-#if __dest_os == __mac_os 	
-__extern_c
-long double cosl(long double);
-long double sinl(long double);
-long double tanl(long double);
-long double acosl(long double);
-long double asinl(long double);
-long double atanl(long double);
-long double atan2l(long double, long double);
-long double coshl(long double);
-long double sinhl(long double);
-long double tanhl(long double);
-long double expl(long double);
-long double frexpl(long double, int *);
-long double ldexpl(long double, int);
-long double logl(long double);
-long double log10l(long double);
-long double modfl(long double, long double *);
-long double fabsl(long double);
-long double powl(long double, long double);
-long double sqrtl(long double);
-long double ceill(long double);
-long double floorl(long double);
-long double fmodl(long double, long double);
-__end_extern_c
-#endif 
+/* Return nonzero value if X is a NaN.  We could use `fpclassify' but
+   we already have this functions `__isnan' and it is faster.  */
+# define isnan(x) \
+     (sizeof (x) == sizeof (float) ?					      \
+        __isnanf (x)							      \
+      : sizeof (x) == sizeof (double) ?					      \
+        __isnan (x) : __isnanl (x))
 
+/* Return nonzero value is X is positive or negative infinity.  */
+# define isinf(x) \
+     (sizeof (x) == sizeof (float) ?					      \
+        __isinff (x)							      \
+      : sizeof (x) == sizeof (double) ?					      \
+        __isinf (x) : __isinfl (x))
 
-/* 970411 bkoz
- * eventually will need this logic for all platforms at this place, right now only 68K
- * has distinct double and long double types (and only when not using 68881)
- */
-/*
- 
-	#ifdef __cplusplus
-		inline long double cos(long double x)		{ return ( cosl(x));}
-	#else
-		#define cos(x)  ( (sizeof(x) == sizeof(double)) ? cos(x) : cosl(x) );
-	#endif
+#endif /* Use ISO C 9X.  */
 
- */
- __extern_c 
+#ifdef	__USE_MISC
+/* Support for various different standard error handling behaviors.  */
+typedef enum
+{
+  _IEEE_ = -1,	/* According to IEEE 754/IEEE 854.  */
+  _SVID_,	/* According to System V, release 4.  */
+  _XOPEN_,	/* Nowadays also Unix98.  */
+  _POSIX_,
+  _ISOC_	/* Actually this is ISO C 9X.  */
+} _LIB_VERSION_TYPE;
 
-#if __dest_os == __be_os		/* Be-mani 980107 */
-extern _IMPEXP_ROOT const double *__huge_val; /* Be-mani 980107 */
-#else							/* Be-mani 980107 */
-long __double_huge[];
-long __extended_huge[] ; /* used by HUGE_VALL in C9X section */
-#endif							/* Be-mani 980107 */
-
-#ifndef __FP__  /* avoid conflict with fp.h */
-
- #if __MC68K__ 
-  #if!(__option(IEEEdoubles))
- 
-   #define      HUGE_VAL   (*(double*)__std(__extended_huge))
-  #else
-   #define      HUGE_VAL   (*(double*)__std(__double_huge))
-  #endif /*__option(IEEEdoubles)*/
- #else
-#  if __dest_os == __be_os						/* Be-mani 980107 */
-#   define		HUGE_VAL	__std(*__huge_val)	/* Be-mani 980107 */
-#  else											/* Be-mani 980107 */
-#   define      HUGE_VAL   (*(double*)       __std(__double_huge))
-#  endif										/* Be-mani 980107 */
-  
- #endif /* __MC68K__  */
-
-
-#endif /* __FP__ */
-__end_extern_c
-/*
- * 	x86 specific functionality
- */
-#if	__INTEL__ || (__dest_os == __be_os)	/* Be-mani 980107 */
-	/* isnan and isfinite are approved extensions to the ANSI C standard and are in
-	 * the current draft standard.  They are now included in the extended Intel math
-	 * library (fpce.obj).  mf-- 10/02/97
-	 *
-	 * Be-mani isfinite is also defined for BeOS on all platforms.
-	 */
-	 
-	 /* 970411 bkoz
-	  * isnan is now defined in the C9X portion of this file also. . .
-	  */
-	  
-__extern_c
-
-	_IMPEXP_ROOT int isnan (double);
-	_IMPEXP_ROOT int isfinite(double);
-#if __dest_os != __be_os		/* Be-mani 980107 we do isnan & isfinite our own way */
-    #define __isnan(x) isnan(x)
-	#define __isfinite(x) isfinite(x)
-#endif
-__end_extern_c
-	
-	
-#endif /* __INTEL__ */
-
-
-/*
- * 	PPC specific functionality
- */	
-#if __POWERPC__
-	#define fabs(x)			__fabs(x)
-#endif	/* __POWERPC__ */
-
-
-/*
- * 	68K specific functionality
- */	
-#if __MC68K__
-/* you get the "d" suffixed functions on 68K no matter what.  
-   HOWEVER, our suggestion is to NOT use these functions
-   as they are unique to the version of the 68k math libraries that is supplied to us by Apple.
-   The "d" suffixed functions are not part of any C standard including the C draft standard.
-   If you want your code to run anywhere besides 68K using SANE, use the unsuffixed STANDARD
-   math functions instead (eg. cos instead of cosd ).
-*/
-__extern_c
-
-    double cosd(double);
-	double sind(double);
-	double tand(double);
-	double acosd(double);
-	double asind(double);
-	double atand(double);
-	double coshd(double);
-	double sinhd(double);
-	double tanhd(double);
-	double expd(double);
-	double ldexpd(double, int);
-	double logd(double);
-	double log10d(double);
-	double fabsd(double);
-	double sqrtd(double);
-	double fmodd(double, double);
-	double atan2d(double, double);
-	double frexpd(double, int *);
-	double modfd(double, double *);
-	double powd(double, double);
-	double ceild(double);
-	double floord(double);
-	
-__end_extern_c
-
-
-/*	68K math support is a bit confusing, so this is a small map of the defines herein:
-
-	#if __MC68k__
-		#if !defined(_INLINE_FPU_CALLS_)
-			#define _INLINE_FPU_CALLS_	0
-		#endif
-
-		#if _INLINE_FPU_CALLS_ && __MC68881__
-			 
-		#elif __option(IEEEdoubles)
-			
-		#else	
-		#endif
-
-	#endif	
-*/
-
-/*
- *  Set the following define to 1 to force the ANSI math header to inline FPU
- *	calls whenever possible.  This behaviour is not ANSI compatible, so should
- *	be used with care.
- *	
- */
- 
-#if !defined(_INLINE_FPU_CALLS_)
-	#define _INLINE_FPU_CALLS_	0
+/* This variable can be changed at run-time to any of the values above to
+   affect floating point error handling behavior (it may also be necessary
+   to change the hardware FPU exception settings).  */
+extern _LIB_VERSION_TYPE _LIB_VERSION;
 #endif
 
-/*	From the above diagram, it is assumed that 
- *
- * 	#if _INLINE_FPU_CALLS_ && __MC68881__ && __option(IEEEdoubles)
- *	
- *	will lead to inconsistencies, ie. using inlines in conjunction with 8byte 
- *	doubles will not work correctly. (Pick any two) Therefore, check for this error now:
- */
 
-#if _INLINE_FPU_CALLS_ && __MC68881__ && __option(IEEEdoubles)
-#error	cannot_have_68881_and_inlinies_and_8-byte_doubles
+#ifdef __USE_SVID
+/* In SVID error handling, `matherr' is called with this description
+   of the exceptional condition.
+
+   We have a problem when using C++ since `exception' is a reserved
+   name in C++.  */
+# ifdef __cplusplus
+struct __exception
+# else
+struct exception
+# endif
+  {
+    int type;
+    char *name;
+    double arg1;
+    double arg2;
+    double retval;
+  };
+
+# ifdef __cplusplus
+extern int __matherr __P ((struct __exception *__exc));
+extern int matherr __P ((struct __exception *__exc));
+# else
+extern int __matherr __P ((struct exception *__exc));
+extern int matherr __P ((struct exception *__exc));
+# endif
+
+# define X_TLOSS	1.41484755040568800000e+16
+
+/* Types of exceptions in the `type' field.  */
+# define DOMAIN		1
+# define SING		2
+# define OVERFLOW	3
+# define UNDERFLOW	4
+# define TLOSS		5
+# define PLOSS		6
+
+/* SVID mode specifies returning this large value instead of infinity.  */
+# define HUGE		FLT_MAX
+# include <float.h>		/* Defines FLT_MAX.  */
+
+#else	/* !SVID */
+
+# ifdef __USE_XOPEN
+/* X/Open wants another strange constant.  */
+#  define MAXFLOAT	FLT_MAX
+#  include <float.h>
+# endif
+
+#endif	/* SVID */
+
+
+/* Some useful constants.  */
+#if defined __USE_BSD || defined __USE_XOPEN
+# define M_E		2.7182818284590452354	/* e */
+# define M_LOG2E	1.4426950408889634074	/* log_2 e */
+# define M_LOG10E	0.43429448190325182765	/* log_10 e */
+# define M_LN2		0.69314718055994530942	/* log_e 2 */
+# define M_LN10		2.30258509299404568402	/* log_e 10 */
+# define M_PI		3.14159265358979323846	/* pi */
+# define M_PI_2		1.57079632679489661923	/* pi/2 */
+# define M_PI_4		0.78539816339744830962	/* pi/4 */
+# define M_1_PI		0.31830988618379067154	/* 1/pi */
+# define M_2_PI		0.63661977236758134308	/* 2/pi */
+# define M_2_SQRTPI	1.12837916709551257390	/* 2/sqrt(pi) */
+# define M_SQRT2	1.41421356237309504880	/* sqrt(2) */
+# define M_SQRT1_2	0.70710678118654752440	/* 1/sqrt(2) */
 #endif
-		
-#if _INLINE_FPU_CALLS_ && __MC68881__
-	/* call the FPU directly (NOT ANSI COMPATIBLE) */
-	long double _fpucos(long double:__FP0):__FP0                    = { 0xF200,0x001D };
-	long double _fpusin(long double:__FP0):__FP0                    = { 0xF200,0x000E };
-	long double _fputan(long double:__FP0):__FP0                    = { 0xF200,0x000F };
-	long double _fpuacos(long double:__FP0):__FP0                   = { 0xF200,0x001C };
-	long double _fpuasin(long double:__FP0):__FP0                   = { 0xF200,0x000C };
-	long double _fpuatan(long double:__FP0):__FP0                   = { 0xF200,0x000A };
-	long double _fpucosh(long double:__FP0):__FP0                   = { 0xF200,0x0019 };
-	long double _fpusinh(long double:__FP0):__FP0                   = { 0xF200,0x0002 };
-	long double _fputanh(long double:__FP0):__FP0                   = { 0xF200,0x0009 };
-	long double _fpuexp(long double:__FP0):__FP0                    = { 0xF200,0x0010 };
-	long double _fpuldexp(long double:__FP0,long:__D0):__FP0        = { 0xF200,0x4026 };
-	long double _fpulog(long double:__FP0):__FP0                    = { 0xF200,0x0014 };
-	long double _fpulog10(long double:__FP0):__FP0                  = { 0xF200,0x0015 };
-	long double _fpufabs(long double:__FP0):__FP0                   = { 0xF200,0x0018 };
-	long double _fpusqrt(long double:__FP0):__FP0                   = { 0xF200,0x0004 };
-	long double _fpufmod(long double:__FP0,long double:__FP1):__FP0 = { 0xF200,0x0421 };
 
-/* note APPLE numerics is NOT ANSI C standard. 
- six of the basic ANSI math functions(atan2,frexpd,
- modf,pow,ceil,floor) do not have FPU Inlines
-*/	                                     
-	
-		#define cos(x)				_fpucos(x)
-		#define sin(x)				_fpusin(x)
-		#define tan(x)				_fputan(x)
-		#define acos(x)				_fpuacos(x)
-		#define asin(x)				_fpuasin(x)
-		#define atan(x)				_fpuatan(x)
-		#define cosh(x)				_fpucosh(x)
-		#define sinh(x)				_fpusinh(x)
-		#define tanh(x)				_fputanh(x)
-		#define exp(x)				_fpuexp(x)
-		#define ldexp(x,n)			_fpuldexp(x,n)
-		#define log(x)				_fpulog(x)
-		#define log10(x)			_fpulog10(x)
-		#define fabs(x)				_fpufabs(x)
-		#define sqrt(x)				_fpusqrt(x)
-		#define fmod(x,y)			_fpufmod(x,y)
-		
-#elif __option(IEEEdoubles)
-	
-	
-		#define cos(x)  	cosd(x)
-		#define sin(x)		sind(x)
-		#define tan(x)		tand(x)
-		#define acos(x)		acosd(x)
-		#define asin(x)		asind(x)
-		#define atan(x)		atand(x)
-		#define cosh(x)		coshd(x)
-		#define sinh(x)		sinhd(x)
-		#define tanh(x)		tanhd(x)
-		#define exp(x)		expd(x)
-		#define ldexp(x,n)	ldexpd(x,n)
-		#define log(x)		logd(x)
-		#define log10(x)	log10d(x)
-		#define fabs(x)		fabsd(x)
-		#define sqrt(x)		sqrtd(x)
-		#define fmod(x,y)	fmodd(x,y)
-		
+/* The above constants are not adequate for computation using `long double's.
+   Therefore we provide as an extension constants with similar names as a
+   GNU extension.  Provide enough digits for the 128-bit IEEE quad.  */
+#ifdef __USE_GNU
+# define M_El		2.7182818284590452353602874713526625L  /* e */
+# define M_LOG2El	1.4426950408889634073599246810018922L  /* log_2 e */
+# define M_LOG10El	0.4342944819032518276511289189166051L  /* log_10 e */
+# define M_LN2l		0.6931471805599453094172321214581766L  /* log_e 2 */
+# define M_LN10l	2.3025850929940456840179914546843642L  /* log_e 10 */
+# define M_PIl		3.1415926535897932384626433832795029L  /* pi */
+# define M_PI_2l	1.5707963267948966192313216916397514L  /* pi/2 */
+# define M_PI_4l	0.7853981633974483096156608458198757L  /* pi/4 */
+# define M_1_PIl	0.3183098861837906715377675267450287L  /* 1/pi */
+# define M_2_PIl	0.6366197723675813430755350534900574L  /* 2/pi */
+# define M_2_SQRTPIl	1.1283791670955125738961589031215452L  /* 2/sqrt(pi) */
+# define M_SQRT2l	1.4142135623730950488016887242096981L  /* sqrt(2) */
+# define M_SQRT1_2l	0.7071067811865475244008443621048490L  /* 1/sqrt(2) */
 #endif
-		#define atan2(x,y)	atan2d(x,y)
-		#define frexp(x,y)	frexpd(x,y)
-		#define modf(x,y)	modfd(x,y)
-		#define pow(x,y)	powd(x,y)
-		#define ceil(x)		ceild(x)
-		#define floor(x)	floord(x)
-
-#endif	/* __MC68K__ */
-
-__end_namespace(stdc_space(math))
-
-__import_stdc_into_std_space(math)
 
 
-	/*
-	 * FLT_EVAL_METHOD
-	 * 
-	 * (eventually move into float.h)
-	 *
-	 *	pick only one method!!
-	 */	
-	/*#define FLT_EVAL_METHOD 	-1	*/
-	/*indeterminable*/
-	
-	/*#define FLT_EVAL_METHOD		0	*/
-	/*	evaluate operations and constants of
-	 * 	float 		in 	float
-	 * 	double 		in 	double
-	 * 	long double in 	long double
-	 */
-	
-	/*#define FLT_EVAL_METHOD		1	*/
-	/* evaluate operations and constants of 
-	 * float 		in 	double
-	 * double 		in 	double
-	 * long double 	in 	long double
-	 */
-	
-	/*#define FLT_EVAL_METHOD		2	*/
-	/* evaluate operations and constants of 
-	 * float 		in 	long double
-	 * double 		in 	long double
-	 * long double 	in 	long double
-	 */
-#ifndef __FP__ /* MacOs Support/Headers/Universal Headers/fp.h 
-                     also defines efficiency types
-                     we recommend NOT using fp.h to do
-                     this if you want your code to be
-                     portable outside the MAC environment.
-                     The draft standard specifies
-                     double_t and float_t be introduced in math.h.
-                     fp.h is a MAC specific header.
-                     */
-                  
-    
-	#ifndef __MC68K__
-    	#define FLT_EVAL_METHOD		0	
-	#else
-	   #define  FLT_EVAL_METHOD		2
-	#endif
-
-	
-	/*
-	 * 7.x
-	 * FLOAT_T
-	 * DOUBLE_T
-	 */	
-	#if	(FLT_EVAL_METHOD == 0)
-	
-		typedef float float_t;
-		typedef double double_t;
-		
-	#elif (FLT_EVAL_METHOD == 1)
-	
-		typedef double float_t;
-		typedef double double_t;
-		
-	#elif (FLT_EVAL_METHOD == 2)
-	
-		typedef long double float_t;
-		typedef long double double_t;	
-	
-	#endif
-#endif /* __FP__ */	
-
-
-
-/* 
- * 	970410 b.kosnik(bkoz)/m.fassiotto
- *
-  	
- 	If you are currently using fp.h on the Macintosh, try defining
-    __MSL_C9X__ below and using this header instead as an all-inclusive header.
- 
- 	NB: most of this functionality will not work on __INTEL__!! (scalb, logb,hypot,
-    isnan, isfinite, rint, round  only)
- 
- 	For more info on C9X, try getting these documents:
- 	ftp://ftp.dmk.com/DMK/sc22wg14/c9x/floating-point/floating-point.txt.gz
- 	ftp://ftp.dmk.com/DMK/sc22wg14/c9x/floating-point/fp_edits.txt.gz
- *
- *
- */
- 
-
-/* 092897  mf--MSL on all platforms defines __MSL_C9X__ by default and no longer
-               uses mac specific headers such as fp.h and types.h.  This define
-               is in the stock prefix files. Comment the line "#define __MSL_C9X__"
-               out of the prefix file if you want your project to continue using 
-               the prototypes and macros below from the non-standard, mac specific 
-               header fp.h.
-*/
-
-#ifndef __FP__
-	
-	#ifndef __STDC_IEC_559__
-	#define __STDC_IEC_559__
-
-	__extern_c
-	/*
-	 * 7.x
-	 * float_huge
-	 * HUGE_VALL
-	 * INFINITY
-	 * NAN
-	 * FP_NAN
-	 * FP_INFINITE
-	 * FP_NORMAL
-	 * FP_SUBNORMAL
-	 * FP_ZERO
-	 * 
-	 */	
-	/*
-	#define      float_huge					??
-	#define      HUGE_VALL					??
-	*/
-
-#if __dest_os == __be_os							/* Be-mani 980107 */
-extern _IMPEXP_ROOT const float 	*__huge_val_float;		/* Be-mani 980107 */
-extern _IMPEXP_ROOT const double_t	*__huge_val_extended;	/* Be-mani 980107 */
-extern _IMPEXP_ROOT const float_t	*__nan_val_float;		/* Be-mani 980107 */
-extern _IMPEXP_ROOT const double	*__nan_val;				/* Be-mani 980107 */
-# define HUGE_VALF	(*__huge_val_float)				/* Be-mani 980107 */
-# define HUGE_VALL	(*__huge_val_extended)			/* Be-mani 980107 */
-# define INFINITY	(*(float_t *) __huge_val_float)	/* Be-mani 980107 */
-# define NAN		(*(float_t *) __nan_val_float)	/* Be-mani 980107 */
-#else												/* Be-mani 980107 */
-long __float_huge[];
-long __float_nan[];
-# define HUGE_VALF  (*(float*)  	__std(__float_huge))
-# define HUGE_VALL  (*(double_t*)   __std(__extended_huge))
-# define INFINITY   (*(float_t*)	__std(__float_huge))               	
-# define NAN	    (*(float_t*)    __std(__float_nan))
-#endif												/* Be-mani 980107 */
-	
-	/*
-	#define      FP_NAN						??
-	#define      FP_INFINITE				??
-	#define      FP_NORMAL					??
-	#define      FP_SUBNORMAL				??
-	#define      FP_ZERO					??
-	*/
-	
-	#if __MC68K__
-		#define    DECIMAL_DIG				21
-	#else
-		#define    DECIMAL_DIG				17   /*970423 bkoz ->fassiotto is this ok?*/
-												 /* 970928  yes, now it's o.k. */
-	#endif      
-
-
-	/*
-	 * 7.x.1
-	 * FP_CONTRACT_ON
-	 * FP_CONTRACT_OFF
-	 * FP_CONTRACT_DEFAULT
-	 */
-	
-
-	/*
-	 * 7.x.2.1
-	 * CLASSIFICATION MACROS
-	 * 
-	 * fpclassify
-	 * signbit
-	 * isfinite
-	 * isnormal
-	 * isnan
-	 */
-	#if __dest_os == __mac_os /*need to match Apple numerics*/
-		long int __fpclassify  ( long double x ); 
-		long int __fpclassifyd ( double x );
-		long int __fpclassifyf ( float x );
-		long int __signbit  ( long double x );
-		long int __signbitd ( double x );
-		long int __signbitf ( float x );
-		long int __isfinite  ( long double x );
-		long int __isfinited ( double x );
-		long int __isfinitef ( float x );
-		long int __isnormal  ( long double x );
-		long int __isnormald ( double x );
-		long int __isnormalf ( float x );
-		long int __isnan  ( long double x );
-		long int __isnand ( double x );
-		long int __isnanf ( float x );
-	#else /*follow standard*/
-	 #if __dest_os != __be_os /* Be-mani 980325 */ 		
-		int __fpclassify  ( long double x ); 
-		int __fpclassifyd ( double x );
-		int __fpclassifyf ( float x );
-		int __signbit  ( long double x );
-		int __signbitd ( double x );
-		int __signbitf ( float x );
-#if !defined(__INTEL__) /* contraction works on INTEL so we don't need these */ /* Be-mani 980107 */
-		int __isfinite  ( long double x );
-		int __isfinited ( double x );
-		int __isfinitef ( float x );
-		int __isnan  ( long double x );
-		int __isnand ( double x );
-		int __isnanf ( float x );
+/* When compiling in strict ISO C compatible mode we must not use the
+   inline functions since they, among other things, do not set the
+   `errno' variable correctly.  */
+#if defined __STRICT_ANSI__ && !defined __NO_MATH_INLINES
+# define __NO_MATH_INLINES	1
 #endif
-		int __isnormal  ( long double x );
-		int __isnormald ( double x );
-		int __isnormalf ( float x );
-     #endif /* __dest_os != __be_os */ /* Be-mani 980325 */
-	#endif	
 
-#if __dest_os != __be_os
-
-	#define fpclassify(x)  (sizeof(x) == sizeof(float)) ? __fpclassifyf(x) \
-		: (sizeof(x) == sizeof(double)) ? __fpclassifyd(x) \
-		: __fpclassify(x) 
-	
-	#define signbit(x)  (sizeof(x) == sizeof(float)) ? __signbitf(x) \
-		: (sizeof(x) == sizeof(double)) ? __signbitd(x) \
-		: __signbit(x) 
-
-	#define isnormal(x)  (sizeof(x) == sizeof(float)) ? __isnormalf(x) \
-		: (sizeof(x) == sizeof(double)) ? __isnormald(x) \
-		: __isnormal(x) 
-	
-	
-	#ifndef __INTEL__
-		#define isfinite(x)  (sizeof(x) == sizeof(float)) ? __isfinitef(x) \
-			: (sizeof(x) == sizeof(double)) ? __isfinited(x) \
-			: __isfinite(x) 
-
-		#define isnan(x)  (sizeof(x) == sizeof(float)) ? __isnanf(x) \
-			: (sizeof(x) == sizeof(double)) ? __isnand(x) \
-			: __isnan(x)
-   #endif			 
-
-#endif /* __dest_os */
-
-	/*
-	 * 7.x.5.1
-	 * ACOSH
-	 * 
-	 * computes the (nonnegative) arc hyperbolic cosine of x in the range [0, +INF]
-	 * a domain error occurs for arguments less than 1
-	 * a range error occurs if x is too large
-	 */
-	 _IMPEXP_ROOT double_t acosh ( double_t x ); 
-	
-
-	/*
-	 * 7.x.5.2
-	 * ASINH
-	 * 
-	 * computes the arc hyperbolic sine of x 
-	 * a range error occurs if the magnitude of x is too large
-	 */
-    _IMPEXP_ROOT double_t asinh ( double_t x ); 
-	
-	
-	/*
-	 * 7.x.5.3
-	 * ATANH
-	 * 
-	 * computes the arc hyperbolic tangent of x 
-	 * a domain error occurs for arguments not in the range [-1,+1]
-	 */
-	 _IMPEXP_ROOT double_t atanh ( double_t x ); 
-
-
-#if __dest_os != __be_os /* Be-mani 980325 */
-	/*
-	 * 7.x.6.2
-	 * EXP2
-	 * 
-	 * computes the base-2 exponential of x: 2^x
-	 * a range error occurs if the magnitude of x is too large
-	 */
-	_IMPEXP_ROOT double_t exp2  ( double_t x );
-#endif /* Be-mani 980325 */
-	
-	/*
-	 * 7.x.5.2
-	 * EXPM1
-	 * 
-	 * computes the base-e exponential of x, minus 1: (e^x) -1
-	 * for small magnitude x, expm1(x) is expected to be more accurate than exp(x) -1
-	 * a range error occurs if x is too large
-	 */
-	_IMPEXP_ROOT double_t expm1  ( double_t x );
-	
-	/*
-	 * 7.x.5.3
-	 * LOG1P
-	 * 
-	 * computes the base-e logarithm of 1 plus x
-	 * for small magnitude x, log1p(x) is expected to be more accurate than log(x+1)
-	 * a domain error occurs if x < -1
-	 * a range error may occur if x == 1
-	 */
-	_IMPEXP_ROOT double_t log1p ( double_t x );
-
-#if __dest_os != __be_os
-	/*
-	 * 7.x.6.9
-	 * LOG2
-	 * 
-	 * computes the base-2 logrithm of x
-	 * a domain error may occur if x < 0
-	 * a range error may occur if x == 0
-	 */
-	_IMPEXP_ROOT double_t log2 ( double_t x );
+/* Get machine-dependent inline versions (if there are any).  */
+#ifdef __USE_EXTERN_INLINES
+# include <bits/mathinline.h>
 #endif
-	
-	/*
-	 * 7.x.6.10
-	 * LOGB
-	 * 
-	 * extracts the exponent of x as a signed integral value in the format of x
-	 * if x is subnormal it is treated as though it were normalized
-	 * a range error may occur if x == 0
-	 */
-	_IMPEXP_ROOT double_t logb ( double_t x );
-	
-	/*
-	 * 7.x.6.12
-	 * SCALB
-	 * 
-	 * computes x * FLT_RADIX^n efficiently, not normally by computing FLT_RADIX^n explicitly
-	 * a range error may occur 
-	 */
-#if (__dest_os == __be_os) && defined(__POWERPC__)		/* Be-mani 980107 */
-     _IMPEXP_ROOT double_t scalb ( double_t x, double n ); /* Be-mani 980107 */
-#else													/* Be-mani 980107 */
-     _IMPEXP_ROOT double_t scalb ( double_t x, int n ); /* Be-mani 980107 */
-#endif 													/* Be-mani 980107 */
-
-	/*
-	 * 7.x.7.2
-	 * HYPOT
-	 * 
-	 * computes the square root of the sum of the squares of x and y
-	 * without undue overflow or underflow
-	 * a range error may occur
-	 */
-	_IMPEXP_ROOT double_t hypot ( double_t x, double_t y );
-	
-	/*
-	 * 7.x.8.1
-	 * ERF
-	 * 
-	 * computes the error function of x
-	 */
-	_IMPEXP_ROOT double_t erf  ( double_t x );	
-	
-	/*
-	 * 7.x.8.2
-	 * ERFC
-	 * 
-	 * computes the complementary error function of x
-	 */
-	_IMPEXP_ROOT double_t erfc ( double_t x );
-
-	/*
-	 * 7.x.8.3
-	 * GAMMA
-	 * 
-	 * computes the gamma function of x
-	 * a domain error occurs if x == 0 || x == negative integer
-	 * a range error may occur 
-	 */
-	_IMPEXP_ROOT double_t gamma ( double_t x );
-	
-	/*
-	 * 7.x.8.4
-	 * LGAMMA
-	 * 
-	 * computes the log of the absolute value of gamma of x
-	 * a range error occurs if x is too large 
-	 */
-	_IMPEXP_ROOT double_t lgamma ( double_t x );
-
-	/*
-	 * 7.x.9
-	 * NEARBYINT
-	 * 
-	 * computes like rint but doesn't raise inexact exception
-	 */
-	_IMPEXP_ROOT double_t nearbyint ( double_t x );
-
-	/*
-	 * 7.x.9.4
-	 * RINT
-	 * 
-	 * rounds its argument to an integral value in floating-point format
-	 * using the current rounding direction
-	 */
-	_IMPEXP_ROOT double_t rint ( double_t x );
-
-#if __dest_os != __be_os
-	/*
-	 * 7.x.9.5
-	 * RINTTOL
-	 * 
-	 * rounds its argument to the nearest integral value 
-	 * using the current rounding direction
-	 * if the rounded range is outside the range of long, result is unspecified
-	 */
-	_IMPEXP_ROOT long int rinttol ( double_t x );
-
-	/*
-	 * 7.x.9.6
-	 * ROUND
-	 * 
-	 * rounds its argument to an integral value in floating-point format
-	 * rounding halfway cases away from zero, regardless of the current rounding direction
-	 */
-	_IMPEXP_ROOT double_t round ( double_t x );
-
-	/*
-	 * 7.x.9.7
-	 * ROUNDTOL
-	 * 
-	 * rounds its argument to the nearest integral value 
-	 * rounding halfway cases away from zero, regardless of the current rounding direction
-	 * if the rounded range is outside the range of long, result is unspecified
-	 */
-	_IMPEXP_ROOT long int roundtol ( double_t round );
-
-	/*
-	 * 7.x.9.9
-	 * TRUNC
-	 * 
-	 * rounds its argument to an integral value in floating-point format
-	 * nearest to but no larger in magnitude than the argument
-	 */
-	#if __MC68K__
-		int      trunc ( double_t x );  
-	#else
-		_IMPEXP_ROOT double_t trunc ( double_t x );
-	#endif
-#endif /* __dest_os != __be_os */ /* Be-mani 980325 */
-
-	/*
-	 * 7.x.10
-	 * REMAINDER
-	 * 
-	 * computes the remainder x REM y required by IEC 559
-	 */
-	_IMPEXP_ROOT double_t remainder ( double_t x, double_t y );
-
-#if __dest_os != __be_os /* Be-mani 980325 */
-	/*
-	 * 7.x.10.3
-	 * REMAINDER
-	 * 
-	 * computes the remainder x REM y required by IEC 559
-	 */
-	_IMPEXP_ROOT double_t remquo    ( double_t x, double_t y, int *quo );
-#endif /* Be-mani 980325 */
-
-	/*
-	 * 7.x.11
-	 * COPYSIGN
-	 * 
-	 * produces a value withthe magnitude of x and the sign of y
-	 */
-	_IMPEXP_ROOT double_t copysign ( double_t x, double_t y );
-
-	/*
-	 * 7.x.11.2
-	 * NAN
-	 * 
-	 * returns a quiet NAN if available
-	 */
-	_IMPEXP_ROOT double      nan  ( const char *tagp );
-
-	/*
-	 * 7.x.11.3
-	 * NEXTAFTER
-	 * 
-	 * determines the next representable value,in the type of the function
-	 * after x in the direction of y, where x and y are first converted to the
-	 * type of the function
-	 */
-	#if __dest_os == __mac_os /*need to match Apple numerics*/
-		long double nextafterl ( long double x, long double y );
-		double      nextafterd ( double x, double y );
-		float       nextafterf ( float x, float y );
-		#define nextafter(x,y) ( (sizeof(x) == sizeof(float)) ? nextafterf(x,y) \
-			: (sizeof(x) == sizeof(double)) ? nextafterd(x,y) \
-			: nextafterl(x,y) )
-	#else /*follow standard, and naming convention of above*/
-		long double __nextafter  ( long double x, long double y );
-		double      __nextafterd ( double x, double y );
-		float       __nextafterf ( float x, float y );
-		#define nextafter(x,y) ( (sizeof(x) == sizeof(float)) ? __nextafterf(x,y) \
-			: (sizeof(x) == sizeof(double)) ? __nextafterd(x,y) \
-			: __nextafter(x,y)	)
-	#endif
 
 
-/* #if __dest_os != __be_os Be-mani 980325 */
-	/*
-	 * 7.x.12.1
-	 * FDIM
-	 * 
-	 * computes the positive difference of its arguments
-	 * x - y 	if	 	x > y
-	 * +0 		if 		x <= y
-	 * a range error may occur
-	 */
-	_IMPEXP_ROOT double_t fdim ( double_t x, double_t y );
+#if __USE_ISOC9X
+/* ISO C 9X defines some macros to compare number while taking care
+   for unordered numbers.  Since many FPUs provide special
+   instructions to support these operations and these tests are
+   defined in <bits/mathinline.h>, we define the generic macros at
+   this late point and only if they are not defined yet.  */
 
-	/*
-	 * 7.x.12.2
-	 * FMAX
-	 * 
-	 * computes the maximum numeric value of its arguments
-	 */
-	_IMPEXP_ROOT double_t fmax ( double_t x, double_t y );
+/* Return nonzero value if X is greater than Y.  */
+# ifndef isgreater
+#  define isgreater(x, y) \
+  (__extension__							      \
+   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
+      !isunordered (__x, __y) && __x > __y; }))
+# endif
 
-	/*
-	 * 7.x.12.3
-	 * FMIN
-	 * 
-	 * computes the minimum numeric value of its arguments
-	 */
-	_IMPEXP_ROOT double_t fmin ( double_t x, double_t y );
-/* #endif Be-mani 980325 */
-	__end_extern_c
+/* Return nonzero value if X is greater than or equal to Y.  */
+# ifndef isgreaterequal
+#  define isgreaterequal(x, y) \
+  (__extension__							      \
+   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
+      !isunordered (__x, __y) && __x >= __y; }))
+# endif
 
-	#endif  /*__STDC_IEC_559__*/
+/* Return nonzero value if X is less than Y.  */
+# ifndef isless
+#  define isless(x, y) \
+  (__extension__							      \
+   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
+      !isunordered (__x, __y) && __x < __y; }))
+# endif
 
-#endif /*__FP__*/
+/* Return nonzero value if X is less than or equal to Y.  */
+# ifndef islessequal
+#  define islessequal(x, y) \
+  (__extension__							      \
+   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
+      !isunordered (__x, __y) && __x <= __y; }))
+# endif
 
-#pragma direct_destruction reset
-#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
-	#pragma import reset
+/* Return nonzero value if either X is less than Y or Y is less than X.  */
+# ifndef islessgreater
+#  define islessgreater(x, y) \
+  (__extension__							      \
+   ({ __typeof__(x) __x = (x); __typeof__(y) __y = (y);			      \
+      !isunordered (__x, __y) && (__x < __y || __y < __x); }))
+# endif
+
+/* Return nonzero value if arguments are unordered.  */
+# ifndef isunordered
+#  define isunordered(u, v) \
+  (__extension__							      \
+   ({ __typeof__(u) __u = (u); __typeof__(v) __v = (v);			      \
+      fpclassify (__u) == FP_NAN || fpclassify (__v) == FP_NAN; }))
+# endif
+
 #endif
-/* #pragma options align=reset */
 
-#endif /*__cmath__*/
+__END_DECLS
 
-/*     Change record
-mm-960722       Inserted declaration for pi
-mm-9607225  	Added declaration for pi for Infinity Marathon.
-mm-961008       Removed declaration for pi since it does not conform to the ANSI C Standard
-bk-961221		line 121 wrapped fabs intrinsic (mmoss)
-bk 961223 		line 24 wrapped HUGE_VAL define
-bk 970318		restructured for 68K, PPC, x86 to reduce confusion
-bk 970410		restructured more to reduce 68K mess, started to add C9X support
-bk 970411		added long double support for PPC cplus plus, 68K cplus plus and c
-bk 970415		68K changes
-bk 970423		c++ long double overrides replaced with casts to double versions
-mf 970902       took out all c++ inlines for math functions on all platforms. They don't do 
-                anything!  Still have fpu inlines on 68k with either C or C++ .
-mf 970915       corrected a bug that defines regular math functions to the "d" suffixed 
-                macros on 68K.  They should only be defined for 8 byte doubles
-mf 970916		moved __extern_c to surround long __double_huge[]                
-mf 970928       define efficiency types double_t, float_t by default(used to require
-                __MSL_C9X__ to be defined).
-mf 971005       updated math.h to be compatible with 3.0.1 universal headers. Removed
-                __MSL_C9X__ altogether.
-Be-mani 980107 	Added _IMPEXP_ROOT to export/import for shared libs. Added BeOS versions
-                of FP constants. BeOS uses its own float.c which has correctly aligned
-				FP constants which are declared const. Redefined scalb to stay
-				backwards compatible.
-Be-mani 980325	Some functions declared here are not defined.
-*/
+
+#endif /* math.h  */

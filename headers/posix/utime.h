@@ -1,27 +1,51 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
+/* Copyright (C) 1991, 1992, 1996, 1997, 1998 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
-#if macintosh && !defined(__dest_os)               /*MW-mm 960927a*/
-  #define __dest_os __mac_os                       /*MW-mm 960927a*/
-#endif                                             /*MW-mm 960927a*/
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
-#if __dest_os == __mac_os
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
 
-#include <utime.mac.h>
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If not,
+   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
-#elif __dest_os == __win32_os
-
-#include <utime.win32.h>
-
-#elif __dest_os == __powertv_os
-
-#include <utime.powertv.h>
-
-#elif __dest_os == __be_os               /* mm 970708 */
-
-#include <utime.be.h>                    /* mm 970708 */
-
-#endif
-/*     Change record
- * MW-mm 960927a Inserted setting of __dest_os to __mac_os when not otherwise set.
- * mm 970708  Inserted Be changes
+/*
+ *	POSIX Standard: 5.6.6 Set File Access and Modification Times  <utime.h>
  */
+
+#ifndef	_UTIME_H
+#define	_UTIME_H	1
+
+#include <features.h>
+
+__BEGIN_DECLS
+
+#include <bits/types.h>
+
+#ifdef __USE_XOPEN
+# define __need_time_t
+# include <time.h>
+#endif
+
+/* Structure describing file times.  */
+struct utimbuf
+  {
+    __time_t actime;		/* Access time.  */
+    __time_t modtime;		/* Modification time.  */
+  };
+
+/* Set the access and modification times of FILE to those given in
+   *FILE_TIMES.  If FILE_TIMES is NULL, set them to the current time.  */
+extern int utime __P ((__const char *__file,
+		       __const struct utimbuf *__file_times));
+
+__END_DECLS
+
+#endif /* utime.h */

@@ -1,11 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	fstream
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// -*- C++ -*- forwarding header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __FSTREAM__
+#define __FSTREAM__
 #include <fstream.h>
-/*     Change record
-*/
+#endif

@@ -1,11 +1,11 @@
 /******************************************************************************
-//
-//	File:		scsi.h
-//
-//	Description:	Data structures and control calls for using the scsi driver.
-//
-//	Copyright 1992-97, Be Incorporated
-//
+/
+/	File:		scsi.h
+/
+/	Description:	Data structures and control calls for using the scsi driver.
+/
+/	Copyright 1992-98, Be Incorporated
+/
 *******************************************************************************/
 
 
@@ -45,11 +45,11 @@
 #define B_SCSI_JUKEBOX_MASK			(1 << (B_SCSI_JUKEBOX))
 #define B_SCSI_NETWORK_MASK			(1 << (B_SCSI_NETWORK))
 
-
 /* control call codes for rescan scsi driver (/dev/scsi/rescan) */
 /*-----------------------------------------------------*/
 enum {
-	B_SCSI_SCAN_FOR_DEVICES = B_DEVICE_OP_CODES_END + 1
+	B_SCSI_SCAN_FOR_DEVICES = B_DEVICE_OP_CODES_END + 1,
+	B_SCSI_ENABLE_PROFILING
 };
 
 
@@ -58,7 +58,8 @@ enum {
 enum {
 	B_SCSI_INQUIRY = B_DEVICE_OP_CODES_END + 100,
 	B_SCSI_EJECT,
-	B_SCSI_PREVENT_ALLOW
+	B_SCSI_PREVENT_ALLOW,
+	B_RAW_DEVICE_COMMAND
 };
 
 typedef struct {
@@ -151,5 +152,27 @@ typedef struct {
 	off_t	block;
 	int32	mode;
 } scsi_data_mode;
+
+/* raw device commands */
+
+typedef struct {
+	uint8		command[16];
+	uint8		command_length;
+	uint8		flags;
+	uint8   	scsi_status;        /* SCSI Status Byte */
+									/* (0 = success, 2 = check cond, ... */
+	uint8   	cam_status;         /* CAM_* status conditions from CAM.h */
+	void		*data;
+	size_t		data_length;
+	void		*sense_data;		/* buffer to return mode sense data in */
+	size_t		sense_data_length;	/* size of optional buffer for mode sense */
+	bigtime_t	timeout;
+} raw_device_command;
+
+enum {
+	B_RAW_DEVICE_DATA_IN          = 0x01,
+	B_RAW_DEVICE_REPORT_RESIDUAL  = 0x02,
+	B_RAW_DEVICE_SHORT_READ_VALID = 0x04
+};
 
 #endif

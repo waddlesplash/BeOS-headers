@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	cctype
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- character type header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CCTYPE__
+#define __CCTYPE__
 #include <ctype.h>
-
-//__using_namespace(__stdc_space(ctype))
-
-/*     Change record
-*/
+#endif

@@ -10,7 +10,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef	_DATA_IO_H
 #define	_DATA_IO_H
@@ -36,6 +36,17 @@ virtual	void		_ReservedDataIO1();
 virtual	void		_ReservedDataIO2();
 virtual	void		_ReservedDataIO3();
 virtual	void		_ReservedDataIO4();
+
+#if !_PR3_COMPATIBLE_
+virtual	void		_ReservedDataIO5();
+virtual	void		_ReservedDataIO6();
+virtual	void		_ReservedDataIO7();
+virtual	void		_ReservedDataIO8();
+virtual	void		_ReservedDataIO9();
+virtual	void		_ReservedDataIO10();
+virtual	void		_ReservedDataIO11();
+virtual	void		_ReservedDataIO12();
+#endif
 
 					BDataIO(const BDataIO &);
 		BDataIO		&operator=(const BDataIO &);
@@ -68,6 +79,18 @@ virtual	void		_ReservedPositionIO1();
 virtual	void		_ReservedPositionIO2();
 virtual void		_ReservedPositionIO3();
 virtual void		_ReservedPositionIO4();
+
+#if !_PR3_COMPATIBLE_
+virtual	void		_ReservedPositionIO5();
+virtual	void		_ReservedPositionIO6();
+virtual	void		_ReservedPositionIO7();
+virtual	void		_ReservedPositionIO8();
+virtual	void		_ReservedPositionIO9();
+virtual	void		_ReservedPositionIO10();
+virtual	void		_ReservedPositionIO11();
+virtual	void		_ReservedPositionIO12();
+#endif
+
 		int32		_reserved[2];
 };
 
@@ -102,10 +125,10 @@ virtual	void		_ReservedMallocIO2();
 
 		size_t		fBlockSize;
 		size_t		fMallocSize;
-		size_t		fPosition;
 		size_t		fLength;
 		char		*fData;
-		int32		_reserved[2];
+		off_t		fPosition;
+		int32		_reserved[1];
 };
 
 /*-------------------------------------------------------------------*/

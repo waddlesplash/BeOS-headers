@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _SUPPORT_DEFS_H
 #define _SUPPORT_DEFS_H
@@ -105,17 +105,21 @@ typedef unsigned char			bool;
 
 
 /*---------------------------------------------------------------*/
-/*----- Atomic functions; old value is returned -----------------*/
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/*----- Atomic functions; old value is returned -----------------*/
 extern _IMPEXP_ROOT int32	atomic_add(int32 *value, int32 addvalue);
 extern _IMPEXP_ROOT int32	atomic_and(int32 *value, int32 andvalue);
 extern _IMPEXP_ROOT int32	atomic_or(int32 *value, int32 orvalue);	
+
+/*----- Other stuff ---------------------------------------------*/
+extern _IMPEXP_ROOT uint32	get_stack_frame();
+
 #ifdef __cplusplus
 }
 #endif
-
 
 /*-----------------------------------------------------------*/
 /*-------- Obsolete or discouraged API ----------------------*/

@@ -9,7 +9,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _ROSTER_H
 #define _ROSTER_H
@@ -56,6 +56,18 @@ struct app_info {
 #define _B_APP_INFO_RESERVED1_		(0x10000000)
 
 
+enum {
+	B_REQUEST_LAUNCHED = 0x00000001,
+	B_REQUEST_QUIT = 0x00000002,
+	B_REQUEST_ACTIVATED = 0x00000004
+};
+
+enum {
+	B_SOME_APP_LAUNCHED		= 'BRAS',
+	B_SOME_APP_QUIT			= 'BRAQ',
+	B_SOME_APP_ACTIVATED	= 'BRAW'
+};
+
 /*-------------------------------------------------------------*/
 /* --------- BRoster class----------------------------------- */
 
@@ -80,6 +92,11 @@ public:
 
 /* Launching, activating, and broadcasting to apps */
 		status_t	Broadcast(BMessage *msg) const;
+		status_t	Broadcast(BMessage *msg, BMessenger reply_to) const;
+		status_t	StartWatching(BMessenger target,
+									uint32 event_mask = B_REQUEST_LAUNCHED |
+										B_REQUEST_QUIT) const;
+		status_t	StopWatching(BMessenger target) const;
 		status_t	ActivateApp(team_id team) const;
 		status_t	Launch(	const char *mime_type,
 							BMessage *initial_msgs = NULL,
@@ -92,13 +109,13 @@ public:
 							char **args,
 							team_id *app_team = NULL) const;
 
-		status_t	Launch(	entry_ref *ref,
+		status_t	Launch(	/* const */ entry_ref *ref,
 							BMessage *initial_message = NULL,
 							team_id *app_team = NULL) const;
-		status_t	Launch(	entry_ref *ref,
+		status_t	Launch(	/* const */ entry_ref *ref,
 							BList *message_list,
 							team_id *app_team = NULL) const;
-		status_t	Launch(	entry_ref *ref,
+		status_t	Launch(	/* const */ entry_ref *ref,
 							int argc,
 							char **args,
 							team_id *app_team = NULL) const;
@@ -112,7 +129,19 @@ friend class _BAppCleanup_;
 friend int	_init_roster_();
 friend status_t _send_to_roster_(BMessage *, BMessage *, bool);
 friend bool _is_valid_roster_mess_(bool);
+friend status_t BMimeType::StartWatching(BMessenger);
+friend status_t BMimeType::StopWatching(BMessenger);
 
+		enum mtarget {
+			MAIN_MESSENGER,
+			MIME_MESSENGER
+		};
+
+		status_t	_StartWatching(mtarget t, uint32 what, BMessenger target,
+									uint32 event_mask) const;
+		status_t	_StopWatching(mtarget t,
+									uint32 what,
+									BMessenger target) const;
 		uint32		AddApplication(	const char *mime_sig,
 									entry_ref *ref,
 									uint32 flags,

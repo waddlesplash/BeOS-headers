@@ -4,9 +4,9 @@
 //
 //	Description:	File type information
 //
-//	Copyright 1997, Be Incorporated, All Rights Reserved.
+//	Copyright 1998, Be Incorporated, All Rights Reserved.
 //
-//***************************************************************************/
+****************************************************************************/
 
 #ifndef _NODE_INFO_H
 #define _NODE_INFO_H
@@ -42,6 +42,8 @@ virtual	status_t	SetIcon(const BBitmap *icon, icon_size k = B_LARGE_ICON);
 									app_verb verb = B_OPEN) const;
 		status_t	SetPreferredApp(const char *signature,
 									app_verb verb = B_OPEN);
+		status_t	GetAppHint(entry_ref *ref) const;
+		status_t	SetAppHint(const entry_ref *ref);
 
 
 		status_t	GetTrackerIcon(BBitmap *icon,

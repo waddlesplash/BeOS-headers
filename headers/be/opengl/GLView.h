@@ -1,20 +1,21 @@
-/****************************************************************** 
-	File: GLView.h
-	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
-*******************************************************************/
+/*******************************************************************************
+/
+/	File:		GLView.h
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef BGLVIEW_H
 #define BGLVIEW_H
 
 #include <GL/gl.h>
-
-struct __glBeContext;
-
 #include <AppKit.h>
 #include <interface/Window.h>
 #include <interface/View.h>
 #include <interface/Bitmap.h>
 #include <game/WindowScreen.h>
+#include <game/DirectWindow.h>
 
 class BGLView : public BView {
 public:
@@ -22,7 +23,7 @@ public:
 					BGLView(BRect rect, char *name,
 						ulong resizingMode, ulong mode,
 						ulong options);
-					~BGLView();
+virtual				~BGLView();
 
 		void		LockGL();
 		void		UnlockGL();
@@ -53,12 +54,14 @@ virtual void        SetResizingMode(uint32 mode);
 virtual void        Show();
 virtual void        Hide();
 
-virtual BHandler   *ResolveSpecifier(BMessage *msg,
-									                         int32 index,
-									                         BMessage *specifier,
-									                         int32 form,
-									                         const char *property);
+virtual BHandler   *ResolveSpecifier(BMessage *msg, int32 index,
+							BMessage *specifier, int32 form,
+							const char *property);
 virtual status_t    GetSupportedSuites(BMessage *data);
+
+/* New public functions */
+		void		DirectConnected( direct_buffer_info *info );
+		void		EnableDirectMode( bool enabled );
 
 private:
 
@@ -78,17 +81,30 @@ virtual void        _ReservedGLView8();
 		bool        confirm_dither();
 		void        draw(BRect r);
 		
-__glBeContext *		m_gc;
+		void *		m_gc;
 		uint32		m_options;
 		uint32      m_ditherCount;
 		BLocker		m_drawLock;
 		BLocker     m_displayLock;
-		BView *     m_embeddedFront;
+#if OLD_GLVIEW
+		BView *		m_embeddedFront;
 		BView *     m_embeddedBack;
+#else
+		void *		m_clip_info;
+		void *     	_reserved1;
+#endif
 		BBitmap *   m_ditherMap;
 		BRect       m_bounds;
 		int16 *     m_errorBuffer[2];
 		uint64      _reserved[8];
+
+	/* Direct Window stuff */
+private:	
+		void 		drawScanline( int x1, int x2, int y, void *data );
+static	void 		scanlineHandler(struct rasStateRec *state, GLint x1, GLint x2);
+		void		lock_draw();
+		void		unlock_draw();
+		bool		validateView();
 };
 
 class BGLScreen : public BWindowScreen {
@@ -138,10 +154,14 @@ virtual void        _ReservedGLScreen8();
                     BGLScreen(const BGLScreen &);
 	    BGLScreen   &operator=(const BGLScreen &);
 
-__glBeContext *		m_gc;
+		void *		m_gc;
 		long		m_options;
 		BLocker		m_drawLock;
-		uint64      _reserved[8];
+		
+		int32		m_colorSpace;
+		uint32		m_screen_mode;
+		
+		uint64      _reserved[7];
 };
 
 #endif

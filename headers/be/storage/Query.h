@@ -1,8 +1,12 @@
-/* ++++++++++
-	FILE:	Query.h
-
-	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
-+++++ */
+/*******************************************************************************
+/
+/	File:		Query.h
+/
+/	Description:	Interface to the attribute query system.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _QUERY_H
 #define _QUERY_H
@@ -64,7 +68,9 @@ virtual				~BQuery();
 
 		status_t	GetPredicate(char *buf, size_t length);
 		size_t		PredicateLength();			
-					
+		
+		dev_t		TargetDevice() const;
+		
 		status_t	Fetch();
 
 virtual	status_t	GetNextEntry(BEntry *entry, bool traverse = FALSE);

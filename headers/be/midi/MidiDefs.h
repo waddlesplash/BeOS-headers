@@ -1,13 +1,12 @@
-//****************************************************************************
-//
-//	File:			MidiDefs.h
-//
-//	Description:	Midi Kit constants and coolants
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
-
+/*******************************************************************************
+/
+/	File:		MidiDefs.h
+/
+/	Description:	Midi Kit constants and coolants.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _MIDI_DEFS_H
 #define _MIDI_DEFS_H
@@ -51,7 +50,7 @@ enum
 typedef unsigned char uchar;
 #endif
 
-// Channel Message Masks
+/* Channel Message Masks*/
 const uchar 	B_NOTE_OFF			= 0x80;
 const uchar 	B_NOTE_ON			= 0x90;
 const uchar 	B_KEY_PRESSURE		= 0xa0;
@@ -62,7 +61,7 @@ const uchar 	B_PITCH_BEND 		= 0xe0;
 
 /*------------------------------------------------------------*/
 
-// System Messages
+/* System Messages*/
 const uchar	B_SYS_EX_START		= 0xf0;
 const uchar	B_MIDI_TIME_CODE	= 0xf1;
 const uchar	B_SONG_POSITION		= 0xf2;
@@ -79,14 +78,14 @@ const uchar	B_SYSTEM_RESET		= 0xff;
 
 /*------------------------------------------------------------*/
 
-// Controller Numbers
+/* Controller Numbers*/
 const uchar	B_MODULATION			= 0x01;
 const uchar	B_BREATH_CONTROLLER		= 0x02;
 const uchar	B_FOOT_CONTROLLER		= 0x04;
 const uchar	B_PORTAMENTO_TIME		= 0x05;
 const uchar	B_DATA_ENTRY			= 0x06;
 const uchar	B_MAIN_VOLUME			= 0x07;
-const uchar	B_BALANCE				= 0x08;
+const uchar	B_MIDI_BALANCE			= 0x08;  /* used to be B_BALANCE */
 const uchar B_PAN					= 0x0a;
 const uchar	B_EXPRESSION_CTRL		= 0x0b;
 const uchar	B_GENERAL_CTRL_1		= 0x10;

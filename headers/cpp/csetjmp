@@ -1,14 +1,8 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	csetjmp
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- setjmp/longjmp header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CSETJMP__
+#define __CSETJMP__
 #include <setjmp.h>
+#endif
 
-//__using_namespace(__stdc_space(setjmp))
-
-/*     Change record
-*/

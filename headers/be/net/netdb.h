@@ -57,11 +57,11 @@ extern _IMPEXP_NET unsigned long inet_addr(const char *a_addr);
 extern _IMPEXP_NET char *inet_ntoa(struct in_addr addr);
 
 
-extern _IMPEXP_NET int gethostname(char *hostname, unsigned hostlen);
+extern _IMPEXP_NET int gethostname(char *hostname, size_t hostlen);
 
 /* BE specific, because of lack of UNIX passwd functions */
-extern _IMPEXP_NET int getusername(char *username, unsigned userlen);
-extern _IMPEXP_NET int getpassword(char *password, unsigned passlen);
+extern _IMPEXP_NET int getusername(char *username, size_t userlen);
+extern _IMPEXP_NET int getpassword(char *password, size_t passlen);
 
 #if __cplusplus
 }

@@ -1,9 +1,12 @@
-/*
-   This header file defines the interface to extended file
-   attributes on the BeOS.
-
-   Copyright 1997 Be Inc.
-*/
+/*******************************************************************************
+/
+/	File:		fs_attr.h
+/
+/	Description:	Interface to extended file attributes.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 
 #ifndef _FS_ATTR_H

@@ -1,351 +1,754 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
+/* Define ISO C stdio on top of C++ iostreams.
+   Copyright (C) 1991, 94, 95, 96, 97, 98 Free Software Foundation, Inc.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with the GNU C Library; see the file COPYING.LIB.  If not,
+   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /*
- *	stdio.h
- *	
- *		Copyright © 1995-1997 Metrowerks, Inc.
- *		All rights reserved.
+ *	ISO C Standard: 4.9 INPUT/OUTPUT	<stdio.h>
  */
- 
-#ifndef __cstdio__
-#define __cstdio__
 
-#include <ansi_parms.h>
+#ifndef _STDIO_H
 
-__namespace(__stdc_space(stdio))
+#ifndef __need_FILE
+# define _STDIO_H	1
+# include <features.h>
 
-#include <size_t.h>
-#include <null.h>
-#include <va_list.h>
+__BEGIN_DECLS
 
-#if __INTEL__
-#include <wchar_t.h>
-#endif
+# define __need_size_t
+# define __need_NULL
+# include <stddef.h>
 
-/* #pragma options align=native */
-#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
-	#pragma import on
-#endif
+# ifndef __USE_XOPEN
+#  define __need___va_list
+# endif
+# include <stdarg.h>
 
-enum __file_kinds {
-	__closed_file,
-	__disk_file,
-	__console_file,
-	__string_file,
-	__unavailable_file
-};
+# include <bits/types.h>
+#endif /* Don't need FILE.  */
+#undef	__need_FILE
 
-enum __open_modes {
-	__must_exist,
-	__create_if_necessary,
-	__create_or_truncate
-};
 
-enum __io_modes {
-	__read				= 1,
-	__write				= 2,
-	__read_write		= 3,
-	__append			= 4
-};
+#ifndef	__FILE_defined
 
-#if __dest_os == __be_os		/* Be-mani 980107a */
+/* The opaque type of streams.  */
+typedef struct _IO_FILE FILE;
 
-typedef struct {
-	unsigned char	open_mode;
-	unsigned char	io_mode;
-	unsigned char	buffer_mode;
-	unsigned char	file_kind;
-	unsigned char	binary_io;
-} __file_modes;
+# define __FILE_defined	1
+#endif /* FILE not defined.  */
 
-typedef struct {
-	unsigned char	_io_state;
-	unsigned char	_free_buffer;
-	unsigned char	_eof;
-	unsigned char	_error;
-} __file_state;
 
-#else /* __dest_os */			/* Be-mani 980107a */
+#ifdef	_STDIO_H
+#define _STDIO_USES_IOSTREAM
 
-typedef struct {
-	unsigned int	open_mode		: 2;
-	unsigned int	io_mode			: 3;
-	unsigned int	buffer_mode		: 2;
-	unsigned int	file_kind		: 2;
-	unsigned int	binary_io		: 1;
-} __file_modes;
-
-typedef struct {
-	unsigned int	_io_state	: 3;
-	unsigned int	_free_buffer	: 1;
-	unsigned char	_eof;
-	unsigned char	_error;
-} __file_state;
-
-
-#endif /* __dest_os */			/* Be-mani 980107a */
-
-enum __io_states {
-	__neutral,
-	__writing,
-	__reading,
-	__rereading
-};
-
-typedef unsigned long	__file_handle;
-#if __dest_os == __be_os          /* mm 970708 */
-typedef long long	fpos_t;   /* we have 64 bit file sizes & positions */     /* mm 970708 */
-#else                             /* mm 970708 */
-typedef unsigned long	fpos_t;
-#endif                            /* mm 970708 */
-
-typedef struct _FILE FILE;
-
-enum __io_results {
-     __no_io_error,
-     __io_error,
-     __io_EOF         /* mm 961031 */
-};
-
-typedef void (* __idle_proc)  (void);
-typedef int  (* __pos_proc)   (__file_handle file, fpos_t * position, int mode, __idle_proc idle_proc);     /* mm 970708 */
-typedef int  (* __io_proc)    (__file_handle file, unsigned char * buff, size_t * count, __idle_proc idle_proc);
-typedef int	 (* __close_proc) (__file_handle file);
-
-#define __ungetc_buffer_size	2
-
-struct _FILE {
-	__file_handle		handle;
-	__file_modes		mode;
-	__file_state		_state;			/* Be-mani 980107 */
-	unsigned char		char_buffer;
-	unsigned char		char_buffer_overflow;
-	unsigned char		ungetc_buffer[__ungetc_buffer_size];
-	fpos_t          	position;		/* bds 131097 */
-	unsigned char *		buffer;
-	unsigned long		buffer_size;
-	unsigned char *		_buffer_ptr;	/* Be-mani 980107 */
-	unsigned long		_buffer_len;	/* Be-mani 980107 */
-	unsigned long		buffer_alignment;
-	unsigned long		saved_buffer_len;
-	fpos_t				buffer_pos;		/* bds 131097 */
-	__pos_proc			position_proc;
-	__io_proc			read_proc;
-	__io_proc			write_proc;
-	__close_proc		close_proc;
-	__idle_proc			idle_proc;
-};
-
-#define _IONBF	0
-#define _IOLBF	1
-#define _IOFBF	2
-
-#define BUFSIZ			 4096
-#define EOF				   -1
-#define FOPEN_MAX		   35
-#define FILENAME_MAX	  256
-
-#if __dest_os == __mac_os
-#define L_tmpnam		 32
-#else
-#define	L_tmpnam		 512
-#endif
-
-#define TMP_MAX		32767
-
-#define SEEK_SET	0
-#define SEEK_CUR	1
-#define SEEK_END	2
-
-__extern_c               /* mm 970708 */
-
-#if __dest_os == __be_os
-
-#define L_ctermid  32
-#define L_cuserid  32
-#define STREAM_MAX FOPEN_MAX
-
-_IMPEXP_ROOT FILE   *popen(const char *cmd, const char *type);/* mm 970708 */ /* Be-mani 980107b */
-_IMPEXP_ROOT int     pclose(FILE *fp);                        /* mm 970708 */ /* Be-mani 980107b */
-
-_IMPEXP_ROOT char   *tempnam (char *dir, char *pfx); /* Be-mani 980107b */
-_IMPEXP_ROOT char   *mktemp(char *name); /* Be-mani 980107b */
-
-#endif /* __be_os */
-
-#if __dest_os == __be_os
-# define __files _files			/* Be-mani 980107a necessary for
-								 * backward compatibility. */
-#endif /* __dest_os */
-
-#define stdin  	(&__files[0])   /* mm 961031 */    /*MW-mm 961203 */
-#define stdout	(&__files[1])   /* mm 961031 */    /*MW-mm 961203 */
-#define stderr	(&__files[2])   /* mm 961031 */    /*MW-mm 961203 */
-
-_IMPEXP_ROOT extern FILE		__files[];      /* mm 961031 */    /*MW-mm 961203 */ /* Be-mani 980107b */
-
-_IMPEXP_ROOT int remove(const char * name); /* Be-mani 980107b */
-_IMPEXP_ROOT int rename(const char * old_name, const char * new_name); /* Be-mani 980107b */
-
-_IMPEXP_ROOT char *	tmpnam(char * name); /* Be-mani 980107b */
-_IMPEXP_ROOT FILE *	tmpfile(void); /* Be-mani 980107b */
-
-_IMPEXP_ROOT void setbuf (FILE * file, char * buff); /* Be-mani 980107b */
-_IMPEXP_ROOT int setvbuf(FILE * file, char * buff, int mode, size_t size); /* Be-mani 980107b */
-
-#if __dest_os == __be_os                                        /* mm 970708 */
-_IMPEXP_ROOT int setbuffer(FILE *stream, char *buf, size_t size);    /* mm 970708 */ /* Be-mani 980107b */
-_IMPEXP_ROOT int setlinebuf(FILE *stream);                           /* mm 970708 */ /* Be-mani 980107b */
-#endif                                                          /* mm 970708 */
-
-_IMPEXP_ROOT int fclose(FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT int fflush(FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT FILE *	fopen  (const char * name, const char * mode); /* Be-mani 980107b */
-_IMPEXP_ROOT FILE *	freopen(const char * name, const char * mode, FILE * file); /* Be-mani 980107b */
-
-#if __dest_os == __be_os
-
-_IMPEXP_ROOT FILE *  fdopen(int fd, const char *type); /* Be-mani 980107b */
-_IMPEXP_ROOT int     fileno(FILE *fd); /* Be-mani 980107b */
-
-#endif
-
-_IMPEXP_ROOT void setbuf (FILE * file, char * buff); /* Be-mani 980107b */
-_IMPEXP_ROOT int setvbuf(FILE * file, char * buff, int mode, size_t size); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int fprintf(FILE * file, const char * format, ...); /* Be-mani 980107b */
-_IMPEXP_ROOT int fscanf (FILE * file, const char * format, ...); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int printf(const char * format, ...); /* Be-mani 980107b */
-_IMPEXP_ROOT int scanf (const char * format, ...); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int sprintf(      char * s, const char * format, ...); /* Be-mani 980107b */
-_IMPEXP_ROOT int sscanf (const char * s, const char * format, ...); /* Be-mani 980107b */
-#if __INTEL__
-_IMPEXP_ROOT int swprintf(wchar_t * s, const wchar_t * format, ...); /* Be-mani 980107b */
-#endif
-
-
-int			__vfscanf(FILE * file,    const char * format, va_list arg);
-int			__vsscanf(const char * s, const char * format, va_list arg);
-
-_IMPEXP_ROOT int vfprintf(FILE * file, const char * format, va_list arg); /* Be-mani 980107b */
-_IMPEXP_ROOT int vprintf(const char * format, va_list arg); /* Be-mani 980107b */
-_IMPEXP_ROOT int vsprintf(char * s, const char * format, va_list arg); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int fgetc(FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT char *	fgets(char * s, int n, FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int fputc(int c, FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT int fputs(const char * s, FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT char *	gets(char * s); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int puts(const char * s); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int ungetc(int c, FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT size_t	fread (      void * ptr, size_t memb_size, size_t num_memb, FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT size_t	fwrite(const void * ptr, size_t memb_size, size_t num_memb, FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int			fgetpos(FILE * file, fpos_t * pos); /* Be-mani 980107b */
-_IMPEXP_ROOT long		ftell  (FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT fpos_t     _ftell(FILE *);                    /* mm 970708 */ /* Be-mani 980107b */
-
-_IMPEXP_ROOT int			fsetpos(FILE * file, const fpos_t * pos); /* Be-mani 980107b */
-_IMPEXP_ROOT int			fseek  (FILE * file, long offset, int mode); /* Be-mani 980107b */
-_IMPEXP_ROOT int         _fseek(FILE *, fpos_t, int);     /* mm 970708 */ /* Be-mani 980107b */
-
-_IMPEXP_ROOT void		rewind(FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT void		clearerr(FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT void		perror(const char * s); /* Be-mani 980107b */
-
-_IMPEXP_ROOT int			__get_char(FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT int			__put_char(int c,FILE * file); /* Be-mani 980107b */
-
-_IMPEXP_ROOT FILE *	__handle_open  (__file_handle handle, const char * mode); /* Be-mani 980107b */
-_IMPEXP_ROOT FILE *	__handle_reopen(__file_handle handle, const char * mode, FILE * file); /* Be-mani 980107b */
-
-void		__set_idle_proc(FILE * file, __idle_proc idle_proc);
-
-#if (__dest_os	== __win32_os)
-
-	/*
-	 * I'm putting this declaration here because it is in Visual C++'s stdio.h
-	 * I copied this declaration from unix.win32.h. They should match.
-	 */
-	 FILE *fdopen(int fildes, char *type);
-
-#endif
-
-
-__end_extern_c
+#include <libio.h>
 
 #ifdef __cplusplus
-
-inline int getc(FILE * file)
-	{ return file->_buffer_len-- ? *file->_buffer_ptr++ : __get_char(file); } /* Be-mani 980107 */
-
-inline int putc(int c, FILE *file)
-	{ return file->_buffer_len-- ? (*file->_buffer_ptr++ = c) : __put_char(c, file); } /* Be-mani 980107 */
-
-inline int getchar()
-	{ return getc(stdin); }
-
-inline int putchar(int c)
-	{ return putc(c, stdout); }
-
-inline int feof(FILE * file)
-	{ return file->_state._eof; }  /* Be-mani 980107 */
-
-inline int ferror(FILE * file)
-	{ return file->_state._error; }	/* Be-mani 980107 */
-
+# define __STDIO_INLINE inline
 #else
-
-_IMPEXP_ROOT int			getc(FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT int			putc(int c, FILE * file); /* Be-mani 980107b */
-
-#define getc(file)		((file)->_buffer_len-- ? (int)  *(file)->_buffer_ptr++      : __std(__get_char)(file)) /* Be-mani 980107 */
-#define putc(c, file)	((file)->_buffer_len-- ? (int) (*(file)->_buffer_ptr++ = c) : __std(__put_char)(c, file)) /* Be-mani 980107 */
-
-_IMPEXP_ROOT int			getchar(void); /* Be-mani 980107b */
-_IMPEXP_ROOT int			putchar(int c); /* Be-mani 980107b */
-
-#define getchar()			__std(getc)(stdin)
-#define putchar(c)		__std(putc)(c, stdout)
-
-_IMPEXP_ROOT int			feof  (FILE * file); /* Be-mani 980107b */
-_IMPEXP_ROOT int			ferror(FILE * file); /* Be-mani 980107b */
-
-#define feof(file)		((file)->_state._eof)	/* Be-mani 980107 */
-#define ferror(file)	((file)->_state._error)	/* Be-mani 980107 */
-
+# define __STDIO_INLINE extern __inline
 #endif
 
-__end_namespace(stdc_space(stdio))
-
-__import_stdc_into_std_space(stdio)
-
-#if defined(__CFM68K__) && !defined(__USING_STATIC_LIBS__)
-	#pragma import reset
+/* The type of the second argument to `fgetpos' and `fsetpos'.  */
+#ifndef __USE_FILE_OFFSET64
+typedef _G_fpos_t fpos_t;
+#else
+typedef _G_fpos64_t fpos_t;
 #endif
-/* #pragma options align=reset */
+#ifdef __USE_LARGEFILE64
+typedef _G_fpos64_t fpos64_t;
+#endif
 
-#endif /* __cstdio__ */
+/* Generate a unique file name (and possibly open it).  */
+extern int __path_search __P ((char *__tmpl, size_t __tmpl_len,
+			       __const char *__dir,
+			       __const char *__pfx));
 
-/*     Change record
- * mm 961031  Changes for Pascal
- * mm 961203  Changed files to __files
- * mm 970708  Inserted Be changes
- * bds 131097 Be changes
- * Be-mani 980107a Backward compatility changes for BeOS shared libs.
- * Be-mani 980107b shared lib changes for BeOS
- * Be-mani 980107 Prepend certain stdio.h private
- *                struct members with underscores. This prevents pollution
- *				  of user namespace.  Otherwise, #define's can destroy
- *				  correct compilation.
- */
+extern int __gen_tempname __P ((char *__tmpl, int __openit, int __large_file));
+
+/* Print out MESSAGE on the error output and abort.  */
+extern void __libc_fatal __P ((__const char *__message))
+     __attribute__ ((__noreturn__));
+
+
+/* The possibilities for the third argument to `setvbuf'.  */
+#define _IOFBF 0 		/* Fully buffered.  */
+#define _IOLBF 1		/* Line buffered.  */
+#define _IONBF 2		/* No buffering.  */
+
+
+/* Default buffer size.  */
+#ifndef BUFSIZ
+# define BUFSIZ _IO_BUFSIZ
+#endif
+
+
+/* End of file character.
+   Some things throughout the library rely on this being -1.  */
+#ifndef EOF
+# define EOF (-1)
+#endif
+
+
+/* The possibilities for the third argument to `fseek'.
+   These values should not be changed.  */
+#define SEEK_SET	0	/* Seek from beginning of file.  */
+#define SEEK_CUR	1	/* Seek from current position.  */
+#define SEEK_END	2	/* Seek from end of file.  */
+
+
+#if defined __USE_SVID || defined __USE_XOPEN
+/* Default path prefix for `tempnam' and `tmpnam'.  */
+# define P_tmpdir	"/tmp"
+#endif
+
+
+/* Get the values:
+   L_tmpnam	How long an array of chars must be to be passed to `tmpnam'.
+   TMP_MAX	The minimum number of unique filenames generated by tmpnam
+   		(and tempnam when it uses tmpnam's name space),
+		or tempnam (the two are separate).
+   L_ctermid	How long an array to pass to `ctermid'.
+   L_cuserid	How long an array to pass to `cuserid'.
+   FOPEN_MAX	Minimum number of files that can be open at once.
+   FILENAME_MAX	Maximum length of a filename.  */
+#include <bits/stdio_lim.h>
+
+
+/* Standard streams.  */
+extern FILE *stdin;		/* Standard input stream.  */
+extern FILE *stdout;		/* Standard output stream.  */
+extern FILE *stderr;		/* Standard error output stream.  */
+
+
+/* Remove file FILENAME.  */
+extern int remove __P ((__const char *__filename));
+/* Rename file OLD to NEW.  */
+extern int rename __P ((__const char *__old, __const char *__new));
+
+
+/* Create a temporary file and open it read/write.  */
+#ifndef __USE_FILE_OFFSET64
+extern FILE *tmpfile __P ((void));
+#else
+# ifdef __REDIRECT
+extern FILE *__REDIRECT (tmpfile, __P ((void)), tmpfile64);
+# else
+#  define tmpfile tmpfile64
+# endif
+#endif
+#ifdef __USE_LARGEFILE64
+extern FILE *tmpfile64 __P ((void));
+#endif
+/* Generate a temporary filename.  */
+extern char *tmpnam __P ((char *__s));
+
+#ifdef __USE_MISC
+/* This is the reentrant variant of `tmpnam'.  The only difference is
+   that it does not allow S to be NULL.  */
+extern char *tmpnam_r __P ((char *__s));
+#endif
+
+
+#if defined __USE_SVID || defined __USE_XOPEN
+/* Generate a unique temporary filename using up to five characters of PFX
+   if it is not NULL.  The directory to put this file in is searched for
+   as follows: First the environment variable "TMPDIR" is checked.
+   If it contains the name of a writable directory, that directory is used.
+   If not and if DIR is not NULL, that value is checked.  If that fails,
+   P_tmpdir is tried and finally "/tmp".  The storage for the filename
+   is allocated by `malloc'.  */
+extern char *tempnam __P ((__const char *__dir, __const char *__pfx));
+#endif
+
+
+/* Close STREAM.  */
+extern int fclose __P ((FILE *__stream));
+/* Flush STREAM, or all streams if STREAM is NULL.  */
+extern int fflush __P ((FILE *__stream));
+
+#ifdef __USE_MISC
+/* Faster versions when locking is not required.  */
+extern int fflush_unlocked __P ((FILE *__stream));
+#endif
+
+#ifdef __USE_GNU
+/* Close all streams.  */
+extern int fcloseall __P ((void));
+#endif
+
+
+#ifndef __USE_FILE_OFFSET64
+/* Open a file and create a new stream for it.  */
+extern FILE *fopen __P ((__const char *__restrict __filename,
+			 __const char *__restrict __modes));
+/* Open a file, replacing an existing stream with it. */
+extern FILE *freopen __P ((__const char *__restrict __filename,
+			   __const char *__restrict __modes,
+			   FILE *__restrict __stream));
+#else
+# ifdef __REDIRECT
+extern FILE *__REDIRECT (fopen, __P ((__const char *__restrict __filename,
+				   __const char *__restrict __modes)),
+			 fopen64);
+extern FILE *__REDIRECT (freopen, __P ((__const char *__restrict __filename,
+					__const char *__restrict __modes,
+					FILE *__restrict __stream)),
+			 freopen64);
+# else
+#  define fopen fopen64
+#  define freopen freopen64
+# endif
+#endif
+#ifdef __USE_LARGEFILE64
+extern FILE *fopen64 __P ((__const char *__restrict __filename,
+			   __const char *__restrict __modes));
+extern FILE *freopen64 __P ((__const char *__restrict __filename,
+			     __const char *__restrict __modes,
+			     FILE *__restrict __stream));
+#endif
+
+#ifdef	__USE_POSIX
+/* Create a new stream that refers to an existing system file descriptor.  */
+extern FILE *fdopen __P ((int __fd, __const char *__modes));
+#endif
+
+#ifdef	__USE_GNU
+/* Create a new stream that refers to the given magic cookie,
+   and uses the given functions for input and output.  */
+extern FILE *fopencookie __P ((void *__magic_cookie, __const char *__modes,
+			       _IO_cookie_io_functions_t __io_funcs));
+
+/* Open a stream that writes into a malloc'd buffer that is expanded as
+   necessary.  *BUFLOC and *SIZELOC are updated with the buffer's location
+   and the number of characters written on fflush or fclose.  */
+extern FILE *open_memstream __P ((char **__bufloc, size_t *__sizeloc));
+#endif
+
+
+/* If BUF is NULL, make STREAM unbuffered.
+   Else make it use buffer BUF, of size BUFSIZ.  */
+extern void setbuf __P ((FILE *__restrict __stream, char *__restrict __buf));
+/* Make STREAM use buffering mode MODE.
+   If BUF is not NULL, use N bytes of it for buffering;
+   else allocate an internal buffer N bytes long.  */
+extern int setvbuf __P ((FILE *__restrict __stream, char *__restrict __buf,
+			 int __modes, size_t __n));
+
+#ifdef	__USE_BSD
+/* If BUF is NULL, make STREAM unbuffered.
+   Else make it use SIZE bytes of BUF for buffering.  */
+extern void setbuffer __P ((FILE *__stream, char *__buf, size_t __size));
+
+/* Make STREAM line-buffered.  */
+extern void setlinebuf __P ((FILE *__stream));
+#endif
+
+
+/* Write formatted output to STREAM.  */
+extern int fprintf __P ((FILE *__restrict __stream,
+			 __const char *__restrict __format, ...));
+/* Write formatted output to stdout.  */
+extern int printf __P ((__const char *__restrict __format, ...));
+/* Write formatted output to S.  */
+extern int sprintf __P ((char *__restrict __s,
+			 __const char *__restrict __format, ...));
+
+/* Write formatted output to S from argument list ARG.  */
+extern int vfprintf __P ((FILE *__restrict __s,
+			  __const char *__restrict __format,
+			  _G_va_list __arg));
+/* Write formatted output to stdout from argument list ARG.  */
+extern int vprintf __P ((__const char *__restrict __format,
+			 _G_va_list __arg));
+/* Write formatted output to S from argument list ARG.  */
+extern int vsprintf __P ((char *__restrict __s,
+			  __const char *__restrict __format,
+			  _G_va_list __arg));
+
+#ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+vprintf (__const char *__restrict __fmt, _G_va_list __arg)
+{
+  return vfprintf (stdout, __fmt, __arg);
+}
+#endif /* Use extern inlines.  */
+
+#if defined __USE_BSD || defined __USE_ISOC9X || defined __USE_UNIX98
+/* Maximum chars of output to write in MAXLEN.  */
+extern int snprintf __P ((char *__restrict __s, size_t __maxlen,
+			  __const char *__restrict __format, ...))
+     __attribute__ ((__format__ (__printf__, 3, 4)));
+
+extern int __vsnprintf __P ((char *__restrict __s, size_t __maxlen,
+			     __const char *__restrict __format,
+			     _G_va_list __arg))
+     __attribute__ ((__format__ (__printf__, 3, 0)));
+extern int vsnprintf __P ((char *__restrict __s, size_t __maxlen,
+			   __const char *__restrict __format,
+			   _G_va_list __arg))
+     __attribute__ ((__format__ (__printf__, 3, 0)));
+#endif
+
+#ifdef __USE_GNU
+/* Write formatted output to a string dynamically allocated with `malloc'.
+   Store the address of the string in *PTR.  */
+extern int vasprintf __P ((char **__restrict __ptr,
+			   __const char *__restrict __f, _G_va_list __arg))
+     __attribute__ ((__format__ (__printf__, 2, 0)));
+extern int __asprintf __P ((char **__restrict __ptr,
+			    __const char *__restrict __fmt, ...))
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+extern int asprintf __P ((char **__restrict __ptr,
+			  __const char *__restrict __fmt, ...))
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+
+/* Write formatted output to a file descriptor.  */
+extern int vdprintf __P ((int __fd, __const char *__restrict __fmt,
+			  _G_va_list __arg))
+     __attribute__ ((__format__ (__printf__, 2, 0)));
+extern int dprintf __P ((int __fd, __const char *__restrict __fmt, ...))
+     __attribute__ ((__format__ (__printf__, 2, 3)));
+#endif
+
+
+/* Read formatted input from STREAM.  */
+extern int fscanf __P ((FILE *__restrict __stream,
+			__const char *__restrict __format, ...));
+/* Read formatted input from stdin.  */
+extern int scanf __P ((__const char *__restrict __format, ...));
+/* Read formatted input from S.  */
+extern int sscanf __P ((__const char *__restrict __s,
+			__const char *__restrict __format, ...));
+
+#ifdef	__USE_ISOC9X
+/* Read formatted input from S into argument list ARG.  */
+extern int vfscanf __P ((FILE *__restrict __s,
+			 __const char *__restrict __format,
+			 _G_va_list __arg))
+     __attribute__ ((__format__ (__scanf__, 2, 0)));
+
+/* Read formatted input from stdin into argument list ARG.  */
+extern int vscanf __P ((__const char *__restrict __format, _G_va_list __arg))
+     __attribute__ ((__format__ (__scanf__, 1, 0)));
+
+/* Read formatted input from S into argument list ARG.  */
+extern int vsscanf __P ((__const char *__restrict __s,
+			 __const char *__restrict __format,
+			 _G_va_list __arg))
+     __attribute__ ((__format__ (__scanf__, 2, 0)));
+#endif /* Use ISO C9x.  */
+
+
+/* Read a character from STREAM.  */
+extern int fgetc __P ((FILE *__stream));
+extern int getc __P ((FILE *__stream));
+
+/* Read a character from stdin.  */
+extern int getchar __P ((void));
+
+/* The C standard explicitly says this is a macro, so we always do the
+   optimization for it.  */
+
+#if __BEOS__
+extern char	_single_threaded;
+#endif
+
+#if __BEOS__
+#define getc(_fp) (_single_threaded ? _IO_getc_unlocked (_fp) : _IO_getc (_fp))
+#else
+#define getc(_fp) _IO_getc (_fp)
+#endif
+
+#ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+getchar (void)
+{
+#if __BEOS__
+	return getc (stdin);
+#else
+	return _IO_getc (stdin);
+#endif
+}
+#endif /* Use extern inlines.  */
+
+#if defined __USE_POSIX || defined __USE_MISC
+/* These are defined in POSIX.1:1996.  */
+extern int getc_unlocked __P ((FILE *__stream));
+extern int getchar_unlocked __P ((void));
+
+# ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+getc_unlocked (FILE *__fp)
+{
+  return _IO_getc_unlocked (__fp);
+}
+
+__STDIO_INLINE int
+getchar_unlocked (void)
+{
+  return _IO_getc_unlocked (stdin);
+}
+# endif /* Use extern inlines.  */
+#endif /* Use POSIX or MISC.  */
+
+
+/* Write a character to STREAM.  */
+extern int fputc __P ((int __c, FILE *__stream));
+extern int putc __P ((int __c, FILE *__stream));
+
+/* Write a character to stdout.  */
+extern int putchar __P ((int __c));
+
+/* The C standard explicitly says this can be a macro,
+   so we always do the optimization for it.  */
+
+#if __BEOS__
+#define putc(_ch, _fp) (_single_threaded ? _IO_putc_unlocked (_ch, _fp) : _IO_putc (_ch, _fp))
+#else
+#define putc(_ch, _fp) _IO_putc (_ch, _fp)
+#endif
+
+#ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+putchar (int __c)
+{
+#if __BEOS__
+	return putc (__c, stdout);
+#else
+	return _IO_putc (__c, stdout);
+#endif
+}
+#endif	/* Use extern inlines.  */
+
+#ifdef __USE_MISC
+/* Faster version when locking is not necessary.  */
+extern int fputc_unlocked __P ((int __c, FILE *__stream));
+
+# ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+fputc_unlocked (int __c, FILE *__stream)
+{
+  return _IO_putc_unlocked (__c, __stream);
+}
+# endif /* Use extern inlines.  */
+#endif /* Use MISC.  */
+
+#if defined __USE_POSIX || defined __USE_MISC
+/* These are defined in POSIX.1:1996.  */
+extern int putc_unlocked __P ((int __c, FILE *__stream));
+extern int putchar_unlocked __P ((int __c));
+
+# ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+putc_unlocked (int __c, FILE *__stream)
+{
+  return _IO_putc_unlocked (__c, __stream);
+}
+
+__STDIO_INLINE int
+putchar_unlocked (int __c)
+{
+  return _IO_putc_unlocked (__c, stdout);
+}
+# endif /* Use extern inlines.  */
+#endif /* Use POSIX or MISC.  */
+
+
+#if defined __USE_SVID || defined __USE_MISC || defined __USE_XOPEN
+/* Get a word (int) from STREAM.  */
+extern int getw __P ((FILE *__stream));
+
+/* Write a word (int) to STREAM.  */
+extern int putw __P ((int __w, FILE *__stream));
+#endif
+
+
+/* Get a newline-terminated string of finite length from STREAM.  */
+extern char *fgets __P ((char *__restrict __s, int __n,
+			 FILE *__restrict __stream));
+
+#ifdef __USE_GNU
+/* This function does the same as `fgets' but does not lock the stream.  */
+extern char *fgets_unlocked __P ((char *__restrict __s, int __n,
+				  FILE *__restrict __stream));
+#endif
+
+/* Get a newline-terminated string from stdin, removing the newline.
+   DO NOT USE THIS FUNCTION!!  There is no limit on how much it will read.  */
+extern char *gets __P ((char *__s));
+
+
+#ifdef	__USE_GNU
+/* Read up to (and including) a DELIMITER from STREAM into *LINEPTR
+   (and null-terminate it). *LINEPTR is a pointer returned from malloc (or
+   NULL), pointing to *N characters of space.  It is realloc'd as
+   necessary.  Returns the number of characters read (not including the
+   null terminator), or -1 on error or EOF.  */
+extern _IO_ssize_t __getdelim __P ((char **__lineptr, size_t *__n,
+				    int __delimiter, FILE *__stream));
+extern _IO_ssize_t getdelim __P ((char **__lineptr, size_t *__n,
+				  int __delimiter, FILE *__stream));
+
+/* Like `getdelim', but reads up to a newline.  */
+extern _IO_ssize_t getline __P ((char **__lineptr, size_t *__n,
+				 FILE *__stream));
+
+# ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE _IO_ssize_t
+getline (char **__lineptr, size_t *__n, FILE *__stream)
+{
+  return __getdelim (__lineptr, __n, '\n', __stream);
+}
+# endif /* Use extern inlines.  */
+#endif
+
+
+/* Write a string to STREAM.  */
+extern int fputs __P ((__const char *__restrict __s,
+		       FILE *__restrict __stream));
+
+#ifdef __USE_GNU
+/* This function does the same as `fputs' but does not lock the stream.  */
+extern int fputs_unlocked __P ((__const char *__restrict __s,
+				FILE *__restrict __stream));
+#endif
+
+/* Write a string, followed by a newline, to stdout.  */
+extern int puts __P ((__const char *__s));
+
+
+/* Push a character back onto the input buffer of STREAM.  */
+extern int ungetc __P ((int __c, FILE *__stream));
+
+
+/* Read chunks of generic data from STREAM.  */
+extern size_t fread __P ((void *__restrict __ptr, size_t __size,
+			  size_t __n, FILE *__restrict __stream));
+/* Write chunks of generic data to STREAM.  */
+extern size_t fwrite __P ((__const void *__restrict __ptr, size_t __size,
+			   size_t __n, FILE *__restrict __s));
+
+#ifdef __USE_MISC
+/* Faster versions when locking is not necessary.  */
+extern size_t fread_unlocked __P ((void *__restrict __ptr, size_t __size,
+				   size_t __n, FILE *__restrict __stream));
+extern size_t fwrite_unlocked __P ((__const void *__restrict __ptr,
+				    size_t __size, size_t __n,
+				    FILE *__restrict __stream));
+#endif
+
+
+/* Seek to a certain position on STREAM.  */
+extern int fseek __P ((FILE *__stream, long int __off, int __whence));
+/* Return the current position of STREAM.  */
+extern long int ftell __P ((FILE *__stream));
+/* Rewind to the beginning of STREAM.  */
+extern void rewind __P ((FILE *__stream));
+
+/* The Single Unix Specification, Version 2, specifies an alternative,
+   more adequate interface for the two functions above which deal with
+   file offset.  `long int' is not the right type.  These definitions
+   are originally defined in the Large File Support API.  */
+
+/* Types needed in these functions.  */
+#ifndef off_t
+# ifndef __USE_FILE_OFFSET64
+typedef __off_t off_t;
+# else
+typedef __off64_t off_t;
+# endif
+# define off_t off_t
+#endif
+
+#if defined __USE_LARGEFILE64 && !defined off64_t
+typedef __off64_t off64_t;
+# define off64_t off64_t
+#endif
+
+
+#ifndef __USE_FILE_OFFSET64
+# ifdef __USE_UNIX98
+/* Seek to a certain position on STREAM.  */
+extern int fseeko __P ((FILE *__stream, __off_t __off, int __whence));
+/* Return the current position of STREAM.  */
+extern __off_t ftello __P ((FILE *__stream));
+# endif
+
+/* Get STREAM's position.  */
+extern int fgetpos __P ((FILE *__restrict __stream,
+			 fpos_t *__restrict __pos));
+/* Set STREAM's position.  */
+extern int fsetpos __P ((FILE *__stream, __const fpos_t *__pos));
+#else
+# ifdef __REDIRECT
+#  ifdef __USE_UNIX98
+extern int __REDIRECT (fseeko,
+		       __P ((FILE *__stream, __off64_t __off, int __whence)),
+		       fseeko64);
+extern __off64_t __REDIRECT (ftello, __P ((FILE *__stream)), ftello64);
+#  endif
+extern int __REDIRECT (fgetpos, __P ((FILE *__restrict __stream,
+				      fpos_t *__restrict __pos)), fgetpos64);
+extern int __REDIRECT (fsetpos, __P ((FILE *__stream, __const fpos_t *__pos)),
+		       fsetpos64);
+# else
+#  ifdef __USE_UNIX98
+#   define fseeko fseeko64
+#   define ftello ftello64
+#  endif
+#  define fgetpos fgetpos64
+#  define fsetpos fsetpos64
+# endif
+#endif
+
+#ifdef __USE_LARGEFILE64
+# ifdef __USE_UNIX98
+extern int fseeko64 __P ((FILE *__stream, __off64_t __off, int __whence));
+extern __off64_t ftello64 __P ((FILE *__stream));
+# endif
+extern int fgetpos64 __P ((FILE *__restrict __stream,
+			   fpos64_t *__restrict __pos));
+extern int fsetpos64 __P ((FILE *__stream, __const fpos64_t *__pos));
+#endif
+
+/* Clear the error and EOF indicators for STREAM.  */
+extern void clearerr __P ((FILE *__stream));
+/* Return the EOF indicator for STREAM.  */
+extern int feof __P ((FILE *__stream));
+/* Return the error indicator for STREAM.  */
+extern int ferror __P ((FILE *__stream));
+
+#ifdef __USE_MISC
+/* Faster versions when locking is not required.  */
+extern void clearerr_unlocked __P ((FILE *__stream));
+extern int feof_unlocked __P ((FILE *__stream));
+extern int ferror_unlocked __P ((FILE *__stream));
+
+# ifdef __USE_EXTERN_INLINES
+__STDIO_INLINE int
+feof_unlocked (FILE *__stream)
+{
+  return _IO_feof_unlocked (__stream);
+}
+
+__STDIO_INLINE int
+ferror_unlocked (FILE *__stream)
+{
+  return _IO_ferror_unlocked (__stream);
+}
+# endif /* Use extern inlines.  */
+#endif
+
+
+/* Print a message describing the meaning of the value of errno.  */
+extern void perror __P ((__const char *__s));
+
+#if !__BEOS__
+/* These variables normally should not be used directly.  The `strerror'
+   function provides all the needed functionality.  */
+# ifdef	__USE_BSD
+extern int sys_nerr;
+extern __const char *__const sys_errlist[];
+# endif
+# ifdef	__USE_GNU
+extern int _sys_nerr;
+extern __const char *__const _sys_errlist[];
+# endif
+#endif /* !__BEOS__ */
+
+#ifdef	__USE_POSIX
+/* Return the system file descriptor for STREAM.  */
+extern int fileno __P ((FILE *__stream));
+#endif /* Use POSIX.  */
+
+#ifdef __USE_MISC
+/* Faster version when locking is not required.  */
+extern int fileno_unlocked __P ((FILE *__stream));
+#endif
+
+
+#if (defined __USE_POSIX2 || defined __USE_SVID  || defined __USE_BSD || \
+     defined __USE_MISC)
+/* Create a new stream connected to a pipe running the given command.  */
+extern FILE *popen __P ((__const char *__command, __const char *__modes));
+
+/* Close a stream opened by popen and return the status of its child.  */
+extern int pclose __P ((FILE *__stream));
+#endif
+
+
+#ifdef	__USE_POSIX
+/* Return the name of the controlling terminal.  */
+extern char *ctermid __P ((char *__s));
+#endif /* Use POSIX.  */
+
+
+#ifdef __USE_XOPEN
+/* Return the name of the current user.  */
+extern char *cuserid __P ((char *__s));
+#endif /* Use X/Open.  */
+
+
+#ifdef	__USE_GNU
+struct obstack;			/* See <obstack.h>.  */
+
+/* Write formatted output to an obstack.  */
+extern int obstack_printf __P ((struct obstack *__obstack,
+				__const char *__format, ...));
+extern int obstack_vprintf __P ((struct obstack *__obstack,
+				 __const char *__format,
+				 _G_va_list __args));
+#endif /* Use GNU.  */
+
+
+#if defined __USE_POSIX || defined __USE_MISC
+/* These are defined in POSIX.1:1996.  */
+
+/* Acquire ownership of STREAM.  */
+extern void flockfile __P ((FILE *__stream));
+
+/* Try to acquire ownership of STREAM but do not block if it is not
+   possible.  */
+extern int ftrylockfile __P ((FILE *__stream));
+
+/* Relinquish the ownership granted for STREAM.  */
+extern void funlockfile __P ((FILE *__stream));
+#endif /* POSIX || misc */
+
+#if defined __USE_XOPEN && !defined __USE_GNU
+/* The X/Open standard requires some functions and variables to be
+   declared here which do not belong into this header.  But we have to
+   follow.  In GNU mode we don't do this nonsense.  */
+
+/* For more information on these symbols look in <getopt.h>.  */
+extern char *optarg;
+extern int optind;
+extern int opterr;
+extern int optopt;
+
+extern int getopt __P ((int __argc, char *__const *__argv,
+			__const char *__shortopts));
+#endif
+
+__END_DECLS
+
+/* Define helper macro.  */
+#undef __STDIO_INLINE
+
+#endif /* <stdio.h> included.  */
+
+#endif /* !_STDIO_H */

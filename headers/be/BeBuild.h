@@ -1,22 +1,43 @@
+/******************************************************************************
+/
+/	File:			BeBuild.h
+/
+/	Description:	Import/export macros
+/
+/	Copyright 1993-98, Be Incorporated
+/
+*******************************************************************************/
+
 #ifndef _BE_BUILD_H
 #define _BE_BUILD_H
 
+#define B_BEOS_VERSION		0x0400
+#define B_BEOS_VERSION_4	B_BEOS_VERSION
 
 #if defined(__powerc) || defined(powerc)
 	#define _PR2_COMPATIBLE_ 1
+	#define _PR3_COMPATIBLE_ 1
 #else
 	#define _PR2_COMPATIBLE_ 0
+	#define _PR3_COMPATIBLE_ 0
 #endif
 
+
+#if __MWERKS__
+#define _UNUSED(x)
+#define _PACKED
+#endif
+
+#if __GNUC__
+#define _UNUSED(x) x
+#define _PACKED	__attribute__((packed))
+#endif
 
 #if _STATIC_LINKING
 
 #define _EXPORT
 #define _IMPORT
 #define _IMPEXP_KERNEL
-#define	_IMPEXP_DRIVER
-#define	_IMPEXP_FS
-#define	_IMPEXP_GRAPHICS
 #define	_IMPEXP_GL
 #define	_IMPEXP_ROOT
 #define	_IMPEXP_NET
@@ -30,7 +51,8 @@
 #define	_IMPEXP_MIDI
 #define _IMPEXP_GAME
 #define _IMPEXP_TRANSLATION
-#define	_IMP_ROOT
+#define _IMPEXP_TEXTENCODING
+#define _IMPEXP_INPUT
 
 #else
 
@@ -45,30 +67,10 @@
 #define	_IMPEXP_KERNEL	__declspec(dllimport)
 #endif
 
-#if _BUILDING_driver
-#define	_IMPEXP_DRIVER	__declspec(dllexport)
-#else
-#define	_IMPEXP_DRIVER	__declspec(dllimport)
-#endif
-
-#if _BUILDING_fs
-#define	_IMPEXP_FS		__declspec(dllexport)
-#else
-#define	_IMPEXP_FS		__declspec(dllimport)
-#endif
-
-#if _BUILDING_graphics
-#define	_IMPEXP_GRAPHICS	__declspec(dllexport)
-#else
-#define	_IMPEXP_GRAPHICS	__declspec(dllimport)
-#endif
-
 #if _BUILDING_root
 #define	_IMPEXP_ROOT	__declspec(dllexport)
-#define	_IMP_ROOT
 #else
 #define	_IMPEXP_ROOT	__declspec(dllimport)
-#define	_IMP_ROOT		__declspec(dllimport)
 #endif
 
 #if _BUILDING_net
@@ -143,17 +145,26 @@
 #define _IMPEXP_TRANSLATION	__declspec(dllimport)
 #endif
 
+#if _BUILDING_textencoding
+#define _IMPEXP_TEXTENCODING	__declspec(dllexport)
+#else
+#define _IMPEXP_TEXTENCODING	__declspec(dllimport)
+#endif
+
+#if _BUILDING_input
+#define _IMPEXP_INPUT	__declspec(dllexport)
+#else
+#define _IMPEXP_INPUT	__declspec(dllimport)
+#endif
+
 #endif /* __INTEL__ */
 
 #if __POWERPC__
 
-#define	_EXPORT
-#define	_IMPORT
+#define	_EXPORT                 __declspec(dllexport)
+#define	_IMPORT					__declspec(dllimport)
 
 #define _IMPEXP_KERNEL
-#define	_IMPEXP_DRIVER
-#define	_IMPEXP_FS
-#define	_IMPEXP_GRAPHICS
 #define	_IMPEXP_GL
 #define	_IMPEXP_ROOT
 #define	_IMPEXP_NET
@@ -167,7 +178,8 @@
 #define	_IMPEXP_MIDI
 #define	_IMPEXP_GAME
 #define _IMPEXP_TRANSLATION
-#define	_IMP_ROOT
+#define _IMPEXP_TEXTENCODING
+#define _IMPEXP_INPUT
 
 #endif
 
@@ -177,9 +189,6 @@
 #define	_IMPORT
 
 #define _IMPEXP_KERNEL
-#define	_IMPEXP_DRIVER
-#define	_IMPEXP_FS
-#define	_IMPEXP_GRAPHICS
 #define	_IMPEXP_GL
 #define	_IMPEXP_ROOT
 #define	_IMPEXP_NET
@@ -193,7 +202,8 @@
 #define	_IMPEXP_MIDI
 #define	_IMPEXP_GAME
 #define _IMPEXP_TRANSLATION
-#define	_IMP_ROOT
+#define _IMPEXP_TEXTENCODING
+#define _IMPEXP_INPUT
 
 #endif
 
@@ -230,6 +240,7 @@ class _IMPEXP_ROOT overflow_error;
 class _IMPEXP_BE BArchivable;
 class _IMPEXP_BE BAutolock;
 class _IMPEXP_BE BBlockCache;
+class _IMPEXP_BE BBufferIO;
 class _IMPEXP_BE BDataIO;
 class _IMPEXP_BE BPositionIO;
 class _IMPEXP_BE BMallocIO;
@@ -238,6 +249,7 @@ class _IMPEXP_BE BFlattenable;
 class _IMPEXP_BE BList;
 class _IMPEXP_BE BLocker;
 class _IMPEXP_BE BStopWatch;
+class _IMPEXP_BE BString;
 
 class _IMPEXP_BE PointerList;
 
@@ -255,6 +267,7 @@ class _IMPEXP_BE BNodeInfo;
 class _IMPEXP_BE BPath;
 class _IMPEXP_BE BQuery;
 class _IMPEXP_BE BResources;
+class _IMPEXP_BE BResourceStrings;
 class _IMPEXP_BE BStatable;
 class _IMPEXP_BE BSymLink;
 class _IMPEXP_BE BVolume;
@@ -278,6 +291,7 @@ class _IMPEXP_BE BLooper;
 class _IMPEXP_BE BMessage;
 class _IMPEXP_BE BMessageFilter;
 class _IMPEXP_BE BMessageQueue;
+class _IMPEXP_BE BMessageRunner;
 class _IMPEXP_BE BMessenger;
 class _IMPEXP_BE BPropertyInfo;
 class _IMPEXP_BE BRoster;
@@ -295,6 +309,7 @@ class _IMPEXP_BE BColorControl;
 class _IMPEXP_BE BControl;
 class _IMPEXP_BE BDragger;
 class _IMPEXP_BE BFont;
+class _IMPEXP_BE BInputDevice;
 class _IMPEXP_BE BListItem;
 class _IMPEXP_BE BListView;
 class _IMPEXP_BE BStringItem;
@@ -317,6 +332,8 @@ class _IMPEXP_BE BScrollBar;
 class _IMPEXP_BE BScrollView;
 class _IMPEXP_BE BSeparatorItem;
 class _IMPEXP_BE BShelf;
+class _IMPEXP_BE BShape;
+class _IMPEXP_BE BShapeIterator;
 class _IMPEXP_BE BSlider;
 class _IMPEXP_BE BStatusBar;
 class _IMPEXP_BE BStringView;
@@ -329,6 +346,7 @@ class _IMPEXP_BE BWindow;
 
 class _IMPEXP_BE _BTextInput_;
 class _IMPEXP_BE _BMCMenuBar_;
+class _IMPEXP_BE _BMCItem_;
 class _IMPEXP_BE _BWidthBuffer_;
 class _IMPEXP_BE BPrivateScreen;
 
@@ -344,7 +362,7 @@ class _IMPEXP_NETDEV BTimeoutHandler;
 class _IMPEXP_NETDEV BPacketHandler;
 class _IMPEXP_NETDEV BNetProtocol;
 class _IMPEXP_NETDEV BNetDevice;
-class _IMPEXP_NETDEV BCallbackHandler;
+class _IMPEXP_NETDEV BCallBackHandler;
 class _IMPEXP_NETDEV BNetConfig;
 class _IMPEXP_NETDEV BIpDevice;
 
@@ -357,6 +375,7 @@ class _IMPEXP_ATALK _PrinterNode;
 /* tracker kit */
 class _IMPEXP_TRACKER BFilePanel;
 class _IMPEXP_TRACKER BNavMenu;
+class _IMPEXP_TRACKER BSlowMenu;
 
 class _IMPEXP_TRACKER CopyLoopControl;
 
@@ -371,9 +390,6 @@ class _IMPEXP_DEVICE	BJoystick;
 class _IMPEXP_DEVICE	BSerialPort;
 
 /* media kit */
-class _IMPEXP_MEDIA 	BAVISource;
-class _IMPEXP_MEDIA		BAVIRenderer;
-class _IMPEXP_MEDIA		BAudioEvent;
 class _IMPEXP_MEDIA		BDACRenderer;
 class _IMPEXP_MEDIA		BAudioFileStream;
 class _IMPEXP_MEDIA		BADCStream;
@@ -381,15 +397,49 @@ class _IMPEXP_MEDIA		BDACStream;
 class _IMPEXP_MEDIA		BAbstractBufferStream;
 class _IMPEXP_MEDIA		BBufferStreamManager;
 class _IMPEXP_MEDIA		BBufferStream;
-class _IMPEXP_MEDIA		BMediaEvent;
-class _IMPEXP_MEDIA		BEventStream;
 class _IMPEXP_MEDIA		BSoundFile;
 class _IMPEXP_MEDIA		BSubscriber;
-class _IMPEXP_MEDIA		BVideoEvent;
-class _IMPEXP_MEDIA		BVideoRenderer;
-class _IMPEXP_MEDIA		BVideoFileStream;
-class _IMPEXP_MEDIA		BBt848Stream;
-class _IMPEXP_MEDIA		BFilmStripRenderer;
+
+class _IMPEXP_MEDIA BMediaRoster;
+class _IMPEXP_MEDIA BMediaNode;
+class _IMPEXP_MEDIA BTimeSource;
+class _IMPEXP_MEDIA BBufferProducer;
+class _IMPEXP_MEDIA BBufferConsumer;
+class _IMPEXP_MEDIA BBuffer;
+class _IMPEXP_MEDIA BBufferGroup;
+class _IMPEXP_MEDIA BControllable;
+class _IMPEXP_MEDIA BFileInterface;
+class _IMPEXP_MEDIA BEntityInterface;
+class _IMPEXP_MEDIA BMediaAddOn;
+class _IMPEXP_MEDIA BMediaTheme;
+class _IMPEXP_MEDIA BParameterWeb;
+class _IMPEXP_MEDIA BParameterGroup;
+class _IMPEXP_MEDIA BParameter;
+class _IMPEXP_MEDIA BNullParameter;
+class _IMPEXP_MEDIA BDiscreteParameter;
+class _IMPEXP_MEDIA BContinuousParameter;
+class _IMPEXP_MEDIA BMediaFiles;
+class _IMPEXP_MEDIA BSound;
+class _IMPEXP_MEDIA BSoundCard;
+class _IMPEXP_MEDIA BSoundPlayer;
+class _IMPEXP_MEDIA BMediaFormats;
+
+struct _IMPEXP_MEDIA media_node;
+struct _IMPEXP_MEDIA media_input;
+struct _IMPEXP_MEDIA media_output;
+struct _IMPEXP_MEDIA live_node_info;
+struct _IMPEXP_MEDIA buffer_clone_info;
+struct _IMPEXP_MEDIA media_source;
+struct _IMPEXP_MEDIA media_destination;
+struct _IMPEXP_MEDIA media_raw_audio_format;
+struct _IMPEXP_MEDIA media_raw_video_format;
+struct _IMPEXP_MEDIA media_video_display_info;
+struct _IMPEXP_MEDIA flavor_info;
+struct _IMPEXP_MEDIA dormant_node_info;
+struct _IMPEXP_MEDIA media_source;
+struct _IMPEXP_MEDIA media_destination;
+struct _IMPEXP_MEDIA _media_format_description;
+
 
 /* midi kit */
 class _IMPEXP_MIDI 		BMidi;
@@ -428,6 +478,11 @@ typedef struct _IMPEXP_GL GLUnurbs GLUnurbsObj;
 typedef struct _IMPEXP_GL GLUquadric GLUquadricObj;
 typedef struct _IMPEXP_GL GLUtesselator GLUtesselatorObj;
 typedef struct _IMPEXP_GL GLUtesselator GLUtriangulatorObj;
+
+/* input_server */
+class _IMPEXP_INPUT	BInputServerDevice;
+class _IMPEXP_INPUT BInputServerFilter;
+class _IMPEXP_INPUT BInputServerMethod;
 
 #endif		/* __cplusplus */
 

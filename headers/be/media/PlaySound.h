@@ -31,4 +31,4 @@ status_t stop_sound(sound_handle handle);
 _IMPEXP_MEDIA
 status_t wait_for_sound(sound_handle handle);
 
-#endif			// #ifndef _PLAY_SOUND_H
+#endif			/* #ifndef _PLAY_SOUND_H*/

@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef	_LOCKER_H
 #define	_LOCKER_H
@@ -20,6 +20,9 @@
 
 class BLocker {
 public:
+					BLocker(bool benaphore_style);
+					BLocker(const char *name, bool benaphore_style);
+
 					BLocker();
 					BLocker(const char *name);
 virtual				~BLocker();	
@@ -27,7 +30,7 @@ virtual				~BLocker();
 		bool		Lock();
 		void		Unlock();
 		bool		IsLocked() const;
-		status_t		LockWithTimeout(bigtime_t timeout);
+		status_t	LockWithTimeout(bigtime_t timeout);
 
 /* -- For debugging (only!) -- */
 		thread_id	LockingThread() const;
@@ -37,12 +40,17 @@ virtual				~BLocker();
 
 /*----- Private or reserved ---------------*/
 private:
+		void		InitData(const char *name, bool benaphore);
 		bool		_Lock(bigtime_t timeout, status_t *error);
 
 		int32		fCount;
 		sem_id		fSem;
 		int32		fOwner;
 		int32		fOwnerCount;
+#if !_PR3_COMPATIBLE_
+		mutable uint32	fOwnerStack;
+		int32		fReserved[3];
+#endif /* not _PR3_COMPATIBLE_ */
 };
 
 /*-------------------------------------------------------------*/

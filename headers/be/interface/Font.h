@@ -7,7 +7,7 @@
 /
 /	Copyright 1997-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _FONT_H
 #define _FONT_H
@@ -15,6 +15,7 @@
 #include <BeBuild.h>
 #include <SupportDefs.h>
 #include <InterfaceDefs.h>
+
 
 /*----------------------------------------------------------------*/
 /*----- BFont defines and structures -----------------------------*/
@@ -37,7 +38,8 @@ enum font_direction {
 };
 
 enum {
-	B_DISABLE_ANTIALIASING = 0x00000001
+	B_DISABLE_ANTIALIASING	= 0x00000001,
+	B_FORCE_ANTIALIASING	= 0x00000002
 };
 
 enum {
@@ -74,6 +76,42 @@ enum {
 	B_IS_FIXED               = 0x0002
 };
 
+enum {
+	B_ITALIC_FACE		= 0x0001,
+	B_UNDERSCORE_FACE	= 0x0002,
+	B_NEGATIVE_FACE		= 0x0004,
+	B_OUTLINED_FACE		= 0x0008,
+	B_STRIKEOUT_FACE	= 0x0010,
+	B_BOLD_FACE			= 0x0020,
+	B_REGULAR_FACE		= 0x0040
+};
+
+enum font_metric_mode {
+	B_SCREEN_METRIC		= 0,
+	B_PRINTING_METRIC	= 1
+};
+
+enum font_file_format {
+	B_TRUETYPE_WINDOWS			= 0,
+	B_POSTSCRIPT_TYPE1_WINDOWS	= 1
+};
+
+class unicode_block {
+public:
+	inline					unicode_block();
+	inline					unicode_block(uint64 block2, uint64 block1);
+
+	inline bool				Includes(const unicode_block &block) const;
+	inline unicode_block	operator&(const unicode_block &block) const;		
+	inline unicode_block	operator|(const unicode_block &block) const;		
+	inline unicode_block	&operator=(const unicode_block &block);
+	inline bool				operator==(const unicode_block &block) const;		
+	inline bool				operator!=(const unicode_block &block) const;
+	
+private:
+	uint64					fData[2];
+};
+
 struct edge_info {
 	float	left;
 	float	right;
@@ -107,70 +145,118 @@ struct tuned_font_info {
 	uint16   face;
 };
 
+class BShape;
+
+/*----------------------------------------------------------------*/
+/*----- Private --------------------------------------------------*/
+
+_IMPEXP_BE void _font_control_(BFont *font, int32 cmd, void *data);
+
 /*----------------------------------------------------------------*/
 /*----- BFont class ----------------------------------------------*/
 
 class BFont {
 public:
-						BFont();
-						BFont(const BFont &font);	
-						BFont(const BFont *font);			
+							BFont();
+							BFont(const BFont &font);	
+							BFont(const BFont *font);			
 
-		void			SetFamilyAndStyle(const font_family family, 
-										  const font_style style);
-		void			SetFamilyAndStyle(uint32 code);
-		void			SetSize(float size);
-		void			SetShear(float shear);
-		void			SetRotation(float rotation);
-		void			SetSpacing(uint8 spacing);
-		void			SetEncoding(uint8 encoding);
-		void			SetFace(uint16 face);
-		void			SetFlags(uint32 flags);
+		void				SetFamilyAndStyle(const font_family family, 
+											  const font_style style);
+		void				SetFamilyAndStyle(uint32 code);
+		void				SetFamilyAndFace(const font_family family, uint16 face);
+		void				SetSize(float size);
+		void				SetShear(float shear);
+		void				SetRotation(float rotation);
+		void				SetSpacing(uint8 spacing);
+		void				SetEncoding(uint8 encoding);
+		void				SetFace(uint16 face);
+		void				SetFlags(uint32 flags);
 
-		void			GetFamilyAndStyle(font_family *family,
-										  font_style *style) const;
-		uint32			FamilyAndStyle() const;
-		float			Size() const;
-		float			Shear() const;
-		float			Rotation() const;
-		uint8			Spacing() const;
-		uint8			Encoding() const;
-		uint16			Face() const;
-		uint32			Flags() const;
-		font_direction	Direction() const; 
-		int32			CountTuned() const;
-		void			GetTunedInfo(int32 index, tuned_font_info *info) const;
-
-		void            GetTruncatedStrings(const char *stringArray[], 
-											int32 numStrings, 
-											uint32 mode,
-											float width, 
-											char *resultArray[]) const;
-
-		float			StringWidth(const char *string) const;
-		float			StringWidth(const char *string, int32 length) const;
-		void			GetStringWidths(const char *stringArray[], 
-										const int32 lengthArray[], 
-										int32 numStrings, 
-										float widthArray[]) const;
-
-		void			GetEscapements(const char charArray[], 
-									   int32 numChars,
-									   float escapementArray[]) const;
-		void			GetEscapements(const char charArray[], 
-									   int32 numChars,
-									   escapement_delta *delta, 
-									   float escapementArray[]) const;
-		void			GetEdges(const char charArray[], 
-								 int32 numBytes,
-								 edge_info edgeArray[]) const;
-		void			GetHeight(font_height *height) const;
+		void				GetFamilyAndStyle(font_family *family,
+											  font_style *style) const;
+		uint32				FamilyAndStyle() const;
+		float				Size() const;
+		float				Shear() const;
+		float				Rotation() const;
+		uint8				Spacing() const;
+		uint8				Encoding() const;
+		uint16				Face() const;
+		uint32				Flags() const;
 		
-		BFont&			operator=(const BFont &font); 
-		bool			operator==(const BFont &font) const;
-		bool			operator!=(const BFont &font) const; 
+		font_direction		Direction() const; 
+		bool				IsFixed() const;	
+		bool				IsFullAndHalfFixed() const;	
+		BRect				BoundingBox() const;
+		unicode_block		Blocks() const;
+		font_file_format	FileFormat() const;
 
-		void			PrintToStream() const;
+		int32				CountTuned() const;
+		void				GetTunedInfo(int32 index, tuned_font_info *info) const;
+
+		void            	GetTruncatedStrings(const char *stringArray[], 
+												int32 numStrings, 
+												uint32 mode,
+												float width, 
+												char *resultArray[]) const;
+
+		float				StringWidth(const char *string) const;
+		float				StringWidth(const char *string, int32 length) const;
+		void				GetStringWidths(const char *stringArray[], 
+											const int32 lengthArray[], 
+											int32 numStrings, 
+											float widthArray[]) const;
+
+		void				GetEscapements(const char charArray[], 
+										   int32 numChars,
+										   float escapementArray[]) const;
+		void				GetEscapements(const char charArray[], 
+										   int32 numChars,
+										   escapement_delta *delta, 
+										   float escapementArray[]) const;
+		void				GetEscapements(const char charArray[], 
+										   int32 numChars,
+										   escapement_delta *delta, 
+										   BPoint escapementArray[]) const;
+		void				GetEscapements(const char charArray[], 
+										   int32 numChars,
+										   escapement_delta *delta, 
+										   BPoint escapementArray[],
+										   BPoint offsetArray[]) const;
+									   
+		void				GetEdges(const char charArray[], 
+									 int32 numBytes,
+									 edge_info edgeArray[]) const;
+		void				GetHeight(font_height *height) const;
+		
+		void				GetBoundingBoxesAsGlyphs(const char charArray[], 
+													 int32 numChars, 
+													 font_metric_mode mode,
+													 BRect boundingBoxArray[]) const;
+		void				GetBoundingBoxesAsString(const char charArray[], 
+													 int32 numChars, 
+													 font_metric_mode mode,
+													 escapement_delta *delta,
+													 BRect boundingBoxArray[]) const;
+		void				GetBoundingBoxesForStrings(const char *stringArray[],
+													   int32 numStrings,
+													   font_metric_mode mode,
+													   escapement_delta deltas[],
+													   BRect boundingBoxArray[]) const;
+		
+		void				GetGlyphShapes(const char charArray[],
+										   int32 numChars,
+										   BShape *glyphShapeArray[]) const;							   
+
+		void				GetHasGlyphs(const char charArray[],
+										 int32 numChars,
+										 bool hasArray[]) const;
+									 
+		BFont&				operator=(const BFont &font); 
+		bool				operator==(const BFont &font) const;
+		bool				operator!=(const BFont &font) const; 
+
+		void				PrintToStream() const;
 	
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -179,24 +265,37 @@ friend class BApplication;
 friend class BView;
 friend void _font_control_(BFont*, int32, void*);
 
-		uint16			fFamilyID;
-		uint16			fStyleID;
-		float			fSize;
-		float			fShear;
-		float			fRotation;
-		uint8			fSpacing;
-		uint8			fEncoding;
-		uint16			fFace;
-		uint32			fFlags;
-		font_height		fHeight;
-		uint32			_reserved[3];
+		uint16				fFamilyID;
+		uint16				fStyleID;
+		float				fSize;
+		float				fShear;
+		float				fRotation;
+		uint8				fSpacing;
+		uint8				fEncoding;
+		uint16				fFace;
+		uint32				fFlags;
+		font_height			fHeight;
+		int32				fPrivateFlags;
+		uint32				_reserved[2];
 
-		void            SetPacket(void *packet) const;
-		void            GetTruncatedStrings64(const char *stringArray[], 
-											  int32 numStrings, 
-											  uint32 mode,
-											  float width, 
-											  char *resultArray[]) const;
+		void           		SetPacket(void *packet) const;
+		void           		GetTruncatedStrings64(const char *stringArray[], 
+												  int32 numStrings, 
+												  uint32 mode,
+												  float width, 
+												  char *resultArray[]) const;
+		void				_GetEscapements_(const char charArray[],
+											 int32 numChars, 
+											 escapement_delta *delta,
+											 uint8 mode,
+											 float *escapements,
+											 float *offsets = NULL) const;
+		void				_GetBoundingBoxes_(const char charArray[], 
+											   int32 numChars, 
+											   font_metric_mode mode,
+											   bool string_escapement,
+											   escapement_delta *delta,
+											   BRect boundingBoxArray[]) const;
 };
 
 /*----------------------------------------------------------------*/
@@ -207,16 +306,72 @@ extern _IMPEXP_BE const BFont* be_bold_font;
 extern _IMPEXP_BE const BFont* be_fixed_font;
 
 _IMPEXP_BE int32       count_font_families();
-_IMPEXP_BE status_t    get_font_family(int32 index, font_family *name,
-							uint32 *flags = NULL);
+_IMPEXP_BE status_t    get_font_family(int32		index, 
+									   font_family	*name,
+									   uint32		*flags = NULL);
+
 _IMPEXP_BE int32       count_font_styles(font_family name);
-_IMPEXP_BE status_t    get_font_style(font_family family, int32 index,
-							font_style *name, uint32 *flags = NULL);
+_IMPEXP_BE status_t    get_font_style(font_family	family, 
+									  int32			index,
+									  font_style	*name, 
+									  uint32		*flags = NULL);
+_IMPEXP_BE status_t    get_font_style(font_family	family, 
+									  int32			index,
+									  font_style	*name, 
+									  uint16		*face, 
+									  uint32		*flags = NULL);
+
 _IMPEXP_BE bool        update_font_families(bool check_only);
+
 _IMPEXP_BE status_t    get_font_cache_info(uint32 id, void  *set);
 _IMPEXP_BE status_t    set_font_cache_info(uint32 id, void  *set);
 
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
+/*----------------------------------------------------------------*/
+/*----- unicode_block inlines ------------------------------------*/
+
+unicode_block::unicode_block() { fData[0] = fData[1] = 0LL; }
+
+unicode_block::unicode_block(uint64 block2, uint64 block1) {
+	fData[0] = block1;
+	fData[1] = block2;
+}
+
+bool unicode_block::Includes(const unicode_block &block) const {
+	return (((fData[0] & block.fData[0]) == block.fData[0]) &&
+			((fData[1] & block.fData[1]) == block.fData[1]));
+}
+
+unicode_block unicode_block::operator&(const unicode_block &block) const {
+	unicode_block		res;
+	
+	res.fData[0] = fData[0] & block.fData[0];
+	res.fData[1] = fData[1] & block.fData[1];
+	return res;
+}
+		
+unicode_block unicode_block::operator|(const unicode_block &block) const {
+	unicode_block		res;
+	
+	res.fData[0] = fData[0] | block.fData[0];
+	res.fData[1] = fData[1] | block.fData[1];
+	return res;
+}
+		
+unicode_block &unicode_block::operator=(const unicode_block &block) {
+	fData[0] = block.fData[0];
+	fData[1] = block.fData[1];
+	return *this;
+}
+
+bool unicode_block::operator==(const unicode_block &block) const {
+	return ((fData[0] == block.fData[0]) && (fData[1] == block.fData[1]));
+}
+
+bool unicode_block::operator!=(const unicode_block &block) const {
+	return ((fData[0] != block.fData[0]) || (fData[1] != block.fData[1]));
+}
+
+/*----------------------------------------------------------------*/
+/*----------------------------------------------------------------*/
 
 #endif /* _FONT_H */

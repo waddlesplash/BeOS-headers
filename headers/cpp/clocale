@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	clocale
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- locale support header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CLOCALE__
+#define __CLOCALE__
 #include <locale.h>
-
-//__using_namespace(__stdc_space(locale))
-
-/*     Change record
-*/
+#endif

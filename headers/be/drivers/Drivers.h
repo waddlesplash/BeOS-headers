@@ -1,8 +1,12 @@
-/* ++++++++++
-	Drivers.h
-	Copyright (c) 1991-1997 by Be, Incorporated.  All Rights Reserved.
-	public driver-related API
-+++++ */
+/*******************************************************************************
+/
+/	File:		Drivers.h
+/
+/	Description:	Public driver-related API
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 
 #ifndef _DRIVERS_H
@@ -10,6 +14,7 @@
 
 #include <BeBuild.h>
 #include <sys/types.h>
+#include <iovec.h>
 #include <SupportDefs.h>
 
 #ifdef __cplusplus
@@ -20,6 +25,9 @@ extern "C" {
 	these hooks are how the kernel accesses the device
 --- */
 
+struct selectsync;
+typedef struct selectsync selectsync;
+
 typedef status_t (*device_open_hook) (const char *name, uint32 flags, void **cookie);
 typedef status_t (*device_close_hook) (void *cookie);
 typedef status_t (*device_free_hook) (void *cookie);
@@ -29,11 +37,21 @@ typedef status_t (*device_read_hook) (void *cookie, off_t position, void *data,
 					size_t *numBytes);
 typedef status_t (*device_write_hook) (void *cookie, off_t position,
 					const void *data, size_t *numBytes);
+typedef status_t (*device_select_hook) (void *cookie, uint8 event, uint32 ref,
+					selectsync *sync);
+typedef status_t (*device_deselect_hook) (void *cookie, uint8 event,
+					selectsync *sync);
+typedef status_t (*device_readv_hook) (void *cookie, off_t position, const iovec *vec,
+					size_t count, size_t *numBytes);
+typedef status_t (*device_writev_hook) (void *cookie, off_t position, const iovec *vec,
+					size_t count, size_t *numBytes);
 
 /* ---
 	the device_hooks structure is a descriptor for the device, giving its
 	entry points.
 --- */
+
+#define	B_CUR_DRIVER_API_VERSION	2
 
 typedef struct {
 	device_open_hook		open;		/* called to open the device */
@@ -42,12 +60,11 @@ typedef struct {
 	device_control_hook		control;	/* called to control the device */
 	device_read_hook		read;		/* reads from the device */
 	device_write_hook		write;		/* writes to the device */
+	device_select_hook		select;		/* start select */
+	device_deselect_hook	deselect;	/* stop select */
+	device_readv_hook		readv;		/* scatter-gather read from the device */
+	device_writev_hook		writev;		/* scatter-gather write to the device */
 } device_hooks;
-
-
-#if __POWERPC__ && _BUILDING_driver
-#pragma export on
-#endif
 
 extern _EXPORT status_t		init_hardware(void);
 extern _EXPORT const char	**publish_devices();
@@ -55,9 +72,7 @@ extern _EXPORT device_hooks	*find_device(const char *name);
 extern _EXPORT status_t		init_driver(void);
 extern _EXPORT void			uninit_driver(void);	
 
-#if __POWERPC__ && _BUILDING_driver
-#pragma export reset
-#endif
+extern _EXPORT int32	api_version;
 
 /* ---
 	Be-defined opcodes for the control call.  Drivers should support
@@ -104,9 +119,25 @@ enum {
 									/* as reported by the bios */
 									/*   returns struct geometry in *data */
 
+	B_GET_MEDIA_STATUS,				/* get status of media. */
+									/* return status_t in *data: */
+									/* B_NO_ERROR: media ready */
+									/* B_DEV_NO_MEDIA: no media */
+									/* B_DEV_NOT_READY: device not ready */
+									/* B_DEV_MEDIA_CHANGED: media changed */
+									/*  since open or last B_GET_MEDIA_STATUS */
+	
+	B_LOAD_MEDIA,					/* load the media if supported */
+	
+	B_GET_BIOS_DRIVE_ID,			/* get bios id for this device */
+
+	B_SET_UNINTERRUPTABLE_IO,		/* prevent cntl-C from interrupting i/o */
+	B_SET_INTERRUPTABLE_IO,			/* allow cntl-C to interrupt i/o */
+
 	B_AUDIO_DRIVER_BASE = 8000,		/* base for codes in audio_driver.h */
 	B_MIDI_DRIVER_BASE = 8100,		/* base for codes in midi_driver.h */
 	B_JOYSTICK_DRIVER_BASE = 8200,	/* base for codes in joystick.h */
+	B_GRAPHIC_DRIVER_BASE = 8300,	/* base for codes in graphic_driver.h */
 
 	B_DEVICE_OP_CODES_END = 9999	/* end of Be-defined contol id's */
 };

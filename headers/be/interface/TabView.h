@@ -9,7 +9,7 @@
 /
 /	Copyright 1997-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _TAB_VIEW_H
 #define _TAB_VIEW_H
@@ -33,7 +33,7 @@ enum tab_position {
 
 class BTab : public BArchivable {
 public:
-						BTab(BView* v=NULL);
+						BTab(BView* contents=NULL);
 virtual					~BTab();
 
 						BTab(BMessage* data);
@@ -45,7 +45,7 @@ virtual status_t		Perform(uint32 d, void *arg);
 virtual	void			SetLabel(const char* label);
 
 		bool			IsSelected() const;
-virtual	void			Select(BView*);
+virtual	void			Select(BView* owner);
 virtual	void			Deselect();
 
 virtual	void			SetEnabled(bool on);
@@ -54,12 +54,14 @@ virtual	void			SetEnabled(bool on);
 		void			MakeFocus(bool infocus=true);
 		bool			IsFocus() const;
 		
-virtual void			SetView(BView* v);
+		//	sets/gets the view to be displayed for this tab
+virtual void			SetView(BView* contents);
 		BView*			View() const;
 
-virtual void			DrawFocusMark(BView*, BRect);
-virtual void 			DrawLabel(BView*, BRect);
-virtual void 			DrawTab(BView*, BRect, tab_position, bool full=true);
+virtual void			DrawFocusMark(BView* owner, BRect tabFrame);
+virtual void 			DrawLabel(BView* owner, BRect tabFrame);
+virtual void 			DrawTab(BView* owner, BRect tabFrame, tab_position,
+							bool full=true);
 
 /*----- Private or reserved -----------------------------------------*/
 private:
@@ -96,7 +98,7 @@ public:
 							uint32 flags = B_FULL_UPDATE_ON_RESIZE |
 								B_WILL_DRAW | B_NAVIGABLE_JUMP |
 								B_FRAME_EVENTS | B_NAVIGABLE);
-						~BTabView();
+virtual					~BTabView();
 						
 						BTabView(BMessage*);							
 static	BArchivable*	Instantiate(BMessage*);
@@ -118,17 +120,17 @@ virtual void			MouseUp(BPoint);
 virtual void 			MouseMoved(BPoint pt, uint32 code, const BMessage *msg);
 virtual	void			Pulse();
 
-virtual	void 			Select(int32);
+virtual	void 			Select(int32 tabIndex);
 		int32			Selection() const;
 
 virtual	void			MakeFocus(bool focusState = true);
-virtual void			SetFocusTab(int32,bool);
+virtual void			SetFocusTab(int32 tabIndex, bool focusState);
 		int32			FocusTab() const;
 		
 virtual void 			Draw(BRect);
 virtual BRect			DrawTabs();
-virtual void			DrawBox(BRect);
-virtual BRect			TabFrame(int32) const;
+virtual void			DrawBox(BRect selectedTabFrame);
+virtual BRect			TabFrame(int32 tabIndex) const;
 				
 virtual	void			SetFlags(uint32 flags);
 virtual	void			SetResizingMode(uint32 mode);
@@ -137,22 +139,31 @@ virtual void 			GetPreferredSize( float *width, float *height);
 virtual void 			ResizeToPreferred();
 
 virtual BHandler		*ResolveSpecifier(BMessage *msg, int32 index,
-						BMessage *specifier, int32 form, const char *property);
+							BMessage *specifier, int32 form, const char *property);
 virtual	status_t		GetSupportedSuites(BMessage *data);
 			
-virtual	void 			AddTab(BView* v, BTab* tab=NULL);
-virtual	BTab*			RemoveTab(int32) const;
-virtual	BTab*			TabAt(int32) const;
+virtual	void 			AddTab(BView* tabContents, BTab* tab=NULL);
+#if !_PR3_COMPATIBLE_
+virtual	BTab*			RemoveTab(int32 tabIndex);
+#else
+virtual	BTab*			RemoveTab(int32 tabIndex) const;
+#endif
+virtual	BTab*			TabAt(int32 tabIndex) const;
 		
 virtual	void			SetTabWidth(button_width s);
 		button_width	TabWidth() const;
 		
-virtual	void			SetTabHeight(float);
+virtual	void			SetTabHeight(float height);
 		float			TabHeight() const;		
+
+		BView*			ContainerView() const;
 		
+		int32			CountTabs() const;
+		BView*			ViewForTab(int32 tabIndex) const;
+
 /*----- Private or reserved -----------------------------------------*/
 private:
-		BView*			_ViewContainer() const;
+		void			_InitObject();
 
 virtual	void			_ReservedTabView1();
 virtual	void			_ReservedTabView2();
@@ -171,7 +182,7 @@ virtual	void			_ReservedTabView12();
 		BTabView		&operator=(const BTabView &);
 	
 		BList*			fTabList;
-		BView*			fViewContainer;
+		BView*			fContainerView;
 		button_width	fTabWidthSetting;
 		float 			fTabWidth;
 		float			fTabHeight;
@@ -179,7 +190,6 @@ virtual	void			_ReservedTabView12();
 		int32			fInitialSelection;
 		int32			fFocus;	
 		uint32			_reserved[12];
-
 };
 
 /*-------------------------------------------------------------*/

@@ -1,11 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	iostream
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// -*- C++ -*- forwarding header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __IOSTREAM__
+#define __IOSTREAM__
 #include <iostream.h>
-/*     Change record
-*/
+#endif

@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	climits
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// -*- C++ -*- forwarding header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CLIMITS__
+#define __CLIMITS__
 #include <limits.h>
-
-//__using_namespace(__stdc_space(limits))
-
-/*     Change record
-*/
+#endif

@@ -6,7 +6,7 @@
 /
 /	Copyright 1997-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _DRAGGER_H
 #define _DRAGGER_H
@@ -45,8 +45,8 @@ virtual void		MessageReceived(BMessage *msg);
 virtual	void		FrameMoved(BPoint new_position);
 virtual	void		FrameResized(float new_width, float new_height);
 
-static	status_t	ShowAllDraggers();			// system wide!
-static	status_t	HideAllDraggers();			// system wide!
+static	status_t	ShowAllDraggers();			/* system wide!*/
+static	status_t	HideAllDraggers();			/* system wide!*/
 static	bool		AreDraggersDrawn();
 
 virtual BHandler	*ResolveSpecifier(BMessage *msg,
@@ -56,6 +56,12 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
 virtual status_t	Perform(perform_code d, void *arg);
+
+virtual void		ResizeToPreferred();
+virtual void		GetPreferredSize(float *width, float *height);
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
 
 		status_t	SetPopUp(BPopUpMenu *context_menu);
 		BPopUpMenu	*PopUp() const;

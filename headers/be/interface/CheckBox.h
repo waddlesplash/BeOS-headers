@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef	_CHECK_BOX_H
@@ -58,6 +58,11 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									int32 form,
 									const char *property);
 virtual status_t	GetSupportedSuites(BMessage *data);
+
+virtual void		MakeFocus(bool state = true);
+virtual void		AllAttached();
+virtual void		AllDetached();
+
 
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t	Perform(perform_code d, void *arg);

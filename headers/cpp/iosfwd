@@ -1,11 +1,15 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	iosfwd
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// -*- C++ -*- I/O forward declaration header.
+// This file is part of the GNU ANSI C++ Library.
 
-#include <iosfwd.h>
-/*     Change record
-*/
+#ifndef __IOSFWD__
+#define __IOSFWD__
+class ios;
+class streambuf;
+class istream;
+class ostream;
+class iostream;
+class filebuf;
+class ifstream;
+class ofstream;
+class fstream;
+#endif

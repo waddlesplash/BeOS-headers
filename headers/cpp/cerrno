@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	cerrno
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- error number header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CERRNO__
+#define __CERRNO__
 #include <errno.h>
-
-//__using_namespace(__stdc_space(errno))
-
-/*     Change record
-*/
+#endif

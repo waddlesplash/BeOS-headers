@@ -1,9 +1,9 @@
 /***************************************************************/
-//
-//	File:	kernelKit.h
-//
-//	Copyright 1992-97, Be Incorporated.
-//
+/**/
+/*	File:	KernelKit.h*/
+/**/
+/*	Copyright 1992-98, Be Incorporated.*/
+/**/
 /***************************************************************/
 
 
@@ -14,3 +14,5 @@
 #include <fs_info.h>
 #include <fs_query.h>
 #include <image.h>
+#include <perfmon_user.h>
+#include <scheduler.h>

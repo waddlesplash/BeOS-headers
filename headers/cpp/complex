@@ -1,11 +1,18 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	complex
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// Main header for the -*- C++ -*- complex number classes.
+// This file is part of the GNU ANSI C++ Library.
 
-#include <complex.h>
-/*     Change record
-*/
+#ifndef __COMPLEX__
+#define __COMPLEX__
+
+#include <std/complext.h>
+
+extern "C++" {
+#define __STD_COMPLEX
+
+// ANSI complex types
+typedef complex<float> float_complex;
+typedef complex<double> double_complex;
+typedef complex<long double> long_double_complex;
+}
+
+#endif

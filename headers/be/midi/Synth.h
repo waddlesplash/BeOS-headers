@@ -1,12 +1,12 @@
-//****************************************************************************
-//
-//	File:		Synth.h
-//
-//	Description:	Interface to the General MIDI synthesizer.
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
+/*******************************************************************************
+/
+/	File:		Synth.h
+/
+/	Description:	Interface to the General MIDI synthesizer.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _SYNTH_H
 #define _SYNTH_H
@@ -47,7 +47,11 @@ class BSynth
 	BSynth();
 	BSynth(synth_mode synth);
 
+#if !_PR3_COMPATIBLE_
+virtual ~BSynth();
+#else
 	~BSynth();
+#endif
 	
 	status_t 	LoadSynthData(entry_ref *instrumentsFile); 
 	status_t 	LoadSynthData(synth_mode synth);
@@ -56,7 +60,7 @@ class BSynth
 	void	Unload(void);
 	bool	IsLoaded(void) const;
 	
-	// change audio modes
+	/* change audio modes*/
 	status_t	SetSamplingRate(int32 sample_rate);
 	int32		SamplingRate() const;
 	
@@ -69,7 +73,7 @@ class BSynth
 	status_t	EnableReverb(bool reverb_enabled);
 	bool		IsReverbEnabled() const;
 	
-	// change voice allocation
+	/* change voice allocation*/
 	status_t	SetVoiceLimits(int16 maxSynthVoices,
 							   int16 maxSampleVoices,
 							   int16 limiterThreshhold);
@@ -78,27 +82,27 @@ class BSynth
 	int16		MaxSampleVoices(void) const;
 	int16		LimiterThreshhold(void) const;
 	
-	// get and set the master mix volume. A volume level of 1.0
-	// is normal, and volume level of 4.0 will overdrive 4 times
+	/* get and set the master mix volume. A volume level of 1.0*/
+	/* is normal, and volume level of 4.0 will overdrive 4 times*/
 	void		SetSynthVolume(double theVolume);
 	double		SynthVolume(void) const;
 	
 	void		SetSampleVolume(double theVolume);
 	double		SampleVolume(void) const;
 	
-	// display feedback information
-	// This will return the number of 16-bit samples stored into the pLeft
-	//  and pRight arrays. Usually 1024. This returns the current data
-	//  points being sent to the hardware.
+	/* display feedback information*/
+	/* This will return the number of 16-bit samples stored into the pLeft*/
+	/*  and pRight arrays. Usually 1024. This returns the current data*/
+	/*  points being sent to the hardware.*/
 	status_t		GetAudio(int16 *pLeft, int16 *pRight,
 						 int32 max_samples) const;
 	
-	// disengage from audio output streams
+	/* disengage from audio output streams*/
 	void		Pause(void);
-	// reengage to audio output streams
+	/* reengage to audio output streams*/
 	void		Resume(void);
 	
-	// Set a call back on controller events
+	/* Set a call back on controller events*/
 	void		SetControllerHook(int16 controller,
 								  synth_controller_hook cback);
 	

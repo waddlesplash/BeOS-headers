@@ -1,12 +1,12 @@
-//****************************************************************************
-//
-//	File:			MidiStore.h
-//
-//	Description:	MIDI event storage class
-//
-//	Copyright 1997, Be Incorporated
-//
-//****************************************************************************
+/*******************************************************************************
+/
+/	File:		MidiStore.h
+/
+/	Description:	MIDI event storage class.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _MIDI_STORE_H
 #define _MIDI_STORE_H

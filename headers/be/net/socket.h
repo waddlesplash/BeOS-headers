@@ -10,9 +10,8 @@
 #define _SOCKET_H
 
 #include <BeBuild.h>
-#include <size_t.h>
+#include <sys/types.h>
 #include <sys/time.h>       /* for timeval/timezone structs & gettimeofday */
-#include <ansi_parms.h>
 #include <ByteOrder.h>
 
 #if __cplusplus

@@ -1,7 +1,13 @@
-/****************************************************************** 
-	File: ctk.h
-	Copyright (c) 1997 by Be Incorporated.  All Rights Reserved.
-*******************************************************************/
+/*******************************************************************************
+/
+/	File:		ctk.h
+/
+/	Description:	Client window class for direct screen access.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
+
 #include <GL/gl.h>
 #include <GL/glu.h>
 

@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	cassert
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// -*- C++ -*- forwarding header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CASSERT__
+#define __CASSERT__
 #include <assert.h>
-
-//__using_namespace(__stdc_space(assert))
-
-/*     Change record
-*/
+#endif

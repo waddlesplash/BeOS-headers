@@ -8,7 +8,7 @@
 /
 /	Copyright 1995-98, Be Incorporated, All Rights Reserved.
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _MESSENGER_H
 #define _MESSENGER_H
@@ -22,9 +22,13 @@
 
 class	BLooper;
 class	_TRoster_;
+class	BMessenger;
 
 /*---------------------------------------------------------------*/
 /* --------- BMessenger class----------------------------------- */
+
+_IMPEXP_BE bool operator<(const BMessenger & a, const BMessenger & b);
+_IMPEXP_BE bool operator!=(const BMessenger & a, const BMessenger & b);
 
 class BMessenger {
 public:	
@@ -51,6 +55,9 @@ public:
 		status_t	SendMessage(BMessage *a_message,
 								BHandler *reply_to = NULL,
 								bigtime_t timeout = B_INFINITE_TIMEOUT) const;
+		status_t	SendMessage(BMessage *a_message,
+								BMessenger reply_to,
+								bigtime_t timeout = B_INFINITE_TIMEOUT) const;
 	
 		status_t	SendMessage(uint32 command, BMessage *reply) const;
 		status_t	SendMessage(BMessage *a_message,
@@ -72,6 +79,8 @@ friend class _TRoster_;
 friend class BMessage;
 friend inline void	_set_message_reply_(BMessage *, BMessenger);
 friend status_t		swap_data(type_code, void *, size_t, swap_action);
+friend bool		operator<(const BMessenger & a, const BMessenger & b);
+friend bool		operator!=(const BMessenger & a, const BMessenger & b);
 				
 					BMessenger(team_id team,
 								port_id port,

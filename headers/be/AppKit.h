@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #include <AppDefs.h>
 #include <Application.h>
@@ -17,6 +17,7 @@
 #include <Message.h>
 #include <MessageFilter.h>
 #include <MessageQueue.h>
+#include <MessageRunner.h>
 #include <Messenger.h>
 #include <PropertyInfo.h>
 #include <Roster.h>

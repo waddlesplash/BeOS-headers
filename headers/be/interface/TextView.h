@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _TEXTVIEW_H
 #define _TEXTVIEW_H
@@ -20,14 +20,14 @@
 /*----- BTextView structures and definitions ---------------------*/
 
 struct text_run {
-	int32			offset;		// byte offset of first character of run
-	BFont			font;		// font of run
-	rgb_color		color;		// color of run
+	int32			offset;		/* byte offset of first character of run*/
+	BFont			font;		/* font of run*/
+	rgb_color		color;		/* color of run*/
 };
 
 struct text_run_array {
-	int32			count;		// number of text runs
-	text_run		runs[1];	// array of count number of runs
+	int32			count;		/* number of text runs*/
+	text_run		runs[1];	/* array of count number of runs*/
 };
 
 enum undo_state {
@@ -58,6 +58,7 @@ class _BLineBuffer_;
 class _BStyleBuffer_;
 class _BWidthBuffer_;
 class _BUndoBuffer_;
+class _BInlineInput_;
 
 
 /*----------------------------------------------------------------*/
@@ -227,6 +228,11 @@ virtual	void			ScrollToOffset(int32 inOffset);
 		void			SetDoesUndo(bool undo);
 		bool			DoesUndo() const;		
 
+virtual void			ResizeToPreferred();
+virtual void			GetPreferredSize(float *width, float *height);
+virtual void			AllAttached();
+virtual void			AllDetached();
+
 static	void*			FlattenRunArray(const text_run_array *inArray, 
 										int32				 *outSize = NULL);
 static	text_run_array*	UnflattenRunArray(const void	*data,
@@ -267,6 +273,13 @@ virtual void			_ReservedTextView5();
 virtual void			_ReservedTextView6();
 virtual void			_ReservedTextView7();
 virtual void			_ReservedTextView8();
+
+#if !_PR3_COMPATIBLE_
+virtual void			_ReservedTextView9();
+virtual void			_ReservedTextView10();
+virtual void			_ReservedTextView11();
+virtual void			_ReservedTextView12();
+#endif
 
 		void			InitObject(BRect			textRect, 
 								   const BFont		*initialFont,
@@ -338,6 +351,10 @@ virtual void			_ReservedTextView8();
 										const char	*property,
 										BMessage	*reply);
 
+		void			HandleInputMethodChanged(BMessage *message);
+		void			HandleInputMethodLocationRequest();
+		void			CancelInputMethod();
+
 static	void			LockWidthBuffer();
 static	void			UnlockWidthBuffer();	
 		
@@ -369,8 +386,12 @@ static	void			UnlockWidthBuffer();
 		bool					fResizable;
 		BView*					fContainerView;
 		float					fLastWidth;
-		_BUndoBuffer_*			fUndo;
-		uint32					_reserved[7];	/* was 8 */
+		_BUndoBuffer_*			fUndo;			/* was _reserved[0] */
+		_BInlineInput_*			fInline;		/* was _reserved[1] */
+		uint32					_reserved[6];	/* was 8 */
+#if !_PR3_COMPATIBLE_
+		uint32					_more_reserved[8];
+#endif
 
 static	_BWidthBuffer_*			sWidths;
 static	sem_id					sWidthSem;

@@ -1,10 +1,11 @@
-/***************************************************************/
-//
-//	File:	interfaceKit.h
-//
-//	Copyright 1992-97, Be Incorporated.
-//
-/***************************************************************/
+
+/**************************************************************
+/
+/	File:	InterfaceKit.h
+/
+/	Copyright 1992-98, Be Incorporated.
+/
+***************************************************************/
 
 
 #include <Alert.h>
@@ -17,6 +18,7 @@
 #include <Dragger.h>
 #include <Font.h>
 #include <GraphicsDefs.h>
+#include <Input.h>
 #include <InterfaceDefs.h>
 #include <ListItem.h>
 #include <ListView.h>
@@ -37,6 +39,7 @@
 #include <Screen.h>
 #include <ScrollBar.h>
 #include <ScrollView.h>
+#include <Shape.h>
 #include <Shelf.h>
 #include <Slider.h>
 #include <StatusBar.h>
@@ -44,5 +47,6 @@
 #include <TabView.h>
 #include <TextControl.h>
 #include <TextView.h>
+/* Note that <UnicodeBlockObjects.h> is not included on purpose. */
 #include <View.h>
 #include <Window.h>

@@ -1,14 +1,7 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	ctime
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- time header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CTIME__
+#define __CTIME__
 #include <time.h>
-
-//__using_namespace(__stdc_space(time))
-
-/*     Change record
-*/
+#endif

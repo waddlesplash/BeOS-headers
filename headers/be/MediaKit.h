@@ -1,17 +1,29 @@
-/***************************************************************/
-//
-//	File:	mediaKit.h
-//
-//	Copyright 1992-97, Be Incorporated.
-//
-/***************************************************************/
+/***************************************************************
+/
+/	File:	MediaKit.h
+/
+/	Copyright 1992-98, Be Incorporated.
+/
+***************************************************************/
 
-
-#include <AudioStream.h>
-#include <BufferMsgs.h>
-#include <BufferStream.h>
-#include <BufferStreamManager.h>
+#include <Buffer.h>
+#include <BufferConsumer.h>
+#include <BufferGroup.h>
+#include <BufferProducer.h>
+#include <Controllable.h>
+#include <FileInterface.h>
+#include <MediaAddOn.h>
 #include <MediaDefs.h>
+#include <MediaFiles.h>
+#include <MediaFormats.h>
+#include <MediaNode.h>
+#include <MediaRoster.h>
+#include <MediaTheme.h>
+#include <ParameterWeb.h>
+#include <PlaySound.h>
+#include <Sound.h>
 #include <SoundFile.h>
-#include <Subscriber.h>
+#include <SoundPlayer.h>
+#include <TimeCode.h>
+#include <TimeSource.h>
 

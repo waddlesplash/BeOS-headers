@@ -6,7 +6,7 @@
 /
 /	Copyright 1992-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
 
 
 #ifndef _GRAPHICS_DEFS_H
@@ -34,8 +34,17 @@ typedef struct rgb_color {
 	uint8		alpha;
 } rgb_color;
 
-extern _IMPEXP_BE const uint8 B_TRANSPARENT_8_BIT;
-extern _IMPEXP_BE const rgb_color B_TRANSPARENT_32_BIT;
+/*----------------------------------------------------------------*/
+
+extern _IMPEXP_BE const rgb_color 	B_TRANSPARENT_COLOR;
+extern _IMPEXP_BE const uint8		B_TRANSPARENT_MAGIC_CMAP8;
+extern _IMPEXP_BE const uint16		B_TRANSPARENT_MAGIC_RGBA15;
+extern _IMPEXP_BE const uint16		B_TRANSPARENT_MAGIC_RGBA15_BIG;
+extern _IMPEXP_BE const uint32		B_TRANSPARENT_MAGIC_RGBA32;
+extern _IMPEXP_BE const uint32		B_TRANSPARENT_MAGIC_RGBA32_BIG;
+
+extern _IMPEXP_BE const uint8 		B_TRANSPARENT_8_BIT;
+extern _IMPEXP_BE const rgb_color	B_TRANSPARENT_32_BIT;
 
 /*----------------------------------------------------------------*/
 
@@ -79,16 +88,59 @@ typedef enum
 	B_RGB15_LITTLE =	B_RGB15,
 	B_RGBA15_LITTLE =	B_RGBA15,
 
-	/* non linear color space */
-	B_YUV422 = 			0x4000,	/* Y0[7:0]  Cb0[7:0]  Y1[7:0]  Cr0[7:0]  Y2[7:0]...	*/
+	/* non linear color space -- note that these are here for exchange purposes;	*/
+	/* a BBitmap or BView may not necessarily support all these color spaces.	*/
+
+	/* Loss/Saturation points are Y 16-235 (absoulte); Cb/Cr 16-240 (center 128) */
+
+	B_YCbCr422 = 		0x4000,	/* Y0[7:0]  Cb0[7:0]  Y1[7:0]  Cr0[7:0]  Y2[7:0]...	*/
 								/* Cb2[7:0]  Y3[7:0]  Cr2[7:0]						*/
-	B_YUV411 = 			0x4001,	/* Cb0[7:0]  Y0[7:0]  Cr0[7:0]  Y1[7:0]  Cb4[7:0]...*/
+	B_YCbCr411 = 		0x4001,	/* Cb0[7:0]  Y0[7:0]  Cr0[7:0]  Y1[7:0]  Cb4[7:0]...*/
 								/* Y2[7:0]  Cr4[7:0]  Y3[7:0]  Y4[7:0]  Y5[7:0]...	*/
 								/* Y6[7:0]  Y7[7:0]	 								*/
-	B_YUV420 = 			0x4002,	/* ????												*/
-	B_YUV444 = 			0x4003,	/* ????												*/
-	B_YUV9 = 			0x4004,	/* ????												*/
-	B_YUV12 = 			0x4005,	/* ????												*/
+	B_YCbCr444 = 		0x4003,	/* Y0[7:0]  Cb0[7:0]  Cr0[7:0]		*/
+	B_YCbCr420 = 		0x4004,	/* Non-interlaced only, Cb0  Y0  Y1  Cb2 Y2  Y3  on even scan lines ... */
+								/* Cr0  Y0  Y1  Cr2 Y2  Y3  on odd scan lines */
+
+	/* Extrema points are Y 0 - 207 (absolute) U -91 - 91 (offset 128) V -127 - 127 (offset 128) */
+	/* note that YUV byte order is different from YCbCr */
+	/* USE YCbCr, not YUV, when that's what you mean! */
+	B_YUV422 =			0x4020, /* U0[7:0]  Y0[7:0]   V0[7:0]  Y1[7:0] ... */
+								/* U2[7:0]  Y2[7:0]   V2[7:0]  Y3[7:0]  */
+	B_YUV411 =			0x4021, /* U0[7:0]  Y0[7:0]  Y1[7:0]  V0[7:0]  Y2[7:0]  Y3[7:0]  */
+								/* U4[7:0]  Y4[7:0]  Y5[7:0]  V4[7:0]  Y6[7:0]  Y7[7:0]  */
+	B_YUV444 =			0x4023,	/* U0[7:0]  Y0[7:0]  V0[7:0]  U1[7:0]  Y1[7:0]  V1[7:0] */
+	B_YUV420 = 			0x4024,	/* Non-interlaced only, U0  Y0  Y1  U2 Y2  Y3  on even scan lines ... */
+								/* V0  Y0  Y1  V2 Y2  Y3  on odd scan lines */
+	B_YUV9 = 			0x402C,	/* planar?	410?								*/
+	B_YUV12 = 			0x402D,	/* planar?	420?								*/
+
+	B_UVL24 =			0x4030,	/* U0[7:0] V0[7:0] L0[7:0] ... */
+	B_UVL32 =			0x4031,	/* U0[7:0] V0[7:0] L0[7:0] X0[7:0]... */
+	B_UVLA32 =			0x6031,	/* U0[7:0] V0[7:0] L0[7:0] A0[7:0]... */
+
+	B_LAB24 =			0x4032,	/* L0[7:0] a0[7:0] b0[7:0] ...  (a is not alpha!) */
+	B_LAB32 =			0x4033,	/* L0[7:0] a0[7:0] b0[7:0] X0[7:0] ... (b is not alpha!) */
+	B_LABA32 =			0x6033,	/* L0[7:0] a0[7:0] b0[7:0] A0[7:0] ... (A is alpha) */
+
+	/* red is at hue = 0 */
+
+	B_HSI24 =			0x4040,	/* H[7:0]  S[7:0]  I[7:0]							*/
+	B_HSI32 =			0x4041,	/* H[7:0]  S[7:0]  I[7:0]  X[7:0]					*/
+	B_HSIA32 =			0x6041,	/* H[7:0]  S[7:0]  I[7:0]  A[7:0]					*/
+
+	B_HSV24 =			0x4042,	/* H[7:0]  S[7:0]  V[7:0]							*/
+	B_HSV32 =			0x4043,	/* H[7:0]  S[7:0]  V[7:0]  X[7:0]					*/
+	B_HSVA32 =			0x6043,	/* H[7:0]  S[7:0]  V[7:0]  A[7:0]					*/
+
+	B_HLS24 =			0x4044,	/* H[7:0]  L[7:0]  S[7:0]							*/
+	B_HLS32 =			0x4045,	/* H[7:0]  L[7:0]  S[7:0]  X[7:0]					*/
+	B_HLSA32 =			0x6045,	/* H[7:0]  L[7:0]  S[7:0]  A[7:0]					*/
+
+	B_CMY24 =			0xC001,	/* C[7:0]  M[7:0]  Y[7:0]  			No gray removal done		*/
+	B_CMY32 =			0xC002,	/* C[7:0]  M[7:0]  Y[7:0]  X[7:0]	No gray removal done		*/
+	B_CMYA32 =			0xE002,	/* C[7:0]  M[7:0]  Y[7:0]  A[7:0]	No gray removal done		*/
+	B_CMYK32 =			0xC003,	/* C[7:0]  M[7:0]  Y[7:0]  K[7:0]					*/
 
 	/* compatibility declarations */
 	B_MONOCHROME_1_BIT = 	B_GRAY1,
@@ -100,16 +152,33 @@ typedef enum
 	B_BIG_RGB_16_BIT =		B_RGB15_BIG
 } color_space;
 
+
+/* Find out whether a specific color space is supported by BBitmaps. */
+/* Support_flags will be set to what kinds of support are available. */
+/* If support_flags is set to 0, false will be returned. */
+enum {
+	B_VIEWS_SUPPORT_DRAW_BITMAP = 0x1,
+	B_BITMAPS_SUPPORT_ATTACHED_VIEWS = 0x2
+};
+_IMPEXP_BE bool bitmaps_support_space(color_space space, uint32 * support_flags);
+
+/* "pixel_chunk" is the native increment from one pixel starting on an integral byte */
+/* to the next. "row_alignment" is the native alignment for pixel scanline starts. */
+/* "pixels_per_chunk" is the number of pixels in a pixel_chunk. For instance, B_GRAY1 */
+/* sets pixel_chunk to 1, row_alignment to 8 and pixels_per_chunk to 8, whereas */
+/* B_RGB24 sets pixel_chunk to 3, row_alignment to 4 and pixels_per_chunk to 1. */
+
+_IMPEXP_BE status_t get_pixel_size_for(color_space space, size_t * pixel_chunk, 
+	size_t * row_alignment, size_t * pixels_per_chunk);
+
+
 enum buffer_orientation {
 	B_BUFFER_TOP_TO_BOTTOM,
 	B_BUFFER_BOTTOM_TO_TOP
 };
 
 enum buffer_layout { 
-	B_BUFFER_INTERLEAVED,
-	B_BUFFER_NONINTERLEAVED,
-	B_BUFFER_F1,
-	B_BUFFER_F2
+	B_BUFFER_NONINTERLEAVED = 1
 };
 		      
 /*----------------------------------------------------------------*/
@@ -124,7 +193,18 @@ enum drawing_mode {
 	B_OP_BLEND,
 	B_OP_MIN,
 	B_OP_MAX,
-	B_OP_SELECT
+	B_OP_SELECT,
+	B_OP_ALPHA
+};
+
+enum source_alpha {
+	B_PIXEL_ALPHA=0,
+	B_CONSTANT_ALPHA
+};
+
+enum alpha_function {
+	B_ALPHA_OVERLAY=0,
+	B_ALPHA_COMPOSITE
 };
 
 enum {

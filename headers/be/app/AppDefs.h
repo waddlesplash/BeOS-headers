@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+*******************************************************************************/
 
 #ifndef _APP_DEFS_H
 #define _APP_DEFS_H
@@ -34,11 +34,13 @@ enum {
 	B_CANCEL				= '_CNC',
 	B_KEY_DOWN 				= '_KYD',
 	B_KEY_UP 				= '_KYU',
+	B_MODIFIERS_CHANGED		= '_MCH',
 	B_MINIMIZE				= '_WMN',
 	B_MOUSE_DOWN 			= '_MDN',
 	B_MOUSE_MOVED 			= '_MMV',
 	B_MOUSE_ENTER_EXIT		= '_MEX',
 	B_MOUSE_UP 				= '_MUP',
+	B_OPEN_IN_WORKSPACE		= '_OWS',
 	B_PULSE 				= '_PUL',
 	B_READY_TO_RUN 			= '_RTR',
 	B_REFS_RECEIVED 		= '_RRC',
@@ -58,10 +60,13 @@ enum {
 	_QUIT_ 					= '_QIT',
 	_VOLUME_MOUNTED_ 		= '_NVL',
 	_VOLUME_UNMOUNTED_		= '_VRM',
-	_OPEN_IN_WORKSPACE_		= '_OWS',
 	_MESSAGE_DROPPED_ 		= '_MDP',
+	_DISPOSE_DRAG_ 			= '_DPD',
 	_MENUS_DONE_			= '_MND',
-	_SHOW_DRAG_HANDLES_		= '_SDH'
+	_SHOW_DRAG_HANDLES_		= '_SDH',
+	_EVENTS_PENDING_ 		= '_EVP',
+	_UPDATE_ 				= '_UPD'
+	/* Media Kit reserves all reserved codes starting in '_TR' */
 };
 
 
@@ -92,7 +97,14 @@ enum {
 	B_RESET_STATUS_BAR			= 'SBRS',
 	B_NODE_MONITOR				= 'NDMN',
 	B_QUERY_UPDATE				= 'QUPD',
-	B_ENDORSABLE				= 'ENDO'
+	B_ENDORSABLE				= 'ENDO',
+	B_COPY_TARGET				= 'DDCP',
+	B_MOVE_TARGET				= 'DDMV',
+	B_TRASH_TARGET				= 'DDRM',
+	B_LINK_TARGET				= 'DDLN',
+	B_INPUT_DEVICES_CHANGED		= 'IDCH',
+	B_INPUT_METHOD_EVENT		= 'IMEV'
+	/* Media Kit reserves all reserved codes starting in 'TRI' */
 };
 
 /*-------------------------------------------------------------*/

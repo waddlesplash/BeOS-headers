@@ -1,14 +1,23 @@
-/*  Metrowerks Standard Library  Version 2.2  1997 October 17  */
-/*
- *	cstdlib
- *	
- *		Copyright © 1996-1997 Metrowerks, Inc.
- *		All rights reserved.
- */
+// The -*- C++ -*- standard library header.
+// This file is part of the GNU ANSI C++ Library.
 
+#ifndef __CSTDLIB__
+#define __CSTDLIB__
 #include <stdlib.h>
 
-//__using_namespace(__stdc_space(stdlib))
+#ifdef __GNUG__
+#pragma interface "cstdlib"
+#endif
 
-/*     Change record
-*/
+extern "C++" {
+
+#if _G_HAS_LABS
+inline long   abs(long x)		{ return labs (x); }
+#else
+inline long   abs(long x)		{ return x >= 0 ? x : -x; }
+#endif
+//inline ldiv_t div(long x, long y)	{ return ldiv (x, y); }
+
+} // extern "C++"
+
+#endif

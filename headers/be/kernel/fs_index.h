@@ -1,10 +1,12 @@
-/*
-   This header file defines the interface to extended 
-   file system indexing on the BeOS.
-
-   Copyright 1997 Be Inc.
-*/
-
+/*******************************************************************************
+/
+/	File:		fs_index.h
+/
+/	Description:	Interface to extended file system indexing.
+/
+/	Copyright 1993-98, Be Incorporated, All Rights Reserved.
+/
+*******************************************************************************/
 
 #ifndef _FS_INDEX_H
 #define _FS_INDEX_H

@@ -6,13 +6,17 @@
 /
 /	Copyright 1993-98, Be Incorporated
 /
-/******************************************************************************/
+******************************************************************************/
 
 #ifndef _BYTEORDER_H
 #define _BYTEORDER_H
 
 #include <BeBuild.h>
-#include <ansi_parms.h>
+#if __POWERPC__
+# include <ansi_parms.h>
+#elif __INTEL__
+# include <endian.h>
+#endif
 #include <SupportDefs.h>
 
 #ifdef __cplusplus

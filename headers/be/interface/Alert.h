@@ -6,7 +6,7 @@
 /
 /	Copyright 1993-98, Be Incorporated, All Rights Reserved
 /
-/******************************************************************************/
+*******************************************************************************/
  
 #ifndef	_ALERT_H
 #define	_ALERT_H
@@ -29,6 +29,12 @@ enum alert_type {
 	B_STOP_ALERT
 };
 
+
+enum button_spacing {
+	B_EVEN_SPACING = 0,
+	B_OFFSET_SPACING
+};
+
 class BBitmap;
 
 /*----------------------------------------------------------------*/
@@ -44,6 +50,14 @@ public:
 							const char *button2 = NULL,
 							const char *button3 = NULL,
 							button_width width = B_WIDTH_AS_USUAL,
+							alert_type type = B_INFO_ALERT);
+					BAlert(	const char *title,
+							const char *text,
+							const char *button1,
+							const char *button2,
+							const char *button3,
+							button_width width,
+							button_spacing spacing,
 							alert_type type = B_INFO_ALERT);
 virtual				~BAlert();
 	
@@ -71,6 +85,10 @@ virtual BHandler	*ResolveSpecifier(BMessage *msg,
 									const char *property);
 virtual	status_t	GetSupportedSuites(BMessage *data);
 
+virtual void		DispatchMessage(BMessage *msg, BHandler *handler);
+virtual	void		Quit();
+virtual	bool		QuitRequested();
+
 static	BPoint		AlertPosition(float width, float height);
 
 /*----- Private or reserved -----------------------------------------*/
@@ -88,6 +106,7 @@ virtual	void		_ReservedAlert3();
 							const char *button2 = NULL,
 							const char *button3 = NULL,
 							button_width width = B_WIDTH_AS_USUAL,
+							button_spacing spacing = B_EVEN_SPACING,
 							alert_type type = B_INFO_ALERT);
 		BBitmap		*InitIcon();
 
