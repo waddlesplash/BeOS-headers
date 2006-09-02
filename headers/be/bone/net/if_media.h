@@ -102,14 +102,22 @@ int        bone_ifmedia_ioctl(struct ifnet *ifp, struct ifreq *ifr, uint32 cmd);
  * Ethernet 
  */ 
 #define IFM_ETHER      0x00000020 
-#define        IFM_10_T        3               /* 10BaseT - RJ45 */ 
-#define        IFM_10_2        4               /* 10Base2 - Thinnet */ 
-#define        IFM_10_5        5               /* 10Base5 - AUI */ 
+#define        IFM_10_T			3               /* 10BaseT - RJ45 */ 
+#define        IFM_10_2			4               /* 10Base2 - Thinnet */ 
+#define        IFM_10_5			5               /* 10Base5 - AUI */ 
 #define        IFM_100_TX      6               /* 100BaseTX - RJ45 */ 
-#define        IFM_100_FX      7               /* 100BaseFX - Fiber */ 
-#define        IFM_100_T4      8               /* 100BaseT4 - 4 pair cat 3 */ 
-#define        IFM_100_VG      9               /* 100VG-AnyLAN */ 
-#define        IFM_100_T2      10              /* 100BaseT2 */ 
+#define        IFM_100_FX		7               /* 100BaseFX - Fiber */ 
+#define        IFM_100_T4		8               /* 100BaseT4 - 4 pair cat 3 */ 
+#define        IFM_100_VG		9               /* 100VG-AnyLAN */ 
+#define        IFM_100_T2		10              /* 100BaseT2 */ 
+#define		IFM_1000_SX	11              /* 1000BaseSX - multi-mode fiber */
+#define		IFM_10_STP		12              /* 10BaseT over shielded TP */
+#define		IFM_10_FL			13              /* 10BaseFL - Fiber */
+#define		IFM_1000_LX 	14              /* 1000baseLX - single-mode fiber */
+#define		IFM_1000_CX	15              /* 1000baseCX - 150ohm STP */
+#define		IFM_1000_T		16              /* 1000baseT - 4 pair cat 5 */
+#define		IFM_HPNA_1		17              /* HomePNA 1.0 (1Mb/s) */
+/* note 31 is the max! */
 
 /* 
  * Token ring 
@@ -129,8 +137,61 @@ int        bone_ifmedia_ioctl(struct ifnet *ifp, struct ifreq *ifr, uint32 cmd);
 #define        IFM_FDDI        0x00000060 
 #define        IFM_FDDI_SMF    3               /* Single-mode fiber */ 
 #define        IFM_FDDI_MMF    4               /* Multi-mode fiber */ 
-#define IFM_FDDI_UTP   5               /* CDDI / UTP */ 
-#define IFM_FDDI_DA    0x00000100      /* Dual attach / single attach */ 
+#define		IFM_FDDI_UTP   5               /* CDDI / UTP */ 
+#define		IFM_FDDI_DA    0x00000100      /* Dual attach / single attach */ 
+
+/*
+ * IEEE 802.11 Wireless
+ */
+#define IFM_IEEE80211   0x00000080
+/* NB: 0,1,2 are auto, manual, none defined below */
+#define	IFM_IEEE80211_FH1			3       /* Frequency Hopping 1Mbps */
+#define	IFM_IEEE80211_FH2       4       /* Frequency Hopping 2Mbps */
+#define	IFM_IEEE80211_DS1       5       /* Direct Sequence 1Mbps */
+#define	IFM_IEEE80211_DS2       6       /* Direct Sequence 2Mbps */
+#define	IFM_IEEE80211_DS5       7       /* Direct Sequence 5.5Mbps */
+#define	IFM_IEEE80211_DS11      8       /* Direct Sequence 11Mbps */
+#define	IFM_IEEE80211_DS22      9       /* Direct Sequence 22Mbps */
+#define	IFM_IEEE80211_OFDM6     10      /* OFDM 6Mbps */
+#define	IFM_IEEE80211_OFDM9     11      /* OFDM 9Mbps */
+#define	IFM_IEEE80211_OFDM12    12      /* OFDM 12Mbps */
+#define	IFM_IEEE80211_OFDM18    13      /* OFDM 18Mbps */
+#define	IFM_IEEE80211_OFDM24    14      /* OFDM 24Mbps */
+#define	IFM_IEEE80211_OFDM36    15      /* OFDM 36Mbps */
+#define	IFM_IEEE80211_OFDM48    16      /* OFDM 48Mbps */
+#define	IFM_IEEE80211_OFDM54    17      /* OFDM 54Mbps */
+#define	IFM_IEEE80211_OFDM72    18      /* OFDM 72Mbps */
+
+#define IFM_IEEE80211_ADHOC     0x00000100      /* Operate in Adhoc mode */
+#define IFM_IEEE80211_HOSTAP    0x00000200      /* Operate in Host AP mode */
+#define IFM_IEEE80211_IBSS      0x00000400      /* Operate in IBSS mode */
+#define IFM_IEEE80211_IBSSMASTER 0x00000800     /* Operate as an IBSS master */
+#define IFM_IEEE80211_TURBO     0x00001000      /* Operate in turbo mode */
+#define IFM_IEEE80211_MONITOR   0x00002000      /* Operate in monitor mode */
+
+/* operating mode for multi-mode devices */
+#define IFM_IEEE80211_11A       0x00010000      /* 5Ghz, OFDM mode */
+#define IFM_IEEE80211_11B       0x00020000      /* Direct Sequence mode */
+#define IFM_IEEE80211_11G       0x00030000      /* 2Ghz, CCK mode */
+#define IFM_IEEE80211_FH        0x00040000      /* 2Ghz, GFSK mode */
+
+/*
+ * ATM
+ */
+#define IFM_ATM	0x000000a0
+#define IFM_ATM_UNKNOWN		3
+#define IFM_ATM_UTP_25		4
+#define IFM_ATM_TAXI_100	5
+#define IFM_ATM_TAXI_140	6
+#define IFM_ATM_MM_155		7
+#define IFM_ATM_SM_155		8
+#define IFM_ATM_UTP_155		9
+#define IFM_ATM_MM_622		10
+#define IFM_ATM_SM_622		11
+#define	IFM_ATM_VIRTUAL		12
+#define IFM_ATM_SDH		0x00000100	/* SDH instead of SONET */
+#define IFM_ATM_NOSCRAMB	0x00000200	/* no scrambling */
+#define IFM_ATM_UNASSIGNED	0x00000400	/* unassigned cells */
 
 /* 
  * Shared media sub-types 
@@ -184,11 +245,13 @@ struct ifmedia_description {
         const char *ifmt_string;  /* description */ 
 }; 
 
-#define        IFM_TYPE_DESCRIPTIONS {                                                \
-        { IFM_ETHER,     "Ethernet" },                                       \
-        { IFM_TOKEN,     "Token ring" },                                       \
-        { IFM_FDDI,      "FDDI" },                                       \
-        { 0, NULL },                                                       \
+#define        IFM_TYPE_DESCRIPTIONS {                                      \
+        { IFM_ETHER,     	"Ethernet" },                                   \
+        { IFM_TOKEN,     	"Token ring" },                                 \
+        { IFM_FDDI,      	"FDDI" },                                       \
+		{ IFM_IEEE80211,	"IEEE 802.11 Wireless Ethernet" },				\
+		{ IFM_ATM,			"ATM" },										\
+        { 0, NULL },                                                        \
 } 
 
 #define        IFM_SUBTYPE_ETHERNET_DESCRIPTIONS {                                \
@@ -263,6 +326,123 @@ struct ifmedia_description {
         { IFM_FDDI_DA, "Dual-attach" },                                       \
         { 0, NULL },                                                       \
 } 
+
+#define	IFM_SUBTYPE_IEEE80211_DESCRIPTIONS {				\
+	{ IFM_IEEE80211_FH1, "FH/1Mbps" },				\
+	{ IFM_IEEE80211_FH2, "FH/2Mbps" },				\
+	{ IFM_IEEE80211_DS1, "DS/1Mbps" },				\
+	{ IFM_IEEE80211_DS2, "DS/2Mbps" },				\
+	{ IFM_IEEE80211_DS5, "DS/5.5Mbps" },				\
+	{ IFM_IEEE80211_DS11, "DS/11Mbps" },				\
+	{ IFM_IEEE80211_DS22, "DS/22Mbps" },				\
+	{ IFM_IEEE80211_OFDM6, "OFDM/6Mbps" },				\
+	{ IFM_IEEE80211_OFDM9, "OFDM/9Mbps" },				\
+	{ IFM_IEEE80211_OFDM12, "OFDM/12Mbps" },			\
+	{ IFM_IEEE80211_OFDM18, "OFDM/18Mbps" },			\
+	{ IFM_IEEE80211_OFDM24, "OFDM/24Mbps" },			\
+	{ IFM_IEEE80211_OFDM36, "OFDM/36Mbps" },			\
+	{ IFM_IEEE80211_OFDM48, "OFDM/48Mbps" },			\
+	{ IFM_IEEE80211_OFDM54, "OFDM/54Mbps" },			\
+	{ IFM_IEEE80211_OFDM72, "OFDM/72Mbps" },			\
+	{ IFM_IEEE80211_DS354k, "DS/354Kbps" },				\
+	{ IFM_IEEE80211_DS512k, "DS/512Kbps" },				\
+	{ 0, NULL },							\
+}
+
+#define	IFM_SUBTYPE_IEEE80211_ALIASES {					\
+	{ IFM_IEEE80211_FH1, "FH1" },					\
+	{ IFM_IEEE80211_FH2, "FH2" },					\
+	{ IFM_IEEE80211_FH1, "FrequencyHopping/1Mbps" },		\
+	{ IFM_IEEE80211_FH2, "FrequencyHopping/2Mbps" },		\
+	{ IFM_IEEE80211_DS1, "DS1" },					\
+	{ IFM_IEEE80211_DS2, "DS2" },					\
+	{ IFM_IEEE80211_DS5, "DS5.5" },					\
+	{ IFM_IEEE80211_DS11, "DS11" },					\
+	{ IFM_IEEE80211_DS22, "DS22" },					\
+	{ IFM_IEEE80211_DS1, "DirectSequence/1Mbps" },			\
+	{ IFM_IEEE80211_DS2, "DirectSequence/2Mbps" },			\
+	{ IFM_IEEE80211_DS5, "DirectSequence/5.5Mbps" },		\
+	{ IFM_IEEE80211_DS11, "DirectSequence/11Mbps" },		\
+	{ IFM_IEEE80211_DS22, "DirectSequence/22Mbps" },		\
+	{ IFM_IEEE80211_OFDM6, "OFDM6" },				\
+	{ IFM_IEEE80211_OFDM9, "OFDM9" },				\
+	{ IFM_IEEE80211_OFDM12, "OFDM12" },				\
+	{ IFM_IEEE80211_OFDM18, "OFDM18" },				\
+	{ IFM_IEEE80211_OFDM24, "OFDM24" },				\
+	{ IFM_IEEE80211_OFDM36, "OFDM36" },				\
+	{ IFM_IEEE80211_OFDM48, "OFDM48" },				\
+	{ IFM_IEEE80211_OFDM54, "OFDM54" },				\
+	{ IFM_IEEE80211_OFDM72, "OFDM72" },				\
+	{ IFM_IEEE80211_DS1, "CCK1" },					\
+	{ IFM_IEEE80211_DS2, "CCK2" },					\
+	{ IFM_IEEE80211_DS5, "CCK5.5" },				\
+	{ IFM_IEEE80211_DS11, "CCK11" },				\
+	{ IFM_IEEE80211_DS354k, "DS354K" },				\
+	{ IFM_IEEE80211_DS354k, "DirectSequence/354Kbps" },		\
+	{ IFM_IEEE80211_DS512k, "DS512K" },				\
+	{ IFM_IEEE80211_DS512k, "DirectSequence/512Kbps" },		\
+	{ 0, NULL },							\
+}
+
+#define	IFM_SUBTYPE_IEEE80211_OPTION_DESCRIPTIONS {			\
+	{ IFM_IEEE80211_ADHOC, "adhoc" },				\
+	{ IFM_IEEE80211_HOSTAP, "hostap" },				\
+	{ IFM_IEEE80211_IBSS, "ibss" },					\
+	{ IFM_IEEE80211_IBSSMASTER, "ibss-master" },			\
+	{ IFM_IEEE80211_TURBO, "turbo" },				\
+	{ IFM_IEEE80211_MONITOR, "monitor" },				\
+	{ 0, NULL },							\
+}
+
+#define	IFM_SUBTYPE_IEEE80211_MODE_DESCRIPTIONS {			\
+	{ IFM_AUTO, "autoselect" },					\
+	{ IFM_IEEE80211_11A, "11a" },					\
+	{ IFM_IEEE80211_11B, "11b" },					\
+	{ IFM_IEEE80211_11G, "11g" },					\
+	{ IFM_IEEE80211_FH, "fh" },					\
+	{ 0, NULL },							\
+}
+
+#define	IFM_SUBTYPE_IEEE80211_MODE_ALIASES {				\
+	{ IFM_AUTO, "auto" },						\
+	{ 0, NULL },							\
+}
+
+# define IFM_SUBTYPE_ATM_DESCRIPTIONS {					\
+	{ IFM_ATM_UNKNOWN,	"Unknown" },				\
+	{ IFM_ATM_UTP_25,	"UTP/25.6MBit" },			\
+	{ IFM_ATM_TAXI_100,	"Taxi/100MBit" },			\
+	{ IFM_ATM_TAXI_140,	"Taxi/140MBit" },			\
+	{ IFM_ATM_MM_155,	"Multi-mode/155MBit" },			\
+	{ IFM_ATM_SM_155,	"Single-mode/155MBit" },		\
+	{ IFM_ATM_UTP_155,	"UTP/155MBit" },			\
+	{ IFM_ATM_MM_622,	"Multi-mode/622MBit" },			\
+	{ IFM_ATM_SM_622,	"Single-mode/622MBit" },		\
+	{ IFM_ATM_VIRTUAL,	"Virtual" },				\
+	{ 0, NULL },							\
+}
+
+# define IFM_SUBTYPE_ATM_ALIASES {					\
+	{ IFM_ATM_UNKNOWN,	"UNKNOWN" },				\
+	{ IFM_ATM_UTP_25,	"UTP-25" },				\
+	{ IFM_ATM_TAXI_100,	"TAXI-100" },				\
+	{ IFM_ATM_TAXI_140,	"TAXI-140" },				\
+	{ IFM_ATM_MM_155,	"MM-155" },				\
+	{ IFM_ATM_SM_155,	"SM-155" },				\
+	{ IFM_ATM_UTP_155,	"UTP-155" },				\
+	{ IFM_ATM_MM_622,	"MM-622" },				\
+	{ IFM_ATM_SM_622,	"SM-622" },				\
+	{ IFM_ATM_VIRTUAL,	"VIRTUAL" },				\
+	{ 0, NULL },							\
+}
+
+#define	IFM_SUBTYPE_ATM_OPTION_DESCRIPTIONS {				\
+	{ IFM_ATM_SDH, "SDH" },						\
+	{ IFM_ATM_NOSCRAMB, "Noscramb" },				\
+	{ IFM_ATM_UNASSIGNED, "Unassigned" },				\
+	{ 0, NULL },							\
+}
+
 
 #define        IFM_SUBTYPE_SHARED_DESCRIPTIONS {                                \
         { IFM_AUTO,      "autoselect" },                                       \

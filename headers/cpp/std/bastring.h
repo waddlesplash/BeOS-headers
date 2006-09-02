@@ -169,11 +169,11 @@ public:
     : dat (nilRep.grab ()) { assign (n, c); }
 #ifdef __STL_MEMBER_TEMPLATES
   template<class InputIterator>
-    basic_string(InputIterator begin, InputIterator end)
+    basic_string(InputIterator _ibegin, InputIterator _iend)
 #else
-  basic_string(const_iterator begin, const_iterator end)
+  basic_string(const_iterator _ibegin, const_iterator _iend)
 #endif
-    : dat (nilRep.grab ()) { assign (begin, end); }
+    : dat (nilRep.grab ()) { assign (_ibegin, _iend); }
 
   ~basic_string ()
     { rep ()->release (); }
@@ -412,17 +412,17 @@ private:
 #ifdef __STL_MEMBER_TEMPLATES
 template <class charT, class traits, class Allocator> template <class InputIterator>
 basic_string <charT, traits, Allocator>& basic_string <charT, traits, Allocator>::
-replace (iterator i1, iterator i2, InputIterator j1, InputIterator j2)
+replace (iterator _i1, iterator _i2, InputIterator _j1, InputIterator _j2)
 #else
 template <class charT, class traits, class Allocator>
 basic_string <charT, traits, Allocator>& basic_string <charT, traits, Allocator>::
-replace (iterator i1, iterator i2, const_iterator j1, const_iterator j2)
+replace (iterator _i1, iterator _i2, const_iterator _j1, const_iterator _j2)
 #endif
 {
   const size_type len = length ();
-  size_type pos = i1 - ibegin ();
-  size_type n1 = i2 - i1;
-  size_type n2 = j2 - j1;
+  size_type pos = _i1 - ibegin ();
+  size_type n1 = _i2 - _i1;
+  size_type n2 = _j2 - _j1;
 
   OUTOFRANGE (pos > len);
   if (n1 > len - pos)
@@ -435,15 +435,15 @@ replace (iterator i1, iterator i2, const_iterator j1, const_iterator j2)
       Rep *p = Rep::create (newlen);
       p->copy (0, data (), pos);
       p->copy (pos + n2, data () + pos + n1, len - (pos + n1));
-      for (; j1 != j2; ++j1, ++pos)
-	traits::assign ((*p)[pos], *j1);
+      for (; _j1 != _j2; ++_j1, ++pos)
+	traits::assign ((*p)[pos], *_j1);
       repup (p);
     }
   else
     {
       rep ()->move (pos + n2, data () + pos + n1, len - (pos + n1));
-      for (; j1 != j2; ++j1, ++pos)
-	traits::assign ((*rep ())[pos], *j1);
+      for (; _j1 != _j2; ++_j1, ++pos)
+	traits::assign ((*rep ())[pos], *_j1);
     }
   rep ()->len = newlen;
 

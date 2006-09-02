@@ -32,6 +32,8 @@ class BMediaRoster :
 	public BHandler
 #endif
 {
+		// temporary hack until roster bug is fixed.
+		friend class MediaMainView;
 public:
 
 		status_t GetVideoInput(

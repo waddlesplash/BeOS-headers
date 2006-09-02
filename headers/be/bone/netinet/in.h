@@ -175,7 +175,7 @@ typedef struct {
 #define IP_ONESBCAST			0x00000020	/* bool; IP broadcast address always set to 255.255.255.255 by kernel */
 
 #define IP_OPTIONS				0x40000001	/* buf/ip_opts; set/get IP options */ 
-#define IP_TOS					0x40000002	/* int; IP type of service and preced. */ 
+//#define IP_TOS					0x40000002	/* int; IP type of service and preced. */ 
 #define IP_TTL					0x40000003	/* int; IP time to live */ 
  
 #define IP_RETOPTS				0x40000004	/* ip_opts; set/get IP options */ 
@@ -205,8 +205,8 @@ typedef struct {
  */ 
 #define        IP_DEFAULT_MULTICAST_TTL  1     /* normally limit m'casts to 1 hop  */ 
 #define        IP_DEFAULT_MULTICAST_LOOP 1     /* normally hear sends if a member  */ 
-#define        IP_MAX_MEMBERSHIPS      20      /* per socket */ 
-
+#define        IP_MAX_MEMBERSHIPS       20      /* per socket */ 
+#define        INET_ADDRSTRLEN          16     /* was missing? Python wants it */
 /* 
  * Argument structure for IP_ADD_MEMBERSHIP and IP_DROP_MEMBERSHIP. 
  */ 

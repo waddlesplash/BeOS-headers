@@ -69,7 +69,7 @@ All rights reserved.
 
 class BString;
 
-namespace B {
+namespace Z {
 namespace Support {
 
 const int32 kSubExpressionMax = 10;
@@ -164,9 +164,9 @@ private:
 	mutable const char **fEndPArrayPointer;
 };
 
-} // namespace B
+} // namespace Z
 } // namespace Support
 
-using namespace B::Support;
+using namespace Z::Support;
 
 #endif

@@ -161,4 +161,4 @@ inline BPoint operator*(const BPoint& p, const BTransform2d& t)
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/
 
-#endif /* _POINT_H */
+#endif /* _TRANSFORM_2D_H */

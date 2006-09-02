@@ -87,7 +87,8 @@ public:
 
 			const TYPE&		operator[](size_t i) const;
 			const TYPE&		ItemAt(size_t i) const;
-	
+			TYPE&			EditItemAt(size_t i);
+			
 			ssize_t			IndexOf(const TYPE& item) const;
 			bool			GetIndexOf(const TYPE& item, size_t* index) const;
 			
@@ -114,6 +115,8 @@ protected:
 	
 	virtual	int32			PerformCompare(const void* d1, const void* d2) const;
 	virtual	bool			PerformLessThan(const void* d1, const void* d2) const;
+
+public:
 };
 
 // Type optimizations.
@@ -194,6 +197,13 @@ const TYPE& BOrderedVector<TYPE>::ItemAt(size_t i) const
 {
 	return *static_cast<const TYPE*>(At(i));
 }
+
+template<class TYPE> inline
+TYPE& BOrderedVector<TYPE>::EditItemAt(size_t i)
+{
+	return *static_cast<TYPE*>(EditAt(i));
+}
+
 
 template<class TYPE> inline
 ssize_t BOrderedVector<TYPE>::AddItem(const TYPE& item, bool* added)
@@ -306,5 +316,9 @@ void BSwap(BOrderedVector<TYPE>& v1, BOrderedVector<TYPE>& v2)
 }
 
 } }	// namespace B::Support
+
+#ifndef _BEOS_EXPLICIT_NAMESPACE_
+using B::Support::BOrderedVector;
+#endif
 
 #endif

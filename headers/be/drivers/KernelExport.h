@@ -43,7 +43,7 @@ extern thread_id spawn_kernel_thread (
 
 typedef ulong		cpu_status;
 
-extern cpu_status	disable_interrupts();
+extern cpu_status	disable_interrupts(void);
 extern void			restore_interrupts(cpu_status status);
 
 
@@ -75,17 +75,21 @@ extern void			release_spinlock (spinlock *lock);
 #define B_HANDLED_INTERRUPT			1		/* don't pass on */
 #define B_INVOKE_SCHEDULER			2		/* don't pass on; invoke the scheduler */
 
+
+// this flag defines whether or not the kernel should disable/enable interrupts when unhandled.
+#define B_NO_ENABLE_COUNTER			0x80000000
+
 typedef int32 (*interrupt_handler) (void *data);
 
 /* interrupt handling support for device drivers */
 
-extern long 	install_io_interrupt_handler (
+extern status_t 	install_io_interrupt_handler (
 	long 				interrupt_number, 
 	interrupt_handler	handler, 
 	void				*data, 
 	ulong 				flags
 );
-extern long 	remove_io_interrupt_handler (
+extern status_t		remove_io_interrupt_handler (
 	long 				interrupt_number,
 	interrupt_handler	handler,
 	void				*data
@@ -113,8 +117,8 @@ struct timer {
 	bigtime_t		period;
 };
 
-status_t	add_timer(timer *t, timer_hook h, bigtime_t, int32 f);
-bool		cancel_timer(timer *t);
+extern status_t	add_timer(timer *t, timer_hook hook, bigtime_t period, int32 f);
+extern bool	cancel_timer(timer *t);
 
 #define		B_ONE_SHOT_ABSOLUTE_TIMER		1
 #define		B_ONE_SHOT_RELATIVE_TIMER		2
@@ -202,7 +206,7 @@ extern area_id	map_physical_memory (
 
 /* platform_type return value is defined in OS.h */
 
-extern platform_type	platform();
+extern platform_type	platform(void);
 #if __POWERPC__
 extern long			motherboard_version (void);
 extern long			io_card_version (void);
@@ -261,4 +265,4 @@ extern void			call_all_cpus(void (*f)(void*, int), void* cookie);
 }
 #endif
 
-#endif
+#endif /* _KERNEL_EXPORT_H */

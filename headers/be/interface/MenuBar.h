@@ -76,9 +76,13 @@ virtual void			MakeFocus(bool state = true);
 virtual void			AllAttached();
 virtual void			AllDetached();
 
-
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
+
+		void			StartMenuBar(	int32 menuIndex,
+										bool sticky = true,
+										bool show_menu = false,
+										BRect *special_rect = NULL);
 
 private:
 friend class BWindow;
@@ -93,10 +97,6 @@ virtual	void			_ReservedMenuBar4();
 
 		BMenuBar		&operator=(const BMenuBar &);
 
-		void			StartMenuBar(	int32 menuIndex,
-										bool sticky = true,
-										bool show_menu = false,
-										BRect *special_rect = NULL);
 static	long			TrackTask(void *arg);
 		BMenuItem		*Track(	int32 *action,
 								int32 startIndex = -1,

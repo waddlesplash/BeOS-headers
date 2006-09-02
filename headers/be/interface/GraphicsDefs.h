@@ -44,12 +44,13 @@ typedef struct rgb_color {
 
 	inline bool operator==(const rgb_color& o) const
 	{
-		return (*((uint32*)this)) == (*((uint32*)&o));
+		return (*((const uint32*)this)) == (*((const uint32*)&o));
 	}
 	
 	inline bool operator!=(const rgb_color& o) const
 	{
-		return (*((uint32*)this)) != (*((uint32*)&o));
+		return ! (*this == o);
+//		return (*((uint32*)this)) != (*((uint32*)&o));
 	}
 	
 	rgb_color&	mix(const rgb_color other, uint8 amount);

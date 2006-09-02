@@ -94,12 +94,12 @@ check_realloc (basic_string::size_type s) const
 
 template <class charT, class traits, class Allocator>
 void basic_string <charT, traits, Allocator>::
-alloc (basic_string::size_type size, bool save)
+alloc (basic_string::size_type asize, bool save)
 {
-  if (! check_realloc (size))
+  if (! check_realloc (asize))
     return;
 
-  Rep *p = Rep::create (size);
+  Rep *p = Rep::create (asize);
 
   if (save)
     {
@@ -476,7 +476,7 @@ getline (istream &is, basic_string <charT, traits, Allocator>& s, charT delim)
 {
   if (is.ipfx1 ())
     {
-      _IO_size_t count = 0;
+      _IO_size_t size_count = 0;
       streambuf *sb = is.rdbuf ();
       s.resize (0);
 
@@ -485,13 +485,13 @@ getline (istream &is, basic_string <charT, traits, Allocator>& s, charT delim)
 	  int ch = sb->sbumpc ();
 	  if (ch == EOF)
 	    {
-	      is.setstate (count == 0
+	      is.setstate (size_count == 0
 			   ? (ios::failbit|ios::eofbit)
 			   : ios::eofbit);
 	      break;
 	    }
 
-	  ++count;
+	  ++size_count;
 
 	  if (ch == delim)
 	    break;

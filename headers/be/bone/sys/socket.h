@@ -121,8 +121,6 @@ struct sockaddr {
 #define SHUTDOWN_SEND	0x1
 #define SHUTDOWN_BOTH	0x2
 
-#ifndef _KERNEL_MODE
-
 /*
  * the sockets API, alphabetized for your reading pleasure
  */
@@ -141,8 +139,6 @@ ssize_t	sendto(int sock, const void *data, size_t datalen, int flags, const stru
 int		setsockopt(int sock, int level, int option, const void *optval, int optlen);
 int		shutdown(int sock, int direction);
 int		socket(int family, int type, int proto);
-
-#endif	/* _KERNEL_MODE */
 
 __extern_c_end
 

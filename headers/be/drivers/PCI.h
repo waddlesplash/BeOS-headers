@@ -230,7 +230,7 @@ struct pci_module_info {
 #define PCI_ide				0x01			/* IDE controller */
 #define PCI_floppy			0x02			/* floppy disk controller */
 #define PCI_ipi				0x03			/* IPI bus controller */
-#define PCI_raid			0x03			/* RAID controller */
+#define PCI_raid			0x04			/* RAID controller */
 #define PCI_mass_storage_other 0x80			/* other mass storage controller */
 
 
@@ -416,6 +416,7 @@ struct pci_module_info {
 
 #define PCI_usb_uhci			0x00	/* Universal Host Controller Interface */
 #define PCI_usb_ohci			0x10	/* Open Host Controller Interface */
+#define PCI_usb_ehci			0x20	/* Enhanced Host Controller Interface */
 
 
 /* ---

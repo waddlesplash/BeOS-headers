@@ -59,21 +59,21 @@ public:
 			ssize_t			AddVectorAt(const BAbstractVector& o, size_t index = SSIZE_MAX);
 			
 			void			MakeEmpty();
-			void			RemoveItemsAt(size_t index, size_t count);
+			void			RemoveItemsAt(size_t index, size_t _count);
 			
 			void			Swap(BAbstractVector& o);
 			
 protected:
 	static char const * const gStaskOverFlow;
 
-	virtual	void			PerformConstruct(void* base, size_t count) const = 0;
-	virtual	void			PerformCopy(void* to, const void* from, size_t count) const = 0;
-	virtual	void			PerformDestroy(void* base, size_t count) const = 0;
+	virtual	void			PerformConstruct(void* base, size_t _count) const = 0;
+	virtual	void			PerformCopy(void* to, const void* from, size_t _count) const = 0;
+	virtual	void			PerformDestroy(void* base, size_t _count) const = 0;
 	
-	virtual	void			PerformMoveBefore(void* to, void* from, size_t count) const = 0;
-	virtual	void			PerformMoveAfter(void* to, void* from, size_t count) const = 0;
+	virtual	void			PerformMoveBefore(void* to, void* from, size_t _count) const = 0;
+	virtual	void			PerformMoveAfter(void* to, void* from, size_t _count) const = 0;
 	
-	virtual	void			PerformAssign(void* to, const void* from, size_t count) const = 0;
+	virtual	void			PerformAssign(void* to, const void* from, size_t _count) const = 0;
 	
 private:
 	
@@ -107,8 +107,8 @@ private:
 };
 
 // Type optimizations.
-void BMoveBefore(BAbstractVector* to, BAbstractVector* from, size_t count = 1);
-void BMoveAfter(BAbstractVector* to, BAbstractVector* from, size_t count = 1);
+void BMoveBefore(BAbstractVector* to, BAbstractVector* from, size_t _count = 1);
+void BMoveAfter(BAbstractVector* to, BAbstractVector* from, size_t _count = 1);
 void BSwap(BAbstractVector& v1, BAbstractVector& v2);
 
 /*--------------------------------------------------------*/
@@ -151,7 +151,7 @@ public:
 			ssize_t			AddVectorAt(const BVector<TYPE>& o, size_t index);
 			
 			void			MakeEmpty();
-			void			RemoveItemsAt(size_t index, size_t count = 1);
+			void			RemoveItemsAt(size_t index, size_t _count = 1);
 	
 			void			Swap(BVector<TYPE>& o);
 			
@@ -164,21 +164,21 @@ public:
 			void			Pop();
 			
 protected:
-	virtual	void			PerformConstruct(void* base, size_t count) const;
-	virtual	void			PerformCopy(void* to, const void* from, size_t count) const;
-	virtual	void			PerformDestroy(void* base, size_t count) const;
+	virtual	void			PerformConstruct(void* base, size_t _count) const;
+	virtual	void			PerformCopy(void* to, const void* from, size_t _count) const;
+	virtual	void			PerformDestroy(void* base, size_t _count) const;
 	
-	virtual	void			PerformMoveBefore(void* to, void* from, size_t count) const;
-	virtual	void			PerformMoveAfter(void* to, void* from, size_t count) const;
+	virtual	void			PerformMoveBefore(void* to, void* from, size_t _count) const;
+	virtual	void			PerformMoveAfter(void* to, void* from, size_t _count) const;
 	
-	virtual	void			PerformAssign(void* to, const void* from, size_t count) const;
+	virtual	void			PerformAssign(void* to, const void* from, size_t _count) const;
 };
 
 // Type optimizations.
 template<class TYPE>
-void BMoveBefore(BVector<TYPE>* to, BVector<TYPE>* from, size_t count = 1);
+void BMoveBefore(BVector<TYPE>* to, BVector<TYPE>* from, size_t _count = 1);
 template<class TYPE>
-void BMoveAfter(BVector<TYPE>* to, BVector<TYPE>* from, size_t count = 1);
+void BMoveAfter(BVector<TYPE>* to, BVector<TYPE>* from, size_t _count = 1);
 template<class TYPE>
 void BSwap(BVector<TYPE>& v1, BVector<TYPE>& v2);
 
@@ -242,21 +242,21 @@ size_t BVector<TYPE>::CountItems() const
 }
 
 template<class TYPE> inline
-const TYPE& BVector<TYPE>::operator[](size_t i) const
+const TYPE& BVector<TYPE>::operator[](size_t _i) const
 {
-	return *static_cast<const TYPE*>(At(i));
+	return *static_cast<const TYPE*>(At(_i));
 }
 
 template<class TYPE> inline
-const TYPE& BVector<TYPE>::ItemAt(size_t i) const
+const TYPE& BVector<TYPE>::ItemAt(size_t _i) const
 {
-	return *static_cast<const TYPE*>(At(i));
+	return *static_cast<const TYPE*>(At(_i));
 }
 
 template<class TYPE> inline
-TYPE& BVector<TYPE>::EditItemAt(size_t i)
+TYPE& BVector<TYPE>::EditItemAt(size_t _i)
 {
-	return *static_cast<TYPE*>(EditAt(i));
+	return *static_cast<TYPE*>(EditAt(_i));
 }
 
 template<class TYPE> inline
@@ -313,9 +313,9 @@ void BVector<TYPE>::MakeEmpty()
 }
 
 template<class TYPE> inline
-void BVector<TYPE>::RemoveItemsAt(size_t index, size_t count)
+void BVector<TYPE>::RemoveItemsAt(size_t index, size_t _count)
 {
-	BAbstractVector::RemoveItemsAt(index, count);
+	BAbstractVector::RemoveItemsAt(index, _count);
 }
 
 template<class TYPE> inline
@@ -339,75 +339,75 @@ void BVector<TYPE>::Push(const TYPE& item)
 template<class TYPE> inline
 TYPE& BVector<TYPE>::EditTop()
 {
-	const size_t count = CountItems();
-	if (count == 0) debugger(gStaskOverFlow);
-	return EditItemAt(count-1);
+	const size_t _count = CountItems();
+	if (_count == 0) debugger(gStaskOverFlow);
+	return EditItemAt(_count-1);
 }
 
 template<class TYPE> inline
 const TYPE& BVector<TYPE>::Top() const
 {
-	const size_t count = CountItems();
-	if (count == 0) debugger(gStaskOverFlow);
-	return ItemAt(count-1);
+	const size_t _count = CountItems();
+	if (_count == 0) debugger(gStaskOverFlow);
+	return ItemAt(_count-1);
 }
 
 template<class TYPE> inline
 void BVector<TYPE>::Pop()
 {
-	const size_t count = CountItems();
-	if (count == 0) debugger(gStaskOverFlow);
-	RemoveItemsAt(count-1);
+	const size_t _count = CountItems();
+	if (_count == 0) debugger(gStaskOverFlow);
+	RemoveItemsAt(_count-1);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformConstruct(void* base, size_t count) const
+void BVector<TYPE>::PerformConstruct(void* base, size_t _count) const
 {
-	BConstruct(static_cast<TYPE*>(base), count);
+	BConstruct(static_cast<TYPE*>(base), _count);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformCopy(void* to, const void* from, size_t count) const
+void BVector<TYPE>::PerformCopy(void* to, const void* from, size_t _count) const
 {
-	BCopy(static_cast<TYPE*>(to), static_cast<const TYPE*>(from), count);
+	BCopy(static_cast<TYPE*>(to), static_cast<const TYPE*>(from), _count);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformDestroy(void* base, size_t count) const
+void BVector<TYPE>::PerformDestroy(void* base, size_t _count) const
 {
-	BDestroy(static_cast<TYPE*>(base), count);
+	BDestroy(static_cast<TYPE*>(base), _count);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformMoveBefore(	void* to, void* from, size_t count) const
+void BVector<TYPE>::PerformMoveBefore(	void* to, void* from, size_t _count) const
 {
-	BMoveBefore(static_cast<TYPE*>(to), static_cast<TYPE*>(from), count);
+	BMoveBefore(static_cast<TYPE*>(to), static_cast<TYPE*>(from), _count);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformMoveAfter(	void* to, void* from, size_t count) const
+void BVector<TYPE>::PerformMoveAfter(	void* to, void* from, size_t _count) const
 {
-	BMoveAfter(static_cast<TYPE*>(to), static_cast<TYPE*>(from), count);
+	BMoveAfter(static_cast<TYPE*>(to), static_cast<TYPE*>(from), _count);
 }
 
 template<class TYPE>
-void BVector<TYPE>::PerformAssign(	void* to, const void* from, size_t count) const
+void BVector<TYPE>::PerformAssign(	void* to, const void* from, size_t _count) const
 {
-	BAssign(static_cast<TYPE*>(to), static_cast<const TYPE*>(from), count);
+	BAssign(static_cast<TYPE*>(to), static_cast<const TYPE*>(from), _count);
 }
 
 /*-------------------------------------------------------------*/
 
 template<class TYPE> inline
-void BMoveBefore(BVector<TYPE>* to, BVector<TYPE>* from, size_t count)
+void BMoveBefore(BVector<TYPE>* to, BVector<TYPE>* from, size_t _count)
 {
-	BMoveBefore(static_cast<BAbstractVector*>(to), static_cast<BAbstractVector*>(from), count);
+	BMoveBefore(static_cast<BAbstractVector*>(to), static_cast<BAbstractVector*>(from), _count);
 }
 
 template<class TYPE> inline
-void BMoveAfter(BVector<TYPE>* to, BVector<TYPE>* from, size_t count)
+void BMoveAfter(BVector<TYPE>* to, BVector<TYPE>* from, size_t _count)
 {
-	BMoveAfter(static_cast<BAbstractVector*>(to), static_cast<BAbstractVector*>(from), count);
+	BMoveAfter(static_cast<BAbstractVector*>(to), static_cast<BAbstractVector*>(from), _count);
 }
 
 template<class TYPE> inline
@@ -417,5 +417,9 @@ void BSwap(BVector<TYPE>& v1, BVector<TYPE>& v2)
 }
 
 } }	// namespace B::Support
+
+#ifndef _BEOS_EXPLICIT_NAMESPACE_
+using B::Support::BVector;
+#endif
 
 #endif

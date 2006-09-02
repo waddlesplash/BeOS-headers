@@ -45,15 +45,6 @@ virtual					~BLooper();
 static	BArchivable		*Instantiate(BMessage *data);
 virtual	status_t		Archive(BMessage *data, bool deep = true) const;
 
-/* Message transmission */
-		status_t		PostMessage(uint32 command);
-		status_t		PostMessage(BMessage *message);
-		status_t		PostMessage(uint32 command,
-									BHandler *handler,
-									BHandler *reply_to = NULL);
-		status_t		PostMessage(BMessage *message,
-									BHandler *handler,
-									BHandler *reply_to = NULL);
 
 virtual	void			DispatchMessage(BMessage *message, BHandler *handler);
 virtual	void			MessageReceived(BMessage *msg);
@@ -107,6 +98,19 @@ virtual	bool			RemoveCommonFilter(BMessageFilter *filter);
 virtual	void			SetCommonFilterList(BList *filters);
 		BList			*CommonFilterList() const;
 
+// Message transmission, these basically just create a BMessenger to this object
+// to pass messages. Use a cached BMessenger for better performance.
+		status_t		PostMessage(uint32 command);
+		status_t		PostMessage(BMessage *message);
+		status_t		PostMessage(uint32 command,
+									BHandler *handler,
+									BHandler *reply_to = NULL);
+		status_t		PostMessage(BMessage *message,
+									BHandler *handler,
+									BHandler *reply_to = NULL);
+									
+
+
 /*----- Private or reserved -----------------------------------------*/
 virtual status_t		Perform(perform_code d, void *arg);
 
@@ -141,6 +145,7 @@ friend status_t _safe_get_server_token_(const BLooper *, int32 *);
 friend team_id	_find_cur_team_id_();
 friend status_t _call_ready_to_loop_(BLooper *, loop_state *);
 friend struct _looper_list_nuker_;
+
 
 virtual	void			_ReservedLooper2();
 virtual	void			_ReservedLooper3();
@@ -233,9 +238,6 @@ static	BLooper			*LooperForPort(port_id port);
 		uint32			fFlags;
 		uint32			_reserved[6];
 };
-
-/*-------------------------------------------------------------*/
-/*-------------------------------------------------------------*/
 
 #endif /* _LOOPER_H */
 

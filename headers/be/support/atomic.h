@@ -36,20 +36,20 @@
 	int32 compare_and_swap64(volatile int64 *location, int64 oldValue, int64 newValue);
 #endif
 
-inline bool cmpxchg32(volatile int32 *atom, int32 *value, int32 newValue)
+inline bool cmpxchg32(volatile int32 *_atom, int32 *_value, int32 _newValue)
 {
-	int32 success = compare_and_swap32(atom, *value, newValue);
+	int32 success = compare_and_swap32(_atom, *_value, _newValue);
 	if (!success)
-		*value = *atom;
+		*_value = *_atom;
 
 	return success;
 };
 
-inline bool cmpxchg64(volatile int64 *atom, int64 *value, int64 newValue)
+inline bool cmpxchg64(volatile int64 *_atom, int64 *_value, int64 _newValue)
 {
-	int32 success = compare_and_swap64(atom, *value, newValue);
+	int32 success = compare_and_swap64(_atom, *_value, _newValue);
 	if (!success)
-		*value = *atom;
+		*_value = *_atom;
 
 	return success;
 };
@@ -59,35 +59,38 @@ typedef struct atomic_list_head {
 	int32 sequence;
 } atomic_list_head;
 
-inline void atomic_push(atomic_list_head* list, void* item)
+inline void atomic_push(atomic_list_head* _list, void* _item)
 {
-	while (1) {
-		atomic_add(&(list->sequence), 1);
-		atomic_list_head top = *list;
-		*(void**)item = top.first;
+	while (1) 
+	{
+		atomic_add(&(_list->sequence), 1);
+		atomic_list_head top = *_list;
+		*(void**)_item = top.first;
 		atomic_list_head next;
-		next.first = item;
+		next.first = _item;
 		next.sequence = top.sequence;
-		if (compare_and_swap64((int64*)list, *(int64*)&top, *(int64*)&next)) {
+		if (compare_and_swap64((int64*)_list, *(int64*)&top, *(int64*)&next)) {
 			return;
 		}
 	}
 }
 
-inline void* atomic_pop(atomic_list_head* list)
+inline void* atomic_pop(atomic_list_head* _list)
 {
-	atomic_add(&(list->sequence), 1);
-	atomic_list_head top = *list;
+	atomic_add(&(_list->sequence), 1);
+	atomic_list_head top = *_list;
 	
-	while (top.first) {
+	while (top.first) 
+	{
 		atomic_list_head next;
 		next.first = *(void**)(top.first);
 		next.sequence = top.sequence;
-		if (compare_and_swap64((int64*)list, *(int64*)&top, *(int64*)&next)) {
+		if (compare_and_swap64((int64*)_list, *(int64*)&top, *(int64*)&next)) 
+		{
 			return top.first;
 		}
-		atomic_add(&(list->sequence), 1);
-		top = *list;
+		atomic_add(&(_list->sequence), 1);
+		top = *_list;
 	}
 	
 	return NULL;

@@ -316,6 +316,7 @@ typedef BLooper inherited;
 
 friend class BApplication;
 friend class BBitmap;
+friend class BButton;
 friend class BControl;
 friend class BScrollBar;
 friend class BView;
@@ -471,8 +472,12 @@ virtual BMessage	*ConvertToMessage(void *raw, int32 code);
 		rgb_color		fWindowColor;
 		BWindow			*fParent;
 		
+		// Saves off the default programmitcally set button in
+		// conjuction with BButton::MakeFocus() code.
+		BButton*		fDefaultButtonSave;
+		
 #if !_PR3_COMPATIBLE_
-		uint32			_more_reserved[3];
+		uint32			_more_reserved[2];
 #endif
 };
 

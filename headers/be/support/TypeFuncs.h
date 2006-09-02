@@ -23,27 +23,27 @@ namespace Support {
 /*----- Basic operations on types ------------------------*/
 
 template<class TYPE>
-static inline void BConstruct(TYPE* base, size_t count = 1)
+static inline void BConstruct(TYPE* base, size_t _count = 1)
 {
-	while (--count != (size_t)-1) {
+	while (--_count != (size_t)-1) {
 		new(base) TYPE();
 		base++;
 	}
 }
 
 template<class TYPE>
-static inline void BDestroy(TYPE* base, size_t count = 1)
+static inline void BDestroy(TYPE* base, size_t _count = 1)
 {
-	while (--count != (size_t)-1) {
+	while (--_count != (size_t)-1) {
 		base->~TYPE();
 		base++;
 	}
 }
 
 template<class TYPE>
-static inline void BCopy(TYPE* to, const TYPE* from, size_t count = 1)
+static inline void BCopy(TYPE* to, const TYPE* from, size_t _count = 1)
 {
-	while (--count != (size_t)-1) {
+	while (--_count != (size_t)-1) {
 		new(to) TYPE(*from);
 		to++;
 		from++;
@@ -51,9 +51,9 @@ static inline void BCopy(TYPE* to, const TYPE* from, size_t count = 1)
 }
 
 template<class TYPE>
-static inline void BMoveBefore(	TYPE* to, TYPE* from, size_t count = 1)
+static inline void BMoveBefore(	TYPE* to, TYPE* from, size_t _count = 1)
 {
-	while (--count != (size_t)-1) {
+	while (--_count != (size_t)-1) {
 		new(to) TYPE(*from);
 		from->~TYPE();
 		to++;
@@ -62,11 +62,11 @@ static inline void BMoveBefore(	TYPE* to, TYPE* from, size_t count = 1)
 }
 
 template<class TYPE>
-static inline void BMoveAfter(	TYPE* to, TYPE* from, size_t count = 1)
+static inline void BMoveAfter(	TYPE* to, TYPE* from, size_t _count = 1)
 {
-	to+=(count-1);
-	from+=(count-1);
-	while (--count != (size_t)-1) {
+	to+=(_count-1);
+	from+=(_count-1);
+	while (--_count != (size_t)-1) {
 		new(to) TYPE(*from);
 		from->~TYPE();
 		to--;
@@ -75,9 +75,9 @@ static inline void BMoveAfter(	TYPE* to, TYPE* from, size_t count = 1)
 }
 
 template<class TYPE>
-static inline void BAssign(	TYPE* to, const TYPE* from, size_t count = 1)
+static inline void BAssign(	TYPE* to, const TYPE* from, size_t _count = 1)
 {
-	while (--count != (size_t)-1) {
+	while (--_count != (size_t)-1) {
 		*to = *from;
 		to++;
 		from++;
@@ -106,23 +106,23 @@ static inline bool BLessThan(const TYPE& v1, const TYPE& v2)
 /*----- Optimizations for all pointer types --------------*/
 
 template<class TYPE>
-static inline void BConstruct(TYPE** base, size_t count = 1)
-	{ (void)base; (void)count; }
+static inline void BConstruct(TYPE** base, size_t _count = 1)
+	{ (void)base; (void)_count; }
 template<class TYPE>
-static inline void BDestroy(TYPE** base, size_t count = 1)
-	{ (void)base; (void)count; }
+static inline void BDestroy(TYPE** base, size_t _count = 1)
+	{ (void)base; (void)_count; }
 template<class TYPE>
-static inline void BCopy(TYPE** to, TYPE* const * from, size_t count = 1)
-	{ if (count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*count); }
+static inline void BCopy(TYPE** to, TYPE* const * from, size_t _count = 1)
+	{ if (_count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*_count); }
 template<class TYPE>
-static inline void BMoveBefore(TYPE** to, TYPE** from, size_t count = 1)
-	{ if (count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*count); }
+static inline void BMoveBefore(TYPE** to, TYPE** from, size_t _count = 1)
+	{ if (_count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*_count); }
 template<class TYPE>
-static inline void BMoveAfter(TYPE** to, TYPE** from, size_t count = 1)
-	{ if (count == 1) *to = *from; else memmove(to, from, sizeof(TYPE*)*count); }
+static inline void BMoveAfter(TYPE** to, TYPE** from, size_t _count = 1)
+	{ if (_count == 1) *to = *from; else memmove(to, from, sizeof(TYPE*)*_count); }
 template<class TYPE>
-static inline void BAssign(TYPE** to, TYPE* const * from, size_t count = 1)
-	{ if (count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*count); }
+static inline void BAssign(TYPE** to, TYPE* const * from, size_t _count = 1)
+	{ if (_count == 1) *to = *from; else memcpy(to, from, sizeof(TYPE*)*_count); }
 
 /*--------------------------------------------------------*/
 /*----- Optimizations for basic data types ---------------*/
@@ -130,26 +130,26 @@ static inline void BAssign(TYPE** to, TYPE* const * from, size_t count = 1)
 // Standard optimizations for types that don't contain internal or
 // other pointers to themselves.
 #define B_IMPLEMENT_SIMPLE_TYPE_FUNCS(TYPE)												\
-static inline void BMoveBefore(TYPE* to, TYPE* from, size_t count = 1)					\
-	{ memcpy(to, from, (sizeof(TYPE[2])/2)*count); }									\
-static inline void BMoveAfter(TYPE* to, TYPE* from, size_t count = 1)					\
-	{ memmove(to, from, (sizeof(TYPE[2])/2)*count); }									\
+static inline void BMoveBefore(TYPE* to, TYPE* from, size_t _count = 1)					\
+	{ memcpy(to, from, (sizeof(TYPE[2])/2)*_count); }									\
+static inline void BMoveAfter(TYPE* to, TYPE* from, size_t _count = 1)					\
+	{ memmove(to, from, (sizeof(TYPE[2])/2)*_count); }									\
 
 // Extreme optimizations for types whose constructor and destructor
 // don't need to be called.
 #define B_IMPLEMENT_BASIC_TYPE_FUNCS(TYPE)												\
-static inline void BConstruct(TYPE* base, size_t count)									\
-	{ (void)base; (void)count; }														\
-static inline void BDestroy(TYPE* base, size_t count)									\
-	{ (void)base; (void)count; }														\
-static inline void BCopy(TYPE* to, const TYPE* from, size_t count = 1)					\
-	{ if (count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*count); }	\
-static inline void BMoveBefore(TYPE* to, TYPE* from, size_t count = 1)					\
-	{ if (count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*count); }	\
-static inline void BMoveAfter(TYPE* to, TYPE* from, size_t count = 1)					\
-	{ if (count == 1) *to = *from; else memmove(to, from, (sizeof(TYPE[2])/2)*count); }	\
-static inline void BAssign(TYPE* to, const TYPE* from, size_t count = 1)				\
-	{ if (count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*count); }	\
+static inline void BConstruct(TYPE* base, size_t _count)									\
+	{ (void)base; (void)_count; }														\
+static inline void BDestroy(TYPE* base, size_t _count)									\
+	{ (void)base; (void)_count; }														\
+static inline void BCopy(TYPE* to, const TYPE* from, size_t _count = 1)					\
+	{ if (_count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*_count); }	\
+static inline void BMoveBefore(TYPE* to, TYPE* from, size_t _count = 1)					\
+	{ if (_count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*_count); }	\
+static inline void BMoveAfter(TYPE* to, TYPE* from, size_t _count = 1)					\
+	{ if (_count == 1) *to = *from; else memmove(to, from, (sizeof(TYPE[2])/2)*_count); }	\
+static inline void BAssign(TYPE* to, const TYPE* from, size_t _count = 1)				\
+	{ if (_count == 1) *to = *from; else memcpy(to, from, (sizeof(TYPE[2])/2)*_count); }	\
 
 B_IMPLEMENT_BASIC_TYPE_FUNCS(bool)
 B_IMPLEMENT_BASIC_TYPE_FUNCS(int8)

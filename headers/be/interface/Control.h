@@ -18,6 +18,12 @@
 
 class BWindow;
 
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
+
 /*----------------------------------------------------------------*/
 /*----- BControl defines -----------------------------------------*/
 
@@ -94,6 +100,8 @@ protected:
 		void		SetInvalidate(bool invalidate);
 /*----- Private or reserved -----------------------------------------*/
 private:
+		friend class Z::Locale::AutoLocale;
+	
 		void		UpdateView();
 		
 virtual	void		_ReservedControl2();

@@ -79,7 +79,9 @@ virtual	void		_ReservedButton3();
 
 		float		fCachedWidth;
 		bool		fDrawAsDefault;
-		uint32		_reserved[3];
+		bool		fMouseOver;
+		uint32		_reserved[2];	// was 3
+		uint8		_reserved2[3];
 };
 
 /*-------------------------------------------------------------*/

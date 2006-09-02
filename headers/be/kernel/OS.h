@@ -233,6 +233,7 @@ typedef enum {
 	B_THREAD_WAITING
 } thread_state;
 
+#define B_LOWEST_ACTIVE_PRIORITY			1
 #define B_LOW_PRIORITY						5
 #define B_NORMAL_PRIORITY					10
 #define B_DISPLAY_PRIORITY					15
@@ -291,7 +292,7 @@ extern status_t 	_get_team_usage_info(team_id tmid, int32 who, team_usage_info *
 
 static inline thread_id		find_thread(const char *name) {
 	thread_id	ret;
-	extern thread_id	_kfind_thread_(const char *name);
+	extern thread_id	_kfind_thread_(const char *tname);
 	if (!name) {
 		__asm__ __volatile__ ( 
 			"movl	%%fs:4, %%eax \n\t"
@@ -333,13 +334,13 @@ extern status_t	snooze(bigtime_t microseconds);
 
 /*
   Right now you can only snooze_until() on a single time base, the
-  system time base given by system_time().  The "time" argument is
+  system time base given by system_time().  The "when" argument is
   the time (in the future) relative to the current system_time() that
   you want to snooze until.  Eventually there will be multiple time
   bases (and a way to find out which ones exist) but for now just pass
   the value B_SYSTEM_TIMEBASE.
 */  
-extern status_t	snooze_until(bigtime_t time, int timebase);
+extern status_t	snooze_until(bigtime_t when, int timebase);
 #define B_SYSTEM_TIMEBASE  (0)
 
 /*
@@ -395,7 +396,23 @@ extern status_t	_get_next_team_info(int32 *cookie, team_info *info, size_t size)
 #define		B_MAX_CPU_COUNT		1	/* FIXME: Should this be higher?  -fnf */
 #endif
 
+typedef enum cpu_vendors {
+	B_CPU_VENDOR_UNKNOWN = 0,
+	B_CPU_VENDOR_INTEL,
+	B_CPU_VENDOR_AMD,
+	B_CPU_VENDOR_UMC,
+	B_CPU_VENDOR_CYRIX,
+	B_CPU_VENDOR_NEXTGEN,
+	B_CPU_VENDOR_CENTAUR,
+	B_CPU_VENDOR_RISE,
+	B_CPU_VENDOR_SIS,
+	B_CPU_VENDOR_TRANSMETA,
+	B_CPU_VENDOR_NATIONAL
+} cpu_vendor;
+
 typedef enum cpu_types {
+	
+	/* Motorola/IBM */
 	B_CPU_PPC_601	= 1,
 	B_CPU_PPC_603	= 2,
 	B_CPU_PPC_603e	= 3,
@@ -414,54 +431,141 @@ typedef enum cpu_types {
 	B_CPU_ARM,
 	B_CPU_SH,
 	B_CPU_SPARC,
-
-	B_CPU_INTEL_X86 = 0x1000,
-	B_CPU_INTEL_PENTIUM = 0x1051,
-	B_CPU_INTEL_PENTIUM75,
-	B_CPU_INTEL_PENTIUM_486_OVERDRIVE,
-	B_CPU_INTEL_PENTIUM_MMX,
-	B_CPU_INTEL_PENTIUM_MMX_MODEL_4 = B_CPU_INTEL_PENTIUM_MMX,
-	B_CPU_INTEL_PENTIUM_MMX_MODEL_8 = 0x1058,
-	B_CPU_INTEL_PENTIUM75_486_OVERDRIVE,
-	B_CPU_INTEL_PENTIUM_PRO = 0x1061,
-	B_CPU_INTEL_PENTIUM_II = 0x1063,
-	B_CPU_INTEL_PENTIUM_II_MODEL_3 = 0x1063,
-	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,
-	B_CPU_INTEL_CELERON = 0x1066,
-	B_CPU_INTEL_PENTIUM_III = 0x1067,
-	B_CPU_INTEL_PENTIUM_III_MODEL_8 = 0x1068,
 	
+	/* Intel */
+	B_CPU_INTEL_X86 = 0x1000,
+	B_CPU_INTEL_486_DX25 = 0x1040,
+	B_CPU_INTEL_486_DX50,
+	B_CPU_INTEL_486_SX,
+	B_CPU_INTEL_486_DX2,
+	B_CPU_INTEL_486_SL,
+	B_CPU_INTEL_486_SX2,
+	B_CPU_INTEL_486_DX2_WB = 0x1047,
+	B_CPU_INTEL_486_DX4,
+	B_CPU_INTEL_486_DX4_WB,
+	B_CPU_INTEL_PENTIUM_ASTEP = 0x1050,		// Pentium 60/66 A-step
+	B_CPU_INTEL_PENTIUM,					// Pentium 60/66
+	B_CPU_INTEL_PENTIUM75,					// Pentium 75-200
+	B_CPU_INTEL_PENTIUM_486_OVERDRIVE,		// Overdrive PODP5V83
+	B_CPU_INTEL_PENTIUM_MMX,				// Pentium 166 & 200 MMX and MMX Overdrive CPU's
+	B_CPU_INTEL_PENTIUM_MMX_MODEL_4 = B_CPU_INTEL_PENTIUM_MMX,
+	B_CPU_INTEL_PENTIUM_M75 = 0x1057,		// Mobile Pentium 75-200
+	B_CPU_INTEL_PENTIUM_MMX_MOBILE,
+	B_CPU_INTEL_PENTIUM_MMX_MODEL_8 = B_CPU_INTEL_PENTIUM_MMX_MOBILE,
+	B_CPU_INTEL_PENTIUM75_486_OVERDRIVE,
+	B_CPU_INTEL_PENTIUM_PRO_ASTEP = 0x1060,
+	B_CPU_INTEL_PENTIUM_PRO = 0x1061,
+	B_CPU_INTEL_PENTIUM_II = 0x1063,		// Klamath
+	B_CPU_INTEL_PENTIUM_II_MODEL_3 = 0x1063,
+	B_CPU_INTEL_PENTIUM_II_MODEL_5 = 0x1065,// Deshutes, Covington, Dixon
+	B_CPU_INTEL_CELERON,					// Mobile PII, Celeron (Mendocine)
+	B_CPU_INTEL_PENTIUM_III,				// Katmai
+	B_CPU_INTEL_PENTIUM_III_MODEL_8,		// Coppermine
+	B_CPU_INTEL_PENTIUM_III_MOBILE,
+	B_CPU_INTEL_PENTIUM_CENTRINO_A = B_CPU_INTEL_PENTIUM_III_MOBILE,
+	B_CPU_INTEL_PENTIUM_III_XEON,			// 0.18u
+	B_CPU_INTEL_PENTIUM_III_MODEL_11,		// 0.13u
+	B_CPU_INTEL_PENTIUM_III_MODEL_B = B_CPU_INTEL_PENTIUM_III_MODEL_11,
+	B_CPU_INTEL_PENTIUM_CENTRINO_B = 0x106d,
+	B_CPU_INTEL_PENTIUM_IA64 = 0x1070,		// Itanium
+	B_CPU_INTEL_PENTIUM_IV	= 0x10f0,		// P4 or Xeon. 0.18u
+	B_CPU_INTEL_PENTIUM_IV_MODEL1,			// P4, Xeon, MP or Celeron. 0.18u
+	B_CPU_INTEL_PENTIUM_IV_MODEL2,			// P4, Mobile M, Xeon, MP, Celeron or Mobile Celeron. 0.13u
+	B_CPU_INTEL_PENTIUM_IV_MODEL3,			// P4 or Celeron. 0.09u
+	B_CPU_INTEL_PENTIUM_IV_XEON = 0x0F27,
+	
+	/* AMD */
 	B_CPU_AMD_X86 = 0x1100,
+	B_CPU_AMD_486_DX2 = 0x1143,
+	B_CPU_AMD_486_DX2_WB = 0x1147,
+	B_CPU_AMD_486_DX4 = 0x1148,
+	B_CPU_AMD_486_DX4_WB = 0x1149,
+	B_CPU_AMD_586_WT = 0x114e,
+	B_CPU_AMD_586_WB = 0x114f,
+	B_CPU_AMD_K5 = 0x1150,
 	B_CPU_AMD_K5_MODEL0 = 0x1150,
 	B_CPU_AMD_K5_MODEL1,
 	B_CPU_AMD_K5_MODEL2,
 	B_CPU_AMD_K5_MODEL3,
-
+	B_CPU_AMD_K6 = 0x1156,
 	B_CPU_AMD_K6_MODEL6 = 0x1156,
 	B_CPU_AMD_K6_MODEL7 = 0x1157,
-
 	B_CPU_AMD_K6_MODEL8 = 0x1158,
 	B_CPU_AMD_K6_2 = 0x1158,
-
 	B_CPU_AMD_K6_MODEL9 = 0x1159,
 	B_CPU_AMD_K6_III = 0x1159,
-	
+	B_CPU_AMD_K6_III_MODEL2	= 0x115D,
+	B_CPU_AMD_ATHLON_MODEL0 = 0x1160,	// 25u
 	B_CPU_AMD_ATHLON_MODEL1 = 0x1161,
+	B_CPU_AMD_ATHLON_MODEL2 = 0x1162,	// 18u
+	B_CPU_AMD_DURON = 0x1163,
 	B_CPU_AMD_ATHLON_THUNDERBIRD = 0x1164,
+	B_CPU_AMD_ATHLON_XP = 0x1166,
+	B_CPU_AMD_ATHLON_XP_MODEL2,
+	B_CPU_AMD_ATHLON_XP_MODEL3,
+	B_CPU_AMD_ATHLON_XP_MODEL_BARTON = 0x116A,
+	B_CPU_AMD_ATHLON_XP64 = 0x11F4,
+	B_CPU_AMD_ATHLON_XP64_FX = 0x11F5,		// Opteron
+	B_CPU_AMD_ATHLON_64 = 0x0F48,			// rev SH7-C0 (Mobile)Athlon64
+	B_CPU_AMD_ATHLON_64_OPTERON = 0x0F51,	// Opteron SH7-B3
+	B_CPU_AMD_ATHLON_64_FX = 0x0F58,		// Opteron or 64FX
+	B_CPU_AMD_ATHLON_64_754 = 0x0F4A,		// (Mobile)Athlon64 754 socket (SH7)
+	B_CPU_AMD_ATHLON_64_FX939 = 0x0F7A,		// Athlon64(FX) 939 socket
+	B_CPU_AMD_ATHLON_64_FX940 = 0x0F5A,		// Opteron or Athlon64FX 940 socket
+	B_CPU_AMD_ATHLON_64_754_2 = 0x0FC0,		// (Mobile)Athlon64 754 socket (DH7)
+	B_CPU_AMD_ATHLON_64_754_3 = 0x0FE0,		// (Mobile)Athlon64 754 socket (DH7)
+	B_CPU_AMD_ATHLON_64_939 = 0x0FF0,		// Athlon64 939 socket (DH7)
+	B_CPU_AMD_ATHLON_64_754_4 = 0x0F82,		// (Mobile)Athlon64 754 socket (CH7)
+	B_CPU_AMD_ATHLON_64_939_2 = 0x0FB2,		// Athlon64 939 socket (CH7)
+	B_CPU_AMD_ATHLON_64_939_3 = 0x11FF,		// Athlon64 939 socket
+	B_CPU_AMD_ATHLON_64_939_4 = 0x11FC,		// Athlon64 939 socket
 
+
+	/* VIA */
 	B_CPU_CYRIX_X86 = 0x1200,
+	B_CPU_CYRIX_MediaGX = 0x1244,
+	B_CPU_CYRIX_6x86 = 0x1252,
 	B_CPU_CYRIX_GXm = 0x1254,
 	B_CPU_CYRIX_6x86MX = 0x1260,
+	B_CPU_CYRIX_VIA_M2 = 0x1265,
+	B_CPU_CYRIX_WINCHIP_C5A,
+	B_CPU_CYRIX_WINCHIP_C5B,
+	B_CPU_CYRIX_WINCHIP_C5N,
+	B_CPU_CYRIX_WINCHIP_C5XL,
+	B_CPU_VIA_ANTAUR = 0x1369,
 
+	/* Centaur */
 	B_CPU_IDT_X86 = 0x1300,
 	B_CPU_IDT_WINCHIP_C6 = 0x1354,
 	B_CPU_IDT_WINCHIP_2 = 0x1358,
+	B_CPU_IDT_WINCHIP_3 = 0x1359,
 	
+	/* Rise */
 	B_CPU_RISE_X86 = 0x1400,
 	B_CPU_RISE_mP6 = 0x1450,
 
+	/* National Semiconductors */
 	B_CPU_NATIONAL_X86 = 0x1500,
-	B_CPU_NATIONAL_GEODE_GX1 = 0x1554
+	B_CPU_NATIONAL_GEODE_GX1 = 0x1554,	// GX1, GXLV, GXm
+	B_CPU_NATIONAL_GEODE_GX2 = 0x1555,
+
+	/* NexGen */
+	B_CPU_NEXGEN_X86 = 0x1600,
+	B_CPU_NEXGEN_Nx586 = 0x1650,
+
+	/* SiS */
+	B_CPU_SIS_X86 = 0x1700,
+	B_CPU_SIS_55x = 0x1750,
+
+	/* Transmeta */
+	B_CPU_TRANSMETA_X86 = 0x1800,
+	B_CPU_TRANSMETA_CRUSOE = 0x1854,	// TM3x00/TM5x00
+
+	/* UMC */
+	B_CPU_UMC_X86 = 0x1900,
+	B_CPU_UMC_U5D = 0x1941,
+	B_CPU_UMC_U5S = 0x1942
+
 } cpu_type;
 
 #define B_CPU_X86_VENDOR_MASK	0x1F00
@@ -475,29 +579,61 @@ typedef union {
 	} eax_0;
 	
 	struct {
-		uint32	stepping	: 4;
-		uint32	model		: 4;
-		uint32	family		: 4;
-		uint32	type		: 2;
-		uint32	reserved_0	: 18;
-		
-		uint32	reserved_1;
-		uint32	features; 
-		uint32	reserved_2;
+		uint32	stepping			: 4;
+		uint32	model				: 4;
+		uint32	family				: 4;
+		uint32	type				: 4;	// only bits 0 and 1 are used
+		uint32	ext_model			: 4;
+		uint32	ext_family			: 8;
+		uint32	reserved_0			: 4;
+
+		uint32	brand_id			: 8;
+		uint32	cflush				: 8;
+		uint32	logical_cpu_count	: 8;	// HT means > 0
+		uint32	apic_id				: 8;
+
+		uint32	features;			// edx
+		uint32	ext_features;		// ecx
 	} eax_1;
 	
-struct {
+	struct {
 		uint8	call_num;
 		uint8	cache_descriptors[15];
 	} eax_2;
 
 	struct {
-		uint32	reserved[2];
+		uint32	reserved[1];
+		uint32	serial_number_transmeta;
 		uint32	serial_number_high;
 		uint32	serial_number_low;
 	} eax_3;
 
+	struct {
+		uint32	cache_type			: 5;
+		uint32	cache_level			: 3;
+		uint32	self_initializing	: 1;
+		uint32	fully_associative	: 1;
+		uint32	reserved			: 4;
+		uint32	cpu_threads			: 12;
+		uint32	cpu_cores			: 6;
+
+		uint32	coherency_line_size	: 12;
+		uint32	phys_line_partition	: 10;
+		uint32	associativities		: 10;
+
+		uint32	sets				: 32;
+
+		uint32	reserved_1			: 32;
+	} eax_4;
+
 	char		as_chars[16];
+
+	struct {
+		uint32	physical_adress_bits: 8;
+		uint32	virtual_adress_bits	: 8;
+		uint32	reserved_0			: 16;
+		uint32	reserved[3];
+	} eax_8000_0008;
 
 	struct {
 		uint32	eax;

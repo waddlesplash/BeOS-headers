@@ -69,6 +69,11 @@ static	BBitmap * GetBitmap(
 static	BBitmap * GetBitmap(
 				BPositionIO * stream,	/*	not NULL	*/
 				BTranslatorRoster * use = NULL);
+		/*  Get bitmap of 'name' from resource of file 'ref' */
+static	BBitmap * GetBitmapResource(
+				const entry_ref& ref,
+				const char*	name,
+				BTranslatorRoster * use = NULL);
 		//	GetBitmap() will try to deliver bitmaps in the PreferredColorSpace().
 		//	Currently, B_RGB16 is supported; all other spaces will behave like
 		//	B_NO_COLOR_SPACE (i e deliver whatever the translator delivers).

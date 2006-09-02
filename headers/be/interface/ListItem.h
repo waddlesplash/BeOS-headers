@@ -14,11 +14,19 @@
 #include <BeBuild.h>
 #include <Archivable.h>
 #include <Rect.h>
+#include <interface/Bitmap.h>
+#include <support/String.h>
 
 class BFont;
 class BMessage;
 class BOutlineListView;
 class BView;
+class BString;
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
 
 /*----------------------------------------------------------------*/
 /*----- BListItem class ------------------------------------------*/
@@ -102,6 +110,7 @@ virtual	void		Update(BView *owner, const BFont *font);
 virtual status_t	Perform(perform_code d, void *arg);
 
 private:
+friend class Z::Locale::AutoLocale;
 
 virtual	void		_ReservedStringItem1();
 virtual	void		_ReservedStringItem2();
@@ -113,6 +122,41 @@ virtual	void		_ReservedStringItem2();
 		float		fBaselineOffset;
 		uint32		_reserved[2];
 };
+
+
+/*----------------------------------------------------------------*/
+/*----- libzeta BitmapItem class ---------------------------------*/
+
+namespace Z {
+	namespace Interface {
+		
+class BitmapItem : public BStringItem
+{
+	public:
+						BitmapItem(const BString _label, const BBitmap& _icon);
+		virtual			~BitmapItem();
+						
+		virtual	void		DrawItem(BView* _owner, BRect _bounds, bool _complete);
+		virtual	void		Update(BView* _owner, const BFont* _font);
+		virtual	void		SetBitmap(const BBitmap& _bitmap);
+		
+		const BBitmap&		GetBitmap() const;
+		
+	private:
+				void		AdjustHeight();
+				void		UpdateMultiline(const BFont& _font);
+					
+	private:
+		BBitmap		fIcon;
+		float		fLineHeight;
+};
+
+	}	// NS Interface
+}	// ns Z
+
+#ifndef _ZETA_EXPLICIT_NAMESPACE_
+using Z::Interface::BitmapItem;
+#endif
 
 /*-------------------------------------------------------------*/
 /*-------------------------------------------------------------*/

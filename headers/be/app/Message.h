@@ -212,8 +212,8 @@ virtual				~BMessage();
 		status_t	AddRef(const char *name, const entry_ref *ref);
 		status_t	AddMessage(const char *name, const BMessage *msg);
 		status_t	AddFlat(const char *name, const BFlattenable *obj, int32 count = 1);
-		status_t	AddAtom(const char *name, const BAtom* atom);
-		status_t	AddAtomRef(const char *name, const BAtom* atom);
+		status_t	AddAtom(const char *name, const BAtom* atm);
+		status_t	AddAtomRef(const char *name, const BAtom* atm);
 
 		status_t	AddData(const char *name, type_code type, const void *data,
 						ssize_t numBytes, bool is_fixed_size = true, int32 count = 1);
@@ -251,10 +251,10 @@ virtual				~BMessage();
 								 bool allow_int32_type = false) const;
 		status_t	FindRGBColor(const char *name, int32 index, rgb_color *c,
 								 bool allow_int32_type = false) const;
-		status_t	FindAtom(const char *name, BAtom** atom) const;
-		status_t	FindAtom(const char *name, int32 index, BAtom** atom) const;
-		status_t	FindAtomRef(const char *name, BAtom** atom) const;
-		status_t	FindAtomRef(const char *name, int32 index, BAtom** atom) const;
+		status_t	FindAtom(const char *name, BAtom** atm) const;
+		status_t	FindAtom(const char *name, int32 index, BAtom** atm) const;
+		status_t	FindAtomRef(const char *name, BAtom** atm) const;
+		status_t	FindAtomRef(const char *name, int32 index, BAtom** atm) const;
 		status_t	FindPointer(const char *name, void **ptr) const;
 		status_t	FindPointer(const char *name, int32 index,  void **ptr) const;
 		status_t	FindMessenger(const char *name, BMessenger *m) const;
@@ -297,10 +297,10 @@ virtual				~BMessage();
 									bool allow_int32_type = false);
 		status_t	ReplaceRGBColor(const char *name, int32 index, rgb_color a_color,
 									bool allow_int32_type = false);
-		status_t	ReplaceAtom(const char *name, const BAtom* atom);
-		status_t	ReplaceAtom(const char *name,int32 index, const BAtom* atom);
-		status_t	ReplaceAtomRef(const char *name, const BAtom* atom);
-		status_t	ReplaceAtomRef(const char *name,int32 index, const BAtom* atom);
+		status_t	ReplaceAtom(const char *name, const BAtom* atm);
+		status_t	ReplaceAtom(const char *name,int32 index, const BAtom* atm);
+		status_t	ReplaceAtomRef(const char *name, const BAtom* atm);
+		status_t	ReplaceAtomRef(const char *name,int32 index, const BAtom* atm);
 		status_t	ReplacePointer(const char *name, const void *ptr);
 		status_t	ReplacePointer(const char *name,int32 index,const void *ptr);
 		status_t	ReplaceMessenger(const char *name, BMessenger messenger);
@@ -357,18 +357,18 @@ virtual				~BMessage();
 		status_t	AddAtom(const char *name, const atom<BAtom> &obj);
 		status_t	AddAtomRef(const char *name, const atom<BAtom> &obj);
 		status_t	AddAtomRef(const char *name, const atomref<BAtom> &obj);
-		status_t	FindAtom(const char *name, atom<BAtom> &atom) const;
-		status_t	FindAtom(const char *name, int32 index, atom<BAtom> &atom) const;
-		status_t	FindAtomRef(const char *name, atomref<BAtom> &atom) const;
-		status_t	FindAtomRef(const char *name, int32 index, atomref<BAtom> &atom) const;
-		status_t	ReplaceAtom(const char *name, const atom<BAtom> &atom);
-		status_t	ReplaceAtom(const char *name,int32 index, const atom<BAtom> &atom);
-		status_t	ReplaceAtomRef(const char *name, const atomref<BAtom> &atom);
-		status_t	ReplaceAtomRef(const char *name,int32 index, const atomref<BAtom> &atom);
-		template <class TYPE> inline status_t	FindAtom(const char *name, atom<TYPE> &atom) const;
-		template <class TYPE> inline status_t	FindAtom(const char *name, int32 index, atom<TYPE> &atom) const;
-		template <class TYPE> inline status_t	FindAtomRef(const char *name, atomref<TYPE> &atom) const;
-		template <class TYPE> inline status_t	FindAtomRef(const char *name, int32 index, atomref<TYPE> &atom) const;
+		status_t	FindAtom(const char *name, atom<BAtom> &atm) const;
+		status_t	FindAtom(const char *name, int32 index, atom<BAtom> &atm) const;
+		status_t	FindAtomRef(const char *name, atomref<BAtom> &atm) const;
+		status_t	FindAtomRef(const char *name, int32 index, atomref<BAtom> &atm) const;
+		status_t	ReplaceAtom(const char *name, const atom<BAtom> &atm);
+		status_t	ReplaceAtom(const char *name,int32 index, const atom<BAtom> &atm);
+		status_t	ReplaceAtomRef(const char *name, const atomref<BAtom> &atm);
+		status_t	ReplaceAtomRef(const char *name,int32 index, const atomref<BAtom> &atm);
+		template <class TYPE> inline status_t	FindAtom(const char *name, atom<TYPE> &atm) const;
+		template <class TYPE> inline status_t	FindAtom(const char *name, int32 index, atom<TYPE> &atm) const;
+		template <class TYPE> inline status_t	FindAtomRef(const char *name, atomref<TYPE> &atm) const;
+		template <class TYPE> inline status_t	FindAtomRef(const char *name, int32 index, atomref<TYPE> &atm) const;
 
 private:
 
@@ -484,10 +484,27 @@ mutable	BMessage			*fOriginal;
 		bool				_reservedBool;
 };
 
-template <class TYPE> inline status_t BMessage::FindAtom(const char *name, int32 index, atom<TYPE> &a) const
+template <class TYPE> inline status_t BMessage::FindAtom(const char *name, int32 index, atom<TYPE> &atm) const
 {
 	BAtom* obj;
 	status_t r = FindAtom(name,index,&obj);
+	if (r == B_OK) {
+		TYPE *t = dynamic_cast<TYPE*>(obj);
+		if (t) atm = t;
+		else r = B_ERROR;
+	};
+	return r;
+};
+
+template <class TYPE> inline status_t BMessage::FindAtom(const char *name, atom<TYPE> &atm) const
+{
+	return FindAtom(name,0,atm);
+};
+
+template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, atomref<TYPE> &a) const
+{
+	BAtom* obj;
+	status_t r = FindAtomRef(name,index,&obj);
 	if (r == B_OK) {
 		TYPE *t = dynamic_cast<TYPE*>(obj);
 		if (t) a = t;
@@ -496,26 +513,9 @@ template <class TYPE> inline status_t BMessage::FindAtom(const char *name, int32
 	return r;
 };
 
-template <class TYPE> inline status_t BMessage::FindAtom(const char *name, atom<TYPE> &a) const
+template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, int32 index, atomref<TYPE> &a) const
 {
-	return FindAtom(name,0,a);
-};
-
-template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, atomref<TYPE> &atom) const
-{
-	BAtom* obj;
-	status_t r = FindAtomRef(name,index,&obj);
-	if (r == B_OK) {
-		TYPE *t = dynamic_cast<TYPE*>(obj);
-		if (t) atom = t;
-		else r = B_ERROR;
-	};
-	return r;
-};
-
-template <class TYPE> inline status_t BMessage::FindAtomRef(const char *name, int32 index, atomref<TYPE> &atom) const
-{
-	return FindAtomRef(name,0,atom);
+	return FindAtomRef(name,0,a);
 };
 
 BDataIO& operator<<(BDataIO& io, const BMessage& message);
@@ -524,4 +524,3 @@ BDataIO& operator<<(BDataIO& io, const BMessage& message);
 /*-------------------------------------------------------------*/
 
 #endif /* _MESSAGE_H */
-

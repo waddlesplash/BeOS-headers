@@ -123,10 +123,10 @@ private:
 	BPrivate::printjob_private& _m_rprivate;
 	uint32 _reserved0[3];
 
-//	#if _R4_COMPATIBLE_
 	uint32 _reserved1[89];
-	public:
+
 	// Just here for compatibility with old drivers
+	public:
 	struct print_file_header
 	{ // Needed by printer old drivers
 		int32	version;
@@ -136,7 +136,6 @@ private:
 		int32	_reserved_4_;
 		int32	_reserved_5_;
 	};
-//	#endif
 };
 
 

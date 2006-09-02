@@ -53,4 +53,9 @@ struct translator_info {			/* Info about a specific translation*/
 	char			MIME[251];
 };
 
+#define B_TRANSLATION_MAKE_VER(mjr,mnr,rev) ((mjr << 8) | ((mnr << 4) & 0xf0) | (rev & 0x0f))
+#define B_TRANSLATION_MAJOR_VER(v) (v >> 8)
+#define B_TRANSLATION_MINOR_VER(v) ((v >> 4) & 0xf)
+#define B_TRANSLATION_REVSN_VER(v) (v & 0xf)
+
 #endif /* _TRANSLATION_DEFS_H */

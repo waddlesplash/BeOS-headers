@@ -19,6 +19,12 @@
 
 class BMenuBar;
 
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
+
 namespace BPrivate {
 class BMCMenuBar;
 }
@@ -98,6 +104,7 @@ virtual status_t		Perform(perform_code d, void *arg);
 
 private:
 friend class BPrivate::BMCMenuBar;
+friend class Z::Locale::AutoLocale;
 
 virtual	void			_ReservedMenuField1();
 virtual	void			_ReservedMenuField2();

@@ -22,11 +22,16 @@ namespace BExperimental {
 class DividerControl : public BControl
 {
 public:
-	// Create the divider.  The divider will control its previous
-	// and next sibling views.  When the user changes the twisty,
+	// The divider will control its previous and next sibling views.  
+	
+	// If using the twistie version, when the user changes the twisty,
 	// you will get a report from the control but must hide the
 	// appropriate view yourself.
-	// B_VERTICAL orientation is currently not supported.
+	
+	// B_VERTICAL orientation is currently not supported while using the twister.
+	
+	// The twister version has a drastically different look than the non 
+	// twister version, but hey, this is experimental, right?
 	
 	// The Divider queries the sibling view's GetPreferredSize() method
 	// to find out when to stop sizing, you will need to implement this
@@ -36,14 +41,12 @@ public:
 				   BMessage* message,
 				   orientation o = B_HORIZONTAL,
 				   uint32 resizeMask = B_FOLLOW_TOP | B_FOLLOW_LEFT_RIGHT,
-				   bool useTwister = true,
+				   bool useTwister = false,
 				   bool fillToEdge = true);
 	~DividerControl();
 	
 	virtual	void			AttachedToWindow();
-	//virtual	void			AllAttached();
 	virtual	void			DetachedFromWindow();
-	//virtual	void			AllDetached();
 
 	virtual	void			FrameMoved(BPoint new_position);
 	virtual	void			MessageReceived(BMessage *msg);

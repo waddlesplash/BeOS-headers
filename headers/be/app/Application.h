@@ -45,9 +45,9 @@ class BWindow;
 class BApplication : public BLooper {
 
 public:
-						BApplication(const char *signature);
-						BApplication(const char *signature, status_t *error);
-						BApplication(const char *signature, status_t *error, bool connectToAppServer);
+						BApplication(const char *mime_sig);
+						BApplication(const char *mime_sig, status_t *error);
+						BApplication(const char *mime_sig, status_t *error, bool connectToAppServer);
 virtual					~BApplication();
 
 /* Archiving */

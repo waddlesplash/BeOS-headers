@@ -12,11 +12,18 @@
 #define	F_GETFL			0x0008
 #define	F_SETFL			0x0010
 #define F_GETLK         0x0020
-#define F_RDLCK         0x0040
 #define F_SETLK         0x0080
 #define F_SETLKW        0x0100
+
+/* flock::l_type */
+/* (yes those got defined out of order as commands... too late now) */
 #define F_UNLCK         0x0200
+#define F_RDLCK         0x0040
 #define F_WRLCK         0x0400
+/* extensions */
+#define F_LCKTYPE       0x3000
+#define F_LCK_FCNTL     0x0000 /* use fcntl(F_*LK*) semantics */
+#define F_LCK_FLOCK     0x1000 /* use flock() semantics */
 
 #if __GNUC__
 #define	FD_CLOEXEC	1	/* Close on exec.  */

@@ -48,7 +48,7 @@ extern int		gethostname(char *hname, size_t namelen);
 extern char		*getlogin(void);
 /* XXXdbg getlogin_r() */
 extern int 		getopt(int argc, char *const *argv, const char *shortopts);
-/* XXXdbg getpagesize() */
+extern int      getpagesize(void);
 extern pid_t    getpgrp(void);
 extern pid_t	getpid(void);
 extern pid_t	getppid(void);
@@ -62,11 +62,14 @@ extern off_t	lseek(int fd, off_t offset, int whence);
 
 extern int		mknod(const char *name, mode_t mode, dev_t dev);
 
+extern int		nice(int niceness);
+
 extern long		pathconf(const char *path, int name);
 extern int 		pause(void);
 extern int		pipe(int fildes[2]);
 
 extern ssize_t	read(int fd, void *buf, size_t count);
+extern ssize_t  pread(int fd, void *buf, size_t count, off_t pos);
 extern ssize_t  read_pos(int fd, off_t pos, void *buf, size_t count);
 extern ssize_t  readlink(const char *path, char *buf, size_t bufsize);
 extern int		rmdir(const char *path);
@@ -90,9 +93,10 @@ extern int		ttyname_r(int fd, char *buf, size_t buflen);
 
 /* XXXdbg ualarm() */
 extern int		unlink(const char *name);
-/* XXXdbg usleep() */
+extern int		usleep (unsigned int usecs);
 
 extern ssize_t	write(int fd, const void *buf, size_t count);
+extern ssize_t  pwrite(int fd, const void *buf, size_t count, off_t pos);
 extern ssize_t  write_pos(int fd, off_t pos, const void *buf,size_t count);
 				
 extern int		ioctl(int fd, unsigned long op, ...);

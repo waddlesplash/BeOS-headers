@@ -16,6 +16,12 @@
 #include <String.h>
 #include <View.h>
 
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
+
 /*----------------------------------------------------------------*/
 /*----- BStringView class ----------------------------------------*/
 
@@ -79,6 +85,7 @@ virtual status_t	GetSupportedSuites(BMessage *data);
 virtual status_t	Perform(perform_code d, void *arg);
 
 private:
+friend class Z::Locale::AutoLocale;
 
 		const char*	GetShownText();
 		

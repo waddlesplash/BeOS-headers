@@ -15,6 +15,12 @@
 #include <BeBuild.h>
 #include <View.h>
 
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
+
 /*----------------------------------------------------------------*/
 /*----- BBox class -----------------------------------------------*/
 
@@ -78,6 +84,7 @@ virtual status_t		GetSupportedSuites(BMessage *data);
 virtual status_t		Perform(perform_code d, void *arg);
 
 private:
+friend class Z::Locale::AutoLocale;
 
 virtual	void			_ReservedBox1();
 virtual	void			_ReservedBox2();

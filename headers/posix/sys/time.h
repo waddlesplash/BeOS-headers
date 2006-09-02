@@ -9,6 +9,14 @@ struct timeval {
 	long tv_usec;
 };
 
+struct timespec { 
+	long tv_sec;
+	long tv_nsec;
+};
+/* whoever named those fields... */
+#define ts_sec tv_sec
+#define ts_nsec tv_nsec
+
 struct timezone {
 	int tz_minuteswest;
 	int tz_dsttime;
@@ -35,6 +43,7 @@ int utimes(const char *name, const struct timeval times[2]);
 /* XXXdbg getitimer() */
 /* XXXdbg setitimer() */
 
+int nanosleep(const struct timespec *req, struct timespec *rem);
 
 __extern_c_end
 

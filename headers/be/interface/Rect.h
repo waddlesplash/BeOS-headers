@@ -86,14 +86,21 @@ public:
 		BRect		InsetByCopy(BPoint) const;
 		BRect		InsetByCopy(float dx, float dy) const;
 		BRect		InsetByCopy(const BInsets& d) const;
+
 		BRect &		OffsetBySelf(BPoint);
 		BRect &		OffsetBySelf(float dx, float dy);
 		BRect		OffsetByCopy(BPoint) const;
 		BRect		OffsetByCopy(float dx, float dy) const;
+
 		BRect &		OffsetToSelf(BPoint);
 		BRect &		OffsetToSelf(float dx, float dy);
 		BRect		OffsetToCopy(BPoint) const;
 		BRect		OffsetToCopy(float dx, float dy) const;
+
+		BRect&		ResizeBySelf(float dx, float dy);
+		BRect&		ResizeBySelf(BPoint _point);
+		BRect		ResizeByCopy(float dx, float dy) const;
+		BRect		ResizeByCopy(BPoint _point) const;
 
 /* comparison */
 		bool		operator==(BRect) const;

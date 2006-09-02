@@ -115,10 +115,11 @@ struct key_map {
 		uint32	tilde_tables;
 };
 
+
+#define B_MAX_MOUSE_BUTTONS 3
+
 struct mouse_map {
-	uint32	left;
-	uint32	right;
-	uint32	middle;
+		uint32	button[B_MAX_MOUSE_BUTTONS];
 };
 
 /*----------------------------------------------------------------*/
@@ -305,8 +306,10 @@ mode_mouse		mouse_mode();
 
 extern const char *B_UI_PANEL_BACKGROUND_COLOR;			/* be:c:PanBg*/
 extern const char *B_UI_PANEL_TEXT_COLOR;				/* be:c:PanTx */
+extern const char *B_UI_PANEL_LINK_COLOR;				/* be:c:PanLn */
 extern const char *B_UI_DOCUMENT_BACKGROUND_COLOR;		/* be:c:DocBg */
 extern const char *B_UI_DOCUMENT_TEXT_COLOR;			/* be:c:DocTx */
+extern const char *B_UI_DOCUMENT_LINK_COLOR;			/* be:c:DocLn */
 extern const char *B_UI_CONTROL_BACKGROUND_COLOR;		/* be:c:CtlBg */
 extern const char *B_UI_CONTROL_TEXT_COLOR;				/* be:c:CtlTx */
 extern const char *B_UI_CONTROL_BORDER_COLOR;			/* be:c:CtlBr */
@@ -350,13 +353,19 @@ status_t		set_window_decor(const char* name,
 							uint32 flags = 0);
 status_t		get_window_decor(BString* outName,
 							BMessage* globals = NULL);
+
+// In libzeta
+BRect&			center_on_screen(BRect& rect_to_center);
+
 #endif
 
 enum color_which {
 	B_PANEL_BACKGROUND_COLOR = 1,
 	B_PANEL_TEXT_COLOR = 10,
+	B_PANEL_LINK_COLOR = 22,
 	B_DOCUMENT_BACKGROUND_COLOR = 11,
 	B_DOCUMENT_TEXT_COLOR = 12,
+	B_DOCUMENT_LINK_COLOR = 23,
 	B_CONTROL_BACKGROUND_COLOR = 13,
 	B_CONTROL_TEXT_COLOR = 14,
 	B_CONTROL_BORDER_COLOR = 15,

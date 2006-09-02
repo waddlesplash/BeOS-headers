@@ -34,6 +34,7 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 
 typedef char *caddr_t;
+typedef unsigned long addr_t;
 
 #include <size_t.h>
 

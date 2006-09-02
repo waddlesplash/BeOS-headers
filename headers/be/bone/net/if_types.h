@@ -103,6 +103,23 @@
 #define        IFT_SMDSICIP    0x34            /* SMDS InterCarrier Interface */ 
 #define        IFT_PROPVIRTUAL 0x35            /* Proprietary Virtual/internal */ 
 #define        IFT_PROPMUX     0x36            /* Proprietary Multiplexing */
+#define        IFT_IEEE80212   0x37 /* 100BaseVG */
+#define        IFT_FIBRECHANNEL	0x38 /* Fibre Channel */
+#define        IFT_HIPPIINTERFACE 0x39 /* HIPPI interfaces	 */
+#define        IFT_FRAMERELAYINTERCONNECT 0x3a /* Obsolete, use either 0x20 or 0x2c */
+#define        IFT_AFLANE8023  0x3b /* ATM Emulated LAN for 802.3 */
+#define        IFT_AFLANE8025  0x3c /* ATM Emulated LAN for 802.5 */
+#define        IFT_CCTEMUL     0x3d /* ATM Emulated circuit		  */
+#define        IFT_FASTETHER   0x3e /* Fast Ethernet (100BaseT) */
+#define        IFT_ISDN        0x3f /* ISDN and X.25	    */
+#define        IFT_V11         0x40 /* CCITT V.11/X.21		*/
+#define        IFT_V36         0x41 /* CCITT V.36			*/
+#define        IFT_G703AT64K   0x42 /* CCITT G703 at 64Kbps */
+#define        IFT_G703AT2MB   0x43 /* Obsolete see DS1-MIB */
+#define        IFT_QLLC        0x44 /* SNA QLLC			*/
+#define        IFT_FASTETHERFX 0x45 /* Fast Ethernet (100BaseFX)	*/
+#define        IFT_CHANNEL     0x46            /* channel			*/
+#define        IFT_IEEE80211   0x47            /* radio spread spectrum	*/
 
 /*
  * logical interface types.  the combination of an IFT_* type and

@@ -437,19 +437,19 @@ struct usb_module_info_v3 {
 							 void *data, size_t *actual_len);
 
 	/* async request queueing */
-	status_t (*queue_interrupt)(usb_pipe pipe, 
+	status_t (*queue_interrupt)(usb_pipe _pipe, 
 								void *data, size_t len,
 								usb_callback_func notify, void *cookie);
 	
-	status_t (*queue_bulk)(usb_pipe pipe, 
+	status_t (*queue_bulk)(usb_pipe _pipe, 
 						   void *data, size_t len,
 						   usb_callback_func notify, void *cookie);
 								
-	status_t (*queue_bulk_v)(usb_pipe pipe, 
+	status_t (*queue_bulk_v)(usb_pipe _pipe, 
 						   iovec *vec, size_t count,
 						   usb_callback_func notify, void *cookie);
 
-	status_t (*queue_isochronous)(usb_pipe pipe, 
+	status_t (*queue_isochronous)(usb_pipe _pipe, 
 								  void *data, size_t len,
 								  usb_iso_packet_descriptor* packet_descriptors, uint32 packet_count,
   								  uint32* starting_frame_number, /* optional, can be NULL */
@@ -461,11 +461,11 @@ struct usb_module_info_v3 {
 							  uint16 value, uint16 index, uint16 length,
 							  void *data, usb_callback_func notify, void *cookie);
 	
-	status_t (*set_pipe_policy)(usb_pipe pipe, uint8 max_num_queued_packets,
+	status_t (*set_pipe_policy)(usb_pipe _pipe, uint8 max_num_queued_packets,
 								uint16 max_buffer_duration_ms, uint16 sample_size);
 							 
 	/* cancel pending async requests to an endpoint */
-	status_t (*cancel_queued_transfers)(usb_pipe pipe); 
+	status_t (*cancel_queued_transfers)(usb_pipe _pipe); 
 	
 	/* tuning, timeouts, etc */
 	status_t (*usb_ioctl)(uint32 opcode, void* buf, size_t buf_size);

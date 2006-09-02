@@ -16,10 +16,10 @@
 #include <be_prim.h>
 
 struct lock_status_t {
-	void (*unlock_func)(void* data);	// unlock function, NULL if lock failed
+	void (*unlock_func)(void* data);	/* unlock function, NULL if lock failed */
 	union {
-		status_t error;					// error if "unlock_func" is NULL
-		void* data;						// locked object if "unlock_func" is non-NULL
+		status_t error;					/* error if "unlock_func" is NULL */			
+		void* data;						/* locked object if "unlock_func" is non-NULL */
 	} value;
 	
 #ifdef __cplusplus

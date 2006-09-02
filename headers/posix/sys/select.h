@@ -39,6 +39,12 @@ typedef        struct fd_set {
 
 int select(int fd, fd_set *rfds, fd_set *wfds, fd_set *efds, struct timeval *timeout);
 
+#else
+/*
+#include <posix/be_prim.h>
+
+int select(uint32 _maximum, uint32 *rfds, uint32 *wfds, uint32 *efds, bigtime_t t)
+*/
 #endif
 
 __extern_c_end

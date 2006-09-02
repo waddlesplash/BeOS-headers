@@ -20,11 +20,22 @@
 extern const unsigned char B_HAND_CURSOR[];
 extern const unsigned char B_I_BEAM_CURSOR[];
 
+// These cursors are in libzeta
+extern const unsigned char B_LINK_CURSOR[];
+extern const unsigned char B_H_SPLITTER_CURSOR[];
+extern const unsigned char B_V_SPLITTER_CURSOR[];
+
 // New-style cursors
 #ifdef  __cplusplus
 class BCursor;
 extern const BCursor *B_CURSOR_SYSTEM_DEFAULT;
 extern const BCursor *B_CURSOR_I_BEAM;
+
+// These cursors are in libzeta
+extern const BCursor* B_CURSOR_LINK;
+extern const BCursor* B_CURSOR_H_SPLITTER;
+extern const BCursor* B_CURSOR_V_SPLITTER;
+
 #endif
 
 /*---------------------------------------------------------------*/
@@ -32,11 +43,12 @@ extern const BCursor *B_CURSOR_I_BEAM;
 
 enum {
 	B_ABOUT_REQUESTED			= '_ABR',
+	B_HELP_REQUESTED			= '_HLP',
 	B_WINDOW_ACTIVATED			= '_ACT',
 	B_APP_ACTIVATED				= '_ACT',	/* Same as B_WINDOW_ACTIVATED */
 	B_ARGV_RECEIVED 			= '_ARG',
 	B_QUIT_REQUESTED 			= '_QRQ',
-	B_CLOSE_REQUESTED 			= '_QRQ',	/* Obsolete; use B_QUIT_REQUESTED */
+	B_CLOSE_REQUESTED 			= '_QRQ',	// Deprecated, use B_QUIT_REQUESTED
 	B_CANCEL					= '_CNC',
 	B_KEY_DOWN 					= '_KYD',
 	B_KEY_UP 					= '_KYU',
@@ -71,6 +83,7 @@ enum {
 	B_PIPESTDOUT_REQUESTED		= '_PSR',
 	B_PIPESTDOUT_ACKNOWLEDGE	= '_PSA',
 	B_PIPESTDOUT_RESET			= '_PSC',
+	B_LANGUAGE_CHANGED			= '_BLC',
 	_APP_MENU_					= '_AMN',
 	_BROWSER_MENUS_				= '_BRM',
 	_MENU_EVENT_ 				= '_MEV',

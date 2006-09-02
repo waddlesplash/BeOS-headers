@@ -25,3 +25,4 @@ extern "C" _EXPORT void process_refs(entry_ref dir_ref, BMessage* msg, void*);
 /*-------------------------------------------------------------*/
 
 #endif /* _TRACKER_ADDON_H */
+

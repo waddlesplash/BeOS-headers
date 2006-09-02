@@ -14,7 +14,7 @@
 #include <BeBuild.h>
 #include <SupportDefs.h>
 #include <Archivable.h>
-
+#include <support/String.h>
 #ifndef OLDHDRS
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -94,7 +94,8 @@ public:
 	status_t GetAddr(char *hostname = 0, unsigned short *port = 0) const;
 	status_t GetAddr(struct sockaddr_in &sa) const;
 	status_t GetAddr(in_addr &addr, unsigned short *port = 0) const;
-
+	BString		GetAddrString() const;
+	
 	inline NLAddress *GetImpl() const;
 
 protected:

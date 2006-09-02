@@ -448,10 +448,11 @@ struct multi_mix_connection_info {
 
 
 /* possible flags values for what is available (in and out) */
-#define B_MULTI_BUFFER_PLAYBACK 0x1
-#define B_MULTI_BUFFER_RECORD 0x2
-#define B_MULTI_BUFFER_METERING 0x4
-#define B_MULTI_BUFFER_TIMECODE 0x40000
+#define B_MULTI_BUFFER_PLAYBACK			0x00001
+#define B_MULTI_BUFFER_RECORD			0x00002
+#define B_MULTI_BUFFER_METERING			0x00004
+#define B_MULTI_BUFFER_TIMECODE			0x40000
+#define B_MULTI_BUFFER_SOFTWARE_SWAP	0x80000
 
 typedef struct multi_buffer_list multi_buffer_list;
 typedef struct buffer_desc buffer_desc;

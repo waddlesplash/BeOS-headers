@@ -25,24 +25,27 @@ namespace BPrivate
 class BBitmapCollection
 {
 public:
-			BBitmapCollection(BDataIO *lbx_data, size_t lbx_size);
-	virtual ~BBitmapCollection();
+							BBitmapCollection(BDataIO *lbx_data, size_t lbx_size);
+	virtual					~BBitmapCollection();
 
-	int32 CountBitmaps() const;
-	status_t GetBitmapInfo(const char *name, int32 *width, int32 *height) const;
-	status_t GetBitmapInfo(int32 index, BString& name, int32 *width=NULL, int32 *height=NULL) const;
-	int32 GetIndexForBitmap(const char *name) const;
-	BBitmap *GetBitmap(const char *name);
-	BBitmap *GetBitmap(int32 index);
+			int32			CountBitmaps() const;
+			status_t		GetBitmapInfo(const char *name, int32 *width, int32 *height) const;
+			status_t		GetBitmapInfo(int32 index, BString& name, int32 *width=NULL, int32 *height=NULL) const;
+			int32			GetIndexForBitmap(const char *name) const;
+			BBitmap*		GetBitmap(const char *name);
+			BBitmap*		GetBitmap(int32 index);
 
-	status_t InitCheck() const;
+			status_t		InitCheck() const;
 
 private:
-				BBitmapCollection(const BBitmapCollection &);
-	BBitmapCollection&	operator = (const BBitmapCollection &);
-	BPrivate::bitmap_collection_p *_m_private;
-	BPrivate::bitmap_collection_p& _m_rprivate;
-	uint32 _reserved[4];
+							BBitmapCollection(const BBitmapCollection &);
+		BBitmapCollection&	operator = (const BBitmapCollection &);
+	
+	BPrivate::
+	bitmap_collection_p*	_m_private;
+	BPrivate::
+	bitmap_collection_p&	_m_rprivate;
+	uint32					_reserved[4];
 
 	virtual void _ReservedBitmapCollection0();
 	virtual void _ReservedBitmapCollection1();

@@ -61,6 +61,8 @@ virtual				~BBitmap();
 static	BArchivable	*Instantiate(BMessage *data);
 virtual	status_t	Archive(BMessage *data, bool deep = true) const;
 
+		BBitmap		&operator=(const BBitmap& _source);
+		
 		status_t	InitCheck() const;
 		bool		IsValid() const;
 
@@ -120,8 +122,6 @@ friend void  _get_screen_bitmap_(BBitmap *,BRect,bool);
 virtual	void		_ReservedBitmap1();
 virtual	void		_ReservedBitmap2();
 virtual	void		_ReservedBitmap3();
-
-		BBitmap		&operator=(const BBitmap &);
 
 		char		*get_shared_pointer() const;
 		void		set_bits(long offset, char *data, long length);

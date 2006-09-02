@@ -396,8 +396,7 @@ void		endservent_r __P((struct servent_data *));
 #if defined(sun) || defined(bsdi)|| defined(__BEOS__)
 struct hostent	*gethostbyaddr_r __P((const char *, int, int, struct hostent *,
 					char *, int, int *));
-struct hostent	*gethostbyname_r __P((const char *, struct hostent *,
-					char *, int, int *));
+struct hostent	*gethostbyname_r __P((const char *, struct hostent * ,char * , int , int *));
 struct hostent	*gethostent_r __P((struct hostent *, char *, int, int *));
 void		sethostent_r __P((int));
 void		endhostent_r __P((void));

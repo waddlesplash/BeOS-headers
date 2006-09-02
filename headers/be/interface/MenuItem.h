@@ -22,6 +22,12 @@
 class BMessage;
 class BWindow;
 
+namespace Z {
+	namespace Locale {
+		class AutoLocale;
+	}
+}
+
 /*----------------------------------------------------------------*/
 /*----- BMenuItem class ------------------------------------------*/
 
@@ -71,6 +77,7 @@ private:
 friend class BMenu;
 friend class BPopUpMenu;
 friend class BMenuBar;
+friend class Z::Locale::AutoLocale;
 
 virtual	void		_ReservedMenuItem1();
 virtual	void		_ReservedMenuItem2();

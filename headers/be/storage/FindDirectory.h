@@ -110,6 +110,8 @@ typedef enum {
 	The C interface
 --- */
 
+// WARNING!!! -=- Not thread safe!
+
 extern status_t find_directory (
 	directory_which	which,				/* what directory to return path for */
 	dev_t			device,				/* device w/volume, for vol-specific directories */
@@ -137,6 +139,28 @@ extern status_t find_directory (
 	bool			and_create_it = false,
 	BVolume			*vol=NULL
 );
+
+// Thread safe impl.
+// This is in libzeta.so
+#ifndef _ZETA_TS_FIND_DIR_
+#define find_directory find_directory_r
+#endif
+
+extern status_t find_directory_r (
+	directory_which	which,
+	BPath			*path,
+	bool			and_create_it = false,
+	BVolume			*vol=NULL
+);
+
+extern status_t find_directory_r (
+	directory_which	which,				/* what directory to return path for */
+	dev_t			device,				/* device w/volume, for vol-specific directories */
+	bool			create_it,			/* create directory if need be */
+	char			*returned_path,		/* buffer for returned path */
+	int32			path_length			/* buffer size */
+);
+
 
 #endif
 

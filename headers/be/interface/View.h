@@ -582,7 +582,10 @@ friend class BWindow;
 friend class BBitmap;
 friend class BPrintJob;
 friend class BShelf;
+
+#ifdef _ZETA_BUILDING_FOR_OLD_TABVIEW_
 friend class BTabView;
+#endif
 
 virtual	void			_ReservedView4();
 virtual	void			_ReservedView5();

@@ -2,26 +2,28 @@
 /* WARNING: Generated automatically from opensslconf.h.in by Configure. */
 
 /* OpenSSL was configured with the following options: */
+#ifndef OPENSSL_SYSNAME_BEOS
+# define OPENSSL_SYSNAME_BEOS
+#endif
+#ifndef OPENSSL_DOING_MAKEDEPEND
+
+#ifndef OPENSSL_NO_KRB5
+# define OPENSSL_NO_KRB5
+#endif
+
+#endif /* OPENSSL_DOING_MAKEDEPEND */
+#ifndef OPENSSL_THREADS
+# define OPENSSL_THREADS
+#endif
+
+/* The OPENSSL_NO_* macros are also defined as NO_* if the application
+   asks for it.  This is a transient feature that is provided for those
+   who haven't had the time to do the appropriate changes in their
+   applications.  */
 #ifdef OPENSSL_ALGORITHM_DEFINES
-# ifndef NO_RC5
-#  define NO_RC5
+# if defined(OPENSSL_NO_KRB5) && !defined(NO_KRB5)
+#  define NO_KRB5
 # endif
-# ifndef NO_IDEA
-#  define NO_IDEA
-# endif
-# ifndef NO_CAST
-#  define NO_CAST
-# endif
-# ifndef NO_DH
-#  define NO_DH
-# endif
-#endif
-#ifdef OPENSSL_THREAD_DEFINES
-# ifndef THREADS
-#  define THREADS
-# endif
-#endif
-#ifdef OPENSSL_OTHER_DEFINES
 #endif
 
 /* crypto/opensslconf.h.in */
@@ -31,11 +33,14 @@
 
 #if !(defined(VMS) || defined(__VMS)) /* VMS uses logical names instead */
 #if defined(HEADER_CRYPTLIB_H) && !defined(OPENSSLDIR)
-#define OPENSSLDIR "/usr/local/ssl"
+#define OPENSSLDIR "/boot/beos/etc"
 #endif
 #endif
 
+#undef OPENSSL_UNISTD
 #define OPENSSL_UNISTD <unistd.h>
+
+#undef OPENSSL_EXPORT_VAR_AS_FUNCTION
 
 #if defined(HEADER_IDEA_H) && !defined(IDEA_INT)
 #define IDEA_INT unsigned int
@@ -70,7 +75,7 @@
 #endif
 #endif
 
-#if defined(HEADER_DES_H) && !defined(DES_LONG)
+#if (defined(HEADER_NEW_DES_H) || defined(HEADER_DES_H)) && !defined(DES_LONG)
 /* If this is set to 'unsigned int' on a DEC Alpha, this gives about a
  * %20 speed up (longs are 8 bytes, int's are 4). */
 #ifndef DES_LONG
@@ -99,7 +104,7 @@
 #define CONFIG_HEADER_RC4_LOCL_H
 /* if this is defined data[i] is used instead of *data, this is a %20
  * speedup on x86 */
-#undef RC4_INDEX
+#define RC4_INDEX
 #endif
 
 #if defined(HEADER_BF_LOCL_H) && !defined(CONFIG_HEADER_BF_LOCL_H)
@@ -113,14 +118,14 @@
 /* the following is tweaked from a config script, that is why it is a
  * protected undef/define */
 #ifndef DES_PTR
-#undef DES_PTR
+#define DES_PTR
 #endif
 
 /* This helps C compiler generate the correct code for multiple functional
  * units.  It reduces register dependancies at the expense of 2 more
  * registers */
 #ifndef DES_RISC1
-#undef DES_RISC1
+#define DES_RISC1
 #endif
 
 #ifndef DES_RISC2
@@ -134,7 +139,7 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 /* Unroll the inner loop, this sometimes helps, sometimes hinders.
  * Very mucy CPU dependant */
 #ifndef DES_UNROLL
-#undef DES_UNROLL
+#define DES_UNROLL
 #endif
 
 /* These default values were supplied by
@@ -170,7 +175,7 @@ YOU SHOULD NOT HAVE BOTH DES_RISC1 AND DES_RISC2 DEFINED!!!!!
 #  define DES_PTR
 #  define DES_RISC2
 #  define DES_UNROLL
-#elif defined( i386 )		/* x86 boxes, should be gcc */
+#elif defined(i386) || defined(__i386__)	/* x86 boxes, should be gcc */
 #  define DES_PTR
 #  define DES_RISC1
 #  define DES_UNROLL

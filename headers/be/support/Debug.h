@@ -55,7 +55,7 @@ extern "C" {
 	#define TRACE()					_debugPrintf("File: %s, Line: %d, Thread: %d\n", \
 										__FILE__, __LINE__, find_thread(NULL))
 
-	#define FUNC_TRACE()			_debugPrintf("File: %s, Line: %d, Thread: %d, Function: %s\n", \
+	#define FUNC_TRACE() 				_debugPrintf("File: %s, Line: %d, Thread: %d, Function: %s\n", \
 										__FILE__, __LINE__, find_thread(NULL), __PRETTY_FUNCTION__)
 
 	#define SERIAL_TRACE()			_sPrintf("File: %s, Line: %d, Thread: %d\n", \

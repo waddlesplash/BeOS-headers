@@ -270,4 +270,9 @@ void BSwap(BKeyedVector<KEY, VALUE>& v1, BKeyedVector<KEY, VALUE>& v2)
 
 } }	// namespace B::Support
 
+#ifndef _BEOS_EXPLICIT_NAMESPACE_
+using B::Support::BKeyedVector;
+#endif
+
+
 #endif

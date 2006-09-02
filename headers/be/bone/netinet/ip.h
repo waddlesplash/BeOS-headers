@@ -49,6 +49,7 @@ typedef struct ip
 #define IP_MF 0x2000				/* more fragments flag */
 #define IP_OFFMASK 0x1fff			/* frag_offset field mask for fragmenting bits */
 
+#ifdef IP_TOS
 /*
  * Definitions for IP type of service (ip_tos)
  */
@@ -67,6 +68,7 @@ typedef struct ip
 #define	IPTOS_PREC_IMMEDIATE		0x40
 #define	IPTOS_PREC_PRIORITY		0x20
 #define	IPTOS_PREC_ROUTINE		0x00
+#endif /* IP_TOS */
 
 /*
  * limits

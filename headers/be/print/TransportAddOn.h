@@ -58,6 +58,8 @@ public:
 		B_TRANSPORT_IS_SHARABLE = 0x00000002,
 		B_TRAMSPORT_IS_HOT_PLUG = 0x00000004,
 		B_TRANSPORT_IS_NETWORK  = 0x00000008,
+		B_TRANSPORT_IS_VIRTUAL	= 0x00000010, // deviceless transport such as print-to-file
+		B_TRANSPORT_DEFIES_THERMODYNAMICS = B_TRANSPORT_IS_VIRTUAL,
 		B_TRANSPORT_IS_USB  	= 0x00008000
 	};
 
@@ -81,6 +83,7 @@ public:
 	virtual status_t EndPrintjob();
 
 	// Implement this if the transport is B_TRAMSPORT_IS_HOT_PLUG or "probable"
+	// default version fills in Name and Attributes
 	virtual status_t ProbePrinters(BMessage *printers);
 
 	// Specials actions on the connected printer

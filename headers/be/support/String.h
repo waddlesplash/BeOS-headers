@@ -15,6 +15,13 @@
 #include <SupportDefs.h>
 #include <string.h>
 
+// Some conveniance typedefs for formatting
+struct uhex8 { uhex8(uint8 value):val(value) {} uint8 val; };
+struct uhex16 { uhex16(uint16 value):val(value) {} uint16 val; };
+struct uhex32 { uhex32(uint32 value):val(value) {} uint32 val; };
+struct uhex64 { uhex64(uint64 value):val(value) {} uint64 val; };
+
+
 class BSharedStringBuffer;
 class BDataIO;
 
@@ -33,7 +40,9 @@ public:
 						BString(const char *, int32 maxLength);
 					
 						~BString();
-			
+						
+	status_t			LoadFromFile(const BString& _path);			
+	status_t			SaveToFile(const BString& _path) const;			
 /*---- Access --------------------------------------------------------------*/
 
 	const char 			*String() const;
@@ -74,6 +83,13 @@ public:
 							int32 length) const;
 						/* caller guarantees that <into> is large enough */
 
+/*---- Joining and Slicing -------------------------------------------------*/
+	BString				operator+(const BString& _other) const;
+
+	BString				Mid(int32 _start, int32 _length) const;
+	BString				Left(int32 _length) const;
+	BString				Right(int32 _length) const;
+	
 /*---- Appending -----------------------------------------------------------*/
 	BString 			&operator+=(const BString &);
 	BString 			&operator+=(const char *);
@@ -286,6 +302,11 @@ public:
 	BString 		&operator<<(int64);
 	BString 		&operator<<(float);
 		/* float output hardcodes %.2f style formatting */
+	BString 		&operator<<(uhex8);
+	BString 		&operator<<(uhex16);
+	BString 		&operator<<(uhex32);
+	BString 		&operator<<(uhex64);
+		// When you want a hexidecimal string value
 	
 /*----- Private or reserved ------------------------------------------------*/
 private:
@@ -349,7 +370,7 @@ BDataIO& operator<<(BDataIO& io, const BString& string);
 inline int32 
 BString::Length() const
 {
-	return _privateData ? (*((int32 *)_privateData - 1) & 0x7fffffff) : 0;
+	return _privateData ? (*((const int32 *)_privateData - 1) & 0x7fffffff) : 0;
 		/* the most significant bit is reserved; accessing
 		 * it in any way will cause the computer to explode
 		 */

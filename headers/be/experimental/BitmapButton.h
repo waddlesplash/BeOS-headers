@@ -35,11 +35,11 @@ public:
 	BBitmapButton(BRect frame, const char* name,
 				  const char* label,
 				  BMessage* message,
-				  const BBitmap* bmNormal = 0,
-				  const BBitmap* bmOver = 0,
-				  const BBitmap* bmPressed = 0,
-				  const BBitmap* bmDisabled = 0,
-				  const BBitmap* bmDisabledPressed = 0,
+				  const BBitmap* bmNormal = NULL,
+				  const BBitmap* bmOver = NULL,
+				  const BBitmap* bmPressed = NULL,
+				  const BBitmap* bmDisabled = NULL,
+				  const BBitmap* bmDisabledPressed = NULL,
 				  uint32 resizeMask = B_FOLLOW_LEFT | B_FOLLOW_TOP);
 	virtual ~BBitmapButton();
 
@@ -53,6 +53,7 @@ public:
 	virtual	void MakeFocus(bool focusState = true);
 	virtual void SetValue(int32 value);
 	virtual void SetEnabled(bool on);
+	virtual status_t Invoke(BMessage *msg = NULL);
 	
 	// Return the bitmap for the corresponding state.  If 'create'
 	// is true, a bitmap will be generated if possible and a specific

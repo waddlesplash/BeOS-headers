@@ -38,9 +38,9 @@ typedef status_t (*device_read_hook) (void *cookie, off_t position, void *data,
 typedef status_t (*device_write_hook) (void *cookie, off_t position,
 					const void *data, size_t *numBytes);
 typedef status_t (*device_select_hook) (void *cookie, uint8 event, uint32 ref,
-					selectsync *sync);
+					selectsync *_sync);
 typedef status_t (*device_deselect_hook) (void *cookie, uint8 event,
-					selectsync *sync);
+					selectsync *_sync);
 typedef status_t (*device_readv_hook) (void *cookie, off_t position, const iovec *vec,
 					size_t count, size_t *numBytes);
 typedef status_t (*device_writev_hook) (void *cookie, off_t position, const iovec *vec,
@@ -67,7 +67,7 @@ typedef struct {
 } device_hooks;
 
 extern _EXPORT status_t		init_hardware(void);
-extern _EXPORT const char	**publish_devices();
+extern _EXPORT const char	**publish_devices(void);
 extern _EXPORT device_hooks	*find_device(const char *name);
 extern _EXPORT status_t		init_driver(void);
 extern _EXPORT void			uninit_driver(void);	
